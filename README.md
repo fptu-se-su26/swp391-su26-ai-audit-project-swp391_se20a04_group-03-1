@@ -4,11 +4,11 @@
 
 | Item | Description |
 |---|---|
-| Course |  |
-| Class |  |
+| Course | SWP391 |
+| Class | SE20A04 |
 | Semester | SU26 |
-| Group |  |
-| Topic |  |
+| Group | 03  |
+| Topic | The application helps citizens look up administrative procedures |
 | Repository |  |
 
 ---
@@ -17,11 +17,11 @@
 
 | No | Student ID | Full Name | GitHub Username | Role | Main Responsibility |
 |---:|---|---|---|---|---|
-| 1 |  |  |  | Leader |  |
-| 2 |  |  |  | Member |  |
-| 3 |  |  |  | Member |  |
-| 4 |  |  |  | Member |  |
-| 5 |  |  |  | Member |  |
+| 1 | DE190953 | Trần Đức Việt  | tranviet-tv | Leader |  |
+| 2 | DE191024 | Trần Thanh Tiến Đạt | LeoKens-tofu | Member |  |
+| 3 | DE190478 | Lê Tự Minh Quang | Quang102769 | Member |  |
+| 4 | DE190972 | Trần Huy Hoàng | hoanght152-sketch | Member |  |
+| 5 | DE190658 | Lê Văn Phúc | vphuc02 | Member |  |
 
 ---
 
