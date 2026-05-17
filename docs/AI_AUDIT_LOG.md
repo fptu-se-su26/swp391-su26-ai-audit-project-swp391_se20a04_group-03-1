@@ -4,15 +4,15 @@
 
 | Thông tin | Nội dung |
 |---|---|
-| Môn học |  |
-| Mã môn học |  |
-| Lớp |  |
-| Học kỳ |  |
-| Tên bài tập / Project |  |
-| Tên sinh viên / Nhóm |  |
-| MSSV / Danh sách MSSV |  |
-| Giảng viên hướng dẫn |  |
-| Ngày bắt đầu |  |
+| Môn học | Software development project |
+| Mã môn học | SWP391 |
+| Lớp | SE20A04 |
+| Học kỳ | SU26 |
+| Tên bài tập / Project | LogiPort - Port Operations Management Solution |
+| Tên sinh viên / Nhóm | 3 |
+| MSSV / Danh sách MSSV | DE190953, DE191024, DE190478, DE190972, DE190658 |
+| Giảng viên hướng dẫn | QuangLTN3 |
+| Ngày bắt đầu | 15/05/2026 |
 | Ngày hoàn thành |  |
 
 ---
@@ -23,7 +23,7 @@
 
 - [ ] ChatGPT
 - [ ] Gemini
-- [ ] Claude
+- [x] Claude
 - [ ] GitHub Copilot
 - [ ] Cursor
 - [ ] Antigravity
