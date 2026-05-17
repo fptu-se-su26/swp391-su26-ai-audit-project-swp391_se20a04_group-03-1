@@ -22,7 +22,7 @@
 Đánh dấu các công cụ AI đã sử dụng trong quá trình thực hiện bài tập/project.
 
 - [ ] ChatGPT
-- [ ] Gemini
+- [x] Gemini
 - [x] Claude
 - [ ] GitHub Copilot
 - [ ] Cursor
