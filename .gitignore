@@ -1,0 +1,97 @@
+# ============================================================
+#  LogiPort Monorepo — .gitignore
+#  Covers: Node.js, Python, Next.js, Build Outputs, IDE, OS
+# ============================================================
+
+# ── Dependencies ────────────────────────────────────────────
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.Python
+
+# ── Environment Variables (NEVER commit secrets) ────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ── Build Outputs ───────────────────────────────────────────
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+*.tsbuildinfo
+
+# ── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── Testing & Coverage ──────────────────────────────────────
+coverage/
+*.lcov
+.nyc_output/
+htmlcov/
+.pytest_cache/
+.coverage
+.coverage.*
+
+# ── Cache & Temp ────────────────────────────────────────────
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.swp
+*.swo
+*.tmp
+*.temp
+
+# ── Package Manager Lock files (keep one, ignore others) ────
+# Uncomment the lock file your team does NOT use:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ── IDE / Editor ─────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ── OS ──────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ── Docker / Deployment ─────────────────────────────────────
+*.pid
+*.seed
+*.pid.lock
+
+# ── MQTT / IoT Data ─────────────────────────────────────────
+mosquitto.db
+mosquitto.log
+sensor_data_dump/
