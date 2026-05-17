@@ -8,7 +8,7 @@
 | Class | SE20A04 |
 | Semester | SU26 |
 | Group | 03  |
-| Topic | The application helps citizens look up administrative procedures |
+| Topic | LogiPort - Port Operations Management Solution |
 | Repository |  |
 
 ---
