@@ -4,14 +4,14 @@
 
 | Thông tin | Nội dung |
 |---|---|
-| Môn học |  |
-| Mã môn học |  |
-| Lớp |  |
-| Học kỳ |  |
-| Tên bài tập / Project |  |
+| Môn học | Software Development Project |
+| Mã môn học | SWP391 |
+| Lớp | SE20A04 |
+| Học kỳ | Ky 5 |
+| Tên bài tập / Project | LogiPort |
 | Tên sinh viên / Nhóm |  |
 | MSSV / Danh sách MSSV |  |
-| Giảng viên hướng dẫn |  |
+| Giảng viên hướng dẫn | Quang |
 | Ngày bắt đầu |  |
 | Ngày cập nhật gần nhất |  |
 
