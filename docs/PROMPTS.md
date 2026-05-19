@@ -9,11 +9,23 @@
 | Lớp | SE20A04 |
 | Học kỳ | Ky 5 |
 | Tên bài tập / Project | LogiPort |
-| Tên sinh viên / Nhóm |  |
-| MSSV / Danh sách MSSV |  |
-| Giảng viên hướng dẫn | Quang |
-| Ngày bắt đầu |  |
-| Ngày cập nhật gần nhất |  |
+| Tên sinh viên / Nhóm | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3|
+| MSSV / Danh sách MSSV | DePrompt Log
+
+## 1. Thông tin chung
+
+| Thông tin | Nội dung |
+|---|---|
+| Môn học | Software Development Project |
+| Mã môn học | SWP391 |
+| Lớp | SE20A04 |
+| Học kỳ | Ky 5 |
+| Tên bài tập / Project | LogiPort |
+| Tên sinh viên / Nhóm | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3|
+| MSSV / Danh sách MSSV |DE190953 - DE191024 - DE190478 - DE190972 - DE190658 |
+| Giảng viên hướng dẫn | Lê Thiện Nhật Quang |
+| Ngày bắt đầu | 12/05/2026 |
+| Ngày cập nhật gần nhất | 18/05/2026 |
 
 ---
 
@@ -37,11 +49,11 @@ Sinh viên/nhóm cần ghi lại:
 Đánh dấu các công cụ AI đã sử dụng.
 
 - [ ] ChatGPT
-- [ ] Gemini
-- [ ] Claude
+- [ x] Gemini
+- [x ] Claude
 - [ ] GitHub Copilot
-- [ ] Cursor
-- [ ] Antigravity
+- [ x] Cursor
+- [x ] Antigravity
 - [ ] Microsoft Copilot
 - [ ] Perplexity
 - [ ] Công cụ khác: ....................................
