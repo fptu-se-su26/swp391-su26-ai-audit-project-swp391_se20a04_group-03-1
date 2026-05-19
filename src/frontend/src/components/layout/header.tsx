@@ -21,7 +21,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <Menu className="h-6 w-6" />
           </button>
           <Link href="/admin/dashboard" className="font-bold text-lg">
-            🚢 LogiTech
+            🚢 LogiPort
           </Link>
         </div>
         <div className="flex items-center gap-4">
