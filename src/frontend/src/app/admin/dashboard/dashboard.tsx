@@ -1,7 +1,6 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 const Dashboard = () => {
   return (
@@ -9,7 +8,11 @@ const Dashboard = () => {
       {/* Tailwind Theme Config - In a real Next.js v14+ project, you'd place these in globals.css using @theme inline or tailwind.config.ts */}
       {/* Google Fonts: Hanken Grotesk & Material Symbols */}
       <link href="https://fonts.googleapis.com" rel="preconnect" />
-      <link crossOrigin="anonymous" href="https://fonts.gstatic.com" rel="preconnect" />
+      <link
+        crossOrigin="anonymous"
+        href="https://fonts.gstatic.com"
+        rel="preconnect"
+      />
       <link
         href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&display=swap"
         rel="stylesheet"
@@ -18,7 +21,7 @@ const Dashboard = () => {
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet"
       />
-      
+
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -34,7 +37,7 @@ const Dashboard = () => {
             .glow-button {
                 box-shadow: 0 0 15px rgba(245, 130, 32, 0.4);
             }
-          `
+          `,
         }}
       />
 
@@ -62,23 +65,38 @@ const Dashboard = () => {
           {/* Trailing Actions */}
           <div className="flex items-center gap-4">
             <button className="text-on-surface-variant hover:bg-white/5 transition-colors p-2 rounded-full">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 0" }}
+              >
                 notifications
               </span>
             </button>
             <button className="text-on-surface-variant hover:bg-white/5 transition-colors p-2 rounded-full">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 0" }}
+              >
                 settings
               </span>
             </button>
             <button className="text-on-surface-variant hover:bg-white/5 transition-colors p-2 rounded-full hidden sm:block">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 0" }}
+              >
                 help
               </span>
             </button>
             {/* Profile Image */}
             <div className="h-8 w-8 rounded-full bg-surface-variant border border-white/10 overflow-hidden ml-2 cursor-pointer border-2 border-transparent hover:border-primary-container transition-colors">
-              <Image src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjqYASDhwH6IuZ2Lj3ZWFNDHbKhzHLBSgsNCU3TeJMmFvoG1J4L-swSBxlWploZNdt9ZBP9PH7YGmAG6sn8oZc5mCXHgQKkolCR8ynbC-7KmgN5Y2H0-6XCeCmtjz6u6tA12_z1SSjnqbpxlR8gZfOEwRKkzgp0_896PDgH1fj3rnMBaAFuki6LTXgG2XWGLmhRVcIkuv3W-qvVAuIbBQf0odEZs-ZEjFp4RvazBlvJh5wNwSZdl9T7lkSrNj57nm2zo1jOuWEXyuo" alt="User profile" width={32} height={32} className="w-full h-full object-cover" />
+              <Image
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjqYASDhwH6IuZ2Lj3ZWFNDHbKhzHLBSgsNCU3TeJMmFvoG1J4L-swSBxlWploZNdt9ZBP9PH7YGmAG6sn8oZc5mCXHgQKkolCR8ynbC-7KmgN5Y2H0-6XCeCmtjz6u6tA12_z1SSjnqbpxlR8gZfOEwRKkzgp0_896PDgH1fj3rnMBaAFuki6LTXgG2XWGLmhRVcIkuv3W-qvVAuIbBQf0odEZs-ZEjFp4RvazBlvJh5wNwSZdl9T7lkSrNj57nm2zo1jOuWEXyuo"
+                alt="User profile"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </nav>
@@ -105,7 +123,10 @@ const Dashboard = () => {
               className="flex items-center gap-3 bg-primary-container/20 text-primary-container border-l-4 border-primary-container px-4 py-3 rounded-r-lg scale-[0.98] transition-transform"
               href="#"
             >
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
                 dashboard
               </span>
               <span className="font-label-md text-label-md">Dashboard</span>
@@ -152,14 +173,18 @@ const Dashboard = () => {
               className="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-lg"
               href="#"
             >
-              <span className="material-symbols-outlined text-[20px]">help</span>
+              <span className="material-symbols-outlined text-[20px]">
+                help
+              </span>
               <span className="font-label-md text-label-md">Help Center</span>
             </Link>
             <Link
               className="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-lg"
               href="#"
             >
-              <span className="material-symbols-outlined text-[20px]">logout</span>
+              <span className="material-symbols-outlined text-[20px]">
+                logout
+              </span>
               <span className="font-label-md text-label-md">Logout</span>
             </Link>
           </div>
@@ -169,7 +194,9 @@ const Dashboard = () => {
           {/* Page Header */}
           <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="font-headline-xl text-headline-xl text-on-surface">Dashboard</h1>
+              <h1 className="font-headline-xl text-headline-xl text-on-surface">
+                Dashboard
+              </h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant mt-1">
                 Real-time overview of yard operations and vehicle flow.
               </p>
@@ -211,7 +238,9 @@ const Dashboard = () => {
                   142
                 </span>
                 <span className="font-label-md text-label-md text-secondary-fixed bg-secondary-fixed/10 px-2 py-0.5 rounded border border-secondary-fixed/20 flex items-center">
-                  <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span>{" "}
+                  <span className="material-symbols-outlined text-[14px] mr-1">
+                    trending_up
+                  </span>{" "}
                   12%
                 </span>
               </div>
@@ -228,7 +257,9 @@ const Dashboard = () => {
               </div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-full bg-surface-container-low flex items-center justify-center border border-white/10">
-                  <span className="material-symbols-outlined text-on-surface">schedule</span>
+                  <span className="material-symbols-outlined text-on-surface">
+                    schedule
+                  </span>
                 </div>
                 <h3 className="font-headline-sm text-headline-sm text-on-surface-variant">
                   Avg. Dwell Time
@@ -238,7 +269,9 @@ const Dashboard = () => {
                 <span className="font-headline-xl text-[56px] leading-tight font-bold text-on-surface">
                   4.2
                 </span>
-                <span className="font-body-lg text-body-lg text-on-surface-variant">hrs</span>
+                <span className="font-body-lg text-body-lg text-on-surface-variant">
+                  hrs
+                </span>
               </div>
               <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
                 Across all zones
@@ -253,7 +286,9 @@ const Dashboard = () => {
               </div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-full bg-tertiary/10 flex items-center justify-center border border-tertiary/30">
-                  <span className="material-symbols-outlined text-tertiary">swap_horiz</span>
+                  <span className="material-symbols-outlined text-tertiary">
+                    swap_horiz
+                  </span>
                 </div>
                 <h3 className="font-headline-sm text-headline-sm text-on-surface-variant">
                   Gate Activity
@@ -311,7 +346,7 @@ const Dashboard = () => {
                     className="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-t from-primary-container/5 to-primary-container/20 border-t-2 border-primary glow-button rounded-t-[100%] opacity-80"
                     style={{
                       clipPath:
-                        "polygon(0 100%, 10% 80%, 30% 90%, 50% 40%, 70% 60%, 90% 20%, 100% 30%, 100% 100%)"
+                        "polygon(0 100%, 10% 80%, 30% 90%, 50% 40%, 70% 60%, 90% 20%, 100% 30%, 100% 100%)",
                     }}
                   />
                   {/* Grid Lines */}
@@ -342,7 +377,9 @@ const Dashboard = () => {
                 {/* Alert Item 1 */}
                 <div className="flex gap-4 items-start p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
                   <div className="h-8 w-8 rounded-full bg-error-container/20 flex items-center justify-center shrink-0 border border-error/30 mt-1">
-                    <span className="material-symbols-outlined text-error text-sm">warning</span>
+                    <span className="material-symbols-outlined text-error text-sm">
+                      warning
+                    </span>
                   </div>
                   <div>
                     <h4 className="font-headline-sm text-base text-on-surface">
@@ -359,14 +396,17 @@ const Dashboard = () => {
                 {/* Alert Item 2 */}
                 <div className="flex gap-4 items-start p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
                   <div className="h-8 w-8 rounded-full bg-tertiary/10 flex items-center justify-center shrink-0 border border-tertiary/30 mt-1">
-                    <span className="material-symbols-outlined text-tertiary text-sm">info</span>
+                    <span className="material-symbols-outlined text-tertiary text-sm">
+                      info
+                    </span>
                   </div>
                   <div>
                     <h4 className="font-headline-sm text-base text-on-surface">
                       Scheduled Maintenance
                     </h4>
                     <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-                      Gate B will be closed for routine sensor calibration at 14:00.
+                      Gate B will be closed for routine sensor calibration at
+                      14:00.
                     </p>
                     <span className="font-label-md text-[10px] text-on-surface-variant mt-1 block">
                       1 hr ago
@@ -385,7 +425,8 @@ const Dashboard = () => {
                       Shipment Cleared
                     </h4>
                     <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-                      High priority shipment BOL-9921 has exited the yard successfully.
+                      High priority shipment BOL-9921 has exited the yard
+                      successfully.
                     </p>
                     <span className="font-label-md text-[10px] text-on-surface-variant mt-1 block">
                       2 hrs ago
