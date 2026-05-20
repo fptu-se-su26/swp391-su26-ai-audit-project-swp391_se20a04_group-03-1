@@ -1,0 +1,21 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+ENV/
+env/
+.env
+
+# Models & weight files (except ones we want to explicitly track, but best to keep local)
+# models/*.pt
+# models/*.onnx
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
