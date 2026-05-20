@@ -1,20 +1,50 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { VideoStream } from "@/components/ui/video-stream"
-import { Plus, CheckCircle, XCircle } from "lucide-react"
-import { useState } from "react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { VideoStream } from "@/components/ui/video-stream";
+import { Plus, CheckCircle, XCircle } from "lucide-react";
+import { useState } from "react";
 
 const gateData = [
-  { id: 1, plate: "XE-001", driver: "Nguyễn A", container: "CNT-001", checkInTime: "08:15", status: "Đã vào", action: "Check-out" },
-  { id: 2, plate: "XE-002", driver: "Trần B", container: "CNT-002", checkInTime: "08:30", status: "Đã vào", action: "Check-out" },
-  { id: 3, plate: "XE-003", driver: "Lê C", container: "CNT-003", checkInTime: "09:00", status: "Đã vào", action: "Check-out" },
-]
+  {
+    id: 1,
+    plate: "XE-001",
+    driver: "Nguyễn A",
+    container: "CNT-001",
+    checkInTime: "08:15",
+    status: "Đã vào",
+    action: "Check-out",
+  },
+  {
+    id: 2,
+    plate: "XE-002",
+    driver: "Trần B",
+    container: "CNT-002",
+    checkInTime: "08:30",
+    status: "Đã vào",
+    action: "Check-out",
+  },
+  {
+    id: 3,
+    plate: "XE-003",
+    driver: "Lê C",
+    container: "CNT-003",
+    checkInTime: "09:00",
+    status: "Đã vào",
+    action: "Check-out",
+  },
+];
 
 export default function GatePage() {
-  const [showCheckIn, setShowCheckIn] = useState(false)
+  const [showCheckIn, setShowCheckIn] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -23,33 +53,13 @@ export default function GatePage() {
           <h1 className="text-3xl font-bold">Quản lý cổng</h1>
           <p className="text-slate-600">Quản lý check-in/check-out xe</p>
         </div>
-        <Button onClick={() => setShowCheckIn(!showCheckIn)} className="gap-2">
+        <Button
+          onClick={() => setShowCheckIn(!showCheckIn)}
+          className="gap-2 hover:bg-blue-500"
+        >
           <Plus className="h-4 w-4" />
           Check-in
         </Button>
-      </div>
-
-      {/* Video Streaming Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Camera Cổng 1</CardTitle>
-            <CardDescription>Entrance Gate A</CardDescription>
-          </CardHeader>
-          <CardContent className="p-2">
-            <VideoStream title="Cổng A - Vào" cameraId="GATE-001" />
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Camera Cổng 2</CardTitle>
-            <CardDescription>Exit Gate B</CardDescription>
-          </CardHeader>
-          <CardContent className="p-2">
-            <VideoStream title="Cổng B - Ra" cameraId="GATE-002" />
-          </CardContent>
-        </Card>
       </div>
 
       {/* Check-in Form */}
@@ -80,12 +90,41 @@ export default function GatePage() {
               </div>
               <div className="flex gap-2">
                 <Button type="submit">Xác nhận</Button>
-                <Button type="button" variant="outline" onClick={() => setShowCheckIn(false)}>Hủy</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowCheckIn(false)}
+                >
+                  Hủy
+                </Button>
               </div>
             </form>
           </CardContent>
         </Card>
       )}
+
+      {/* Video Streaming Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Camera Cổng 1</CardTitle>
+            <CardDescription>Entrance Gate A</CardDescription>
+          </CardHeader>
+          <CardContent className="p-2">
+            <VideoStream title="Cổng A - Vào" cameraId="GATE-001" />
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Camera Cổng 2</CardTitle>
+            <CardDescription>Exit Gate B</CardDescription>
+          </CardHeader>
+          <CardContent className="p-2">
+            <VideoStream title="Cổng B - Ra" cameraId="GATE-002" />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Active Vehicles */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -133,13 +172,18 @@ export default function GatePage() {
                   <th className="text-left py-3 px-4 font-medium">Tài xế</th>
                   <th className="text-left py-3 px-4 font-medium">Container</th>
                   <th className="text-left py-3 px-4 font-medium">Giờ vào</th>
-                  <th className="text-left py-3 px-4 font-medium">Trạng thái</th>
+                  <th className="text-left py-3 px-4 font-medium">
+                    Trạng thái
+                  </th>
                   <th className="text-left py-3 px-4 font-medium">Hành động</th>
                 </tr>
               </thead>
               <tbody>
                 {gateData.map((item) => (
-                  <tr key={item.id} className="border-b hover:bg-slate-50">
+                  <tr
+                    key={item.id}
+                    className="border-b hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                  >
                     <td className="py-3 px-4 font-medium">{item.plate}</td>
                     <td className="py-3 px-4">{item.driver}</td>
                     <td className="py-3 px-4">{item.container}</td>
@@ -151,7 +195,9 @@ export default function GatePage() {
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <Button variant="outline" size="sm">{item.action}</Button>
+                      <Button variant="outline" size="sm">
+                        {item.action}
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -161,5 +207,5 @@ export default function GatePage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
