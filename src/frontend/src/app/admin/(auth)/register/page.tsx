@@ -75,7 +75,7 @@ export default function RegisterPage() {
       .addField("#confirmPassword", [
         { rule: "required", errorMessage: "Vui lòng xác nhận lại mật khẩu." },
         {
-          validator: (value, fields) => {
+          validator: (value: string, fields: any) => {
             if (fields["#password"] && fields["#password"].elem) {
               const repeatPasswordValue = (
                 fields["#password"].elem as HTMLInputElement
