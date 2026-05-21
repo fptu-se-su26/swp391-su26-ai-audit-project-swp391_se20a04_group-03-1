@@ -1,0 +1,7 @@
+﻿
+ultralytics
+easyocr
+flask
+flask-cors
+requests
+opencv-python
