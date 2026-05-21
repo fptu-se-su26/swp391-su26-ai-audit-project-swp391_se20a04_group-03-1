@@ -2,30 +2,30 @@
 
 ## 1. Thông tin chung
 
-| Thông tin | Nội dung |
-|---|---|
-| Môn học | Software Development Project |
-| Mã môn học | SWP391 |
-| Lớp | SE20A04 |
-| Học kỳ | Ky 5 |
-| Tên bài tập / Project | LogiPort |
-| Tên sinh viên / Nhóm | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3|
-| MSSV / Danh sách MSSV | DePrompt Log
+| Thông tin             | Nội dung                                                                                      |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| Môn học               | Software Development Project                                                                  |
+| Mã môn học            | SWP391                                                                                        |
+| Lớp                   | SE20A04                                                                                       |
+| Học kỳ                | Ky 5                                                                                          |
+| Tên bài tập / Project | LogiPort                                                                                      |
+| Tên sinh viên / Nhóm  | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3 |
+| MSSV / Danh sách MSSV | DePrompt Log                                                                                  |
 
 ## 1. Thông tin chung
 
-| Thông tin | Nội dung |
-|---|---|
-| Môn học | Software Development Project |
-| Mã môn học | SWP391 |
-| Lớp | SE20A04 |
-| Học kỳ | Ky 5 |
-| Tên bài tập / Project | LogiPort |
-| Tên sinh viên / Nhóm | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3|
-| MSSV / Danh sách MSSV |DE190953 - DE191024 - DE190478 - DE190972 - DE190658 |
-| Giảng viên hướng dẫn | Lê Thiện Nhật Quang |
-| Ngày bắt đầu | 12/05/2026 |
-| Ngày cập nhật gần nhất | 18/05/2026 |
+| Thông tin              | Nội dung                                                                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| Môn học                | Software Development Project                                                                  |
+| Mã môn học             | SWP391                                                                                        |
+| Lớp                    | SE20A04                                                                                       |
+| Học kỳ                 | Ky 5                                                                                          |
+| Tên bài tập / Project  | LogiPort                                                                                      |
+| Tên sinh viên / Nhóm   | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3 |
+| MSSV / Danh sách MSSV  | DE190953 - DE191024 - DE190478 - DE190972 - DE190658                                          |
+| Giảng viên hướng dẫn   | Lê Thiện Nhật Quang                                                                           |
+| Ngày bắt đầu           | 12/05/2026                                                                                    |
+| Ngày cập nhật gần nhất | 18/05/2026                                                                                    |
 
 ---
 
@@ -62,18 +62,18 @@ Sinh viên/nhóm cần ghi lại:
 
 ## 4. Bảng tổng hợp prompt đã sử dụng
 
-| STT | Ngày | Công cụ AI | Mục đích | Prompt tóm tắt | Kết quả chính | Có sử dụng vào bài không? | Minh chứng |
-|---:|---|---|---|---|---|---|---|
-| 1 | 19/05/2026 | Claude | Tạo giao diện | Là senior về nextJs, tạo ra các trang cần thiết cho dự án |  | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
-| 2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |  | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
-| 3 |  |  |  |  |  | Có / Không |  |
-| 4 |  |  |  |  |  | Có / Không |  |
-| 5 |  |  |  |  |  | Có / Không |  |
-| 6 |  |  |  |  |  | Có / Không |  |
-| 7 |  |  |  |  |  | Có / Không |  |
-| 8 |  |  |  |  |  | Có / Không |  |
-| 9 |  |  |  |  |  | Có / Không |  |
-| 10 |  |  |  |  |  | Có / Không |  |
+| STT | Ngày       | Công cụ AI               | Mục đích                         | Prompt tóm tắt                                                                                                                                                                                                         | Kết quả chính               | Có sử dụng vào bài không? | Minh chứng                                                                                                                             |
+| --: | ---------- | ------------------------ | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+|   1 | 19/05/2026 | Claude                   | Tạo giao diện                    | Là senior về nextJs, tạo ra các trang cần thiết cho dự án                                                                                                                                                              |                             | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+|   2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |                             | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
+|   3 | 21/05/2026 | Gemini                   | Làm chức năng register           | Phân tích và tạo code cho module register                                                                                                                                                                              | Đã tạo được module register | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
+|   4 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+|   5 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+|   6 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+|   7 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+|   8 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+|   9 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+|  10 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
 
 ---
 
@@ -85,13 +85,13 @@ Sinh viên/nhóm cần ghi lại:
 
 ### Prompt số 1
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 19/05/2026 |
-| Công cụ AI | Claude |
-| Mục đích |  |
-| Phần việc liên quan | Front end |
-| Mức độ sử dụng | Hỏi sinh code  |
+| Nội dung            | Thông tin     |
+| ------------------- | ------------- |
+| Ngày sử dụng        | 19/05/2026    |
+| Công cụ AI          | Claude        |
+| Mục đích            |               |
+| Phần việc liên quan | Front end     |
+| Mức độ sử dụng      | Hỏi sinh code |
 
 #### 5.1. Prompt nguyên văn
 
@@ -191,7 +191,7 @@ Cần render ra giao diện nhanh, gọn, và đẹp để tiết kiệm thời 
 Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
 
 ```text
-AI đã tạo được các trang cơ bản với nội dung sau: 
+AI đã tạo được các trang cơ bản với nội dung sau:
 - Triển khai ReportsPage với các tùy chọn lọc và bảng báo cáo
 - Tạo SealPage để theo dõi trạng thái niêm phong với cảnh báo và bảng dữ liệu
 - Phát triển YardPage để quản lý các vị trí đỗ xe và hiển thị tổng quan bãi đỗ xe
@@ -241,14 +241,14 @@ Một vài tiêu đề hoặc tên dự án chưa đồng bị hoặc hợp lí,
 
 #### 5.7. Minh chứng liên quan
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link tài liệu/báo cáo |  |
-| Ghi chú khác |  |
+| Loại minh chứng       | Nội dung                                                                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+| File liên quan        |                                                                                                                                        |
+| Screenshot            |                                                                                                                                        |
+| Kết quả chạy/test     |                                                                                                                                        |
+| Link tài liệu/báo cáo |                                                                                                                                        |
+| Ghi chú khác          |                                                                                                                                        |
 
 #### 5.8. Ghi chú thêm
 
@@ -260,13 +260,13 @@ Viết tại đây...
 
 ### Prompt số 2
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 19/05/2026 |
-| Công cụ AI | Claude / GitHub Copilot /Antigravity/Stitch AI |
-| Mục đích | Thiết kế các trang frontend  |
-| Phần việc liên quan | Requirement, Design,  Coding Debug |
-| Mức độ sử dụng | Hỏi sinh code, Hỏi tối ưu |
+| Nội dung            | Thông tin                                      |
+| ------------------- | ---------------------------------------------- |
+| Ngày sử dụng        | 19/05/2026                                     |
+| Công cụ AI          | Claude / GitHub Copilot /Antigravity/Stitch AI |
+| Mục đích            | Thiết kế các trang frontend                    |
+| Phần việc liên quan | Requirement, Design, Coding Debug              |
+| Mức độ sử dụng      | Hỏi sinh code, Hỏi tối ưu                      |
 
 #### 5.1. Prompt nguyên văn
 
@@ -421,13 +421,13 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 #### 5.2. Bối cảnh khi viết prompt
 
 ```text
-Cần build giao diện nhanh, với những công cụ bổ trợ  tinh gọn, giúp việc thiết kế trở nên đẹp mắt 
+Cần build giao diện nhanh, với những công cụ bổ trợ  tinh gọn, giúp việc thiết kế trở nên đẹp mắt
 ```
 
 #### 5.3. Kết quả AI trả về
 
 ```text
-AI đã tạo được các trang cơ bản với nội dung sau: 
+AI đã tạo được các trang cơ bản với nội dung sau:
 - Triển khai tốt các page liên quan đến Admin đã đề cập trên prompt
 - Tạo Inventory để theo dõi, quan lý các thung hàng cho các xe booking, chưa booking
 - Phát triển YardPage để quản lý các vị trí đỗ xe và hiển thị tổng quan bãi đỗ xe
@@ -471,14 +471,14 @@ AI đã tạo được các trang cơ bản với nội dung sau:
 
 #### 5.7. Minh chứng liên quan
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit |https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/main...DE190478-frontend  |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link tài liệu/báo cáo |  |
-| Ghi chú khác |  |
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/main...DE190478-frontend |
+| File liên quan        |                                                                                                                         |
+| Screenshot            |                                                                                                                         |
+| Kết quả chạy/test     |                                                                                                                         |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          |                                                                                                                         |
 
 #### 5.8. Ghi chú thêm
 
@@ -490,13 +490,137 @@ AI đã tạo được các trang cơ bản với nội dung sau:
 
 ### Prompt số 3
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích |  |
+| Nội dung            | Thông tin        |
+| ------------------- | ---------------- |
+| Ngày sử dụng        | 21/05/2026       |
+| Công cụ AI          | Antigravity      |
+| Mục đích            | Tạo api register |
+| Phần việc liên quan | Coding           |
+| Mức độ sử dụng      | Hỏi sinh code    |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+Phân tích dự án hiện có , hãy bắt đầu viết tính năng register. Từ trang register của frontend hãy sửa lại dùng just-validate để xác thực và lấy dữ liệu gửi lên backend,  xong hãy viết tiếp tính năng này cho backend, yêu cầu sử dụng các thư viện đã cài, dùng joi để validate cho người dùng, viết schema cho account-admin trong model (yêu cầu schema đầy đủ các thuộc tính cần có của account-admin trong dự án, viết schema đơn giản không cần các cú pháp phức tạp như enum, ....)
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+- Yêu cầu tạo module register
+- Sử dụng Just-Validate để xác thực frontend
+- Sử dụng Joi để validate backend
+- Viết schema cho account-admin trong model (yêu cầu schema đầy đủ các thuộc tính cần có của account-admin trong dự án, viết schema đơn giản không cần các cú pháp phức tạp như enum, ....)
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+# Bàn giao tính năng - Đăng ký (Register / Account Admin)
+
+Tính năng Đăng ký tài khoản (Register) đã được triển khai hoàn chỉnh ở cả Frontend (Giao diện) và Backend (Máy chủ API), đáp ứng đầy đủ các tiêu chuẩn bảo mật, cấu trúc module hiện đại và trải nghiệm người dùng tối ưu.
+
+---
+
+## 🌟 Các thay đổi chính đã thực hiện
+
+### 1. Nâng cấp Frontend với `Just-Validate`
+- Đã cài đặt thư viện `just-validate` (`v4.3.0`) thay thế hoàn toàn cơ chế tự viết validate bằng `useState` thủ công.
+- **Tích hợp vào React Component:**
+  - Đã tái cấu trúc file [register/page.tsx](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/frontend/src/app/admin/(auth)/register/page.tsx) bằng cách sử dụng `useRef` cho thẻ `<form>`.
+  - Khởi tạo thư viện `JustValidate` thông minh trong `useEffect`. Nó tự động dán các bộ luật: `required`, `email`, `minLength` và hàm so sánh chuỗi (để đối chiếu xác nhận mật khẩu).
+  - Tự động thay đổi class viền đỏ `border-red-500` vào input lỗi và hiện thông báo tiếng Việt trực quan phía bên dưới input ngay khi người dùng gõ.
+- **Kết nối Backend:** Thêm lệnh `fetch` gọi API thực tế tới `POST http://localhost:4000/api/auth/register`, xử lý JSON từ máy chủ và điều hướng sang trang Đăng nhập sau 2 giây khi thành công.
+
+### 2. Xây dựng cấu trúc API Backend chuẩn (Express + MongoDB)
+Hệ thống backend đã được thiết lập cấu trúc MVC hoàn chỉnh thông qua các tệp:
+
+- **Model (Mongoose):** [account-admin.model.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/models/account-admin.model.ts)
+  - Khởi tạo bảng `AccountAdmin` với các trường đơn giản: `fullName`, `email`, `role`, và `password`. Không sử dụng Enum hay khóa phụ phức tạp theo đúng yêu cầu.
+
+- **Validator (Joi):** [auth.validator.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/validators/auth.validator.ts)
+  - Bộ kiểm duyệt dữ liệu khắt khe trước khi chạm vào CSDL. Mọi thông tin rác hay email sai định dạng sẽ bị chặn lập tức bằng Joi và trả về thông báo lỗi 400 thân thiện.
+
+- **Controller (Bcryptjs):** [auth.controller.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/controllers/auth.controller.ts)
+  - Thực thi quy trình đăng ký:
+    1. Kiểm tra Validate qua Joi.
+    2. Chặn các trường hợp đăng ký bằng email đã tồn tại.
+    3. **Bảo mật:** Băm (hash) mật khẩu mạnh mẽ bằng chuỗi Salt (10 vòng lặp) của thư viện `bcryptjs`.
+    4. Lưu bản ghi dữ liệu vào CSDL MongoDB.
+
+- **Router Configuration:**
+  - [auth.router.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/routers/auth.router.ts) cấu hình đường dẫn nội bộ cho chức năng Auth.
+  - [index.ts (routers)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/routers/index.ts) tập hợp tất cả thành `rootRouter`.
+  - [index.ts (main)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/index.ts) tích hợp toàn bộ các APIs vào tiền tố nhánh `/api`.
+
+---
+
+## 🛡️ Kết quả chạy kiểm thử hệ thống
+
+> [!TIP]
+> Backend đã biên dịch và khởi động thành công trên cổng 4000. Dữ liệu khi đăng ký ngoài frontend sẽ đi qua quá trình chặn lỗi nghiêm ngặt của Just-Validate, sau đó được gửi lên Backend Joi kiểm chứng lần hai, mã hóa an toàn và ghi nhận vĩnh viễn vào hệ cơ sở dữ liệu MongoDB.
+
+Bây giờ bạn chỉ cần mở các terminal cho cả 2 cổng (`npm run dev` ở Frontend và Backend) là toàn bộ tính năng này có thể hoạt động hoàn hảo!
+
+```
+
+#### 5.4. Kết quả đã áp dụng vào bài
+
+```text
+- Sử dụng Just-Validate để xác thực Frontend
+- Sử dụng Joi để validate Backend
+- Model AccountAdmin với các trường: fullName, email, role, password
+- Router Auth kết nối tới API: POST http://localhost:4000/api/auth/register
+- API sẽ xử lý logic đăng ký: kiểm tra email đã tồn tại, băm mật khẩu với bcryptjs, lưu vào MongoDB
+```
+
+#### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Chỉ lấy được đoạn mã trong phần Backend, phần frontend cần chỉnh sửa lại
+- Cần thêm điều kiện ràng buộc về phần Frontend
+- Tính năng của hàm trong validator AI sử dụng trong controller nhưng em đã tách ra thành 1 middleware và nhúng vào route auth (em đã chỉnh sửa trong file auth.router.ts)
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+- [ ] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [x] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 5.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
+| File liên quan        |                                                                                                                                        |
+| Screenshot            |                                                                                                                                        |
+| Kết quả chạy/test     |                                                                                                                                        |
+| Link tài liệu/báo cáo |                                                                                                                                        |
+| Ghi chú khác          |                                                                                                                                        |
+
+#### 5.8. Ghi chú thêm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Prompt số 4
+
+| Nội dung            | Thông tin                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| Ngày sử dụng        |                                                                                            |
+| Công cụ AI          | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác                   |
+| Mục đích            |                                                                                            |
 | Phần việc liên quan | Requirement / Design / Database / Coding / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỏi ý tưởng / Hỏi giải thích / Hỏi review / Hỏi debug / Hỏi sinh code / Hỏi tối ưu |
+| Mức độ sử dụng      | Hỏi ý tưởng / Hỏi giải thích / Hỏi review / Hỏi debug / Hỏi sinh code / Hỏi tối ưu         |
 
 #### 5.1. Prompt nguyên văn
 
@@ -541,14 +665,14 @@ Viết tại đây...
 
 #### 5.7. Minh chứng liên quan
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit |  |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link tài liệu/báo cáo |  |
-| Ghi chú khác |  |
+| Loại minh chứng       | Nội dung |
+| --------------------- | -------- |
+| Link commit           |          |
+| File liên quan        |          |
+| Screenshot            |          |
+| Kết quả chạy/test     |          |
+| Link tài liệu/báo cáo |          |
+| Ghi chú khác          |          |
 
 #### 5.8. Ghi chú thêm
 
@@ -678,20 +802,20 @@ Viết tại đây...
 
 Đánh dấu số lượng prompt theo từng nhóm.
 
-| Loại prompt | Số lượng | Ví dụ prompt tiêu biểu |
-|---|---:|---|
-| Prompt phân tích yêu cầu |  |  |
-| Prompt giải thích kiến thức |  |  |
-| Prompt thiết kế giải pháp |  |  |
-| Prompt thiết kế database |  |  |
-| Prompt sinh code mẫu |  |  |
-| Prompt debug lỗi |  |  |
-| Prompt viết test case |  |  |
-| Prompt review code |  |  |
-| Prompt tối ưu code |  |  |
-| Prompt viết báo cáo |  |  |
-| Prompt chuẩn bị thuyết trình |  |  |
-| Prompt khác |  |  |
+| Loại prompt                  | Số lượng | Ví dụ prompt tiêu biểu |
+| ---------------------------- | -------: | ---------------------- |
+| Prompt phân tích yêu cầu     |          |                        |
+| Prompt giải thích kiến thức  |          |                        |
+| Prompt thiết kế giải pháp    |          |                        |
+| Prompt thiết kế database     |          |                        |
+| Prompt sinh code mẫu         |          |                        |
+| Prompt debug lỗi             |          |                        |
+| Prompt viết test case        |          |                        |
+| Prompt review code           |          |                        |
+| Prompt tối ưu code           |          |                        |
+| Prompt viết báo cáo          |          |                        |
+| Prompt chuẩn bị thuyết trình |          |                        |
+| Prompt khác                  |          |                        |
 
 ---
 
@@ -699,18 +823,18 @@ Viết tại đây...
 
 Sinh viên/nhóm tự kiểm tra chất lượng prompt đã dùng.
 
-| Tiêu chí | Đã đạt? | Ghi chú |
-|---|:---:|---|
-| Prompt có mục tiêu rõ ràng |  |  |
-| Prompt có đủ bối cảnh |  |  |
-| Prompt có nêu công nghệ/ngôn ngữ sử dụng |  |  |
-| Prompt có nêu yêu cầu đầu ra |  |  |
-| Prompt không yêu cầu AI làm toàn bộ bài một cách máy móc |  |  |
-| Prompt có yêu cầu AI giải thích hoặc phân tích |  |  |
-| Kết quả AI được kiểm tra lại |  |  |
-| Kết quả AI được chỉnh sửa trước khi sử dụng |  |  |
-| Prompt quan trọng được ghi lại đầy đủ |  |  |
-| Prompt sai/chưa hiệu quả được rút kinh nghiệm |  |  |
+| Tiêu chí                                                 | Đã đạt? | Ghi chú |
+| -------------------------------------------------------- | :-----: | ------- |
+| Prompt có mục tiêu rõ ràng                               |         |         |
+| Prompt có đủ bối cảnh                                    |         |         |
+| Prompt có nêu công nghệ/ngôn ngữ sử dụng                 |         |         |
+| Prompt có nêu yêu cầu đầu ra                             |         |         |
+| Prompt không yêu cầu AI làm toàn bộ bài một cách máy móc |         |         |
+| Prompt có yêu cầu AI giải thích hoặc phân tích           |         |         |
+| Kết quả AI được kiểm tra lại                             |         |         |
+| Kết quả AI được chỉnh sửa trước khi sử dụng              |         |         |
+| Prompt quan trọng được ghi lại đầy đủ                    |         |         |
+| Prompt sai/chưa hiệu quả được rút kinh nghiệm            |         |         |
 
 ---
 
@@ -725,5 +849,5 @@ Sinh viên/nhóm cam kết rằng:
 - Chịu trách nhiệm với sản phẩm cuối cùng.
 
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
-|---|---|
-|  |  |
+| ----------------------- | ------------- |
+|                         |               |
