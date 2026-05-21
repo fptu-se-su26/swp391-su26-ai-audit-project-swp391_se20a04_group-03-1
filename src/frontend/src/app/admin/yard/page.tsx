@@ -79,7 +79,7 @@ export default function YardPage() {
             Quản lý vị trí đỗ xe và trạng thái bãi
           </p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2 hover:bg-blue-500">
           <Plus className="h-4 w-4" />
           Thêm vị trí
         </Button>
@@ -149,21 +149,21 @@ export default function YardPage() {
             {yardSlots.map((slot) => (
               <div
                 key={slot.id}
-                className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-lg ${
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-lg ${
                   slot.status === "Trống"
-                    ? "border-slate-300 bg-slate-50 hover:border-slate-400"
-                    : "border-green-400 bg-green-50 hover:border-green-500"
+                    ? "border-slate-200/80 bg-slate-50/50 hover:border-slate-300 dark:border-slate-800/80 dark:bg-slate-900/10 dark:hover:border-slate-700/80 dark:hover:bg-slate-900/30"
+                    : "border-green-200 bg-green-50/50 hover:border-green-300 dark:border-green-900/40 dark:bg-green-950/10 dark:hover:border-green-800/50 dark:hover:bg-green-950/20"
                 }`}
               >
-                <p className="text-xs font-medium text-slate-600">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {slot.block}-{slot.bay}-{slot.row}-{slot.tier}
                 </p>
                 {slot.plate && (
-                  <p className="text-sm font-bold text-green-700 mt-1">
+                  <p className="text-sm font-bold text-green-600 dark:text-green-400 mt-1">
                     {slot.plate}
                   </p>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   {slot.status === "Trống" ? "🟢" : "🔴"} {slot.status}
                 </p>
               </div>
@@ -183,33 +183,49 @@ export default function YardPage() {
             {["Khu A", "Khu B", "Khu C", "Khu D"].map((zone) => (
               <div
                 key={zone}
-                className="p-4 border border-slate-200 rounded-lg"
+                className="p-4 border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950/20 rounded-xl"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="h-4 w-4 text-slate-600" />
-                  <p className="font-semibold">{zone}</p>
+                  <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                  <p className="font-semibold text-slate-800 dark:text-slate-200">
+                    {zone}
+                  </p>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Tổng ô</span>
-                    <span className="font-medium">120</span>
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Tổng ô
+                    </span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      120
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Đang sử dụng</span>
-                    <span className="font-medium">94</span>
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Đang sử dụng
+                    </span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      94
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Trống</span>
-                    <span className="font-medium">26</span>
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Trống
+                    </span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      26
+                    </span>
                   </div>
-                  <div className="pt-2 border-t">
-                    <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                       <div
-                        className="bg-slate-900 h-2 rounded-full"
+                        className="bg-slate-900 dark:bg-sky-500 h-2 rounded-full"
                         style={{ width: "78%" }}
                       />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">78% sử dụng</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      78% sử dụng
+                    </p>
                   </div>
                 </div>
               </div>

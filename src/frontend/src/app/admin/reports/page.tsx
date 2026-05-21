@@ -1,8 +1,15 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Download, Filter } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Download, Filter } from "lucide-react";
 
 export default function ReportsPage() {
   return (
@@ -12,7 +19,7 @@ export default function ReportsPage() {
           <h1 className="text-3xl font-bold">Báo cáo</h1>
           <p className="text-slate-600">Xem và tải báo cáo quản lý cảng</p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2 hover:bg-blue-500">
           <Download className="h-4 w-4" />
           Xuất báo cáo
         </Button>
@@ -27,15 +34,15 @@ export default function ReportsPage() {
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-1">
               <label className="text-sm font-medium">Từ ngày</label>
-              <input type="date" className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm mt-1" defaultValue="2026-05-01" />
+              <Input type="date" className="mt-1" defaultValue="2026-05-01" />
             </div>
             <div className="flex-1">
               <label className="text-sm font-medium">Đến ngày</label>
-              <input type="date" className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm mt-1" defaultValue="2026-05-19" />
+              <Input type="date" className="mt-1" defaultValue="2026-05-19" />
             </div>
             <div className="flex-1">
               <label className="text-sm font-medium">Loại báo cáo</label>
-              <select className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm mt-1">
+              <select className="w-full rounded-xl border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950/20 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500/70 transition-all">
                 <option>Tất cả</option>
                 <option>Xe vào/ra</option>
                 <option>Container</option>
@@ -54,14 +61,47 @@ export default function ReportsPage() {
       {/* Report Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { title: "Báo cáo xe vào/ra", icon: "🚚", desc: "Số liệu xe check-in/out theo ngày", date: "Hôm nay" },
-          { title: "Báo cáo bãi", icon: "📦", desc: "Tình trạng chiếm dụng bãi", date: "Hôm nay" },
-          { title: "Báo cáo container", icon: "📊", desc: "Số lượng container theo loại", date: "Hôm nay" },
-          { title: "Báo cáo hiệu suất", icon: "⚡", desc: "Hiệu suất xử lý theo khung giờ", date: "Tuần này" },
-          { title: "Báo cáo doanh thu", icon: "💰", desc: "Doanh thu từ phí lưu trú", date: "Tháng này" },
-          { title: "Báo cáo cảnh báo", icon: "⚠️", desc: "Các sự cố và cảnh báo", date: "Tháng này" },
+          {
+            title: "Báo cáo xe vào/ra",
+            icon: "🚚",
+            desc: "Số liệu xe check-in/out theo ngày",
+            date: "Hôm nay",
+          },
+          {
+            title: "Báo cáo bãi",
+            icon: "📦",
+            desc: "Tình trạng chiếm dụng bãi",
+            date: "Hôm nay",
+          },
+          {
+            title: "Báo cáo container",
+            icon: "📊",
+            desc: "Số lượng container theo loại",
+            date: "Hôm nay",
+          },
+          {
+            title: "Báo cáo hiệu suất",
+            icon: "⚡",
+            desc: "Hiệu suất xử lý theo khung giờ",
+            date: "Tuần này",
+          },
+          {
+            title: "Báo cáo doanh thu",
+            icon: "💰",
+            desc: "Doanh thu từ phí lưu trú",
+            date: "Tháng này",
+          },
+          {
+            title: "Báo cáo cảnh báo",
+            icon: "⚠️",
+            desc: "Các sự cố và cảnh báo",
+            date: "Tháng này",
+          },
         ].map((report, idx) => (
-          <Card key={idx} className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card
+            key={idx}
+            className="hover:shadow-lg transition-shadow cursor-pointer"
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <span className="text-3xl">{report.icon}</span>
@@ -120,7 +160,10 @@ export default function ReportsPage() {
           <CardContent>
             <div className="h-64 flex items-end justify-around gap-1">
               {[5, 8, 12, 15, 18, 14, 12, 10, 8, 6, 4, 3].map((count, idx) => (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-2">
+                <div
+                  key={idx}
+                  className="flex-1 flex flex-col items-center gap-2"
+                >
                   <div
                     className="w-full bg-green-500 rounded-t"
                     style={{ height: `${(count / 20) * 200}px` }}
@@ -162,5 +205,5 @@ export default function ReportsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
