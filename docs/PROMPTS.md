@@ -1,17 +1,4 @@
 # Prompt Log
-
-## 1. Thông tin chung
-
-| Thông tin             | Nội dung                                                                                      |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| Môn học               | Software Development Project                                                                  |
-| Mã môn học            | SWP391                                                                                        |
-| Lớp                   | SE20A04                                                                                       |
-| Học kỳ                | Ky 5                                                                                          |
-| Tên bài tập / Project | LogiPort                                                                                      |
-| Tên sinh viên / Nhóm  | Trần Đức Việt- Trần Thanh Tiến Đạt - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc - Nhóm 3 |
-| MSSV / Danh sách MSSV | DePrompt Log                                                                                  |
-
 ## 1. Thông tin chung
 
 | Thông tin              | Nội dung                                                                                      |
