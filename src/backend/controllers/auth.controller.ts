@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { AccountAdmin } from "../models/account-admin.model";
 import jwt from "jsonwebtoken";
 import { redisClient } from "../config/redis.config";
+import { sendMail } from "../helpers/mail.helper";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -141,6 +142,108 @@ export const logout = async (req: Request, res: Response) => {
     return res.json({
       code: "error",
       message: "Đã xảy ra lỗi máy chủ trong quá trình đăng xuất.",
+    });
+  }
+};
+
+export const forgotPasswordPost = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const existAccount = await AccountAdmin.findOne({
+      email: email,
+      isActive: true,
+    });
+    if (!existAccount) {
+      return res.json({
+        code: "error",
+        message: "Không tồn tại tài khoản với email này",
+      });
+    }
+
+    // 1. Tạo mã OTP ngẫu nhiên 6 chữ số
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 2. Lưu OTP vào Redis với thời hạn 3 phút (180 giây)
+    //Check xem trong redis đã tồn tại mã otp của email này hay chưa
+    const existOtp = await redisClient.get(`auth:otp:${email}`);
+    if (existOtp) {
+      return res.json({
+        code: "error",
+        message: "Bạn đã yêu cầu mã OTP trong vòng 3 phút vừa qua",
+      });
+    }
+    // Cấu trúc key: auth:otp:email -> Hash:otp
+    await redisClient.setEx(`auth:otp:${email}`, 180, otp);
+
+    // 3. Chuẩn bị nội dung và gửi email
+    const subject = "Mã xác nhận khôi phục mật khẩu - LogiPort System";
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h3>Xin chào ${existAccount.fullName},</h3>
+        <p>Hệ thống nhận được yêu cầu khôi phục mật khẩu cho tài khoản công vụ của bạn.</p>
+        <p>Mã xác nhận (OTP) của bạn là:</p>
+        <h2 style="color: #00D4FF; background-color: #1c2541; padding: 10px 20px; display: inline-block; border-radius: 5px;">${otp}</h2>
+        <p style="color: red;"><strong>Lưu ý:</strong> Mã này chỉ có hiệu lực trong vòng <strong>3 phút</strong>.</p>
+        <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này và bảo mật tài khoản của mình.</p>
+        <hr />
+        <p>Trân trọng,<br />LogiPort System</p>
+      </div>
+    `;
+
+    // Gọi hàm sendMail (không cần await nếu không muốn block request quá lâu)
+    sendMail(email, subject, htmlContent);
+
+    // 4. Trả về kết quả thành công cho Frontend
+    return res.json({
+      code: "success",
+      message: "Đã gửi mã khôi phục qua email. Vui lòng kiểm tra hộp thư.",
+    });
+  } catch (error) {
+    console.error("Forgot Password Error: ", error);
+    return res.json({
+      code: "error",
+      message: "Đã xảy ra lỗi máy chủ trong quá trình gửi yêu cầu khôi phục.",
+    });
+  }
+};
+
+export const resetPasswordPost = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, password } = req.body;
+
+    const existingUser = await AccountAdmin.findOne({ email });
+    if (!existingUser) {
+      return res.json({
+        code: "error",
+        message: "Email không tồn tại",
+      });
+    }
+
+    const storedOtp = await redisClient.get(`auth:otp:${email}`);
+    if (!storedOtp || storedOtp !== otp) {
+      return res.json({
+        code: "error",
+        message: "Mã OTP không hợp lệ hoặc đã hết hạn",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    await AccountAdmin.updateOne({ email }, { password: hashedPassword });
+
+    await redisClient.del(`auth:otp:${email}`);
+
+    return res.json({
+      code: "success",
+      message: "Đặt lại mật khẩu thành công",
+    });
+  } catch (error) {
+    console.error("Reset Password Error: ", error);
+    return res.json({
+      code: "error",
+      message: "Đã xảy ra lỗi máy chủ trong quá trình đặt lại mật khẩu.",
     });
   }
 };

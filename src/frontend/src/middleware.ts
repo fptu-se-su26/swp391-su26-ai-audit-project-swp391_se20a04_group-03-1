@@ -7,7 +7,10 @@ export function middleware(request: NextRequest) {
 
   // Xác định các trang không yêu cầu đăng nhập
   const isAuthPage =
-    pathname === "/admin/login" || pathname === "/admin/register";
+    pathname === "/admin/login" ||
+    pathname === "/admin/register" ||
+    pathname === "/admin/forgot-password" ||
+    pathname.includes("/admin/reset-password");
 
   // 1. CHƯA CÓ TOKEN: Nếu cố truy cập vào các trang /admin khác (ngoại trừ login/register) -> Đuổi về login
   if (!token && !isAuthPage) {

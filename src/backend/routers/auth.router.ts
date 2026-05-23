@@ -15,4 +15,16 @@ router.post("/login", authValidate.loginPost, authController.loginPost);
 
 router.get("/logout", authController.logout);
 
+router.post(
+  "/forgot-password",
+  authValidate.forgotPasswordPost,
+  authController.forgotPasswordPost,
+);
+
+router.post(
+  "/reset-password",
+  authValidate.resetPasswordPost,
+  authController.resetPasswordPost,
+);
+
 export default router;
