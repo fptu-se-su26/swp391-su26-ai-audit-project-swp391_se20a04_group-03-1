@@ -183,13 +183,6 @@ export default function HomePage() {
       color: "from-indigo-500 to-purple-500",
       highlight: "Nâng cao năng suất khai thác bãi thêm 45%."
     },
-    {
-      title: "4. Điều phối nâng hạ & Giải phóng xe (Terminal Handling)",
-      desc: "Màn hình chỉ dẫn tự động gửi lệnh công việc (Work Order) trực tiếp tới cabin xe nâng (Reach Stacker) gần nhất. Xe nâng hạ container xuống vị trí chỉ định. Cổng tự động mở để xe đầu kéo rời đi nhanh chóng.",
-      badge: "Automation",
-      color: "from-amber-500 to-orange-500",
-      highlight: "Toàn bộ chu trình khép kín, minh bạch và số hóa 100%."
-    }
   ]
 
   return (
@@ -342,7 +335,7 @@ export default function HomePage() {
             <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl font-medium leading-relaxed">
               Giải pháp công nghệ hiện đại đột phá giúp số hóa và tự động hóa quy trình vận hành cảng. 
               Tích hợp nhận dạng thông minh YOLOv8 & EasyOCR, tối ưu hóa sơ đồ vị trí container xếp bãi, 
-              đồng bộ lịch trình xe nâng, giảm thiểu ùn tắc và nâng cao hiệu suất bãi cảng 24/7.
+              giảm thiểu ùn tắc và nâng cao hiệu suất bãi cảng 24/7.
             </p>
             
             <div className="flex gap-4 w-full sm:w-auto flex-wrap">
@@ -490,44 +483,6 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Feature 3: Secure Seal */}
-            <Card className="group border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131a26]/40 hover:-translate-y-1.5 hover:shadow-xl hover:border-emerald-500/30 dark:hover:border-emerald-500/20 transition-all duration-300 rounded-2xl overflow-hidden">
-              <CardContent className="p-8">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <ShieldCheck className="h-6 w-6" />
-                </div>
-                <h4 className="text-lg font-black text-slate-900 dark:text-white mb-3">
-                  Giám Sát Niêm Phong (Seal Audit)
-                </h4>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 font-medium">
-                  Kiểm soát an ninh tuyệt đối cho hàng hóa lưu kho. Tích hợp máy quét cầm tay hoặc camera độ phân giải cao 
-                  chụp quét khớp mã niêm phong (Seal) của hải quan/hãng tàu, phát hiện dấu vết cạy phá hoặc sai số lệch mã ngay từ cổng.
-                </p>
-                <Link href="/admin/seal" className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-600 dark:text-emerald-400 group-hover:underline">
-                  Kiểm tra an toàn seal <ArrowRight className="h-3 w-3" />
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Feature 4: Lift Operations */}
-            <Card className="group border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131a26]/40 hover:-translate-y-1.5 hover:shadow-xl hover:border-amber-500/30 dark:hover:border-amber-500/20 transition-all duration-300 rounded-2xl overflow-hidden">
-              <CardContent className="p-8">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Truck className="h-6 w-6" />
-                </div>
-                <h4 className="text-lg font-black text-slate-900 dark:text-white mb-3">
-                  Điều Phối Xe Nâng (Lift Orders)
-                </h4>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 font-medium">
-                  Đồng bộ tức thời công việc cho tài xế xe nâng và xe cẩu trục. Nhận thông tin vị trí container xếp bãi tự động 
-                  từ hệ thống điều khiển trung tâm, tự động hóa hàng đợi (queue), hiển thị trực quan bảng chỉ dẫn công việc trong cabin.
-                </p>
-                <Link href="/admin/lift" className="inline-flex items-center gap-1.5 text-xs font-black text-amber-600 dark:text-amber-400 group-hover:underline">
-                  Xem điều động xe nâng <ArrowRight className="h-3 w-3" />
-                </Link>
-              </CardContent>
-            </Card>
-
             {/* Feature 5: Smart Appointments */}
             <Card className="group border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131a26]/40 hover:-translate-y-1.5 hover:shadow-xl hover:border-purple-500/30 dark:hover:border-purple-500/20 transition-all duration-300 rounded-2xl overflow-hidden">
               <CardContent className="p-8">
@@ -581,8 +536,7 @@ export default function HomePage() {
           </h3>
           <div className="w-16 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 mx-auto mt-4 rounded-full" />
           <p className="text-slate-600 dark:text-slate-300 mt-5 text-sm sm:text-base font-medium leading-relaxed">
-            Xem cách hệ thống tích hợp liên tục từ khi phương tiện đăng ký dịch vụ, tự động quét kiểm tra ở cổng, 
-            phân bổ ô bãi thông minh, đến khi hoàn thành xếp dỡ nâng hạ xe nâng.
+            Hệ thống quản lý khép kín từ lúc xe container đăng ký lịch hẹn, qua trạm cân, kiểm tra tại cổng, phân bổ ô bãi thông minh.
           </p>
         </div>
 
@@ -944,8 +898,7 @@ export default function HomePage() {
           Sẵn Sàng Chuyển Đổi Số Cảng Container Của Bạn?
         </h3>
         <p className="text-slate-600 dark:text-slate-300 font-medium text-sm sm:text-base leading-relaxed mb-8 max-w-2xl mx-auto">
-          Truy cập ngay vào hệ thống điều hành để kiểm chứng toàn bộ tính năng và trải nghiệm bảng giám sát trực quan 
-          được thiết kế tối ưu cho các vai trò từ Trưởng bãi, Nhân viên kiểm cổng cho tới Đơn vị nâng hạ.
+          Truy cập ngay vào hệ thống điều hành để kiểm chứng toàn bộ tính năng và trải nghiệm bảng giám sát trực quan. Nền tảng LogiPort được thiết kế tối ưu cho các vai trò từ Trưởng bãi, Nhân viên kiểm cổng cho tới quản lý hệ thống.
         </p>
         
         <div className="flex gap-4 justify-center flex-wrap">
