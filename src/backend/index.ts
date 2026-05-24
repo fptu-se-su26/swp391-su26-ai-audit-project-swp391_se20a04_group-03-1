@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/database.config";
 import rootRouter from "./routers";
+import { connectRedis } from "./config/redis.config";
 
 const app = express();
 const port = 4000;
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 //Connect Database
 connectDB();
+connectRedis();
 
 //Allow json
 app.use(express.json());
