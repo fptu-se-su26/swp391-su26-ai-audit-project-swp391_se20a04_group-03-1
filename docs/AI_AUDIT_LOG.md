@@ -437,41 +437,75 @@ Viết tại đây...
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng |  |
-| Công cụ AI | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác |
-| Mục đích sử dụng |  |
-| Phần việc liên quan | Requirement / Design / Database / Frontend / Backend / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng | Hỗ trợ ý tưởng / Hỗ trợ một phần / Hỗ trợ nhiều / Sinh chính nội dung |
+| Ngày sử dụng | 24/05/2026 |
+| Công cụ AI | Gemini / Claude / GitHub Copilot / Cursor / Antigravity |
+| Mục đích sử dụng | Hỗ trợ xây dựng và tối ưu Computer Vision Service |
+| Phần việc liên quan | Testing / Debug / Design / Requirement|
+| Mức độ sử dụng | Hỗ trợ ý tưởng |
 
 #### 4.1. Prompt đã sử dụng
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+computer-vision/
+├── models/                  # Nơi lưu trữ các file trọng số AI (.pt, .onnx)
+│   ├── best.pt              # File weight YOLO chuyên dò biển số xe
+│   └── container_model.pt   # File weight YOLO chuyên dò mã container (nếu có)
+│
+├── src/                     # Toàn bộ mã nguồn chính của hệ thống
+│   ├── __init__.py
+│   ├── config.py            # Lưu các hằng số: URL Backend, Port Flask, Thống số Camera
+│   ├── services/
+│   │   ├── ai_processor.py  # Hàm xử lý YOLO + EasyOCR cốt lõi
+│   │   └── api_client.py    # Hàm chuyên gọi requests.post sang NodeJS Backend
+│   └── app.py               # File chạy chính (Khởi chạy Flask Server phát stream)
+│
+├── tests/                   # Thư mục chứa các file nháp, test nhanh phần cứng
+│   ├── test_camera.py       # Script đơn giản test xem Iriun Webcam có lên hình không
+│   └── quick_test_cv.py     # File test nháp cũ của bạn (giữ lại để đối chiếu)
+│
+├── .gitignore               # Bỏ qua môi trường ảo (venv) và các file log khi push lên GitHub
+├── requirements.txt         # Danh sách các thư viện Python cần cài đặt
+└── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)    
+
+dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py) 
 ```
 
 #### 4.2. Kết quả AI gợi ý
 
 ```text
-Viết tại đây...
+AI đã triển khai hỗ trợ và gợi ý với các nội dung sau:
+- AI gợi ý kế hoạch triển khai Computer Vision Service bằng Flask.
+- AI hỗ trợ thiết kế cấu trúc thư mục và tổ chức module Python.
+- AI gợi ý tích hợp YOLOv8 và EasyOCR cho nhận diện biển số và container.
+- AI hỗ trợ xây dựng cơ chế cooldown de-duplication tránh gửi dữ liệu OCR trùng lặp.
+- AI hỗ trợ xây dựng Flask API cho stream video và health check.
+- AI hỗ trợ xử lý lỗi import package trong Python project.
+- AI hỗ trợ kiểm thử và xác minh hoạt động của hệ thống Computer Vision.
 ```
 
 #### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Viết tại đây...
+- AI gợi ý kế hoạch triển khai Computer Vision Service bằng Flask.
+- AI hỗ trợ thiết kế cấu trúc thư mục và tổ chức module Python.
+- AI gợi ý tích hợp YOLOv8 và EasyOCR cho nhận diện biển số và container.
+- AI hỗ trợ xây dựng cơ chế cooldown de-duplication tránh gửi dữ liệu OCR trùng lặp.
+- AI hỗ trợ xây dựng Flask API cho stream video và health check.
+- AI hỗ trợ xử lý lỗi import package trong Python project.
+- AI hỗ trợ kiểm thử và xác minh hoạt động của hệ thống Computer Vision.
 ```
 
 #### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Viết tại đây...
+Sử dụng nguyên văn các gợi ý từ AI để có thể xây dựng phần Computer Vision.
 ```
 
 #### 4.5. Minh chứng
 
 | Loại minh chứng | Nội dung |
 |---|---|
-| Link commit |  |
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main |
 | File liên quan |  |
 | Screenshot |  |
 | Kết quả chạy/test |  |

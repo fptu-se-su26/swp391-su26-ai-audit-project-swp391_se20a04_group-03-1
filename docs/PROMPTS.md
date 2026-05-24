@@ -616,58 +616,211 @@ Viết tại đây...
 
 | Nội dung            | Thông tin                                                                                  |
 | ------------------- | ------------------------------------------------------------------------------------------ |
-| Ngày sử dụng        |                                                                                            |
-| Công cụ AI          | ChatGPT / Gemini / Claude / GitHub Copilot / Cursor / Antigravity / Khác                   |
-| Mục đích            |                                                                                            |
-| Phần việc liên quan | Requirement / Design / Database / Coding / Testing / Debug / Report / Presentation / Other |
-| Mức độ sử dụng      | Hỏi ý tưởng / Hỏi giải thích / Hỏi review / Hỏi debug / Hỏi sinh code / Hỏi tối ưu         |
+| Ngày sử dụng        | 24/05/2026                                                                                 |
+| Công cụ AI          | Gemini / Claude / GitHub Copilot / Cursor / Antigravity                                    |
+| Mục đích            | Tạo Computer Vision                                                                        |
+| Phần việc liên quan | Requirement / Design / Testing / Debug                                                     |
+| Mức độ sử dụng      | Hỏi ý tưởng / Hỏi giải thích / Hỏi tối ưu                                                  |
 
 #### 5.1. Prompt nguyên văn
 
 ```text
-Dán nguyên văn prompt đã hỏi AI tại đây.
+computer-vision/
+├── models/                  # Nơi lưu trữ các file trọng số AI (.pt, .onnx)
+│   ├── best.pt              # File weight YOLO chuyên dò biển số xe
+│   └── container_model.pt   # File weight YOLO chuyên dò mã container (nếu có)
+│
+├── src/                     # Toàn bộ mã nguồn chính của hệ thống
+│   ├── __init__.py
+│   ├── config.py            # Lưu các hằng số: URL Backend, Port Flask, Thống số Camera
+│   ├── services/
+│   │   ├── ai_processor.py  # Hàm xử lý YOLO + EasyOCR cốt lõi
+│   │   └── api_client.py    # Hàm chuyên gọi requests.post sang NodeJS Backend
+│   └── app.py               # File chạy chính (Khởi chạy Flask Server phát stream)
+│
+├── tests/                   # Thư mục chứa các file nháp, test nhanh phần cứng
+│   ├── test_camera.py       # Script đơn giản test xem Iriun Webcam có lên hình không
+│   └── quick_test_cv.py     # File test nháp cũ của bạn (giữ lại để đối chiếu)
+│
+├── .gitignore               # Bỏ qua môi trường ảo (venv) và các file log khi push lên GitHub
+├── requirements.txt         # Danh sách các thư viện Python cần cài đặt
+└── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)    
+
+dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py) 
 ```
 
 #### 5.2. Bối cảnh khi viết prompt
 
 ```text
-Viết tại đây...
+- Phân tích và refactor project computer-vision
+- Tách logic từ quick_test_cv.py thành các module riêng
+- Xây dựng Flask server stream video realtime
+- Tích hợp YOLO + EasyOCR nhận diện biển số/container
+- Gửi dữ liệu detect sang NodeJS Backend
+- Thêm cooldown chống detect trùng
+- Tối ưu realtime và fix lỗi import module
+- Hoàn thiện cấu trúc thư mục và các tính năng chính của hệ thống
 ```
 
 #### 5.3. Kết quả AI trả về
 
 ```text
-Viết tại đây...
+# Hướng dẫn chi tiết: Triển khai dịch vụ Thị giác máy tính
+
+## Tóm tắt
+
+Đã xây dựng một dịch vụ Thị giác máy tính hoàn chỉnh dựa trên Flask trong `src/computer-vison/` xử lý luồng video thời gian thực bằng YOLOv8 + EasyOCR để phát hiện và nhận dạng biển số xe và mã container, sau đó gửi các sự kiện webhook đến máy chủ Node.js.
+
+---
+
+## Các tệp đã tạo
+
+### Cấu hình & Khởi tạo gói
+
+| Tệp | Mục đích |
+
+|------|---------|
+
+| [.gitignore](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/.gitignore) | Bỏ qua `venv/`, `__pycache__/`, nhật ký, tệp hệ điều hành |
+
+| [src/__init__.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/__init__.py) | Dấu hiệu gói cho `src` |
+
+| [src/services/__init__.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/services/__init__.py) | Dấu hiệu gói cho `src.services` |
+
+| [src/config.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/config.py) | Các hằng số tập trung: URL máy chủ phụ trợ, cổng Flask, chỉ số camera, đường dẫn mô hình, ngưỡng độ tin cậy, thời gian chờ |
+
+### Các dịch vụ cốt lõi
+
+| Tệp | Mục đích |
+
+|------|---------|
+
+| [src/services/api_client.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/services/api_client.py) | Webhook HTTP POST đến máy chủ phụ trợ Node.js với **khử trùng lặp thời gian chờ** (mặc định 5 giây) để ngăn chặn việc gửi quá nhiều kết quả quét giống hệt nhau |
+| [src/services/ai_processor.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/services/ai_processor.py) | Quy trình YOLO + EasyOCR: tải `best.pt` (ảnh) và tùy chọn `container_model.pt`, phát hiện khung bao, cắt vùng, chạy OCR, chú thích khung hình bằng các hộp màu và kích hoạt `api_client` |
+
+### Ứng dụng Flask
+
+| Tệp | Mục đích |
+
+|------|---------|
+
+| [src/app.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/app.py) | Máy chủ Flask chính với CORS, luồng chụp ảnh nền, `/video_feed` (luồng MJPEG) và `/status` (kiểm tra trạng thái JSON) |
+
+### Các tập lệnh kiểm thử
+
+| Tập tin | Mục đích |
+
+|------|---------|
+
+| [tests/test_camera.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/tests/test_camera.py) | Tập lệnh OpenCV đơn giản để xác minh kết nối webcam/Iriun cục bộ |
+
+| [tests/quick_test_cv.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/tests/quick_test_cv.py) | Bản sao tham chiếu của nguyên mẫu một tệp gốc để so sánh |
+
+---
+
+## Sửa lỗi: `ModuleNotFoundError: No module named 'src'`
+
+Khi chạy `python src/app.py` từ `computer-vison/`, Python không nhận ra `src` là một gói vì thư mục cha của tập lệnh được thêm vào `sys.path`, chứ không phải thư mục gốc của dự án.
+
+**Đã áp dụng sửa lỗi**: Đã thêm các điều kiện `sys.path.insert(0, ...)` vào đầu cả ba tệp sử dụng lệnh nhập `from src.*`:
+- `src/app.py` → chèn `computer-vison/`
+- `src/services/ai_processor.py` → chèn `computer-vison/`
+- `src/services/api_client.py` → chèn `computer-vison/`
+
+---
+
+## Kết quả xác minh
+
+### 1. Kiểm tra nhập gói
+
+```
+> .\venv\Scripts\python.exe -c "import cv2; import easyocr; from ultralytics import YOLO; print('OK')"
+Tất cả các gói đã được nhập thành công!
+```
+
+### 2. Khởi động máy chủ Flask
+```
+=== DỊCH VỤ THỊ GIÁC MÁY TÍNH FLASK ĐANG CHẠY TRÊN http://0.0.0.0:5001 ===
+
+* Đang phục vụ ứng dụng Flask 'app'
+
+* Đang chạy trên http://127.0.0.1:5001
+
+* Đang chạy trên http://192.168.110.103:5001
+```
+
+### 3. Phản hồi điểm cuối `/status`
+```json
+{
+
+"status": "online",
+
+"camera": { "connection_status": "Connected", "index": 0, "running": true },
+
+"models": {
+
+"license_plate_weights_exists": true,
+
+"container_weights_exists": false
+
+},
+
+"integration": {
+
+"nodejs_backend_webhook_url": "http://localhost:4000/api/gate/scan"
+
+}
+}
+```
+
+---
+## Cách chạy
+
+```bash
+cd src/computer-vison
+.\venv\Scripts\python.exe src/app.py
+```
+
+Sau đó mở:
+
+- **Luồng video**: http://localhost:5001/video_feed
+- **Kiểm tra trạng thái**: http://localhost:5001/status
 ```
 
 #### 5.4. Kết quả đã áp dụng vào bài
 
 ```text
-Viết tại đây...
+- AI gợi ý kế hoạch triển khai Computer Vision Service bằng Flask.
+- AI hỗ trợ thiết kế cấu trúc thư mục và tổ chức module Python.
+- AI gợi ý tích hợp YOLOv8 và EasyOCR cho nhận diện biển số và container.
+- AI hỗ trợ xây dựng cơ chế cooldown de-duplication tránh gửi dữ liệu OCR trùng lặp.
+- AI hỗ trợ xây dựng Flask API cho stream video và health check.
+- AI hỗ trợ xử lý lỗi import package trong Python project.
+- AI hỗ trợ kiểm thử và xác minh hoạt động của hệ thống Computer Vision.
 ```
 
 #### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Viết tại đây...
+- Áp dụng nguyên văn câu trả lời của AI đã gợi ý để xây dựng computer vision
 ```
 
 #### 5.6. Đánh giá chất lượng prompt
 
 - [ ] Prompt rõ ràng
-- [ ] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [ ] Prompt tạo ra kết quả tốt
+- [X] Prompt có đủ bối cảnh
+- [X] Prompt còn thiếu thông tin
+- [X] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [X] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 5.7. Minh chứng liên quan
 
 | Loại minh chứng       | Nội dung |
 | --------------------- | -------- |
-| Link commit           |          |
+| Link commit           |     https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main     |
 | File liên quan        |          |
 | Screenshot            |          |
 | Kết quả chạy/test     |          |
