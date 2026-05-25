@@ -465,7 +465,7 @@ export default function DashboardPage() {
           <div className="mx-auto grid max-w-[520px] grid-cols-5 gap-2">
             {[
               { label: "Trang chủ", icon: Activity, active: true },
-              { label: "Vị trí", icon: Warehouse, active: false },
+              { label: "Lịch hẹn", icon: Warehouse, active: false },
               { label: "Đỗ xe", icon: MapPinned, active: false },
               { label: "Hoạt động", icon: Truck, active: false },
               { label: "Cảnh báo", icon: Bell, active: false },
