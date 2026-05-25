@@ -89,6 +89,22 @@ export default function AlertsPage() {
     [alerts],
   );
 
+  // Confirm dialog / snackbar state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [pendingAction, setPendingAction] = useState<{
+    type: "cancel" | "mark";
+    alertId: string;
+    appointmentId?: string;
+    prevStatus?: AlertStatus;
+  } | null>(null);
+
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    message: string;
+    undo?: () => void;
+  }>({ open: false, message: "" });
+
   function applyFilter(items: AlertItem[]) {
     let res = items;
     if (activeFilter === "unread")
@@ -104,24 +120,75 @@ export default function AlertsPage() {
     return res;
   }
 
-  function markAsRead(id: string) {
-    setAlerts((s) =>
-      s.map((a) =>
-        a.id === id
-          ? { ...a, status: a.status === "unread" ? "read" : a.status }
-          : a,
-      ),
-    );
-  }
+  // markAsRead flow is triggered via pendingAction from UI buttons
 
   function cancelAppointment(appointmentId?: string) {
     if (!appointmentId) return;
-    // mock: update any alert that relates to this appointment to cancelled
-    setAlerts((s) =>
-      s.map((a) =>
-        a.appointmentId === appointmentId ? { ...a, status: "cancelled" } : a,
-      ),
+    // find related alert id(s) and prompt confirm
+    const related = alerts.find((a) => a.appointmentId === appointmentId);
+    const alertId = related?.id;
+    setPendingAction({ type: "cancel", alertId: alertId ?? "", appointmentId });
+    setConfirmMessage(
+      "Bạn có chắc muốn hủy lịch? Bạn có thể hoàn tác trong vài giây.",
     );
+    setConfirmOpen(true);
+  }
+
+  function performPendingAction() {
+    if (!pendingAction) return;
+    const { type, alertId, appointmentId, prevStatus } = pendingAction;
+    if (type === "mark") {
+      // change unread -> read
+      setAlerts((s) =>
+        s.map((a) => (a.id === alertId ? { ...a, status: "read" } : a)),
+      );
+      // show snackbar with undo
+      setSnack({
+        open: true,
+        message: "Đã đánh dấu là đã đọc",
+        undo: () => {
+          setAlerts((s) =>
+            s.map((a) =>
+              a.id === alertId
+                ? { ...a, status: (prevStatus as AlertStatus) ?? "unread" }
+                : a,
+            ),
+          );
+          setSnack({ open: false, message: "" });
+        },
+      });
+    }
+
+    if (type === "cancel") {
+      // capture previous statuses for related alerts so undo can restore them
+      const prev = alerts
+        .filter((a) => a.appointmentId === appointmentId)
+        .map((a) => ({ id: a.id, status: a.status }));
+
+      setAlerts((s) =>
+        s.map((a) =>
+          a.appointmentId === appointmentId ? { ...a, status: "cancelled" } : a,
+        ),
+      );
+      setSnack({
+        open: true,
+        message: "Đã hủy lịch",
+        undo: () => {
+          setAlerts((s) =>
+            s.map((a) => {
+              const p = prev.find((x) => x.id === a.id);
+              return p ? { ...a, status: p.status } : a;
+            }),
+          );
+          setSnack({ open: false, message: "" });
+        },
+      });
+    }
+
+    setPendingAction(null);
+    setConfirmOpen(false);
+    // auto-hide snackbar after 4s if not undone
+    setTimeout(() => setSnack((s) => ({ ...s, open: false })), 4000);
   }
 
   const visible = applyFilter(alerts);
@@ -270,7 +337,15 @@ export default function AlertsPage() {
                         size="sm"
                         variant="ghost"
                         onClick={() => {
-                          markAsRead(a.id);
+                          setPendingAction({
+                            type: "mark",
+                            alertId: a.id,
+                            prevStatus: a.status,
+                          });
+                          setConfirmMessage(
+                            "Bạn có chắc muốn đánh dấu thông báo là đã đọc?",
+                          );
+                          setConfirmOpen(true);
                         }}
                       >
                         <Check className="mr-2 h-4 w-4" /> Đánh dấu
@@ -279,7 +354,17 @@ export default function AlertsPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => cancelAppointment(a.appointmentId)}
+                          onClick={() => {
+                            setPendingAction({
+                              type: "cancel",
+                              alertId: a.id,
+                              appointmentId: a.appointmentId,
+                            });
+                            setConfirmMessage(
+                              "Bạn có chắc muốn hủy lịch? Bạn có thể hoàn tác trong vài giây.",
+                            );
+                            setConfirmOpen(true);
+                          }}
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Hủy lịch
                         </Button>
@@ -327,6 +412,73 @@ export default function AlertsPage() {
               </div>
             </div>
           </aside>
+        )}
+        {/* Confirm dialog */}
+        {confirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-full max-w-md rounded-lg border bg-[#0f1a2a]/95 p-6">
+              <h3 className="text-lg font-bold">Xác nhận</h3>
+              <p className="mt-2 text-sm text-slate-300">{confirmMessage}</p>
+              <div className="mt-4 flex justify-end gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setConfirmOpen(false);
+                    setPendingAction(null);
+                  }}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => performPendingAction()}
+                >
+                  Xác nhận
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Snackbar / Undo */}
+        {snack.open && (
+          <div className="fixed left-1/2 bottom-6 z-50 w-full max-w-md -translate-x-1/2">
+            <div className="mx-4 flex items-center justify-between gap-4 rounded-lg border bg-[#101b31]/95 p-3 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded bg-white/5 flex items-center justify-center text-amber-300">
+                  <Bell className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="font-semibold">{snack.message}</p>
+                  <p className="text-xs text-slate-400">
+                    Hoàn tác sẽ khôi phục trạng thái trước đó.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {snack.undo && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (snack.undo) {
+                        snack.undo();
+                      }
+                    }}
+                  >
+                    Hoàn tác
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSnack({ open: false, message: "" })}
+                >
+                  Đóng
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </main>
