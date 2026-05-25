@@ -2,21 +2,12 @@
 
 import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Spot } from "./parking-map";
+import { Spot } from "@/app/client/parking/parking-map";
 
-function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const toRad = (v: number) => (v * Math.PI) / 180;
-  const R = 6371e3; // meters
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+function calcDistance(spot: Spot) {
+  const base = spot.zone === "A" || spot.zone === "B" ? 120 : 145;
+  const rank = parseInt(spot.id.split("-")[1] ?? "1", 10);
+  return base + rank * 18;
 }
 
 export default function SpotDetails({
@@ -26,73 +17,59 @@ export default function SpotDetails({
   spot: Spot;
   onNavigate: () => void;
 }) {
-  // attempt to get current position for distance estimate; fallback to null
-  const [pos, setPos] = React.useState<{ lat: number; lon: number } | null>(
-    null,
+  const distance = useMemo(() => calcDistance(spot), [spot]);
+  const eta = useMemo(
+    () => `${Math.max(1, Math.round(distance / 70))} min`,
+    [distance],
   );
 
-  React.useEffect(() => {
-    if (!navigator.geolocation) return;
-    const id = setTimeout(() => {
-      navigator.geolocation.getCurrentPosition(
-        (p) => setPos({ lat: p.coords.latitude, lon: p.coords.longitude }),
-        () => setPos(null),
-        { timeout: 3000 },
-      );
-    }, 300);
-    return () => clearTimeout(id as any);
-  }, []);
-
-  const distance = useMemo(() => {
-    if (!pos || !spot.geo) return null;
-    return Math.round(haversine(pos.lat, pos.lon, spot.geo.lat, spot.geo.lon));
-  }, [pos, spot]);
-
-  const eta = useMemo(() => {
-    if (!distance) return "—";
-    // assume 15 km/h inside port -> 4.167 m/s
-    const speed = 15000 / 3600; // m/s
-    const seconds = distance / speed;
-    return `${Math.max(1, Math.round(seconds / 60))} phút`;
-  }, [distance]);
-
   return (
-    <div>
-      <div className="flex items-center justify-between">
+    <div className="space-y-4">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-extrabold text-amber-300">
-            Bay {spot.id}
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+            Vị trí đã chọn
+          </p>
+          <h2 className="mt-1 text-3xl font-black text-amber-300">
+            Ô {spot.id}
           </h2>
-          <p className="text-sm text-slate-300">Khu: {spot.zone ?? "—"}</p>
+          <p className="mt-1 text-sm text-slate-300">
+            Khu {spot.zone} •{" "}
+            {spot.status === "free"
+              ? "trống"
+              : spot.status === "occupied"
+                ? "đã chiếm"
+                : spot.status === "reserved"
+                  ? "đã đặt"
+                  : "lỗi"}
+          </p>
         </div>
-        <div className="rounded-md bg-emerald-600/90 px-3 py-1 text-xs font-semibold text-slate-900">
-          READY
+        <div className="rounded-xl border border-emerald-400/30 bg-emerald-400/15 px-3 py-2 text-sm font-bold text-emerald-300">
+          SẴN SÀNG
         </div>
       </div>
 
-      <div className="mt-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-md border border-slate-700/20 p-3">
-            <div className="text-xs text-slate-400">Distance</div>
-            <div className="text-lg font-semibold">
-              {distance ? `${distance} m` : "—"}
-            </div>
-          </div>
-          <div className="rounded-md border border-slate-700/20 p-3">
-            <div className="text-xs text-slate-400">Est. Time</div>
-            <div className="text-lg font-semibold">{distance ? eta : "—"}</div>
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-amber-300/20 bg-[#101b31] p-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            Khoảng cách
+          </p>
+          <p className="mt-2 text-3xl font-black text-slate-100">{distance}m</p>
         </div>
-
-        <div className="mt-4">
-          <Button
-            className="w-full bg-amber-400 text-slate-950 font-bold py-4"
-            onClick={onNavigate}
-          >
-            <span className="mr-2">🧭</span> NAVIGATE TO SLOT
-          </Button>
+        <div className="rounded-2xl border border-amber-300/20 bg-[#101b31] p-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            Thời gian dự kiến
+          </p>
+          <p className="mt-2 text-3xl font-black text-slate-100">{eta}</p>
         </div>
       </div>
+
+      <Button
+        onClick={onNavigate}
+        className="h-14 w-full rounded-2xl bg-amber-300 text-slate-950 text-base font-extrabold shadow-lg transition-transform duration-150 hover:scale-[1.01] active:scale-[0.99]"
+      >
+        Bắt đầu điều hướng
+      </Button>
     </div>
   );
 }

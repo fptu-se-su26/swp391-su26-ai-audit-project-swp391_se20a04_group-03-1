@@ -12,30 +12,47 @@ export default function SpotTile({
   onClick: () => void;
   selected?: boolean;
 }) {
-  const bg =
+  const stateClass =
     spot.status === "free"
-      ? "bg-emerald-500/80"
+      ? "bg-emerald-400 text-slate-950"
       : spot.status === "occupied"
-        ? "bg-slate-700"
+        ? "bg-slate-700 text-slate-100"
         : spot.status === "reserved"
-          ? "bg-amber-400/90"
-          : "bg-rose-500/80";
+          ? "bg-amber-400 text-slate-950"
+          : "bg-rose-500 text-slate-950";
 
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`relative w-full h-full rounded-md p-2 text-left flex flex-col justify-between items-start transform transition ${selected ? "ring-2 ring-amber-400 shadow-lg" : "hover:scale-105"}`}
-      aria-label={`Bay ${spot.id} ${spot.status}`}
+      aria-label={`Vị trí ${spot.id} ${spot.status}`}
+      aria-pressed={selected ? "true" : "false"}
+      className={`relative flex h-full w-full flex-col justify-between rounded-xl border p-3 text-left transition-all duration-150 ${
+        selected
+          ? "border-amber-300 shadow-[0_0_0_2px_rgba(250,185,84,0.25)] scale-[1.02]"
+          : "border-slate-700/40 hover:-translate-y-0.5 hover:border-amber-300/50"
+      } ${stateClass}`}
     >
-      <div
-        className={`w-full rounded-md p-2 text-sm font-semibold text-slate-900 ${bg}`}
-      >
-        {spot.id}
+      <div className="text-[10px] font-bold uppercase tracking-[0.28em] opacity-80">
+        {spot.zone}
       </div>
-      <div className="text-xs text-slate-400">{spot.zone ?? "--"}</div>
-      {selected && (
-        <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-amber-300 animate-pulse" />
-      )}
+      <div className="text-xl font-black tracking-wide">{spot.id}</div>
+      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.2em] opacity-80">
+        <span>
+          {spot.status === "free"
+            ? "trống"
+            : spot.status === "occupied"
+              ? "đã chiếm"
+              : spot.status === "reserved"
+                ? "đã đặt"
+                : "lỗi"}
+        </span>
+        {selected ? (
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-100 animate-pulse" />
+        ) : (
+          <span />
+        )}
+      </div>
     </button>
   );
 }
