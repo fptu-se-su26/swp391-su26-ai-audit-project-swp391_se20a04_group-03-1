@@ -34,7 +34,7 @@ export default function ParkingMap({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-slate-300">Sơ đồ bãi theo từng khu</p>
           <p className="text-xs text-slate-500">
@@ -48,8 +48,8 @@ export default function ParkingMap({
         </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-4 rounded-[24px] border border-amber-300/20 bg-[radial-gradient(circle_at_50%_0%,rgba(250,185,84,0.10),transparent_30%),linear-gradient(180deg,#0f1a2a_0%,#0b1624_100%)] p-4 md:p-5">
-        <div className="space-y-4">
+      <div className="grid gap-4 rounded-[24px] border border-amber-300/20 bg-[radial-gradient(circle_at_50%_0%,rgba(250,185,84,0.10),transparent_30%),linear-gradient(180deg,#0f1a2a_0%,#0b1624_100%)] p-3 sm:p-4 md:grid-cols-[1fr_auto_1fr] md:p-5">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
           {zones.slice(0, 2).map((zone) => (
             <ZoneBlock
               key={zone.zone}
@@ -61,19 +61,19 @@ export default function ParkingMap({
           ))}
         </div>
 
-        <div className="relative flex min-h-140 min-w-27.5 items-center justify-center rounded-[22px] border border-dashed border-amber-300/20 bg-[#09111d]/55">
+        <div className="relative order-last flex min-h-28 items-center justify-center rounded-[22px] border border-dashed border-amber-300/20 bg-[#09111d]/55 px-4 py-6 md:order-0 md:min-h-140 md:min-w-27.5 md:px-0">
           <div className="absolute top-4 rounded-full border border-amber-300/20 bg-[#0b1624] px-4 py-1 text-[10px] font-bold tracking-[0.35em] text-amber-200">
             LÀN CHÍNH
           </div>
           <div className="text-center text-amber-300">
-            <div className="text-3xl">🚚</div>
-            <div className="mt-2 text-xs font-bold tracking-[0.24em]">
+            <div className="text-2xl md:text-3xl">🚚</div>
+            <div className="mt-2 text-[10px] font-bold tracking-[0.18em] md:text-xs md:tracking-[0.24em]">
               VỊ TRÍ XE CỦA BẠN
             </div>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
           {zones.slice(2, 4).map((zone) => (
             <ZoneBlock
               key={zone.zone}
@@ -86,9 +86,10 @@ export default function ParkingMap({
         </div>
       </div>
 
-      <div className="text-xs text-slate-500">
-        Khu A/B nằm bên trái, khu C/D nằm bên phải để tài xế nhìn nhanh theo
-        từng khối.
+      <div className="text-xs leading-5 text-slate-500">
+        Trên máy tính bảng và điện thoại, các khối sẽ tự xếp dọc để dễ nhìn.
+        Trên màn hình lớn, khu A/B nằm bên trái, khu C/D nằm bên phải để tài xế
+        nhìn nhanh theo từng khối.
       </div>
     </div>
   );
@@ -108,16 +109,16 @@ function ZoneBlock({
   const ordered = [...spots].sort((a, b) => a.id.localeCompare(b.id));
 
   return (
-    <section className="rounded-[20px] border border-slate-700/40 bg-[#08111d]/75 p-3 shadow-inner">
-      <div className="mb-3 flex items-center justify-between">
+    <section className="rounded-[20px] border border-slate-700/40 bg-[#08111d]/80 p-3 shadow-inner md:p-3.5">
+      <div className="mb-3 flex items-center justify-between gap-2">
         <div className="rounded-full border border-amber-300/20 bg-[#0c1728] px-3 py-1 text-[11px] font-extrabold tracking-[0.24em] text-amber-200">
           KHU {zone}
         </div>
         <div className="text-[11px] text-slate-500">4 vị trí</div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-2.5">
         {ordered.map((spot) => (
-          <div key={spot.id} className="h-24">
+          <div key={spot.id} className="aspect-4/3 min-h-22 sm:min-h-24">
             <SpotTile
               spot={spot}
               selected={selectedId === spot.id}

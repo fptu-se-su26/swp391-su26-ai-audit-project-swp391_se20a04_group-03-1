@@ -54,13 +54,17 @@ export default function SpotDetails({
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
             Khoảng cách
           </p>
-          <p className="mt-2 text-3xl font-black text-slate-100">{distance}m</p>
+          <p className="mt-2 text-[2rem] font-black leading-none text-slate-100 md:text-3xl">
+            {distance}m
+          </p>
         </div>
         <div className="rounded-2xl border border-amber-300/20 bg-[#101b31] p-4">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
             Thời gian dự kiến
           </p>
-          <p className="mt-2 text-3xl font-black text-slate-100">{eta}</p>
+          <p className="mt-2 text-[2rem] font-black leading-none text-slate-100 md:text-3xl">
+            {eta}
+          </p>
         </div>
       </div>
 
