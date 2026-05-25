@@ -1,8 +1,11 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import * as Dialog from "@radix-ui/react-dialog"
-import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser"
+import { useEffect, useRef, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import {
+  BrowserMultiFormatReader,
+  type IScannerControls,
+} from "@zxing/browser";
 import {
   Camera,
   CameraOff,
@@ -11,67 +14,75 @@ import {
   ScanLine,
   ShieldCheck,
   X,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type QrScannerDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onDetected: (value: string) => void
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDetected: (value: string) => void;
+};
 
-export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDialogProps) {
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const controlsRef = useRef<IScannerControls | null>(null)
-  const readerRef = useRef<BrowserMultiFormatReader | null>(null)
-  const onDetectedRef = useRef(onDetected)
+export function QrScannerDialog({
+  open,
+  onOpenChange,
+  onDetected,
+}: QrScannerDialogProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const controlsRef = useRef<IScannerControls | null>(null);
+  const readerRef = useRef<BrowserMultiFormatReader | null>(null);
+  const onDetectedRef = useRef(onDetected);
 
-  const [status, setStatus] = useState<"idle" | "starting" | "scanning" | "error">("idle")
-  const [message, setMessage] = useState("Open camera permission to start QR validation.")
-  const [manualCode, setManualCode] = useState("")
+  const [status, setStatus] = useState<
+    "idle" | "starting" | "scanning" | "error"
+  >("idle");
+  const [message, setMessage] = useState(
+    "Mở quyền camera để bắt đầu xác thực QR.",
+  );
+  const [manualCode, setManualCode] = useState("");
 
   useEffect(() => {
-    onDetectedRef.current = onDetected
-  }, [onDetected])
+    onDetectedRef.current = onDetected;
+  }, [onDetected]);
 
   useEffect(() => {
     if (!open) {
-      controlsRef.current?.stop()
-      controlsRef.current = null
-      readerRef.current = null
-      setStatus("idle")
-      setMessage("Open camera permission to start QR validation.")
-      setManualCode("")
-      return
+      controlsRef.current?.stop();
+      controlsRef.current = null;
+      readerRef.current = null;
+      setStatus("idle");
+      setMessage("Mở quyền camera để bắt đầu xác thực QR.");
+      setManualCode("");
+      return;
     }
 
-    let mounted = true
-    let retryCount = 0
-    setStatus("starting")
-    setMessage("Requesting camera access from the browser...")
+    let mounted = true;
+    let retryCount = 0;
+    setStatus("starting");
+    setMessage("Đang yêu cầu quyền camera...");
 
-    const reader = new BrowserMultiFormatReader(undefined, 250)
-    readerRef.current = reader
+    const reader = new BrowserMultiFormatReader(undefined, 250);
+    readerRef.current = reader;
 
     const startScanner = async () => {
       if (!videoRef.current) {
         if (!mounted) {
-          return
+          return;
         }
 
         if (retryCount < 20) {
-          retryCount += 1
+          retryCount += 1;
           window.setTimeout(() => {
-            void startScanner()
-          }, 50)
-          return
+            void startScanner();
+          }, 50);
+          return;
         }
 
-        setStatus("error")
-        setMessage("Camera preview is not ready yet.")
-        return
+        setStatus("error");
+        setMessage("Xem trước camera chưa sẵn sàng.");
+        return;
       }
 
       try {
@@ -85,71 +96,71 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
           videoRef.current,
           (result, error) => {
             if (!mounted) {
-              return
+              return;
             }
 
             if (result) {
-              const text = result.getText().trim()
+              const text = result.getText().trim();
               if (text) {
-                setStatus("scanning")
-                setMessage("QR detected. Verifying check-in...")
-                onDetectedRef.current(text)
-                controlsRef.current?.stop()
+                setStatus("scanning");
+                setMessage("Đã quét QR. Đang xác thực...");
+                onDetectedRef.current(text);
+                controlsRef.current?.stop();
               }
 
-              return
+              return;
             }
 
             if (error) {
-              setStatus("scanning")
+              setStatus("scanning");
             }
-          }
-        )
+          },
+        );
 
         if (!mounted) {
-          controls.stop()
-          return
+          controls.stop();
+          return;
         }
 
-        controlsRef.current = controls
-        setStatus("scanning")
-        setMessage("Camera is active. Align QR code inside the frame.")
+        controlsRef.current = controls;
+        setStatus("scanning");
+        setMessage("Camera hoạt động. Đặt QR vào khung.");
       } catch (error) {
         if (!mounted) {
-          return
+          return;
         }
 
-        setStatus("error")
+        setStatus("error");
         setMessage(
           error instanceof Error
             ? error.message
-            : "Camera permission was denied or QR scanner could not start."
-        )
+            : "Quyền camera bị từ chối hoặc máy quét không thể khởi động.",
+        );
       }
-    }
+    };
 
     window.setTimeout(() => {
-      void startScanner()
-    }, 0)
+      void startScanner();
+    }, 0);
 
     return () => {
-      mounted = false
-      controlsRef.current?.stop()
-      controlsRef.current = null
-      readerRef.current = null
-    }
-  }, [open])
+      mounted = false;
+      controlsRef.current?.stop();
+      controlsRef.current = null;
+      readerRef.current = null;
+    };
+  }, [open]);
 
   const submitManualCode = () => {
-    const value = manualCode.trim()
+    const value = manualCode.trim();
 
     if (!value) {
-      return
+      return;
     }
 
-    onDetectedRef.current(value)
-    onOpenChange(false)
-  }
+    onDetectedRef.current(value);
+    onOpenChange(false);
+  };
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -160,15 +171,20 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
             <div>
               <Dialog.Title className="flex items-center gap-2 text-base font-semibold tracking-wide text-slate-50">
                 <ScanLine className="h-5 w-5 text-amber-200" />
-                QR Check-in Scanner
+                Máy quét QR - Check-in
               </Dialog.Title>
               <Dialog.Description className="mt-1 text-xs text-slate-400">
-                Camera access is requested on open. Works on localhost and HTTPS.
+                Trình duyệt sẽ yêu cầu quyền camera khi mở. Hoạt động trên
+                localhost và HTTPS.
               </Dialog.Description>
             </div>
 
             <Dialog.Close asChild>
-              <Button variant="ghost" size="icon" className="rounded-full text-slate-300 hover:bg-white/10 hover:text-white">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-slate-300 hover:bg-white/10 hover:text-white"
+              >
                 <X className="h-4 w-4" />
               </Button>
             </Dialog.Close>
@@ -212,12 +228,16 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
                               <Camera className="h-4 w-4 text-emerald-300" />
                             )}
                             <span className="text-xs font-semibold tracking-[0.28em] text-slate-200">
-                              {status === "error" ? "CAMERA OFFLINE" : status === "starting" ? "REQUESTING ACCESS" : "SCANNING"}
+                              {status === "error"
+                                ? "KHÔNG CÓ CAMERA"
+                                : status === "starting"
+                                  ? "ĐANG YÊU CẦU"
+                                  : "ĐANG QUÉT"}
                             </span>
                           </div>
                           <span className="flex items-center gap-1 text-[11px] font-medium text-slate-300">
                             <CircleCheckBig className="h-3.5 w-3.5 text-emerald-300" />
-                            rear camera preferred
+                            ưu tiên camera sau
                           </span>
                         </div>
                       </div>
@@ -229,23 +249,29 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
               <div className="rounded-[22px] border border-white/10 bg-white/5 p-4">
                 <div className="flex items-center gap-2 text-emerald-200">
                   <ShieldCheck className="h-4 w-4" />
-                  <p className="text-xs font-semibold tracking-[0.28em]">STATUS</p>
+                  <p className="text-xs font-semibold tracking-[0.28em]">
+                    TRẠNG THÁI
+                  </p>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-200">{message}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-200">
+                  {message}
+                </p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="rounded-[22px] border border-white/10 bg-white/5 p-4">
-                <p className="text-[11px] font-bold tracking-[0.35em] text-slate-400">MANUAL FALLBACK</p>
+                <p className="text-[11px] font-bold tracking-[0.35em] text-slate-400">
+                  NHẬP THỦ CÔNG
+                </p>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
-                  If the camera cannot read the code, paste the QR payload or appointment token below.
+                  Nếu camera không đọc được, dán mã QR hoặc token hẹn ở dưới.
                 </p>
                 <div className="mt-4 space-y-3">
                   <Input
                     value={manualCode}
                     onChange={(event) => setManualCode(event.target.value)}
-                    placeholder="Paste QR payload or token"
+                    placeholder="Dán mã QR hoặc token"
                     className="h-11 rounded-2xl border-white/10 bg-slate-950/60 text-slate-100 placeholder:text-slate-500"
                   />
                   <Button
@@ -253,17 +279,27 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
                     className="h-11 w-full rounded-2xl bg-amber-400 text-slate-950 hover:bg-amber-300"
                     onClick={submitManualCode}
                   >
-                    Submit token
+                    Gửi token
                   </Button>
                 </div>
               </div>
 
               <div className="rounded-[22px] border border-white/10 bg-slate-950/55 p-4">
-                <p className="text-[11px] font-bold tracking-[0.35em] text-slate-400">HELPFUL TIPS</p>
+                <p className="text-[11px] font-bold tracking-[0.35em] text-slate-400">
+                  MẸO HỮU ÍCH
+                </p>
                 <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-300">
-                  <li>• Make sure the app is served over HTTPS or localhost so the browser can request camera permission.</li>
-                  <li>• Hold the phone steady and align the QR inside the amber frame.</li>
-                  <li>• If scanning on iPhone Safari, keep the browser tab active while the camera is open.</li>
+                  <li>
+                    • Ứng dụng cần chạy trên HTTPS hoặc localhost để trình duyệt
+                    yêu cầu quyền camera.
+                  </li>
+                  <li>
+                    • Giữ điện thoại ổn định và đặt QR vào trong khung vàng.
+                  </li>
+                  <li>
+                    • Trên iPhone Safari, giữ tab trình duyệt đang mở khi camera
+                    bật.
+                  </li>
                 </ul>
               </div>
 
@@ -273,21 +309,24 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
                   variant="outline"
                   className="h-11 flex-1 rounded-2xl border-white/10 bg-transparent text-slate-200 hover:bg-white/10"
                   onClick={() => {
-                    controlsRef.current?.stop()
-                    readerRef.current = null
-                    setStatus("starting")
-                    setMessage("Restarting camera scan...")
-                    onOpenChange(false)
-                    window.setTimeout(() => onOpenChange(true), 50)
+                    controlsRef.current?.stop();
+                    readerRef.current = null;
+                    setStatus("starting");
+                    setMessage("Đang khởi động lại camera...");
+                    onOpenChange(false);
+                    window.setTimeout(() => onOpenChange(true), 50);
                   }}
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Rescan
+                  Quét lại
                 </Button>
 
                 <Dialog.Close asChild>
-                  <Button type="button" className="h-11 flex-1 rounded-2xl bg-emerald-400 text-slate-950 hover:bg-emerald-300">
-                    Close scanner
+                  <Button
+                    type="button"
+                    className="h-11 flex-1 rounded-2xl bg-emerald-400 text-slate-950 hover:bg-emerald-300"
+                  >
+                    Đóng máy quét
                   </Button>
                 </Dialog.Close>
               </div>
@@ -296,7 +335,7 @@ export function QrScannerDialog({ open, onOpenChange, onDetected }: QrScannerDia
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  )
+  );
 }
 
 function CornerMark({ flip, bottom }: { flip?: boolean; bottom?: boolean }) {
@@ -306,5 +345,5 @@ function CornerMark({ flip, bottom }: { flip?: boolean; bottom?: boolean }) {
         bottom ? "border-b-0" : "border-t-2"
       } ${flip ? "border-r-2" : "border-l-2"} ${bottom ? "border-t-0" : ""}`}
     />
-  )
+  );
 }
