@@ -19,16 +19,16 @@ Nguyên tắc ghi changelog:
 
 | Thông tin | Nội dung |
 |---|---|
-| Môn học |  |
-| Mã môn học |  |
-| Lớp |  |
-| Học kỳ |  |
-| Tên bài tập / Project |  |
-| Tên sinh viên / Nhóm |  |
-| MSSV / Danh sách MSSV |  |
-| Giảng viên hướng dẫn |  |
-| Repository URL |  |
-| Ngày bắt đầu |  |
+| Môn học | Software Development Project  |
+| Mã môn học | SWP391 |
+| Lớp | SE20A04 |
+| Học kỳ | SUMMER 2026 |
+| Tên bài tập / Project | LogiPort System - Hệ Thống Quản Lý Cảng V2.0 |
+| Tên sinh viên / Nhóm | Trần Đức Việt - Trần Thanh Tiến Đat - Lê Tự Minh Quang - Trần Huy Hoàng - Lê Văn Phúc |
+| MSSV / Danh sách MSSV | DE190153 - DE191024 - DE190478 - DE190972 - DE190658  |
+| Giảng viên hướng dẫn | Lê Thiện Nhật Quang |
+| Repository URL | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1.git |
+| Ngày bắt đầu | 12/05/2026 |
 | Ngày hoàn thành |  |
 
 ---
@@ -37,10 +37,10 @@ Nguyên tắc ghi changelog:
 
 | Phiên bản/Giai đoạn | Thời gian | Nội dung chính | Trạng thái |
 |---|---|---|---|
-| Phase 01 |  | Khởi tạo project | Not Started / In Progress / Completed |
-| Phase 02 |  | Phân tích yêu cầu | Not Started / In Progress / Completed |
-| Phase 03 |  | Thiết kế hệ thống | Not Started / In Progress / Completed |
-| Phase 04 |  | Implementation | Not Started / In Progress / Completed |
+| Phase 01 | 15/05/2026 | Khởi tạo project | Completed |
+| Phase 02 | 16/05/2026  | Phân tích yêu cầu | Completed |
+| Phase 03 | 17/05/2026 | Thiết kế hệ thống | In Progress |
+| Phase 04 | 18/05/2026 | Implementation | In Progress  |
 | Phase 05 |  | Testing & Debug | Not Started / In Progress / Completed |
 | Phase 06 |  | Hoàn thiện báo cáo và demo | Not Started / In Progress / Completed |
 
@@ -51,52 +51,52 @@ Nguyên tắc ghi changelog:
 ## Ngày thực hiện
 
 ```text
-DD/MM/YYYY
+12/05/2026
 ```
 
 ## Đã hoàn thành
 
-- [ ] Tạo repository
-- [ ] Tạo cấu trúc thư mục project
-- [ ] Tạo file README.md
-- [ ] Tạo thư mục `docs/`
-- [ ] Tạo file `AI_AUDIT_LOG.md`
-- [ ] Tạo file `PROMPTS.md`
-- [ ] Tạo file `REFLECTION.md`
-- [ ] Tạo file `CHANGELOG.md`
-- [ ] Khởi tạo source code ban đầu
-- [ ] Cài đặt thư viện/công cụ cần thiết
-- [ ] Cấu hình môi trường chạy project
+- [X] Tạo repository
+- [X] Tạo cấu trúc thư mục project
+- [X] Tạo file README.md
+- [X] Tạo thư mục `docs/`
+- [X] Tạo file `AI_AUDIT_LOG.md`
+- [X] Tạo file `PROMPTS.md`
+- [X] Tạo file `REFLECTION.md`
+- [X] Tạo file `CHANGELOG.md`
+- [X] Khởi tạo source code ban đầu
+- [X] Cài đặt thư viện/công cụ cần thiết
+- [X] Cấu hình môi trường chạy project
 
 ## Thay đổi chi tiết
 
 | STT | Nội dung thay đổi | Người thực hiện | File/Module liên quan | Minh chứng |
 |---:|---|---|---|---|
-| 1 |  |  |  |  |
+| 1 | Cập nhật lần đầu các thông tin cho file AI_AUDIT_LOG.md  | Lê Tự Minh Quang | AI_AUDIT_LOG.md | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/916d21d21f0b45195df65f86f458367703403211 |
 | 2 |  |  |  |  |
 | 3 |  |  |  |  |
 
 ## AI có hỗ trợ không?
 
-- [ ] Có
+- [X] Có
 - [ ] Không
 
 Nếu có, mô tả AI đã hỗ trợ phần nào:
 
 ```text
-Viết tại đây...
+Bước Đầu: Sử dụng Claude xây dựng ý tưởng cho dự án ban đầu. Tạo tài liệu đặc tả yêu cầu phần mềm (SRS) cho dự án LogiPort System
 ```
 
 ## Commit/Screenshot minh chứng
 
 ```text
-Dán link commit, screenshot hoặc mô tả minh chứng tại đây...
+https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/916d21d21f0b45195df65f86f458367703403211
 ```
 
 ## Ghi chú
 
 ```text
-Viết tại đây...
+Đây là inital commit khởi tạo dự án 
 ```
 
 ---
@@ -106,27 +106,27 @@ Viết tại đây...
 ## Ngày thực hiện
 
 ```text
-DD/MM/YYYY
+13/05/2026
 ```
 
 ## Đã hoàn thành
 
-- [ ] Xác định problem statement
-- [ ] Xác định user roles
-- [ ] Viết user stories
-- [ ] Viết use cases
-- [ ] Xác định functional requirements
-- [ ] Xác định non-functional requirements
-- [ ] Xác định business rules
-- [ ] Xác định acceptance criteria
-- [ ] Review yêu cầu với giảng viên/nhóm
-- [ ] Chỉnh sửa yêu cầu sau feedback
+- [X] Xác định problem statement
+- [X] Xác định user roles
+- [X] Viết user stories
+- [X] Viết use cases
+- [X] Xác định functional requirements
+- [X] Xác định non-functional requirements
+- [X] Xác định business rules
+- [X] Xác định acceptance criteria
+- [X] Review yêu cầu với giảng viên/nhóm
+- [X] Chỉnh sửa yêu cầu sau feedback
 
 ## Thay đổi chi tiết
 
 | STT | Nội dung thay đổi | Người thực hiện | File/Module liên quan | Minh chứng |
 |---:|---|---|---|---|
-| 1 |  |  |  |  |
+| 1 |  |  | |  |
 | 2 |  |  |  |  |
 | 3 |  |  |  |  |
 

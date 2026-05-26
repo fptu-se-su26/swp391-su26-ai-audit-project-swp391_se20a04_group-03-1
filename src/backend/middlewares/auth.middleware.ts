@@ -1,0 +1,46 @@
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { redisClient } from "../config/redis.config";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
+
+export const requireAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // 1. Lấy token từ cookie
+    const token = req.cookies.tokenAdmin;
+    if (!token) {
+      return res.json({ code: "error", message: "Vui lòng đăng nhập" });
+    }
+    // 2. Giải mã token
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+    // 3. LẤY TOKEN ĐANG LƯU TỪ REDIS RA ĐỐI CHIẾU
+    const activeVersion = await redisClient.get(`auth:session:${decoded.id}`);
+    // So sánh Version trong Token gửi lên VÀ Version trong Redis
+    if (!activeVersion || decoded.tokenVersion !== activeVersion) {
+      res.clearCookie("tokenAdmin"); // Xóa cookie rác ở client
+      return res.json({
+        code: "error",
+        message: "Tài khoản của bạn đã được đăng nhập ở một thiết bị khác.",
+      });
+    }
+    // 4. Nếu khớp 100%, cho phép đi qua và đính kèm thông tin user
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.clearCookie("tokenAdmin");
+    return res.json({
+      code: "error",
+      message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+    });
+  }
+};
