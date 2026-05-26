@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/database.config";
-import rootRouter from "./routers";
+import rootRouter from "./routers/index.route";
 import { connectRedis } from "./config/redis.config";
 
 const app = express();

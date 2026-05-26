@@ -47,16 +47,6 @@ const menuItems = [
     icon: Box,
   },
   {
-    label: "Phiếu nâng/hạ",
-    href: "/admin/lift",
-    icon: ArrowUpDown,
-  },
-  {
-    label: "Giám sát niêm phong",
-    href: "/admin/seal",
-    icon: Lock,
-  },
-  {
     label: "Báo cáo",
     href: "/admin/reports",
     icon: BarChart3,
