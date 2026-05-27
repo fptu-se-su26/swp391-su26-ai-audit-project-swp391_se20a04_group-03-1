@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, ScanLine, FileText } from "lucide-react";
 import Link from "next/link";
@@ -31,12 +31,12 @@ export default function Home() {
 
           {/* Right: Buttons */}
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden sm:flex" asChild>
-              <Link href="/docs">Tài liệu HD</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/login">Đăng nhập hệ thống</Link>
-            </Button>
+            <Link href="/docs" className={buttonVariants({ variant: "ghost", className: "hidden sm:flex" })}>
+              Tài liệu HD
+            </Link>
+            <Link href="/login" className={buttonVariants()}>
+              Đăng nhập hệ thống
+            </Link>
           </div>
         </div>
       </header>
