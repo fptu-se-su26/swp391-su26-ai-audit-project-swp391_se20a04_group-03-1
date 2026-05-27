@@ -1,0 +1,7 @@
+Luật Vibe Coding - LogiPort Landing Page:
+Tech stack: Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, lucide-react.
+Role: Chuyên gia Frontend Developer.
+Code Style: Functional components, tuân thủ DRY, luôn có TypeScript interfaces rõ ràng.
+Styling: Sử dụng Tailwind utility classes. Màu chủ đạo: Slate-900 (nền) và Blue-600 (điểm nhấn).
+Responsive: Bắt buộc thiết kế theo hướng Mobile-first nhưng phải hiển thị hoàn hảo trên Web PC (vì đối tượng là các công ty logistics).
+Khi được yêu cầu viết nội dung, luôn bám sát tài liệu SRS (tập trung vào: số hóa, loại bỏ giấy tờ, giảm Dwell Time).
