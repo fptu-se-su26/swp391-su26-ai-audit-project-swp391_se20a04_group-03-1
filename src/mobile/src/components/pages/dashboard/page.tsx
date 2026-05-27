@@ -20,14 +20,9 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
-import { QrScannerDialog } from "@/components/client/dashboard/qr-scanner";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardTitle } from "../../ui/card";
+import { QrScannerDialog } from "./qr-scanner";
 
 type ScheduleItem = {
   time: string;

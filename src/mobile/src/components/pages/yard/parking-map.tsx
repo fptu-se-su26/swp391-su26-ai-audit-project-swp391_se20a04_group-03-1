@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import SpotTile from "@/app/client/parking/spot-tile";
+import SpotTile from "./spot-tile";
 
 export type Spot = {
   id: string;

@@ -21,15 +21,15 @@ import {
   TicketCheck,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../../ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "../../ui/card";
+import { Input } from "../../ui/input";
 
 type SlotStatus = "confirmed" | "pending" | "late" | "cancelled" | "completed";
 

@@ -2,13 +2,13 @@
 
 import React, { useMemo, useState } from "react";
 import { Search, MapPinned, Radio } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import ParkingMap, { type Spot } from "@/app/client/parking/parking-map";
-import SpotDetails from "@/app/client/parking/spot-details";
+import { Input } from "../../ui/input";
+import ParkingMap, { type Spot } from "./parking-map";
+import SpotDetails from "./spot-details";
 import { useRealtimeSpots } from "../../../lib/use-realtime-spots";
 
 export default function ParkingPage() {
-  const { spots } = useRealtimeSpots();
+  const spots = useRealtimeSpots().spots as Spot[];
   const [selected, setSelected] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
@@ -20,7 +20,7 @@ export default function ParkingPage() {
   const filteredSpots = useMemo(() => {
     if (!query.trim()) return spots;
     const q = query.toLowerCase();
-    return spots.filter((spot) =>
+    return spots.filter((spot: Spot) =>
       `${spot.id} ${spot.zone} ${spot.status}`.toLowerCase().includes(q),
     );
   }, [spots, query]);

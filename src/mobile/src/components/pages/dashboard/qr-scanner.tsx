@@ -16,8 +16,8 @@ import {
   X,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 
 type QrScannerDialogProps = {
   open: boolean;
@@ -31,8 +31,8 @@ export function QrScannerDialog({
   onDetected,
 }: QrScannerDialogProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const controlsRef = useRef<IScannerControls | null>(null);
-  const readerRef = useRef<BrowserMultiFormatReader | null>(null);
+  const controlsRef = useRef<any | null>(null);
+  const readerRef = useRef<any | null>(null);
   const onDetectedRef = useRef(onDetected);
 
   const [status, setStatus] = useState<
@@ -94,7 +94,7 @@ export function QrScannerDialog({
             },
           },
           videoRef.current,
-          (result, error) => {
+          (result: any, error: any) => {
             if (!mounted) {
               return;
             }

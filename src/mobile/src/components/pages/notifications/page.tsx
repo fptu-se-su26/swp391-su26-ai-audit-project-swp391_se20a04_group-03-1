@@ -10,15 +10,10 @@ import {
   Info,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useSSE } from "@/lib/use-sse";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardTitle } from "../../ui/card";
+import { Input } from "../../ui/input";
+import { useSSE } from "../../../lib/use-sse";
 
 type AlertType = "info" | "appointment" | "system";
 type AlertStatus = "unread" | "read" | "important" | "cancelled" | "confirmed";
