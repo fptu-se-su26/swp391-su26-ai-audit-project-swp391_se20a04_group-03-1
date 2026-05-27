@@ -178,6 +178,49 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Stats Banner */}
+        <section className="w-full py-16 bg-slate-950 dark:bg-black text-white relative overflow-hidden">
+          {/* Subtle background glow */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[300px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+          
+          <div className="container mx-auto px-4 md:px-6 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
+              {/* Stat 1 */}
+              <div className="flex flex-col items-center justify-center space-y-3 pt-8 md:pt-0">
+                <h3 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-blue-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]">
+                  99.9%
+                </h3>
+                <div className="space-y-1">
+                  <p className="font-semibold text-lg md:text-xl">Uptime Hệ Thống</p>
+                  <p className="text-sm md:text-base text-slate-400">Không sập giờ cao điểm</p>
+                </div>
+              </div>
+              
+              {/* Stat 2 */}
+              <div className="flex flex-col items-center justify-center space-y-3 pt-8 md:pt-0">
+                <h3 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-teal-400 drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]">
+                  &lt; 500ms
+                </h3>
+                <div className="space-y-1">
+                  <p className="font-semibold text-lg md:text-xl">Phản hồi API</p>
+                  <p className="text-sm md:text-base text-slate-400">Xử lý dữ liệu siêu tốc</p>
+                </div>
+              </div>
+              
+              {/* Stat 3 */}
+              <div className="flex flex-col items-center justify-center space-y-3 pt-8 md:pt-0">
+                <h3 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-indigo-400 drop-shadow-[0_0_15px_rgba(129,140,248,0.5)]">
+                  &lt; 3s
+                </h3>
+                <div className="space-y-1">
+                  <p className="font-semibold text-lg md:text-xl">AI Nhận Diện</p>
+                  <p className="text-sm md:text-base text-slate-400">Xử lý biển số & thùng xe</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
