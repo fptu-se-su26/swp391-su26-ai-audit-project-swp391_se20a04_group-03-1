@@ -232,7 +232,7 @@ export default function YardDetailPage() {
             </CardHeader>
             <CardContent className="p-0 bg-slate-900 relative aspect-video">
               <img
-                src={`http://localhost:5001/yard_feed?yard_id=${id}`}
+                src={`${process.env.NEXT_PUBLIC_CV_URL || 'http://localhost:5001'}/yard_feed?yard_id=${id}`}
                 alt="Live AI Stream"
                 className="w-full h-full object-cover"
               />

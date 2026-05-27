@@ -44,6 +44,7 @@ export default function YardConfigPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [isDrawing, setIsDrawing] = useState(false);
+  const [draggingSlot, setDraggingSlot] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
 
   useEffect(() => {
     fetchYard();
@@ -92,8 +93,26 @@ export default function YardConfigPage() {
     });
   };
 
+  const handleSlotMouseDown = (e: React.MouseEvent<HTMLDivElement>, slot: SlotRect) => {
+    e.stopPropagation(); // Prevent triggering drawing
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+
+    const clickX = ((e.clientX - rect.left) / rect.width) * 100;
+    const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setDraggingSlot({
+      id: slot.id,
+      offsetX: clickX - slot.x,
+      offsetY: clickY - slot.y,
+    });
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDrawing || !containerRef.current || !drawingRect) return;
+    if (!containerRef.current) return;
+    
+    if (!isDrawing && !draggingSlot) return;
+    
     const rect = containerRef.current.getBoundingClientRect();
 
     let currentX = ((e.clientX - rect.left) / rect.width) * 100;
@@ -103,14 +122,37 @@ export default function YardConfigPage() {
     currentX = Math.max(0, Math.min(100, currentX));
     currentY = Math.max(0, Math.min(100, currentY));
 
-    setDrawingRect({
-      ...drawingRect,
-      currentX,
-      currentY,
-    });
+    if (draggingSlot) {
+      setSlots(slots.map(s => {
+        if (s.id === draggingSlot.id) {
+          let newX = currentX - draggingSlot.offsetX;
+          let newY = currentY - draggingSlot.offsetY;
+          
+          newX = Math.max(0, Math.min(100 - s.width, newX));
+          newY = Math.max(0, Math.min(100 - s.height, newY));
+          
+          return { ...s, x: newX, y: newY };
+        }
+        return s;
+      }));
+      return;
+    }
+
+    if (isDrawing && drawingRect) {
+      setDrawingRect({
+        ...drawingRect,
+        currentX,
+        currentY,
+      });
+    }
   };
 
   const handleMouseUp = () => {
+    if (draggingSlot) {
+      setDraggingSlot(null);
+      return;
+    }
+
     if (!isDrawing || !drawingRect) return;
 
     const x = Math.min(drawingRect.startX, drawingRect.currentX);
@@ -233,24 +275,24 @@ export default function YardConfigPage() {
               <div
                 ref={containerRef}
                 className="relative w-full overflow-hidden select-none bg-slate-900 cursor-crosshair"
-                style={{ aspectRatio: "16/9" }}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
               >
                 <img
-                  src={`http://localhost:5001/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`}
+                  src={`${process.env.NEXT_PUBLIC_CV_URL || 'http://localhost:5001'}/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`}
                   alt="Camera View"
-                  className="w-full h-auto object-contain"
-                  style={{ maxHeight: "60vh" }}
+                  className="block w-full h-auto"
+                  draggable={false}
                 />
 
                 {/* Render Existing Slots */}
                 {slots.map((slot) => (
                   <div
                     key={slot.id}
-                    className="absolute border-2 border-green-500 bg-green-500/20 flex flex-col items-center justify-center transition-all"
+                    className="absolute border-2 border-green-500 bg-green-500/20 flex flex-col items-center justify-center cursor-move"
+                    onMouseDown={(e) => handleSlotMouseDown(e, slot)}
                     style={{
                       left: `${slot.x}%`,
                       top: `${slot.y}%`,
