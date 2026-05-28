@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120">
+  <rect width="240" height="120" rx="8" fill="#07111f" />
+  <g fill="#0f1a2a" stroke="#183042" stroke-width="1">
+    <rect x="12" y="12" width="40" height="30" rx="4" />
+    <rect x="58" y="12" width="40" height="30" rx="4" />
+    <rect x="104" y="12" width="40" height="30" rx="4" />
+    <rect x="150" y="12" width="40" height="30" rx="4" />
+  </g>
+  <text x="16" y="78" fill="#a3b1c2" font-size="10">Parking schematic placeholder</text>
+</svg>

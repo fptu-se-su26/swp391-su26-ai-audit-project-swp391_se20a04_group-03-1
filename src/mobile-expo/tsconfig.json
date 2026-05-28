@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {},
+  "extends": "expo/tsconfig.base",
+  "include": [
+    "App.tsx",
+    "index.tsx",
+    "src/App.tsx",
+    "src/navigation/**/*",
+    "src/screens/**/*",
+    "src/components/layout/**/*",
+    "src/types/**/*"
+  ],
+  "exclude": [
+    "src/components/pages/**/*",
+    "src/components/ui/**/*",
+    "src/lib/**/*",
+    "src/hooks/**/*",
+    "src/helpers/**/*",
+    "src/services/**/*",
+    "src/store/**/*"
+  ]
+}
