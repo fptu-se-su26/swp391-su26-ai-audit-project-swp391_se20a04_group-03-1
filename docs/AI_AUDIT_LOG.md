@@ -678,13 +678,14 @@ AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình �
 
 #### 4.5. Minh chứng
 
-| --------------------- | ------------------------------------------------------------------------------------------------------- |
-| Link commit           | Cập nhật sau...                                                                                         |
-| File liên quan        | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
-| Screenshot            | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                          |
-| Kết quả chạy/test     | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.         |
-| Link tài liệu/báo cáo |                                                                                                         |
-| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                 |
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | cập nhật sau... |
+| File liên quan | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
+| Screenshot | (Ảnh màn hình danh sách lịch hẹn và Thùng rác) |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng. |
+| Link video demo |  |
+| Ghi chú khác | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code. |
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
