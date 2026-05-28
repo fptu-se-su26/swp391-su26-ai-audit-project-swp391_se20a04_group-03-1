@@ -1,7 +1,7 @@
 # Tài Xế Cảng — Technical Project Details
 
 > **Audience**: Developers maintaining or scaling the mobile-expo application.
-> **Last analyzed**: 2026-05-28
+> **Last analyzed**: 2026-05-28 (updated after refactor session)
 
 ---
 
@@ -27,10 +27,11 @@ Stack.Navigator (AppNavigator)
 │
 ├── Screen: "MainTabs"  (headerShown: false)
 │   └── Tab.Navigator
-│       ├── Tab: "Dashboard"     → DashboardScreen
-│       ├── Tab: "Appointments"  → AppointmentsScreen
-│       ├── Tab: "Yard"          → YardScreen
-│       └── Tab: "Settings"      → SettingsScreen
+│       ├── Tab: "Dashboard"      → DashboardScreen
+│       ├── Tab: "Notifications"  → NotificationsScreen
+│       ├── Tab: "Appointments"   → AppointmentsScreen
+│       ├── Tab: "Yard"           → YardScreen
+│       └── Tab: "Settings"       → SettingsScreen
 │
 └── Screen: "QRScanner"  (modal presentation)
     └── QRScannerScreen
@@ -143,7 +144,20 @@ A custom dark navigation theme is defined inline with a deep-navy background (`#
 
 **Purpose**: Displays a list of all parking spots with their zone and real-time occupancy status.
 
-**Data**: Fetched via `useQuery(["yard-spots"], fetchYardSpots)`.
+**Data**: Fetched via `useQuery(["yard-spots"], fetchYardSpots)` with full `isLoading` / `isError` state handling provided by `<QueryStateHandler>`.
+
+**Summary statistics**: The three summary cards (Trống / Đã chiếm / Đã đặt) are **dynamically calculated** from the fetched `spots` array using `useMemo`:
+
+```ts
+const { freeCount, occupiedCount, reservedCount } = useMemo(
+  () => ({
+    freeCount:     spots.filter((s) => s.status === "Free").length,
+    occupiedCount: spots.filter((s) => s.status === "Occupied").length,
+    reservedCount: spots.filter((s) => s.status === "Reserved").length,
+  }),
+  [spots],
+);
+```
 
 **Status indicators**:
 | Status | Color |
@@ -151,8 +165,6 @@ A custom dark navigation theme is defined inline with a deep-navy background (`#
 | `Free` | Green (`#047857` bg, `#d1fae5` text) |
 | `Occupied` | Red (`#dc2626` bg, `#fee2e2` text) |
 | `Reserved` | Amber (`#f59e0b` bg, `#fff7ed` text) |
-
-> **Note**: The summary cards at the top (24 free, 18 occupied, 6 reserved) are **hardcoded** and do not derive from the fetched `spots` array. This is a known inconsistency.
 
 ---
 
@@ -171,15 +183,24 @@ A custom dark navigation theme is defined inline with a deep-navy background (`#
 - `pushEnabled` — Push notifications toggle
 - `darkMode` — Dark mode toggle (UI only; does not affect actual theme)
 
-**Navigation links** (currently navigate to `"Notifications"` tab which does not exist — a bug):
-- Help Center
-- Terms of Service
+**Navigation** — fully typed using `useNavigation<NavigationProp<RootTabParamList>>()`. All `as never` casts removed:
+- "Help Center" and "Terms of Service" links → navigate to `"Notifications"` tab (now registered)
+- **Logout button** → navigates to `"Dashboard"` (no auth state is cleared)
 
-**Logout button** — navigates to `"Dashboard"` (no auth state is cleared).
+### 2.7 `NotificationsScreen` — Notifications Feed
+
+**File**: `src/screens/notifications/NotificationsScreen.tsx`
+
+**Purpose**: Placeholder screen that displays a styled list of port notifications. Currently uses static mock data; ready to be wired to `useQuery(["notifications"])` once the backend is live.
+
+**Features**:
+- `FlatList` of notification items with icon, title, body, timestamp, and unread dot indicator
+- Themed icon boxes with per-category accent colors
+- Empty-state fallback UI
 
 ---
 
-### 2.7 `ScreenShell` — Layout Wrapper Component
+### 2.8 `ScreenShell` — Layout Wrapper Component
 
 **File**: `src/components/layout/ScreenShell.tsx`
 
@@ -325,9 +346,10 @@ type YardSpot = {
 The `src/lib/` directory contains two hooks prepared for a live backend:
 
 **`useSSE(url, onMessage, options)`** (`src/lib/use-sse.ts`):
-- Connects to a Server-Sent Events endpoint.
+- Refactored to use **`react-native-sse`** — a React Native-compatible SSE client. The browser-only `EventSource` global has been removed.
 - Handles automatic reconnection on error with configurable `reconnectInterval`.
-- Returns an `EventSource` ref for cleanup.
+- Returns an `EventSource` ref for imperative cleanup.
+- Hook signature is identical to the previous version — no call-site changes required.
 - Currently not wired to any screen.
 
 **`useRealtimeSpots()`** (`src/lib/use-realtime-spots.ts`):
@@ -347,7 +369,16 @@ findPath(start: Point, goal: Point, grid: number[][]): Point[] | null
 
 ### 5.4 Video Stream (`src/components/ui/video-stream.tsx`)
 
-A `VideoStream` component renders a `<img>` tag pointing to an MJPEG stream from a Flask backend (`http://localhost:5001/video_feed`). This is a **web-only component** (uses HTML elements) and cannot run in React Native. It was likely ported from the companion web application.
+The `VideoStream` component has been **refactored for React Native**. All HTML elements (`<div>`, `<img>`, `<button>`) and `className` props have been replaced with `<View>`, `<TouchableOpacity>`, `<Text>`, and `StyleSheet`.
+
+Because React Native's `<Image>` component cannot decode MJPEG streams, the live feed is rendered inside a **`react-native-webview`** using an injected HTML page with a single `<img src={streamUrl}>`. This is the standard approach for MJPEG playback in React Native.
+
+Features preserved from the original:
+- Live/Offline status badge
+- Fullscreen toggle (implemented via `<Modal>`)
+- Mute toggle
+- Error/offline fallback with reconnect button
+- `ActivityIndicator` while the WebView loads
 
 ---
 
@@ -391,7 +422,7 @@ export const stitchPalette = {
 
 **File**: `tsconfig.json`
 
-The TypeScript compiler **only includes** the following paths:
+The TypeScript compiler includes the following paths:
 
 ```json
 "include": [
@@ -401,19 +432,23 @@ The TypeScript compiler **only includes** the following paths:
 ]
 ```
 
-The following directories are **explicitly excluded** from type checking:
+The following directories are excluded from type checking (pages, hooks, helpers, store — not yet refactored for native):
 
 ```json
 "exclude": [
   "src/components/pages/**/*",
-  "src/components/ui/**/*",
-  "src/lib/**/*",
-  "src/hooks/**/*", "src/helpers/**/*",
-  "src/services/**/*", "src/store/**/*"
+  "src/hooks/**/*",
+  "src/helpers/**/*",
+  "src/store/**/*"
 ]
 ```
 
-**This means**: `src/services/portalApi.ts`, `src/lib/*.ts`, and `src/components/ui/*.tsx` are intentionally **not type-checked by the TypeScript compiler**. This is a deliberate workaround to avoid type errors from web-ported files that use browser APIs (`localStorage`, `window`, `document`, `EventSource`) and web-only libraries (`lucide-react`, `radix-ui`, `clsx`).
+**What changed**: `src/components/ui/**/*`, `src/lib/**/*`, and `src/services/**/*` were **removed from the `exclude` list** and are now fully type-checked. This was made possible by:
+- Refactoring `video-stream.tsx` to use React Native primitives (no more HTML elements or `className`)
+- Replacing `use-sse.ts`'s browser `EventSource` with `react-native-sse`
+- Deleting `theme-provider.tsx` (used `localStorage` / `window.matchMedia`)
+
+Any remaining web-only utilities in `src/components/ui/` (e.g., `button.tsx` using `radix-ui`, `card.tsx` using `clsx`) should be progressively migrated or removed.
 
 ---
 
@@ -423,31 +458,25 @@ The following directories are **explicitly excluded** from type checking:
 
 | ID | Location | Issue |
 |---|---|---|
-| B-01 | `YardScreen.tsx` | Summary stat cards (24 free, 18 occupied, 6 reserved) are **hardcoded** and do not reflect the actual fetched `spots` array. |
-| B-02 | `SettingsScreen.tsx` | "Help Center" and "Terms of Service" links navigate to `"Notifications"`, a tab route that **does not exist** in `RootTabParamList`. This will throw a runtime navigation warning. |
 | B-03 | `SettingsScreen.tsx` | Logout button navigates to `"Dashboard"` but does **not clear any auth/session state**. No actual authentication flow exists. |
 | B-04 | `use-realtime-spots.ts` | Imports from `"@/app/client/parking/parking-map"` — a **Next.js path alias** that does not resolve in the Expo/React Native context. This file cannot be used as-is. |
-| B-05 | `use-sse.ts` | Uses `EventSource` which is a **browser-only API**. On React Native (without a polyfill), this will throw `ReferenceError: EventSource is not defined`. |
-| B-06 | `lib/theme-provider.tsx` | Uses `localStorage` and `window.matchMedia` — **browser-only APIs**. Cannot run in React Native. |
-| B-07 | `components/ui/video-stream.tsx` | Uses HTML elements (`<div>`, `<img>`, `<button>`) — **web-only JSX**. Cannot render in React Native. |
 | B-08 | `darkMode` toggle in `SettingsScreen` | The `darkMode` switch toggles local state but has **no effect on the actual app theme**. |
+
+> ✅ **Resolved in refactor session (2026-05-28)**: B-01 (hardcoded yard stats), B-02 (missing Notifications route), B-05 (`EventSource` browser API), B-06 (`theme-provider.tsx` browser APIs), B-07 (`video-stream.tsx` HTML elements).
 
 ### 🔧 Refactoring Opportunities
 
 | ID | Area | Recommendation |
 |---|---|---|
 | R-01 | **Code duplication in styles** | Many screens hardcode identical color values (e.g., `"#0f1a2a"`, `"#1f2937"`) instead of using `stitchPalette`. Enforce palette usage uniformly. |
-| R-02 | **Web-ported code in `lib/` and `components/ui/`** | Move or delete `video-stream.tsx`, `theme-provider.tsx`, `use-sse.ts`, `use-realtime-spots.ts`, `utils.ts`, and `button.tsx` from the native project, or refactor them for React Native. |
+| R-02 | **Remaining web-ported code in `components/ui/`** | `button.tsx` (uses `radix-ui`, `cva`), `card.tsx`, `input.tsx`, `label.tsx` are web-ported and unused in native screens. Remove or rewrite for React Native. |
 | R-03 | **`services/portalApi.ts`** | Replace mock data with real HTTP calls using the installed `axios` client. Add environment variable support for the base URL. |
 | R-04 | **Authentication** | No auth layer exists. Add login/session management using Zustand (already installed) or Expo SecureStore for persisting tokens. |
-| R-05 | **Error & Loading states** | Screens use `useQuery` but do not handle `isLoading` or `isError` states — no skeleton loaders or error messages are displayed while data is fetching. |
-| R-06 | **Navigation type safety** | `navigation.navigate("QRScanner" as never)` and `navigation.navigate("Notifications" as never)` use `as never` casts to bypass type safety. Use proper typed navigation with `useNavigation<NavigationProp<...>>`. |
-| R-07 | **Yard screen hardcoded stats** | Derive the summary counts (Free/Occupied/Reserved) from the `spots` array rather than hardcoding. |
-| R-08 | **`tsconfig.json` exclusions** | The broad exclusion of `src/services`, `src/lib`, and `src/components/ui` suppresses type errors but also hides real bugs. Refactor web-ported files so they can be included in type checking. |
 | R-09 | **`QRScannerNative` (POC)** | The vision-camera POC skeleton in `src/components/qr/` should either be completed and integrated, or removed to avoid confusion. |
 | R-10 | **`useRealtimeSpots` hook** | Refactor to use the local `YardSpot` type and wire it to the `YardScreen` using SSE or polling via `useQuery`'s `refetchInterval`. |
 | R-11 | **Navigation theme duplication** | The `DarkTheme` override in `src/App.tsx` partially duplicates `stitchPalette`. Consider deriving the Navigation theme from the palette. |
-| R-12 | **Notification tab** | `RootTabParamList` defines a `"Notifications"` tab but no screen is registered for it in `AppNavigator.tsx`. Either add the screen or remove it from the type. |
+
+> ✅ **Resolved in refactor session (2026-05-28)**: R-05 (loading/error states added to all screens), R-06 (navigation type safety fixed in SettingsScreen), R-07 (dynamic yard stats), R-08 (tsconfig exclusions narrowed), R-12 (NotificationsScreen registered).
 
 ### 🚀 Feature Gaps (Planned But Not Yet Implemented)
 

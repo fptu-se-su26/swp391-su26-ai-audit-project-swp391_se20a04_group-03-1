@@ -24,8 +24,9 @@ The app is designed with a dark, industrial aesthetic ("Industrial Dark Mode") t
 | 📊 **Dashboard** | Real-time summary of check-ins, free yard spots, pending tasks, and active alerts |
 | 📅 **Appointments** | View daily appointment schedule with status filtering (All / Active / Pending / History) |
 | 📷 **QR Scanner** | Camera-based QR code check-in at port gates using `expo-camera` |
-| 🅿️ **Yard Map** | Visual overview of parking spot status per zone (Free / Occupied / Reserved) |
-| ⚙️ **Settings** | Driver profile, push notification toggle, dark mode toggle, help center |
+| 🅿️ **Yard Map** | Visual overview of parking spot status per zone (Free / Occupied / Reserved), dynamically calculated from live data |
+| 🔔 **Notifications** | Port notification feed with unread indicators, category icons, and empty-state UI |
+| ⚙️ **Settings** | Driver profile, push notification toggle, dark mode toggle, fully-typed navigation |
 | 🌙 **Industrial Dark Theme** | Consistent deep-navy color palette optimized for outdoor use |
 
 ---
@@ -140,12 +141,14 @@ mobile-expo/
     ├── screens/
     │   ├── dashboard/
     │   │   └── DashboardScreen.tsx     # Main home screen with stats and QR shortcut
+    │   ├── notifications/
+    │   │   └── NotificationsScreen.tsx # Port notification feed with unread indicators
     │   ├── appointments/
     │   │   └── AppointmentsScreen.tsx  # Appointment list with filter tabs
     │   ├── scanner/
     │   │   └── QRScannerScreen.tsx     # Camera QR code scanner
     │   ├── yard/
-    │   │   └── YardScreen.tsx          # Parking yard spot overview
+    │   │   └── YardScreen.tsx          # Parking yard spot overview (dynamic stats)
     │   └── settings/
     │       └── SettingsScreen.tsx      # Profile, preferences, logout
     │
@@ -160,8 +163,9 @@ mobile-expo/
     │       ├── card.tsx                # Card component (web-ported)
     │       ├── input.tsx               # Input component (web-ported)
     │       ├── label.tsx               # Label component (web-ported)
+    │       ├── query-state-handler.tsx # Shared loading/error/skeleton wrapper for useQuery
     │       ├── snackbar.tsx            # Snackbar component (web-ported)
-    │       └── video-stream.tsx        # Video stream viewer (web-ported, HTML/JSX)
+    │       └── video-stream.tsx        # MJPEG video stream viewer (React Native, WebView)
     │
     ├── services/
     │   └── portalApi.ts        # API service layer (currently stub/mock data)
@@ -175,11 +179,10 @@ mobile-expo/
     │   └── zxing-browser.d.ts  # Type stub for ZXing browser library
     │
     ├── lib/
-    │   ├── astar.ts            # A* pathfinding algorithm (for future yard routing)
+    │   ├── astar.ts              # A* pathfinding algorithm (for future yard routing)
     │   ├── use-realtime-spots.ts # Simulated real-time spot update hook
-    │   ├── use-sse.ts          # Server-Sent Events (SSE) hook for live data
-    │   ├── theme-provider.tsx  # Web-based ThemeProvider (web-ported, unused in native)
-    │   └── utils.ts            # Utility: `cn()` helper (clsx + tailwind-merge)
+    │   ├── use-sse.ts            # SSE hook (react-native-sse, reconnect logic)
+    │   └── utils.ts              # Utility: `cn()` helper (clsx + tailwind-merge)
     │
     └── assets/
         └── expo/               # App icons, splash screen, and favicon assets
