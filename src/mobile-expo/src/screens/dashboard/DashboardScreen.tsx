@@ -17,6 +17,7 @@ import {
   fetchYardSpots,
 } from "../../services/portalApi";
 import type { RootTabParamList } from "../../navigation/AppNavigator";
+import { QueryStateHandler } from "../../components/ui/query-state-handler";
 
 type Props = BottomTabScreenProps<RootTabParamList, "Dashboard">;
 
@@ -40,6 +41,18 @@ export default function DashboardScreen({ navigation }: Props) {
     queryKey: ["yard-spots"],
     queryFn: fetchYardSpots,
   });
+
+  const anyLoading =
+    summaryQuery.isLoading ||
+    notificationsQuery.isLoading ||
+    appointmentsQuery.isLoading ||
+    yardQuery.isLoading;
+
+  const anyError =
+    summaryQuery.isError ||
+    notificationsQuery.isError ||
+    appointmentsQuery.isError ||
+    yardQuery.isError;
 
   const summary = summaryQuery.data;
   const notifications = notificationsQuery.data ?? [];
@@ -65,6 +78,12 @@ export default function DashboardScreen({ navigation }: Props) {
       subtitle="Cảng thông minh IoT · giao diện tối cho tài xế"
       hideHeader
     >
+      <QueryStateHandler
+        isLoading={anyLoading}
+        isError={anyError}
+        spinnerOnly
+        errorMessage="Không tải được dữ liệu trang chủ. Vui lòng kiểm tra kết nối và thử lại."
+      >
       <View style={styles.headerBar}>
         <View style={styles.brandRow}>
           <View style={styles.brandMark}>
@@ -79,6 +98,7 @@ export default function DashboardScreen({ navigation }: Props) {
         </View>
         <View style={styles.signalGlyph} />
       </View>
+
 
       <View style={styles.sectionPanel}>
         <View style={styles.sectionHeaderRow}>
@@ -154,6 +174,7 @@ export default function DashboardScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.footerSpacer} />
+      </QueryStateHandler>
     </ScreenShell>
   );
 }

@@ -6,6 +6,7 @@ import ScreenShell from "../../components/layout/ScreenShell";
 import { fetchAppointments } from "../../services/portalApi";
 import type { RootTabParamList } from "../../navigation/AppNavigator";
 import { stitchPalette } from "../../theme/stitchPalette";
+import { QueryStateHandler } from "../../components/ui/query-state-handler";
 
 type Props = BottomTabScreenProps<RootTabParamList, "Appointments">;
 
@@ -47,7 +48,11 @@ function getStatusTone(status: string) {
 export default function AppointmentsScreen({ navigation }: Props) {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
 
-  const { data: appointments = [] } = useQuery({
+  const {
+    data: appointments = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["appointments"],
     queryFn: fetchAppointments,
   });
@@ -82,6 +87,11 @@ export default function AppointmentsScreen({ navigation }: Props) {
       title="Lịch hẹn"
       subtitle="Xem thông tin, pass QR và trạng thái. Liên hệ điều phối khi cần hỗ trợ."
     >
+      <QueryStateHandler
+        isLoading={isLoading}
+        isError={isError}
+        errorMessage="Không tải được danh sách lịch hẹn. Vui lòng thử lại sau."
+      >
       <View style={styles.heroCard}>
         <Text style={styles.heroKicker}>PORT DRIVER</Text>
         <Text style={styles.heroTitle}>Active Slots</Text>
@@ -199,6 +209,7 @@ export default function AppointmentsScreen({ navigation }: Props) {
           liên hệ điều phối để được hướng dẫn.
         </Text>
       </View>
+      </QueryStateHandler>
     </ScreenShell>
   );
 }
