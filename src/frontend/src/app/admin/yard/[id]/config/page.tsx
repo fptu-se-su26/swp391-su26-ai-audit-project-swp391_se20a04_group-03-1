@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   AlertCircle,
   Loader2,
+  Camera,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -38,13 +39,18 @@ export default function YardConfigPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isTakingSnapshot, setIsTakingSnapshot] = useState(false);
 
   const [slots, setSlots] = useState<SlotRect[]>([]);
   const [drawingRect, setDrawingRect] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [isDrawing, setIsDrawing] = useState(false);
-  const [draggingSlot, setDraggingSlot] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
+  const [draggingSlot, setDraggingSlot] = useState<{
+    id: string;
+    offsetX: number;
+    offsetY: number;
+  } | null>(null);
 
   useEffect(() => {
     fetchYard();
@@ -93,7 +99,10 @@ export default function YardConfigPage() {
     });
   };
 
-  const handleSlotMouseDown = (e: React.MouseEvent<HTMLDivElement>, slot: SlotRect) => {
+  const handleSlotMouseDown = (
+    e: React.MouseEvent<HTMLDivElement>,
+    slot: SlotRect,
+  ) => {
     e.stopPropagation(); // Prevent triggering drawing
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -110,9 +119,9 @@ export default function YardConfigPage() {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
-    
+
     if (!isDrawing && !draggingSlot) return;
-    
+
     const rect = containerRef.current.getBoundingClientRect();
 
     let currentX = ((e.clientX - rect.left) / rect.width) * 100;
@@ -123,18 +132,20 @@ export default function YardConfigPage() {
     currentY = Math.max(0, Math.min(100, currentY));
 
     if (draggingSlot) {
-      setSlots(slots.map(s => {
-        if (s.id === draggingSlot.id) {
-          let newX = currentX - draggingSlot.offsetX;
-          let newY = currentY - draggingSlot.offsetY;
-          
-          newX = Math.max(0, Math.min(100 - s.width, newX));
-          newY = Math.max(0, Math.min(100 - s.height, newY));
-          
-          return { ...s, x: newX, y: newY };
-        }
-        return s;
-      }));
+      setSlots(
+        slots.map((s) => {
+          if (s.id === draggingSlot.id) {
+            let newX = currentX - draggingSlot.offsetX;
+            let newY = currentY - draggingSlot.offsetY;
+
+            newX = Math.max(0, Math.min(100 - s.width, newX));
+            newY = Math.max(0, Math.min(100 - s.height, newY));
+
+            return { ...s, x: newX, y: newY };
+          }
+          return s;
+        }),
+      );
       return;
     }
 
@@ -215,6 +226,29 @@ export default function YardConfigPage() {
     }
   };
 
+  const takeSnapshot = async () => {
+    try {
+      setIsTakingSnapshot(true);
+      setError(null);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/yards/${id}/snapshot`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+      const result = await res.json();
+      if (!res.ok || result.code === "error") {
+        throw new Error(result.message || "Lỗi chụp ảnh.");
+      }
+      setYard({ ...yard, snapshotUrl: result.data.snapshotUrl });
+    } catch (err: any) {
+      setError(err.message || "Không thể chụp ảnh.");
+    } finally {
+      setIsTakingSnapshot(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-slate-500">
@@ -268,8 +302,22 @@ export default function YardConfigPage() {
         {/* Drawing Area */}
         <div className="xl:col-span-3">
           <Card>
-            <CardHeader className="py-4">
+            <CardHeader className="py-4 flex flex-row items-center justify-between">
               <CardTitle className="text-base">Camera Snapshot</CardTitle>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={takeSnapshot}
+                disabled={isTakingSnapshot || !yard.cameraIp}
+                className="border-[1px] rounded-[10px] border-[#585756] cursor-pointer"
+              >
+                {isTakingSnapshot ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Camera className="h-4 w-4 mr-2" />
+                )}
+                Chụp ảnh từ Camera
+              </Button>
             </CardHeader>
             <CardContent className="p-0 border-t">
               <div
@@ -281,7 +329,7 @@ export default function YardConfigPage() {
                 onMouseLeave={handleMouseUp}
               >
                 <img
-                  src={`${process.env.NEXT_PUBLIC_CV_URL || 'http://localhost:5001'}/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`}
+                  src={yard.snapshotUrl}
                   alt="Camera View"
                   className="block w-full h-auto"
                   draggable={false}
