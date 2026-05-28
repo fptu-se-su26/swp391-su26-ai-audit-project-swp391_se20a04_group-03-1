@@ -1,6 +1,6 @@
 # 🚢 Tài Xế Cảng — Smart Port Driver Mobile App
 
-> A mobile application for port truck drivers to manage check-ins, view appointments, monitor yard availability, and scan QR codes at smart IoT-enabled port gates.
+> A mobile application for port truck drivers to manage check-ins, view appointments, monitor yard availability, and display dynamically generated QR codes for security guards to scan at smart IoT-enabled port gates.
 
 ---
 
@@ -9,7 +9,7 @@
 **Tài Xế Cảng** (Port Driver) is the mobile-facing module of a larger Smart Port IoT audit system. It provides port truck drivers with a real-time operational dashboard to:
 
 - Track their appointment schedule and gate assignments
-- Check in at port gates via QR code scanning
+- Check in at port gates by displaying a dynamically generated QR code for security guards to scan
 - Monitor parking yard occupancy across multiple zones
 - Receive and view port notifications and alerts
 
@@ -23,7 +23,7 @@ The app is designed with a dark, industrial aesthetic ("Industrial Dark Mode") t
 |---|---|
 | 📊 **Dashboard** | Real-time summary of check-ins, free yard spots, pending tasks, and active alerts |
 | 📅 **Appointments** | View daily appointment schedule with status filtering (All / Active / Pending / History) |
-| 📷 **QR Scanner** | Camera-based QR code check-in at port gates using `expo-camera` |
+| 📲 **My QR Code** | Displays a dynamically generated QR code containing driver info for security guards to scan at port gates |
 | 🅿️ **Yard Map** | Visual overview of parking spot status per zone (Free / Occupied / Reserved), dynamically calculated from live data |
 | 🔔 **Notifications** | Port notification feed with unread indicators, category icons, and empty-state UI |
 | ⚙️ **Settings** | Driver profile, push notification toggle, dark mode toggle, fully-typed navigation |
@@ -39,7 +39,7 @@ The app is designed with a dark, industrial aesthetic ("Industrial Dark Mode") t
 | **Framework** | React Native 0.85 via Expo SDK ~56 |
 | **Navigation** | React Navigation v7 (Bottom Tabs + Native Stack) |
 | **State / Server State** | TanStack React Query v5 + Zustand v5 |
-| **Camera / QR** | `expo-camera` (primary), `react-native-vision-camera` (POC skeleton) |
+| **QR Code Generation** | `react-native-qrcode-svg` + `react-native-svg` |
 | **Animations** | `react-native-reanimated` v4, `framer-motion` v12 |
 | **Icons** | `@expo/vector-icons` (Ionicons), `lucide-react` |
 | **UI Utilities** | `class-variance-authority`, `tailwind-merge`, `react-native-paper` |
@@ -145,8 +145,8 @@ mobile-expo/
     │   │   └── NotificationsScreen.tsx # Port notification feed with unread indicators
     │   ├── appointments/
     │   │   └── AppointmentsScreen.tsx  # Appointment list with filter tabs
-    │   ├── scanner/
-    │   │   └── QRScannerScreen.tsx     # Camera QR code scanner
+    │   ├── qr/
+    │   │   └── MyQRCodeScreen.tsx      # Displays generated QR code with driver info
     │   ├── yard/
     │   │   └── YardScreen.tsx          # Parking yard spot overview (dynamic stats)
     │   └── settings/
@@ -156,7 +156,7 @@ mobile-expo/
     │   ├── layout/
     │   │   └── ScreenShell.tsx         # Shared scrollable screen wrapper with header
     │   ├── qr/
-    │   │   ├── QRScannerNative.tsx     # POC skeleton for vision-camera QR scanner
+    │   │   ├── QRScannerNative.tsx     # Legacy POC skeleton (unused)
     │   │   └── README.md               # Notes on native scanner setup
     │   └── ui/
     │       ├── button.tsx              # CVA-powered Button (web-ported, unused in native)
@@ -175,7 +175,7 @@ mobile-expo/
     │
     ├── types/
     │   ├── portal.ts           # Core domain TypeScript types (Appointment, YardSpot, etc.)
-    │   ├── vision-camera-code-scanner.d.ts  # Type stub for native scanner plugin
+    │   ├── vision-camera-code-scanner.d.ts  # Type stub (legacy, unused)
     │   └── zxing-browser.d.ts  # Type stub for ZXing browser library
     │
     ├── lib/

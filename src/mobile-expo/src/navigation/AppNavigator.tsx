@@ -7,7 +7,7 @@ import AppointmentsScreen from "../screens/appointments/AppointmentsScreen";
 import YardScreen from "../screens/yard/YardScreen";
 import SettingsScreen from "../screens/settings/SettingsScreen";
 import NotificationsScreen from "../screens/notifications/NotificationsScreen";
-import QRScannerScreen from "../screens/scanner/QRScannerScreen";
+import MyQRCodeScreen from "../screens/qr/MyQRCodeScreen";
 import { stitchPalette } from "../theme/stitchPalette";
 
 export type RootTabParamList = {
@@ -20,7 +20,12 @@ export type RootTabParamList = {
 
 export type RootStackParamList = {
   MainTabs: undefined;
-  QRScanner: undefined;
+  MyQRCode: {
+    appointmentCode: string;
+    driverName: string;
+    licensePlate: string;
+    timeSlot: string;
+  };
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -128,9 +133,9 @@ export default function AppNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="QRScanner"
-        component={QRScannerScreen}
-        options={{ title: "Quét mã QR", presentation: "modal" }}
+        name="MyQRCode"
+        component={MyQRCodeScreen}
+        options={{ title: "Mã QR của tôi", presentation: "modal" }}
       />
     </Stack.Navigator>
   );

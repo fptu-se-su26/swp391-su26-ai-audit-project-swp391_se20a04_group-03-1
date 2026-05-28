@@ -33,13 +33,13 @@ Stack.Navigator (AppNavigator)
 │       ├── Tab: "Yard"           → YardScreen
 │       └── Tab: "Settings"       → SettingsScreen
 │
-└── Screen: "QRScanner"  (modal presentation)
-    └── QRScannerScreen
+└── Screen: "MyQRCode"  (modal presentation, params: appointmentCode, driverName, licensePlate, timeSlot)
+    └── MyQRCodeScreen
 ```
 
 - The root navigator is a **Native Stack** (`createNativeStackNavigator`).
 - The main app lives inside a **Bottom Tab** navigator (`createBottomTabNavigator`).
-- `QRScannerScreen` is a **modal** pushed on top of the tab stack and can be navigated to from both `DashboardScreen` and `AppointmentsScreen` via `navigation.getParent()?.navigate("QRScanner")`.
+- `MyQRCodeScreen` is a **modal** pushed on top of the tab stack. It receives typed params (`appointmentCode`, `driverName`, `licensePlate`, `timeSlot`) and can be navigated to from both `DashboardScreen` and `AppointmentsScreen` via `navigation.getParent()?.navigate("MyQRCode", { ... })`.
 
 ---
 
@@ -78,7 +78,7 @@ A custom dark navigation theme is defined inline with a deep-navy background (`#
 **Key UI sections**:
 1. **Header Bar** — Brand logo + signal glyph indicator
 2. **Connection Panel** — Shows active connection status (hardcoded `SENS-ORCH-729`)
-3. **QR Check-in Card** — Pressable; navigates to `QRScannerScreen` modal
+3. **QR Check-in Card** — Pressable; navigates to `MyQRCodeScreen` modal with driver params
 4. **Schedule Stack** — First two appointments rendered as `ScheduleCard` cards
 5. **Stat Chips** — Four KPI chips at the bottom
 
@@ -110,7 +110,7 @@ A custom dark navigation theme is defined inline with a deep-navy background (`#
 | `"history"` | Status is not `"Pending"` |
 
 **Actions per appointment card**:
-- If `status === "Confirmed"` → Primary action navigates to `QRScannerScreen`
+- If `status === "Confirmed"` → Primary action navigates to `MyQRCodeScreen` with appointment params
 - Otherwise → Shows an `Alert.alert()` dialog prompting the driver to wait
 
 **Internal sub-components**:
@@ -118,23 +118,34 @@ A custom dark navigation theme is defined inline with a deep-navy background (`#
 
 ---
 
-### 2.4 `QRScannerScreen` — QR Code Check-in
+### 2.4 `MyQRCodeScreen` — QR Code Display for Check-in
 
-**File**: `src/screens/scanner/QRScannerScreen.tsx`
+**File**: `src/screens/qr/MyQRCodeScreen.tsx`
 
-**Purpose**: Full-screen camera view for scanning QR codes at port gates.
+**Purpose**: Displays a dynamically generated QR code containing the driver's appointment information. Security guards scan this code at port gates to verify the driver's check-in.
 
-**Permission handling flow**:
-1. `useCameraPermissions()` hook from `expo-camera` is used.
-2. On mount, if permission is not granted, `requestPermission()` is called automatically.
-3. Three UI states: *loading* (null permission), *denied* (shows grant button), *granted* (shows live camera).
+**Route params** (typed via `RootStackParamList`):
+```ts
+{
+  appointmentCode: string;  // e.g. "AP-1024"
+  driverName: string;       // e.g. "Nguyen Van An"
+  licensePlate: string;     // e.g. "51C-123.45"
+  timeSlot: string;         // e.g. "09:30"
+}
+```
 
-**Scanning flow**:
-1. `CameraView` from `expo-camera` is configured for `barcodeScannerSettings={{ barcodeTypes: ["qr"] }}`.
-2. `onBarcodeScanned` callback fires once (guarded by `scannedData` state).
-3. On successful scan: shows `Alert.alert()` with scanned data → navigates back on dismiss.
+**QR code generation**:
+1. Route params are extracted via `route.params`.
+2. Params are serialized to a JSON string using `JSON.stringify()`.
+3. `QRCode` from `react-native-qrcode-svg` renders the JSON payload as a scannable QR code.
+4. The QR code is displayed inside a styled card with driver info details below.
 
-**Scan lock**: Once `scannedData` is set, `onBarcodeScanned` is passed `undefined` to prevent re-triggering.
+**UI sections**:
+1. **Card header** — Kicker ("PORT DRIVER PASS") + title ("Mã QR Check-in")
+2. **QR code display** — 220px QR code on cream background with amber border
+3. **Instruction badge** — Bilingual instruction: "Vui lòng đưa mã này cho bảo vệ để quét" / "Please show this code to the security guard"
+4. **Detail rows** — Appointment code, driver name, license plate, and time slot
+5. **Close button** — Returns to previous screen
 
 ---
 
@@ -243,7 +254,7 @@ Because multiple screens use the same query keys (e.g., `["appointments"]` is fe
 
 - `AppointmentsScreen`: `activeFilter` for the currently selected filter tab
 - `SettingsScreen`: `pushEnabled`, `darkMode` for toggle switches
-- `QRScannerScreen`: `scannedData` to lock the scanner after first successful scan
+- `QRScannerScreen` (removed): No longer applicable — replaced by `MyQRCodeScreen` which is stateless (receives params, renders QR)
 
 ### 3.3 Global State — Zustand (Declared, Not Yet Used)
 
@@ -269,7 +280,8 @@ portalApi.ts (mock stub)
 | Library | Version | Purpose |
 |---|---|---|
 | `expo` | ~56.0.5 | Core Expo SDK — build toolchain, device APIs |
-| `expo-camera` | ^56.0.7 | Camera access and QR barcode scanning |
+| `react-native-qrcode-svg` | ^6.3.6 | QR code generation and display |
+| `react-native-svg` | ^15.15.4 | SVG rendering (required by react-native-qrcode-svg) |
 | `@react-navigation/native` | ^7.2.5 | Navigation container and core hooks |
 | `@react-navigation/bottom-tabs` | ^7.16.2 | Bottom tab bar navigator |
 | `@react-navigation/native-stack` | ^7.16.0 | Native stack navigator (modal support) |
@@ -285,7 +297,7 @@ portalApi.ts (mock stub)
 | `class-variance-authority` | ^0.7.1 | Variant-based component styling (used by ported `button.tsx`) |
 | `tailwind-merge` | ^3.6.0 | CSS class merging utility (used by `cn()` helper) |
 | `@zxing/browser` + `@zxing/library` | ^0.2.0 / ^0.22.0 | ZXing QR code library (web-only, not used in native) |
-| `vision-camera-code-scanner` | ^0.2.0 | Native QR scanner plugin (POC skeleton only) |
+| `vision-camera-code-scanner` | ^0.2.0 | Native QR scanner plugin (legacy POC, **removed from dependencies**) |
 | `framer-motion` | ^12.40.0 | Web animation library (declared, not used in native screens) |
 | `axios` | ^1.16.1 | HTTP client (declared, not yet connected to real API) |
 | `lucide-react` | ^1.16.0 | Web icon library (used only in ported `video-stream.tsx`) |
@@ -472,7 +484,7 @@ Any remaining web-only utilities in `src/components/ui/` (e.g., `button.tsx` usi
 | R-02 | **Remaining web-ported code in `components/ui/`** | `button.tsx` (uses `radix-ui`, `cva`), `card.tsx`, `input.tsx`, `label.tsx` are web-ported and unused in native screens. Remove or rewrite for React Native. |
 | R-03 | **`services/portalApi.ts`** | Replace mock data with real HTTP calls using the installed `axios` client. Add environment variable support for the base URL. |
 | R-04 | **Authentication** | No auth layer exists. Add login/session management using Zustand (already installed) or Expo SecureStore for persisting tokens. |
-| R-09 | **`QRScannerNative` (POC)** | The vision-camera POC skeleton in `src/components/qr/` should either be completed and integrated, or removed to avoid confusion. |
+| R-09 | **`QRScannerNative` (POC)** | The vision-camera POC skeleton in `src/components/qr/` is now fully obsolete since the app uses `react-native-qrcode-svg` for QR display. Should be removed. |
 | R-10 | **`useRealtimeSpots` hook** | Refactor to use the local `YardSpot` type and wire it to the `YardScreen` using SSE or polling via `useQuery`'s `refetchInterval`. |
 | R-11 | **Navigation theme duplication** | The `DarkTheme` override in `src/App.tsx` partially duplicates `stitchPalette`. Consider deriving the Navigation theme from the palette. |
 

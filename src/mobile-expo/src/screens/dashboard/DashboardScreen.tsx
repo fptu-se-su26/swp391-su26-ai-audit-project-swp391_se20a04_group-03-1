@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { NavigationProp } from "@react-navigation/native";
 import ScreenShell from "../../components/layout/ScreenShell";
 import {
   fetchDashboardSummary,
@@ -16,7 +17,7 @@ import {
   fetchAppointments,
   fetchYardSpots,
 } from "../../services/portalApi";
-import type { RootTabParamList } from "../../navigation/AppNavigator";
+import type { RootTabParamList, RootStackParamList } from "../../navigation/AppNavigator";
 import { QueryStateHandler } from "../../components/ui/query-state-handler";
 
 type Props = BottomTabScreenProps<RootTabParamList, "Dashboard">;
@@ -127,7 +128,16 @@ export default function DashboardScreen({ navigation }: Props) {
 
         <Pressable
           style={styles.qrCard}
-          onPress={() => navigation.getParent()?.navigate("QRScanner" as never)}
+          onPress={() =>
+            navigation
+              .getParent<NavigationProp<RootStackParamList>>()
+              ?.navigate("MyQRCode", {
+                appointmentCode: "AP-1024",
+                driverName: "Nguyen Van An",
+                licensePlate: "51C-123.45",
+                timeSlot: "09:30",
+              })
+          }
           accessibilityRole="button"
           accessibilityLabel="Chạm để check-in QR"
         >

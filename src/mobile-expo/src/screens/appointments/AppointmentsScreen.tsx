@@ -2,9 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { NavigationProp } from "@react-navigation/native";
 import ScreenShell from "../../components/layout/ScreenShell";
 import { fetchAppointments } from "../../services/portalApi";
-import type { RootTabParamList } from "../../navigation/AppNavigator";
+import type { RootTabParamList, RootStackParamList } from "../../navigation/AppNavigator";
 import { stitchPalette } from "../../theme/stitchPalette";
 import { QueryStateHandler } from "../../components/ui/query-state-handler";
 
@@ -171,7 +172,14 @@ export default function AppointmentsScreen({ navigation }: Props) {
                 style={styles.primaryAction}
                 onPress={() => {
                   if (isConfirmed) {
-                    navigation.getParent()?.navigate("QRScanner" as never);
+                    navigation
+                      .getParent<NavigationProp<RootStackParamList>>()
+                      ?.navigate("MyQRCode", {
+                        appointmentCode: "AP-1024",
+                        driverName: "Nguyen Van An",
+                        licensePlate: "51C-123.45",
+                        timeSlot: "09:30",
+                      });
                     return;
                   }
 
