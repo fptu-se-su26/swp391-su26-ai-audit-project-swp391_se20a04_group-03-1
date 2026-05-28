@@ -6,6 +6,7 @@ import DashboardScreen from "../screens/dashboard/DashboardScreen";
 import AppointmentsScreen from "../screens/appointments/AppointmentsScreen";
 import YardScreen from "../screens/yard/YardScreen";
 import SettingsScreen from "../screens/settings/SettingsScreen";
+import NotificationsScreen from "../screens/notifications/NotificationsScreen";
 import QRScannerScreen from "../screens/scanner/QRScannerScreen";
 import { stitchPalette } from "../theme/stitchPalette";
 
@@ -67,6 +68,17 @@ function MainTabs() {
           tabBarLabel: "Trang chủ",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="grid-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{
+          title: "Thông báo",
+          tabBarLabel: "Thông báo",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="notifications-outline" color={color} size={size} />
           ),
         }}
       />

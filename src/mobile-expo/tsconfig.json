@@ -12,11 +12,8 @@
   ],
   "exclude": [
     "src/components/pages/**/*",
-    "src/components/ui/**/*",
-    "src/lib/**/*",
     "src/hooks/**/*",
     "src/helpers/**/*",
-    "src/services/**/*",
     "src/store/**/*"
   ]
 }
