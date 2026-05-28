@@ -680,7 +680,7 @@ AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình �
 
 | Loại minh chứng | Nội dung |
 |---|---|
-| Link commit | cập nhật sau... |
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
 | File liên quan | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
 | Screenshot | (Ảnh màn hình danh sách lịch hẹn và Thùng rác) |
 | Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng. |
