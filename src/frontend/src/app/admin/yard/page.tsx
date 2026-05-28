@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,231 +8,195 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { VideoStream } from "@/components/ui/video-stream";
-import { Plus, MapPin } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Plus, Video, Settings, AlertCircle, Loader2, Trash2 } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-const yardSlots = [
-  {
-    id: 1,
-    block: "A",
-    bay: "01",
-    row: "1",
-    tier: "1",
-    status: "Trống",
-    plate: null,
-  },
-  {
-    id: 2,
-    block: "A",
-    bay: "01",
-    row: "1",
-    tier: "2",
-    status: "Sử dụng",
-    plate: "XE-001",
-  },
-  {
-    id: 3,
-    block: "A",
-    bay: "01",
-    row: "2",
-    tier: "1",
-    status: "Trống",
-    plate: null,
-  },
-  {
-    id: 4,
-    block: "A",
-    bay: "01",
-    row: "2",
-    tier: "2",
-    status: "Sử dụng",
-    plate: "XE-002",
-  },
-  {
-    id: 5,
-    block: "A",
-    bay: "02",
-    row: "1",
-    tier: "1",
-    status: "Trống",
-    plate: null,
-  },
-  {
-    id: 6,
-    block: "A",
-    bay: "02",
-    row: "1",
-    tier: "2",
-    status: "Sử dụng",
-    plate: "XE-003",
-  },
-];
+interface Yard {
+  _id: string;
+  name: string;
+  cameraIp: string;
+  snapshotUrl: string;
+  slots: any[];
+}
 
 export default function YardPage() {
+  const [yards, setYards] = useState<Yard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchYards();
+  }, []);
+
+  const fetchYards = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yards`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.code === "error") throw new Error(data.message);
+      setYards(data.data || []);
+    } catch (err: any) {
+      setError(err.message || "Không thể tải danh sách bãi đỗ.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteYard = async (id: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yards/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.code === "error") throw new Error(data.message);
+      
+      fetchYards();
+    } catch (err: any) {
+      setError(err.message || "Lỗi khi xóa bãi đỗ.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý bãi</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Quản lý Bãi đỗ xe
+          </h1>
           <p className="text-slate-600">
-            Quản lý vị trí đỗ xe và trạng thái bãi
+            Quản lý các bãi đỗ, kết nối Camera và cấu hình ô đỗ xe thông minh.
           </p>
         </div>
-        <Button className="gap-2 hover:bg-blue-500">
-          <Plus className="h-4 w-4" />
-          Thêm vị trí
-        </Button>
+        <Link href="/admin/yard/create">
+          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all duration-200">
+            <Plus className="h-4 w-4" />
+            Tạo bãi đỗ mới
+          </Button>
+        </Link>
       </div>
 
-      {/* Video Streaming Section */}
-      <div className="w-full h-full">
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Camera Cổng 1</CardTitle>
-            <CardDescription>Entrance Gate A</CardDescription>
-          </CardHeader>
-          <CardContent className="p-2">
-            <VideoStream title="Sân A" cameraId="YARD-001" />
-          </CardContent>
-        </Card>
-      </div>
+      {error && (
+        <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200/50">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
-      {/* Yard Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Tổng vị trí</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">480</p>
-            <p className="text-xs text-slate-500">ô đỗ</p>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-2" />
+          <p>Đang tải danh sách bãi đỗ...</p>
+        </div>
+      ) : yards.length === 0 ? (
+        <Card className="border-dashed border-2 shadow-none bg-slate-50/50">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-slate-500">
+            <Video className="h-12 w-12 text-slate-300 mb-2" />
+            <p>Chưa có bãi đỗ nào được tạo.</p>
+            <Link href="/admin/yard/create" className="mt-4">
+              <Button variant="outline">Tạo bãi đỗ đầu tiên</Button>
+            </Link>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Đang sử dụng</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-600">374</p>
-            <p className="text-xs text-slate-500">78% chiếm dụng</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Trống</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-blue-600">106</p>
-            <p className="text-xs text-slate-500">22% còn trống</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Bảo trì</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-orange-600">0</p>
-            <p className="text-xs text-slate-500">ô đỗ</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Yard Map */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Bản đồ bãi</CardTitle>
-          <CardDescription>Trạng thái sử dụng từng vị trí</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-            {yardSlots.map((slot) => (
-              <div
-                key={slot.id}
-                className={`p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-lg ${
-                  slot.status === "Trống"
-                    ? "border-slate-200/80 bg-slate-50/50 hover:border-slate-300 dark:border-slate-800/80 dark:bg-slate-900/10 dark:hover:border-slate-700/80 dark:hover:bg-slate-900/30"
-                    : "border-green-200 bg-green-50/50 hover:border-green-300 dark:border-green-900/40 dark:bg-green-950/10 dark:hover:border-green-800/50 dark:hover:bg-green-950/20"
-                }`}
-              >
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  {slot.block}-{slot.bay}-{slot.row}-{slot.tier}
-                </p>
-                {slot.plate && (
-                  <p className="text-sm font-bold text-green-600 dark:text-green-400 mt-1">
-                    {slot.plate}
-                  </p>
-                )}
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {slot.status === "Trống" ? "🟢" : "🔴"} {slot.status}
-                </p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Yard Zones */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Các khu bãi</CardTitle>
-          <CardDescription>Thông tin chi tiết từng khu</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {["Khu A", "Khu B", "Khu C", "Khu D"].map((zone) => (
-              <div
-                key={zone}
-                className="p-4 border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950/20 rounded-xl"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">
-                    {zone}
-                  </p>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">
-                      Tổng ô
-                    </span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      120
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">
-                      Đang sử dụng
-                    </span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      94
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">
-                      Trống
-                    </span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      26
-                    </span>
-                  </div>
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                      <div
-                        className="bg-slate-900 dark:bg-sky-500 h-2 rounded-full"
-                        style={{ width: "78%" }}
-                      />
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      78% sử dụng
-                    </p>
-                  </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {yards.map((yard) => (
+            <Card
+              key={yard._id}
+              className="overflow-hidden hover:shadow-lg transition-shadow border-slate-200"
+            >
+              <div className="relative h-48 bg-slate-100">
+                <img
+                  src={`${process.env.NEXT_PUBLIC_CV_URL || 'http://localhost:5001'}/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`}
+                  onError={(e) => {
+                    e.currentTarget.src = yard.snapshotUrl || 'https://placehold.co/600x400/png?text=No+Camera';
+                  }}
+                  alt={yard.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                  {yard.slots?.length || 0} ô đỗ
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">
+                  <Link
+                    href={`/admin/yard/${yard._id}`}
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    {yard.name}
+                  </Link>
+                </CardTitle>
+                <CardDescription className="flex items-center gap-1.5 mt-1">
+                  <Video className="h-3.5 w-3.5" />
+                  {yard.cameraIp}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0 flex justify-end gap-2">
+                <Link href={`/admin/yard/${yard._id}`}>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="gap-2  text-blue-600 border-blue-200 hover:bg-blue-50"
+                  >
+                    Xem chi tiết
+                  </Button>
+                </Link>
+                <Link href={`/admin/yard/${yard._id}/config`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Cấu hình
+                  </Button>
+                </Link>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Hành động này sẽ xóa bãi đỗ <strong>{yard.name}</strong>. Dữ liệu không thể khôi phục sau khi xóa.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Hủy</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDeleteYard(yard._id)} className="bg-red-600 hover:bg-red-700">
+                        Xác nhận xóa
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
