@@ -437,6 +437,108 @@ Viết tại đây...
 
 | Nội dung | Thông tin |
 |---|---|
+| Ngày sử dụng | 21/05/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tạo api register |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi sinh code |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Phân tích dự án hiện có , hãy bắt đầu viết tính năng register. Từ trang register của frontend hãy sửa lại dùng just-validate để xác thực và lấy dữ liệu gửi lên backend,  xong hãy viết tiếp tính năng này cho backend, yêu cầu sử dụng các thư viện đã cài, dùng joi để validate cho người dùng, viết schema cho account-admin trong model (yêu cầu schema đầy đủ các thuộc tính cần có của account-admin trong dự án, viết schema đơn giản không cần các cú pháp phức tạp như enum, ....) 
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+# Bàn giao tính năng - Đăng ký (Register / Account Admin)
+
+Tính năng Đăng ký tài khoản (Register) đã được triển khai hoàn chỉnh ở cả Frontend (Giao diện) và Backend (Máy chủ API), đáp ứng đầy đủ các tiêu chuẩn bảo mật, cấu trúc module hiện đại và trải nghiệm người dùng tối ưu.
+
+---
+
+## 🌟 Các thay đổi chính đã thực hiện
+
+### 1. Nâng cấp Frontend với `Just-Validate`
+- Đã cài đặt thư viện `just-validate` (`v4.3.0`) thay thế hoàn toàn cơ chế tự viết validate bằng `useState` thủ công.
+- **Tích hợp vào React Component:**
+  - Đã tái cấu trúc file [register/page.tsx](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/frontend/src/app/admin/(auth)/register/page.tsx) bằng cách sử dụng `useRef` cho thẻ `<form>`.
+  - Khởi tạo thư viện `JustValidate` thông minh trong `useEffect`. Nó tự động dán các bộ luật: `required`, `email`, `minLength` và hàm so sánh chuỗi (để đối chiếu xác nhận mật khẩu).
+  - Tự động thay đổi class viền đỏ `border-red-500` vào input lỗi và hiện thông báo tiếng Việt trực quan phía bên dưới input ngay khi người dùng gõ.
+- **Kết nối Backend:** Thêm lệnh `fetch` gọi API thực tế tới `POST http://localhost:4000/api/auth/register`, xử lý JSON từ máy chủ và điều hướng sang trang Đăng nhập sau 2 giây khi thành công.
+
+### 2. Xây dựng cấu trúc API Backend chuẩn (Express + MongoDB)
+Hệ thống backend đã được thiết lập cấu trúc MVC hoàn chỉnh thông qua các tệp:
+
+- **Model (Mongoose):** [account-admin.model.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/models/account-admin.model.ts)
+  - Khởi tạo bảng `AccountAdmin` với các trường đơn giản: `fullName`, `email`, `role`, và `password`. Không sử dụng Enum hay khóa phụ phức tạp theo đúng yêu cầu.
+
+- **Validator (Joi):** [auth.validator.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/validators/auth.validator.ts)
+  - Bộ kiểm duyệt dữ liệu khắt khe trước khi chạm vào CSDL. Mọi thông tin rác hay email sai định dạng sẽ bị chặn lập tức bằng Joi và trả về thông báo lỗi 400 thân thiện.
+
+- **Controller (Bcryptjs):** [auth.controller.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/controllers/auth.controller.ts)
+  - Thực thi quy trình đăng ký:
+    1. Kiểm tra Validate qua Joi.
+    2. Chặn các trường hợp đăng ký bằng email đã tồn tại.
+    3. **Bảo mật:** Băm (hash) mật khẩu mạnh mẽ bằng chuỗi Salt (10 vòng lặp) của thư viện `bcryptjs`.
+    4. Lưu bản ghi dữ liệu vào CSDL MongoDB.
+
+- **Router Configuration:**
+  - [auth.router.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/routers/auth.router.ts) cấu hình đường dẫn nội bộ cho chức năng Auth.
+  - [index.ts (routers)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/routers/index.ts) tập hợp tất cả thành `rootRouter`.
+  - [index.ts (main)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/index.ts) tích hợp toàn bộ các APIs vào tiền tố nhánh `/api`.
+
+---
+
+## 🛡️ Kết quả chạy kiểm thử hệ thống
+
+> [!TIP]
+> Backend đã biên dịch và khởi động thành công trên cổng 4000. Dữ liệu khi đăng ký ngoài frontend sẽ đi qua quá trình chặn lỗi nghiêm ngặt của Just-Validate, sau đó được gửi lên Backend Joi kiểm chứng lần hai, mã hóa an toàn và ghi nhận vĩnh viễn vào hệ cơ sở dữ liệu MongoDB.
+
+Bây giờ bạn chỉ cần mở các terminal cho cả 2 cổng (`npm run dev` ở Frontend và Backend) là toàn bộ tính năng này có thể hoạt động hoàn hảo!
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Sử dụng Just-Validate để xác thực Frontend
+- Sử dụng Joi để validate Backend
+- Model AccountAdmin với các trường: fullName, email, role, password
+- Router Auth kết nối tới API: POST http://localhost:4000/api/auth/register
+- API sẽ xử lý logic đăng ký: kiểm tra email đã tồn tại, băm mật khẩu với bcryptjs, lưu vào MongoDB
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Chỉ lấy được đoạn mã trong phần Backend, phần frontend cần chỉnh sửa lại
+- Cần thêm điều kiện ràng buộc về phần Frontend
+- Tính năng của hàm trong validator AI sử dụng trong controller nhưng em đã tách ra thành 1 middleware và nhúng vào route auth (em đã chỉnh sửa trong file auth.router.ts)
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main |
+| File liên quan |  |
+| Screenshot |  |
+| Kết quả chạy/test |  |
+| Link video demo |  |
+| Ghi chú khác |  |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+
+### Lần sử dụng AI số 4
+
+| Nội dung | Thông tin |
+|---|---|
 | Ngày sử dụng | 24/05/2026 |
 | Công cụ AI | Gemini / Claude / GitHub Copilot / Cursor / Antigravity |
 | Mục đích sử dụng | Hỗ trợ xây dựng và tối ưu Computer Vision Service |
@@ -511,6 +613,78 @@ Sử dụng nguyên văn các gợi ý từ AI để có thể xây dựng phầ
 | Kết quả chạy/test |  |
 | Link video demo |  |
 | Ghi chú khác |  |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Lần sử dụng AI số 5
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 24/05/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phát triển tính năng đặt lịch hẹn |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi hướng dẫn  |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Module 1: 	Đặt lịch xe container vào cảng
+	Doanh nghiệp vận tải đặt trước khung giờ cho xe container vào cảng. Hệ thống kiểm tra:
+
+	Dữ liệu	Ý nghĩa
+	Biển số xe	Xác định xe
+	Tài xế	Người điều khiển xe
+	Mã container	Container cần giao/nhận
+	Mã booking	Liên kết với lệnh giao/nhận
+	Khung giờ	Slot được phép vào cảng
+	Trạng thái	Chờ duyệt, đã xác nhận, đã vào, đã ra, hủy
+
+Từ module 1 như trên, hãy cho tôi work-flow chi tiết 
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 4.5. Minh chứng
+
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
+| Screenshot            | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                          |
+| Kết quả chạy/test     | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.         |
+| Link tài liệu/báo cáo |                                                                                                         |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                 |
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
