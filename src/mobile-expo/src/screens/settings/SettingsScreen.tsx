@@ -9,11 +9,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
+import { RootTabParamList } from "../../navigation/AppNavigator";
 import ScreenShell from "../../components/layout/ScreenShell";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function SettingsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootTabParamList>>();
   const [pushEnabled, setPushEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
 
@@ -75,7 +77,7 @@ export default function SettingsScreen() {
 
           <TouchableOpacity
             style={styles.navRow}
-            onPress={() => navigation.navigate("Notifications" as never)}
+            onPress={() => navigation.navigate("Notifications")}
           >
             <View style={styles.rowLeft}>
               <Ionicons
@@ -94,7 +96,7 @@ export default function SettingsScreen() {
 
           <TouchableOpacity
             style={styles.navRow}
-            onPress={() => navigation.navigate("Notifications" as never)}
+            onPress={() => navigation.navigate("Notifications")}
           >
             <View style={styles.rowLeft}>
               <Ionicons
@@ -114,7 +116,7 @@ export default function SettingsScreen() {
 
         <Pressable
           style={styles.logoutBtn}
-          onPress={() => navigation.navigate("Dashboard" as never)}
+          onPress={() => navigation.navigate("Dashboard")}
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <Ionicons name="log-out" size={18} color="#071122" />
