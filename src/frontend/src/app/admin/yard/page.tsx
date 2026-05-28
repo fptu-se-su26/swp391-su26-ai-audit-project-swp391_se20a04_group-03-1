@@ -121,9 +121,9 @@ export default function YardPage() {
             >
               <div className="relative h-48 bg-slate-100">
                 <img
-                  src={`${process.env.NEXT_PUBLIC_CV_URL || 'http://localhost:5001'}/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`}
+                  src={yard.snapshotUrl || 'https://placehold.co/600x400/png?text=No+Camera'}
                   onError={(e) => {
-                    e.currentTarget.src = yard.snapshotUrl || 'https://placehold.co/600x400/png?text=No+Camera';
+                    e.currentTarget.src = 'https://placehold.co/600x400/png?text=No+Camera';
                   }}
                   alt={yard.name}
                   className="w-full h-full object-cover"

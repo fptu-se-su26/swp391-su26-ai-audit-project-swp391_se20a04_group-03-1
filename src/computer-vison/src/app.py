@@ -264,6 +264,7 @@ def yard_capture_worker(yard_id, camera_ip):
         return not (box_x2 < sx or box_x1 > sx + sw or box_y2 < sy or box_y1 > sy + sh)
 
     frame_count = 0
+    previous_occupied_slots = set()
     while active_yard_streams.get(yard_id, {}).get("running", False) and cap.isOpened():
         # Stop thread if no clients requested a frame in the last 30 seconds
         if time.time() - active_yard_streams[yard_id]["last_accessed"] > 30:
@@ -290,7 +291,7 @@ def yard_capture_worker(yard_id, camera_ip):
                     current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
                     for slot in current_slots:
                         if check_overlap(x1, y1, x2, y2, slot['x'], slot['y'], slot['width'], slot['height'], w, h):
-                            occupied_slots.add(slot.get('_id') or slot.get('slotName'))
+                            occupied_slots.add(slot.get('slotName'))
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 165, 0), 2)
                     
         current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
@@ -299,7 +300,7 @@ def yard_capture_worker(yard_id, camera_ip):
             sy = int(slot['y'] / 100.0 * h)
             sw = int(slot['width'] / 100.0 * w)
             sh = int(slot['height'] / 100.0 * h)
-            is_occupied = (slot.get('_id') or slot.get('slotName')) in occupied_slots
+            is_occupied = slot.get('slotName') in occupied_slots
             color = (0, 0, 255) if is_occupied else (0, 255, 0)
             status_text = "Occupied" if is_occupied else "Empty"
             
@@ -312,6 +313,17 @@ def yard_capture_worker(yard_id, camera_ip):
         ret_encode, buffer = cv2.imencode('.jpg', frame)
         if ret_encode:
             active_yard_streams[yard_id]["frame_data"] = buffer.tobytes()
+            
+        if occupied_slots != previous_occupied_slots:
+            print(f"[Yard Feed Worker] Trạng thái bãi {yard_id} thay đổi! Gửi webhook...")
+            try:
+                payload = { "occupied_slots": list(occupied_slots) }
+                backend_api_base = BACKEND_URL.replace("/gate/scan", "") 
+                webhook_url = f"{backend_api_base}/yards/{yard_id}/sync-status"
+                requests.post(webhook_url, json=payload, timeout=2.0)
+            except Exception as e:
+                print(f"[Yard Feed Worker] Lỗi gửi webhook: {e}")
+            previous_occupied_slots = occupied_slots.copy()
             
         time.sleep(0.01)
         
@@ -351,15 +363,32 @@ def generate_yard_stream(yard_id):
             "frame_data": None, 
             "running": True, 
             "last_accessed": time.time(),
-            "slots": slots
+            "slots": slots,
+            "camera_ip": camera_ip
         }
         t = threading.Thread(target=yard_capture_worker, args=(yard_id, camera_ip), daemon=True)
         t.start()
         # Give thread a moment to fetch first frame
         time.sleep(1)
     else:
-        # Update slots in real-time for existing thread
-        active_yard_streams[yard_id]["slots"] = slots
+        if active_yard_streams[yard_id].get("camera_ip") != camera_ip:
+            print(f"[Yard Feed] RTSP URL changed for yard {yard_id}. Restarting stream...")
+            active_yard_streams[yard_id]["running"] = False
+            time.sleep(0.5) # Allow old thread to exit
+            
+            active_yard_streams[yard_id] = {
+                "frame_data": None, 
+                "running": True, 
+                "last_accessed": time.time(),
+                "slots": slots,
+                "camera_ip": camera_ip
+            }
+            t = threading.Thread(target=yard_capture_worker, args=(yard_id, camera_ip), daemon=True)
+            t.start()
+            time.sleep(1)
+        else:
+            # Update slots in real-time for existing thread
+            active_yard_streams[yard_id]["slots"] = slots
         
     # Client stream loop
     while True:
