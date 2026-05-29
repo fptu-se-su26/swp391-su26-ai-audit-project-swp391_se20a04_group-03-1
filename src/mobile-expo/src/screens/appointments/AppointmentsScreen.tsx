@@ -93,130 +93,130 @@ export default function AppointmentsScreen({ navigation }: Props) {
         isError={isError}
         errorMessage="Không tải được danh sách lịch hẹn. Vui lòng thử lại sau."
       >
-      <View style={styles.heroCard}>
-        <Text style={styles.heroKicker}>PORT DRIVER</Text>
-        <Text style={styles.heroTitle}>Active Slots</Text>
-        <Text style={styles.heroSubtitle}>
-          Tài xế chỉ xem thông tin, check-in QR và liên hệ điều phối khi cần.
-        </Text>
+        <View style={styles.heroCard}>
+          <Text style={styles.heroKicker}>PORT DRIVER</Text>
+          <Text style={styles.heroTitle}>Active Slots</Text>
+          <Text style={styles.heroSubtitle}>
+            Tài xế chỉ xem thông tin, check-in QR và liên hệ điều phối khi cần.
+          </Text>
 
-        <View style={styles.summaryRow}>
-          <SummaryChip label="Đã xác nhận" value={confirmedCount} />
-          <SummaryChip label="Đang chờ" value={pendingCount} />
-          <SummaryChip label="Chờ xử lý" value={waitingCount} />
+          <View style={styles.summaryRow}>
+            <SummaryChip label="Đã xác nhận" value={confirmedCount} />
+            <SummaryChip label="Đang chờ" value={pendingCount} />
+            <SummaryChip label="Chờ xử lý" value={waitingCount} />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.filterRow}>
-        {filters.map((filter) => {
-          const selected = filter.key === activeFilter;
-          return (
-            <Pressable
-              key={filter.key}
-              onPress={() => setActiveFilter(filter.key)}
-              style={[
-                styles.filterChip,
-                selected && styles.filterChipActive,
-                { marginRight: 10 },
-              ]}
-            >
-              <Text
-                style={[styles.filterText, selected && styles.filterTextActive]}
+        <View style={styles.filterRow}>
+          {filters.map((filter) => {
+            const selected = filter.key === activeFilter;
+            return (
+              <Pressable
+                key={filter.key}
+                onPress={() => setActiveFilter(filter.key)}
+                style={[
+                  styles.filterChip,
+                  selected && styles.filterChipActive,
+                  { marginRight: 10 },
+                ]}
               >
-                {filter.label}
-              </Text>
-            </Pressable>
+                <Text
+                  style={[styles.filterText, selected && styles.filterTextActive]}
+                >
+                  {filter.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <View style={styles.listHeader}>
+          <Text style={styles.listHeaderTitle}>Lịch trong ngày</Text>
+          <Text style={styles.listHeaderSub}>
+            {visibleAppointments.length} mục hiển thị
+          </Text>
+        </View>
+
+        {visibleAppointments.map((item) => {
+          const isConfirmed = item.status === "Confirmed";
+
+          return (
+            <View key={item.code} style={styles.card}>
+              <View style={styles.cardTopRow}>
+                <View>
+                  <Text style={styles.cardCode}>{item.code}</Text>
+                  <Text style={styles.cardTime}>{item.time}</Text>
+                </View>
+                <View style={[styles.statusPill, getStatusTone(item.status)]}>
+                  <Text style={styles.statusText}>
+                    {formatStatus(item.status)}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.metaBlock}>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Xe</Text>
+                  <Text style={styles.metaValue}>{item.truck}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Khuyến nghị</Text>
+                  <Text style={styles.metaValue}>
+                    {isConfirmed ? "Xem pass và quét QR" : "Chờ điều phối xử lý"}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.actionRow}>
+                <Pressable
+                  style={styles.primaryAction}
+                  onPress={() => {
+                    if (isConfirmed) {
+                      navigation
+                        .getParent<NavigationProp<RootStackParamList>>()
+                        ?.navigate("MyQRCode", {
+                          appointmentCode: "AP-1024",
+                          driverName: "Nguyen Van An",
+                          licensePlate: "51C-123.45",
+                          timeSlot: "09:30",
+                        });
+                      return;
+                    }
+
+                    Alert.alert(
+                      "Chưa thể mở pass",
+                      "Lịch này chưa ở trạng thái xác nhận. Hãy chờ điều phối hoặc liên hệ hỗ trợ.",
+                    );
+                  }}
+                >
+                  <Text style={styles.primaryActionText}>
+                    {isConfirmed ? "Xem pass / Quét QR" : "Xem hướng dẫn"}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.secondaryAction}
+                  onPress={() => {
+                    Alert.alert(
+                      "Liên hệ điều phối",
+                      "Vui lòng liên hệ điều phối để xử lý lịch đang chờ hoặc hỗ trợ vào cổng.",
+                    );
+                  }}
+                >
+                  <Text style={styles.secondaryActionText}>Điều phối</Text>
+                </Pressable>
+              </View>
+            </View>
           );
         })}
-      </View>
 
-      <View style={styles.listHeader}>
-        <Text style={styles.listHeaderTitle}>Lịch trong ngày</Text>
-        <Text style={styles.listHeaderSub}>
-          {visibleAppointments.length} mục hiển thị
-        </Text>
-      </View>
-
-      {visibleAppointments.map((item) => {
-        const isConfirmed = item.status === "Confirmed";
-
-        return (
-          <View key={item.code} style={styles.card}>
-            <View style={styles.cardTopRow}>
-              <View>
-                <Text style={styles.cardCode}>{item.code}</Text>
-                <Text style={styles.cardTime}>{item.time}</Text>
-              </View>
-              <View style={[styles.statusPill, getStatusTone(item.status)]}>
-                <Text style={styles.statusText}>
-                  {formatStatus(item.status)}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.metaBlock}>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Xe</Text>
-                <Text style={styles.metaValue}>{item.truck}</Text>
-              </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Khuyến nghị</Text>
-                <Text style={styles.metaValue}>
-                  {isConfirmed ? "Xem pass và quét QR" : "Chờ điều phối xử lý"}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.actionRow}>
-              <Pressable
-                style={styles.primaryAction}
-                onPress={() => {
-                  if (isConfirmed) {
-                    navigation
-                      .getParent<NavigationProp<RootStackParamList>>()
-                      ?.navigate("MyQRCode", {
-                        appointmentCode: "AP-1024",
-                        driverName: "Nguyen Van An",
-                        licensePlate: "51C-123.45",
-                        timeSlot: "09:30",
-                      });
-                    return;
-                  }
-
-                  Alert.alert(
-                    "Chưa thể mở pass",
-                    "Lịch này chưa ở trạng thái xác nhận. Hãy chờ điều phối hoặc liên hệ hỗ trợ.",
-                  );
-                }}
-              >
-                <Text style={styles.primaryActionText}>
-                  {isConfirmed ? "Xem pass / Quét QR" : "Xem hướng dẫn"}
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={styles.secondaryAction}
-                onPress={() => {
-                  Alert.alert(
-                    "Liên hệ điều phối",
-                    "Vui lòng liên hệ điều phối để xử lý lịch đang chờ hoặc hỗ trợ vào cổng.",
-                  );
-                }}
-              >
-                <Text style={styles.secondaryActionText}>Điều phối</Text>
-              </Pressable>
-            </View>
-          </View>
-        );
-      })}
-
-      <View style={styles.infoCard}>
-        <Text style={styles.infoTitle}>Hỗ trợ điều phối</Text>
-        <Text style={styles.infoBody}>
-          Nếu cần hỗ trợ đổi khung giờ, xác nhận lịch hoặc kiểm tra pass, hãy
-          liên hệ điều phối để được hướng dẫn.
-        </Text>
-      </View>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoTitle}>Hỗ trợ điều phối</Text>
+          <Text style={styles.infoBody}>
+            Nếu cần hỗ trợ đổi khung giờ, xác nhận lịch hoặc kiểm tra pass, hãy
+            liên hệ điều phối để được hướng dẫn.
+          </Text>
+        </View>
       </QueryStateHandler>
     </ScreenShell>
   );

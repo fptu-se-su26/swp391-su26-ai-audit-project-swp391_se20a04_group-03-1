@@ -85,105 +85,105 @@ export default function DashboardScreen({ navigation }: Props) {
         spinnerOnly
         errorMessage="Không tải được dữ liệu trang chủ. Vui lòng kiểm tra kết nối và thử lại."
       >
-      <View style={styles.headerBar}>
-        <View style={styles.brandRow}>
-          <View style={styles.brandMark}>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <View key={`brand-dot-${index}`} style={styles.brandDot} />
-            ))}
+        <View style={styles.headerBar}>
+          <View style={styles.brandRow}>
+            <View style={styles.brandMark}>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <View key={`brand-dot-${index}`} style={styles.brandDot} />
+              ))}
+            </View>
+            <View>
+              <Text style={styles.brandText}>TÀI XẾ CẢNG</Text>
+              <Text style={styles.brandSubtext}>CẢNG THÔNG MINH IOT</Text>
+            </View>
           </View>
-          <View>
-            <Text style={styles.brandText}>TÀI XẾ CẢNG</Text>
-            <Text style={styles.brandSubtext}>CẢNG THÔNG MINH IOT</Text>
-          </View>
-        </View>
-        <View style={styles.signalGlyph} />
-      </View>
-
-
-      <View style={styles.sectionPanel}>
-        <View style={styles.sectionHeaderRow}>
-          <View style={styles.connectionRow}>
-            <View style={styles.connectionDot} />
-            <Text style={styles.sectionHeaderLeft}>KẾT NỐI ĐANG HOẠT ĐỘNG</Text>
-          </View>
-          <Text style={styles.sectionHeaderRight}>SENS-ORCH-729</Text>
-        </View>
-        <View style={styles.statusBanner}>
-          <View style={styles.statusStripe} />
-          <View style={styles.statusBody}>
-            <Text style={styles.statusKicker}>TRẠNG THÁI HIỆN TẠI</Text>
-            <Text style={styles.statusHeadline}>
-              GIAI ĐOẠN: ĐANG CHỜ TẠI CỔNG
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.sectionPanel}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderLeft}>LỆNH ĐIỆN TỬ</Text>
-          <Text style={styles.sectionHeaderRight}>TXN-992-K</Text>
+          <View style={styles.signalGlyph} />
         </View>
 
-        <Pressable
-          style={styles.qrCard}
-          onPress={() =>
-            navigation
-              .getParent<NavigationProp<RootStackParamList>>()
-              ?.navigate("MyQRCode", {
-                appointmentCode: "AP-1024",
-                driverName: "Nguyen Van An",
-                licensePlate: "51C-123.45",
-                timeSlot: "09:30",
-              })
-          }
-          accessibilityRole="button"
-          accessibilityLabel="Chạm để check-in QR"
-        >
-          <View style={styles.qrFrame}>
-            <MiniQrPreview />
-          </View>
-          <View style={styles.qrBadge}>
-            <Text style={styles.qrBadgeText}>CHẠM ĐỂ CHECK-IN</Text>
-          </View>
-        </Pressable>
 
-        <View style={styles.infoGrid}>
-          <InfoTile label="KHÓA BÃI" value="ZONE-4" />
-          <InfoTile
-            label="GIỜ VÀO CỔNG DỰ KIẾN"
-            value={nextAppointmentTime}
-            align="right"
-          />
+        <View style={styles.sectionPanel}>
+          <View style={styles.sectionHeaderRow}>
+            <View style={styles.connectionRow}>
+              <View style={styles.connectionDot} />
+              <Text style={styles.sectionHeaderLeft}>KẾT NỐI ĐANG HOẠT ĐỘNG</Text>
+            </View>
+            <Text style={styles.sectionHeaderRight}>SENS-ORCH-729</Text>
+          </View>
+          <View style={styles.statusBanner}>
+            <View style={styles.statusStripe} />
+            <View style={styles.statusBody}>
+              <Text style={styles.statusKicker}>TRẠNG THÁI HIỆN TẠI</Text>
+              <Text style={styles.statusHeadline}>
+                GIAI ĐOẠN: ĐANG CHỜ TẠI CỔNG
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.sectionRowTitle}>
-        <Text style={styles.sectionRowTitleText}>LỊCH TRONG NGÀY</Text>
-      </View>
+        <View style={styles.sectionPanel}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionHeaderLeft}>LỆNH ĐIỆN TỬ</Text>
+            <Text style={styles.sectionHeaderRight}>TXN-992-K</Text>
+          </View>
 
-      <View style={styles.scheduleStack}>
-        {topScheduleItems.map((item, index) => (
-          <ScheduleCard
-            key={item.code}
-            time={item.time}
-            tag={mapScheduleStatus(item.status)}
-            containerCode={`CONT: ${item.code.replace("AP-", "MSCU ")}`}
-            gate={index === 0 ? "G-12" : "G-08"}
-            accent={index === 0 ? styles.accentMint : styles.accentSand}
-          />
-        ))}
-      </View>
+          <Pressable
+            style={styles.qrCard}
+            onPress={() =>
+              navigation
+                .getParent<NavigationProp<RootStackParamList>>()
+                ?.navigate("MyQRCode", {
+                  appointmentCode: "AP-1024",
+                  driverName: "Nguyen Van An",
+                  licensePlate: "51C-123.45",
+                  timeSlot: "09:30",
+                })
+            }
+            accessibilityRole="button"
+            accessibilityLabel="Chạm để check-in QR"
+          >
+            <View style={styles.qrFrame}>
+              <MiniQrPreview />
+            </View>
+            <View style={styles.qrBadge}>
+              <Text style={styles.qrBadgeText}>CHẠM ĐỂ CHECK-IN</Text>
+            </View>
+          </Pressable>
 
-      <View style={styles.footerStats}>
-        <StatChip label="LẦN CHECK-IN" value={summary?.checkInsToday ?? 0} />
-        <StatChip label="Ô TRỐNG" value={freeSpots} />
-        <StatChip label="CẢNH BÁO" value={activeAlerts} />
-        <StatChip label="ĐANG CHỜ XỬ LÝ" value={pendingTasks} />
-      </View>
+          <View style={styles.infoGrid}>
+            <InfoTile label="KHÓA BÃI" value="ZONE-4" />
+            <InfoTile
+              label="GIỜ VÀO CỔNG DỰ KIẾN"
+              value={nextAppointmentTime}
+              align="right"
+            />
+          </View>
+        </View>
 
-      <View style={styles.footerSpacer} />
+        <View style={styles.sectionRowTitle}>
+          <Text style={styles.sectionRowTitleText}>LỊCH TRONG NGÀY</Text>
+        </View>
+
+        <View style={styles.scheduleStack}>
+          {topScheduleItems.map((item, index) => (
+            <ScheduleCard
+              key={item.code}
+              time={item.time}
+              tag={mapScheduleStatus(item.status)}
+              containerCode={`CONT: ${item.code.replace("AP-", "MSCU ")}`}
+              gate={index === 0 ? "G-12" : "G-08"}
+              accent={index === 0 ? styles.accentMint : styles.accentSand}
+            />
+          ))}
+        </View>
+
+        <View style={styles.footerStats}>
+          <StatChip label="LẦN CHECK-IN" value={summary?.checkInsToday ?? 0} />
+          <StatChip label="Ô TRỐNG" value={freeSpots} />
+          <StatChip label="CẢNH BÁO" value={activeAlerts} />
+          <StatChip label="ĐANG CHỜ XỬ LÝ" value={pendingTasks} />
+        </View>
+
+        <View style={styles.footerSpacer} />
       </QueryStateHandler>
     </ScreenShell>
   );

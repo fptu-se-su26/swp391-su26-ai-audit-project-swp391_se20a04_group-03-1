@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
-import { RootTabParamList } from "../../navigation/AppNavigator";
+import type { RootTabParamList } from "../../navigation/AppNavigator";
 import ScreenShell from "../../components/layout/ScreenShell";
 import { Ionicons } from "@expo/vector-icons";
 
