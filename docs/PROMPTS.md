@@ -1,4 +1,5 @@
 # Prompt Log
+
 ## 1. Thông tin chung
 
 | Thông tin              | Nội dung                                                                                      |
@@ -49,18 +50,18 @@ Sinh viên/nhóm cần ghi lại:
 
 ## 4. Bảng tổng hợp prompt đã sử dụng
 
-| STT | Ngày       | Công cụ AI               | Mục đích                         | Prompt tóm tắt                                                                                                                                                                                                         | Kết quả chính               | Có sử dụng vào bài không? | Minh chứng                                                                                                                             |
-| --: | ---------- | ------------------------ | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-|   1 | 19/05/2026 | Claude                   | Tạo giao diện                    | Là senior về nextJs, tạo ra các trang cần thiết cho dự án                                                                                                                                                              |                             | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
-|   2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |                             | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
-|   3 | 21/05/2026 | Gemini                   | Làm chức năng register           | Phân tích và tạo code cho module register                                                                                                                                                                              | Đã tạo được module register | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
-|   4 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
-|   5 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
-|   6 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
-|   7 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
-|   8 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
-|   9 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
-|  10 |            |                          |                                  |                                                                                                                                                                                                                        |                             | Có / Không                |                                                                                                                                        |
+| STT | Ngày       | Công cụ AI               | Mục đích                                        | Prompt tóm tắt                                                                                                                                                                                                         | Kết quả chính                                     | Có sử dụng vào bài không? | Minh chứng                                                                                                                             |
+| --: | ---------- | ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+|   1 | 19/05/2026 | Claude                   | Tạo giao diện                                   | Là senior về nextJs, tạo ra các trang cần thiết cho dự án                                                                                                                                                              |                                                   | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+|   2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend                | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |                                                   | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
+|   3 | 21/05/2026 | Gemini                   | Làm chức năng register                          | Phân tích và tạo code cho module register                                                                                                                                                                              | Đã tạo được module register                       | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
+|   4 | 24/05/2026 | Antigravity              | Tạo tính năng quét biển số - demo               | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8                                                                                                                                                       | Đã nhận diện được biển số cơ bản                  | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
+|   5 | 27/05/2026 | Gemini                   | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi                                                                                                                                                                   | Đã có được module quản lí bãi cơ bản              | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
+|   6 | 24/05/2026 | Antigravity              | Xử lí module quản lí đặt lịch hẹn               | Hướng dẫn các tính năng của quản lí đặt lịch hẹn                                                                                                                                                                       | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+|   7 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
+|   8 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
+|   9 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
+|  10 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
 
 ---
 
@@ -601,13 +602,13 @@ Viết tại đây...
 
 ### Prompt số 4
 
-| Nội dung            | Thông tin                                                                                  |
-| ------------------- | ------------------------------------------------------------------------------------------ |
-| Ngày sử dụng        | 24/05/2026                                                                                 |
-| Công cụ AI          | Gemini / Claude / GitHub Copilot / Cursor / Antigravity                                    |
-| Mục đích            | Tạo Computer Vision                                                                        |
-| Phần việc liên quan | Requirement / Design / Testing / Debug                                                     |
-| Mức độ sử dụng      | Hỏi ý tưởng / Hỏi giải thích / Hỏi tối ưu                                                  |
+| Nội dung            | Thông tin                                         |
+| ------------------- | ------------------------------------------------- |
+| Ngày sử dụng        | 24/05/2026                                        |
+| Công cụ AI          | Antigravity                                       |
+| Mục đích            | Tạo code cho Computer Vision - demo xử lí biển số |
+| Phần việc liên quan | Design / Testing / Debug                          |
+| Mức độ sử dụng      | Hỏi ý tưởng / Hỏi giải thích / Hỏi tối ưu         |
 
 #### 5.1. Prompt nguyên văn
 
@@ -631,9 +632,9 @@ computer-vision/
 │
 ├── .gitignore               # Bỏ qua môi trường ảo (venv) và các file log khi push lên GitHub
 ├── requirements.txt         # Danh sách các thư viện Python cần cài đặt
-└── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)    
+└── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)
 
-dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py) 
+dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py)
 ```
 
 #### 5.2. Bối cảnh khi viết prompt
@@ -721,20 +722,24 @@ Khi chạy `python src/app.py` từ `computer-vison/`, Python không nhận ra `
 ### 1. Kiểm tra nhập gói
 
 ```
+
 > .\venv\Scripts\python.exe -c "import cv2; import easyocr; from ultralytics import YOLO; print('OK')"
-Tất cả các gói đã được nhập thành công!
+> Tất cả các gói đã được nhập thành công!
+
 ```
 
 ### 2. Khởi động máy chủ Flask
 ```
+
 === DỊCH VỤ THỊ GIÁC MÁY TÍNH FLASK ĐANG CHẠY TRÊN http://0.0.0.0:5001 ===
 
-* Đang phục vụ ứng dụng Flask 'app'
+- Đang phục vụ ứng dụng Flask 'app'
 
-* Đang chạy trên http://127.0.0.1:5001
+- Đang chạy trên http://127.0.0.1:5001
 
-* Đang chạy trên http://192.168.110.103:5001
-```
+- Đang chạy trên http://192.168.110.103:5001
+
+````
 
 ### 3. Phản hồi điểm cuối `/status`
 ```json
@@ -758,66 +763,206 @@ Tất cả các gói đã được nhập thành công!
 
 }
 }
-```
+````
 
 ---
-## Cách chạy
 
-```bash
-cd src/computer-vison
-.\venv\Scripts\python.exe src/app.py
+### Prompt số 5
+
+| Nội dung            | Thông tin                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| Ngày sử dụng        | 27/05/2026                                                                                       |
+| Công cụ AI          | Antigravity                                                                                      |
+| Mục đích            | Tạo api quản lí bãi xe (API, Router, Model, Controller của bãi xe)                               |
+| Phần việc liên quan | Coding                                                                                           |
+| Mức độ sử dụng      | Hỏi sinh code                                                                                    |
+| Phần liên quan      | Module quản lí bãi xe, cụ thể là file `admin.routes.ts`, `admin.controller.ts`, `admin.model.ts` |
+
+#### 5.1. Prompt nguyên văn
+
+```text
+ ở trang bãi đổ như tôi tưởng tượng thì sẽ có 1 đường liên kết tới trang tạo bãi đổ, ở trang đó sẽ cấu hình tên bãi đổ và địa chỉ của camera để truyền video-streaming.
+ Khi tạo xong bãi đổ, sẽ có thể cấu hình bãi đổ bằng
+ cách chụp một bức ảnh nền (Snapshot) từ IP Camera củabãi đó và hiển thị làm hình nền (Background) sau đó Admin tạo,
+ kéo thả các khung hình chữ nhật vào đúng với ô đỗ
+ trên hình và đặt tên từng ô đỗ.
+ Vấn đề ở đây rằng tôi chưa có camera để có thể tạo
+ và nhập ip camera để stream tới bãi nhưng tôi muốn
+ làm tính năng cấu hình bãi đổ : admin có thể tạo, kéo thả chọn ô đỗ trước.
+ Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận và xử lí kết quả backend trả về theo đúng chuẩn
 ```
 
-Sau đó mở:
+#### 5.2. Bối cảnh khi viết prompt
 
-- **Luồng video**: http://localhost:5001/video_feed
-- **Kiểm tra trạng thái**: http://localhost:5001/status
+```text
+- Đang phát triển tính năng quản lý bãi đỗ xe (Yard) cho Admin.
+- Cần tạo chức năng kéo thả khung hình chữ nhật lên bản đồ/ảnh để định vị các ô đỗ xe (Bounding Box).
+- Cần tích hợp luồng video camera IP (RTSP) làm hình nền cấu hình (Snapshot), nhưng trước mắt cần làm giao diện tạo ô đỗ độc lập ngay cả khi chưa có camera.
+- Form tạo bãi đỗ mới cần được validate chuẩn bằng `just-validate` trước khi gửi lên Backend.
+- Yêu cầu xây dựng đồng bộ cả Frontend (Giao diện) và Backend (API lưu trữ).
+```
+
+#### 5.3. Kết quả AI trả về
+
+```text
+# Bàn giao tính năng - Quản lý & Cấu hình bãi đỗ (Yard Config)
+
+AI đã triển khai thành công quy trình tạo bãi đỗ và vẽ sơ đồ vị trí đỗ xe theo yêu cầu:
+
+1. **Frontend - Giao diện Tạo bãi đỗ (`/admin/yard/create`)**
+   - Xây dựng form nhập liệu với các trường: Tên bãi đỗ, IP Camera, Sức chứa.
+   - Tích hợp `just-validate` xử lý logic xác thực trực tiếp trên Client. Gọi API POST lên Backend để tạo bãi đỗ.
+
+2. **Backend - API Quản lý Bãi đỗ (NodeJS + Express)**
+   - Khởi tạo schema `yard.model.ts` lưu thông tin bãi đỗ và mảng `slots` chứa tọa độ các ô đỗ xe (x, y, width, height, name).
+   - Viết các Controller và Router tương ứng cho thao tác CRUD.
+
+3. **Frontend - Tính năng Vẽ Ô đỗ (`/admin/yard/[id]/config`)**
+   - Xây dựng công cụ Drawing Tool bằng các sự kiện `onMouseDown`, `onMouseMove`, `onMouseUp` của React.
+   - Hiển thị ảnh chụp từ IP Camera (gọi qua module Flask Python `/snapshot`) làm Background.
+   - Cho phép người dùng kéo thả chuột để vẽ các khung hình chữ nhật đại diện cho ô đỗ xe, sửa tên từng ô và hiển thị danh sách bên cạnh. Tọa độ được tính theo tỷ lệ phần trăm (%) để giữ nguyên vị trí khi phóng to/thu nhỏ ảnh.
+
+4. **Kết nối hệ thống AI (Computer Vision)**
+   - API lấy ảnh Snapshot từ camera IP đã được kết nối thông qua dịch vụ Flask chạy song song.
 ```
 
 #### 5.4. Kết quả đã áp dụng vào bài
 
 ```text
-- AI gợi ý kế hoạch triển khai Computer Vision Service bằng Flask.
-- AI hỗ trợ thiết kế cấu trúc thư mục và tổ chức module Python.
-- AI gợi ý tích hợp YOLOv8 và EasyOCR cho nhận diện biển số và container.
-- AI hỗ trợ xây dựng cơ chế cooldown de-duplication tránh gửi dữ liệu OCR trùng lặp.
-- AI hỗ trợ xây dựng Flask API cho stream video và health check.
-- AI hỗ trợ xử lý lỗi import package trong Python project.
-- AI hỗ trợ kiểm thử và xác minh hoạt động của hệ thống Computer Vision.
+- Tạo mới các file Frontend: `page.tsx` cho `/yard/create` và `/yard/[id]/config`.
+- Áp dụng logic vẽ Bounding Box (khung chữ nhật) tương đối (%) lên thẻ `<img>` hiển thị snapshot của camera.
+- Cấu trúc Backend API: Khởi tạo các file thuộc module Yard (`yard.controller.ts`, `yard.model.ts`, `yard.router.ts`).
+- Chức năng lưu mảng tọa độ lên CSDL MongoDB bằng API `PATCH /yards/:id/slots`.
 ```
 
 #### 5.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-- Áp dụng nguyên văn câu trả lời của AI đã gợi ý để xây dựng computer vision
+- Chỉnh sửa lại thiết kế UI/UX ở trang Config Yard, thêm giao diện Dark Mode, danh sách bên phải và nút lưu đồng bộ.
+- Phối hợp với AI để fix lỗi luồng stream camera bị đụng độ (conflict) giữa trang Live Stream và trang Cấu hình do đặc thù IP Camera chỉ cho phép 1 kết nối. Bổ sung tính năng tự động nhả camera (`camera.release()`) khi thoát trang.
+- Bổ sung cơ chế fallback để dùng camera Local (Webcam máy tính) nếu IP Camera đang gặp sự cố kết nối.
 ```
 
 #### 5.6. Đánh giá chất lượng prompt
 
-- [ ] Prompt rõ ràng
-- [X] Prompt có đủ bối cảnh
-- [X] Prompt còn thiếu thông tin
-- [X] Prompt tạo ra kết quả tốt
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [X] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 5.7. Minh chứng liên quan
 
-| Loại minh chứng       | Nội dung |
-| --------------------- | -------- |
-| Link commit           |     https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main     |
-| File liên quan        |          |
-| Screenshot            |          |
-| Kết quả chạy/test     |          |
-| Link tài liệu/báo cáo |          |
-| Ghi chú khác          |          |
+| Loại minh chứng       | Nội dung                                                                                             |
+| --------------------- | ---------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                      |
+| File liên quan        | `src/frontend/src/app/admin/yard/[id]/config/page.tsx`, `src/backend/controllers/yard.controller.ts` |
+| Screenshot            | (Ảnh màn hình giao diện vẽ ô đỗ)                                                                     |
+| Kết quả chạy/test     | Giao diện vẽ hoạt động mượt mà, gọi API thành công, ảnh snapshot tải thành công.                     |
+| Link tài liệu/báo cáo |                                                                                                      |
+| Ghi chú khác          | Giao tiếp với AI khá hiệu quả trong việc sửa lỗi OpenCV.                                             |
 
 #### 5.8. Ghi chú thêm
 
 ```text
-Viết tại đây...
+Phần xử lý sự kiện kéo thả vẽ hình bằng React khá phức tạp, AI xử lý tốt việc quy đổi tọa độ Pixel sang % giúp trang web responsive.
+```
+
+---
+
+### Prompt số 6
+
+| Nội dung            | Thông tin                         |
+| ------------------- | --------------------------------- |
+| Ngày sử dụng        | 24/05/2026                        |
+| Công cụ AI          | Antigravity                       |
+| Mục đích            | Phát triển tính năng đặt lịch hẹn |
+| Phần việc liên quan | Coding                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                     |
+| Phần liên quan      |                                   |
+
+#### 6.1. Prompt nguyên văn
+
+```text
+Module 1: 	Đặt lịch xe container vào cảng
+	Doanh nghiệp vận tải đặt trước khung giờ cho xe container vào cảng. Hệ thống kiểm tra:
+
+	Dữ liệu	Ý nghĩa
+	Biển số xe	Xác định xe
+	Tài xế	Người điều khiển xe
+	Mã container	Container cần giao/nhận
+	Mã booking	Liên kết với lệnh giao/nhận
+	Khung giờ	Slot được phép vào cảng
+	Trạng thái	Chờ duyệt, đã xác nhận, đã vào, đã ra, hủy
+
+Từ module 1 như trên, hãy cho tôi work-flow chi tiết
+```
+
+#### 6.2. Bối cảnh khi viết prompt
+
+```text
+- Bắt đầu triển khai phân hệ lớn nhất (Module 1) của hệ thống quản lý cảng biển thông minh.
+- Nhóm cần một Workflow chuẩn cho tính năng đặt lịch xe (Appointments).
+- Đã có khung ý tưởng về luồng nghiệp vụ (Biển số xe, Tài xế, Mã container, Mã booking, Khung giờ).
+- Yêu cầu AI không sinh code ngay lập tức mà phải đóng vai trò là một System Analyst để hướng dẫn logic từng bước, giúp nhóm hiểu sâu bài toán trước khi bắt tay vào code Frontend và Backend.
+```
+
+#### 6.3. Kết quả AI trả về
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 6.4. Kết quả đã áp dụng vào bài
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 6.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 6.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 6.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
+| Screenshot            | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                          |
+| Kết quả chạy/test     | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.         |
+| Link tài liệu/báo cáo |                                                                                                         |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                 |
+
+#### 6.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI giải thích Workflow và kiến trúc trước (thay vì bắt viết code ngay) giúp team hiểu rõ bản chất nghiệp vụ, dễ dàng mở rộng (thêm bộ lọc, soft delete, phân trang) và giảm thiểu bug logic về sau.
 ```
 
 ---

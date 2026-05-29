@@ -24,7 +24,7 @@ export const requireAuth = async (
     // 2. Giải mã token
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
     // 3. LẤY TOKEN ĐANG LƯU TỪ REDIS RA ĐỐI CHIẾU
-    const activeVersion = await redisClient.get(`auth:token:${decoded.id}`);
+    const activeVersion = await redisClient.get(`auth:session:${decoded.id}`);
     // So sánh Version trong Token gửi lên VÀ Version trong Redis
     if (!activeVersion || decoded.tokenVersion !== activeVersion) {
       res.clearCookie("tokenAdmin"); // Xóa cookie rác ở client
