@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import DashboardScreen from "../screens/dashboard/DashboardScreen";
 import AppointmentsScreen from "../screens/appointments/AppointmentsScreen";
@@ -31,9 +31,7 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-type MainTabsProps = NativeStackScreenProps<RootStackParamList, "MainTabs">;
-
-function MainTabs(props: MainTabsProps): React.JSX.Element {
+function MainTabs(): React.JSX.Element {
   return (
     <Tab.Navigator
       initialRouteName="Dashboard"
