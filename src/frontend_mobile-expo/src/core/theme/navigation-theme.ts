@@ -4,7 +4,9 @@
  * Uses our Stitch palette tokens so the navigator chrome
  * (headers, tab bars, etc.) matches the rest of the app.
  */
-import { DarkTheme, type Theme } from '@react-navigation/native';
+import { DarkTheme } from 'expo-router';
+// @ts-ignore
+type Theme = any;
 import { palette } from './palette';
 
 export const navigationTheme: Theme = {

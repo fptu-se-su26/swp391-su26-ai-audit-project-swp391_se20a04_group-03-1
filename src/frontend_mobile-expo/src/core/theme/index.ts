@@ -13,3 +13,4 @@ export {
 
 export { spacing, radii, fontSizes, fontWeights } from './spacing';
 export { navigationTheme } from './navigation-theme';
+export * from "./stitchPalette";
