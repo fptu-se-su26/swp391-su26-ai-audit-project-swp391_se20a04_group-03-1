@@ -50,18 +50,18 @@ Sinh viên/nhóm cần ghi lại:
 
 ## 4. Bảng tổng hợp prompt đã sử dụng
 
-| STT | Ngày       | Công cụ AI               | Mục đích                                        | Prompt tóm tắt                                                                                                                                                                                                         | Kết quả chính                                     | Có sử dụng vào bài không? | Minh chứng                                                                                                                             |
-| --: | ---------- | ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-|   1 | 19/05/2026 | Claude                   | Tạo giao diện                                   | Là senior về nextJs, tạo ra các trang cần thiết cho dự án                                                                                                                                                              |                                                   | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
-|   2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend                | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |                                                   | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
-|   3 | 21/05/2026 | Gemini                   | Làm chức năng register                          | Phân tích và tạo code cho module register                                                                                                                                                                              | Đã tạo được module register                       | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
-|   4 | 24/05/2026 | Antigravity              | Tạo tính năng quét biển số - demo               | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8                                                                                                                                                       | Đã nhận diện được biển số cơ bản                  | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
-|   5 | 27/05/2026 | Gemini                   | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi                                                                                                                                                                   | Đã có được module quản lí bãi cơ bản              | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
-|   6 | 24/05/2026 | Antigravity              | Xử lí module quản lí đặt lịch hẹn               | Hướng dẫn các tính năng của quản lí đặt lịch hẹn                                                                                                                                                                       | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
-|   7 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
-|   8 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
-|   9 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
-|  10 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
+| STT | Ngày       | Công cụ AI               | Mục đích                                        | Prompt tóm tắt                                                                                                                                                                                                         | Kết quả chính                                              | Có sử dụng vào bài không? | Minh chứng                                                                                                                             |
+| --: | ---------- | ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+|   1 | 19/05/2026 | Claude                   | Tạo giao diện                                   | Là senior về nextJs, tạo ra các trang cần thiết cho dự án                                                                                                                                                              |                                                            | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+|   2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend                | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |                                                            | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
+|   3 | 21/05/2026 | Gemini                   | Làm chức năng register                          | Phân tích và tạo code cho module register                                                                                                                                                                              | Đã tạo được module register                                | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
+|   4 | 24/05/2026 | Antigravity              | Tạo tính năng quét biển số - demo               | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8                                                                                                                                                       | Đã nhận diện được biển số cơ bản                           | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
+|   5 | 27/05/2026 | Gemini                   | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi                                                                                                                                                                   | Đã có được module quản lí bãi cơ bản                       | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
+|   6 | 24/05/2026 | Antigravity              | Xử lí module quản lí đặt lịch hẹn               | Hướng dẫn các tính năng của quản lí đặt lịch hẹn                                                                                                                                                                       | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch          | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+|   7 | 29/05/2026 | Antigravity              | Tạo tính năng quản lí công ty                   | Hướng dẫn xây dựng các tính năng quản lí công ty                                                                                                                                                                       | Nhận được hướng dẫn chi tiết cho tính năng quản lí công ty | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38 |
+|   8 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                            | Có / Không                |                                                                                                                                        |
+|   9 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                            | Có / Không                |                                                                                                                                        |
+|  10 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                            | Có / Không                |                                                                                                                                        |
 
 ---
 
@@ -960,6 +960,131 @@ AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình �
 | Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                 |
 
 #### 6.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI giải thích Workflow và kiến trúc trước (thay vì bắt viết code ngay) giúp team hiểu rõ bản chất nghiệp vụ, dễ dàng mở rộng (thêm bộ lọc, soft delete, phân trang) và giảm thiểu bug logic về sau.
+```
+
+---
+
+### Prompt số 7
+
+| Nội dung            | Thông tin                            |
+| ------------------- | ------------------------------------ |
+| Ngày sử dụng        | 29/05/2026                           |
+| Công cụ AI          | Antigravity                          |
+| Mục đích            | Phát triển tính năng quản lí công ty |
+| Phần việc liên quan | Coding                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                        |
+| Phần liên quan      |                                      |
+
+#### 7.1. Prompt nguyên văn
+
+```text
+ phân tích kĩ source code, trong front end tôi muốn thêm trang quản lí công ty, chức năng của trang quản lí công ty bao gôm tất cả các chức năng tương tự như trang appointments. Hãy chỉ xử lí phần front end cho tôi và đưa ra hướng dẫn backend để tôi tự triển khai
+```
+
+#### 7.2. Bối cảnh khi viết prompt
+
+```text
+Cần viết trang quản lí công ty cùng với các tính năng CRUD cơ bản để xử lí nghiệp vụ của trang quản lí công ty. Ngoài ra cần làm thêm tính năng soft delete cho trang quản lí công ty để xử lí các trường hợp xóa không mong muốn.
+```
+
+#### 7.3. Kết quả AI trả về
+
+```text
+Các thay đổi chính đã thực hiện
+1. Giao diện (Frontend)
+Menu Navigation: Đã thêm liên kết "Quản lý công ty" với biểu tượng Building2 vào Sidebar (
+sidebar.tsx
+).
+Trang Danh sách công ty: (
+page.tsx
+)
+Hiển thị danh sách các công ty vận tải.
+Tích hợp tìm kiếm (Debounce 500ms) theo mã, tên, SĐT...
+Lọc theo Trạng thái (Đang hoạt động, Đình chỉ, Ngừng hoạt động).
+Lọc theo ngày đăng ký (Từ ngày - Đến ngày).
+Phân trang (Pagination) mượt mà.
+Tích hợp JustValidate vào form thêm công ty mới với các validation chuẩn xác (VD: Regex biển số/số điện thoại/Email).
+Trang Chỉnh sửa công ty: (
+edit/[id]/page.tsx
+)
+Lấy dữ liệu công ty theo ID để đưa vào form.
+Cho phép quản trị viên chỉnh sửa toàn bộ thông tin (Tên, Mã CT, Liên hệ, Trạng thái) và cập nhật qua API.
+Trang Thùng rác (Trash): (
+trash/page.tsx
+)
+Hiển thị các công ty đã bị "Xóa mềm" (Soft delete).
+Hỗ trợ chức năng Khôi phục (Restore) để đưa công ty hoạt động trở lại.
+Chức năng Xóa vĩnh viễn (Hard delete) khỏi hệ thống.
+
+```
+
+#### 7.4. Kết quả đã áp dụng vào bài
+
+```text
+1. Giao diện (Frontend)
+Menu Navigation: Đã thêm liên kết "Quản lý công ty" với biểu tượng Building2 vào Sidebar (
+sidebar.tsx
+).
+Trang Danh sách công ty: (
+page.tsx
+)
+Hiển thị danh sách các công ty vận tải.
+Tích hợp tìm kiếm (Debounce 500ms) theo mã, tên, SĐT...
+Lọc theo Trạng thái (Đang hoạt động, Đình chỉ, Ngừng hoạt động).
+Lọc theo ngày đăng ký (Từ ngày - Đến ngày).
+Phân trang (Pagination) mượt mà.
+Tích hợp JustValidate vào form thêm công ty mới với các validation chuẩn xác (VD: Regex biển số/số điện thoại/Email).
+Trang Chỉnh sửa công ty: (
+edit/[id]/page.tsx
+)
+Lấy dữ liệu công ty theo ID để đưa vào form.
+Cho phép quản trị viên chỉnh sửa toàn bộ thông tin (Tên, Mã CT, Liên hệ, Trạng thái) và cập nhật qua API.
+Trang Thùng rác (Trash): (
+trash/page.tsx
+)
+Hiển thị các công ty đã bị "Xóa mềm" (Soft delete).
+Hỗ trợ chức năng Khôi phục (Restore) để đưa công ty hoạt động trở lại.
+Chức năng Xóa vĩnh viễn (Hard delete) khỏi hệ thống.
+2. Backend
+Models: Tạo model (company.model.ts) và schema MongoDB hỗ trợ các trường cần thiết (tên, mã, liên hệ, logo, trạng thái) và trường deletedAt cho soft delete.
+Controller: Xây dựng logic CRUD completo (cả xoá mềm và xoá vĩnh viễn) trong company.controller.ts.
+Validation: Áp dụng validation cho các request API.
+Route: Định tuyến các API và đảm bảo bảo mật bằng middleware.
+```
+
+#### 7.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 7.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 7.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38                                                             |
+| File liên quan        | `src/frontend/src/app/admin/companies/page.tsx`, `src/frontend/src/app/admin/companies/edit/[id]/page.tsx`, `src/backend/controllers/company.controller.ts`, `src/backend/models/company.model.ts` |
+| Screenshot            |                                                                                                                                                                                                    |
+| Kết quả chạy/test     | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                                                                                    |
+| Link tài liệu/báo cáo |                                                                                                                                                                                                    |
+| Ghi chú khác          |                                                                                                                                                                                                    |
+
+#### 7.8. Ghi chú thêm
 
 ```text
 Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI giải thích Workflow và kiến trúc trước (thay vì bắt viết code ngay) giúp team hiểu rõ bản chất nghiệp vụ, dễ dàng mở rộng (thêm bộ lọc, soft delete, phân trang) và giảm thiểu bug logic về sau.
