@@ -19,8 +19,6 @@ export interface TabRoute {
 
 export const mainTabs: TabRoute[] = [
   { name: 'dashboard', title: 'Trang chủ', icon: 'grid-outline', href: '/(tabs)/' },
-  { name: 'notifications', title: 'Thông báo', icon: 'notifications-outline', href: '/(tabs)/notifications' },
   { name: 'appointments', title: 'Lịch hẹn', icon: 'calendar-outline', href: '/(tabs)/appointments' },
-  { name: 'yard', title: 'Bãi xe', icon: 'locate-outline', href: '/(tabs)/yard' },
-  { name: 'settings', title: 'Cài đặt', icon: 'settings-outline', href: '/(tabs)/settings' },
+  { name: 'settings', title: 'Tài khoản', icon: 'person-circle-outline', href: '/(tabs)/settings' },
 ];

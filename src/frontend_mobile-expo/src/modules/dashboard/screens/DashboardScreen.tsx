@@ -12,6 +12,7 @@ export default function DashboardScreen() {
   const [gateState, setGateState] = useState<GateState>("waiting");
   const [snackVisible, setSnackVisible] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  const [showQrModal, setShowQrModal] = useState(false);
 
   const gateStatus = useMemo(() => {
     switch (gateState) {
@@ -53,6 +54,8 @@ export default function DashboardScreen() {
         setSnackMessage("Mã không hợp lệ — Không được phép vào");
       }
       setSnackVisible(true);
+      // close QR modal when result arrives
+      setShowQrModal(false);
 
       // auto-reset to waiting after a short period to return UI to default
       if (resetTimer) clearTimeout(resetTimer as ReturnType<typeof setTimeout>);
@@ -113,17 +116,9 @@ export default function DashboardScreen() {
 
         <Pressable
           style={styles.qrCard}
-          onPress={() =>
-            router.push({
-              pathname: "/modal/qr",
-              params: {
-                appointmentCode: "AP-1024",
-                driverName: "Nguyen Van An",
-                licensePlate: "51C-123.45",
-                timeSlot: "14:20",
-              },
-            })
-          }
+          onPress={() => {
+            setShowQrModal(true);
+          }}
           accessibilityRole="button"
           accessibilityLabel="Chạm để mở mã QR check-in"
         >
@@ -134,6 +129,26 @@ export default function DashboardScreen() {
             <Text style={styles.qrBadgeText}>TAP TO CHECK-IN</Text>
           </View>
         </Pressable>
+
+        {showQrModal && (
+          <View style={styles.qrModalOverlay} pointerEvents="auto">
+            <View style={styles.qrModalInner}>
+              <View style={styles.qrModalFrame}>
+                <LargeQrDisplay />
+              </View>
+              <View style={styles.qrModalActions}>
+                <Text style={styles.hintText}>Đưa mã cho bảo vệ quét tại cổng. Chờ kết quả...</Text>
+                <Pressable
+                  style={styles.resetButton}
+                  onPress={() => setShowQrModal(false)}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.resetButtonText}>ĐÓNG</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
 
       <View style={styles.hintPanel}>
@@ -185,6 +200,17 @@ function MiniQrPreview() {
     </View>
   );
 }
+
+function LargeQrDisplay() {
+  return (
+    <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+      <View style={{width:320, height:320, padding:18, borderRadius:20, backgroundColor:'#f4ead9', borderWidth:1, borderColor:'#f0c88f'}}>
+        <MiniQrPreview />
+      </View>
+    </View>
+  );
+}
+
 
 const styles = StyleSheet.create({
   headerBar: {
@@ -479,5 +505,38 @@ const styles = StyleSheet.create({
   },
   footerSpacer: {
     height: 12,
+  },
+  qrModalOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(2,6,23,0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  qrModalInner: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+  },
+  qrModalFrame: {
+    width: '100%',
+    backgroundColor: '#f4ead9',
+    padding: 18,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#f0c88f',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  qrModalActions: {
+    marginTop: 12,
+    alignItems: 'center',
+    gap: 10,
   },
 });

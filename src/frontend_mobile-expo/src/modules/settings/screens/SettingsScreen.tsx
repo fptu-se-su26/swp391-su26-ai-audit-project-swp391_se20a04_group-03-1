@@ -75,43 +75,7 @@ export default function SettingsScreen() {
             <Switch value={darkMode} onValueChange={setDarkMode} />
           </View>
 
-          <TouchableOpacity
-            style={styles.navRow}
-            onPress={() => router.push("/(tabs)/notifications")}
-          >
-            <View style={styles.rowLeft}>
-              <Ionicons
-                name="help-circle"
-                size={20}
-                color="#60a5fa"
-                style={{ marginRight: 10 }}
-              />
-              <View>
-                <Text style={styles.navLabel}>Help Center</Text>
-                <Text style={styles.rowSub}>Tài liệu & hỗ trợ</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navRow}
-            onPress={() => router.push("/(tabs)/notifications")}
-          >
-            <View style={styles.rowLeft}>
-              <Ionicons
-                name="document-text"
-                size={20}
-                color="#f97316"
-                style={{ marginRight: 10 }}
-              />
-              <View>
-                <Text style={styles.navLabel}>Terms of Service</Text>
-                <Text style={styles.rowSub}>Xem điều khoản sử dụng</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-          </TouchableOpacity>
+          {/* Removed links to Notifications / Help — app trimmed to 3 main screens */}
         </View>
 
         <Pressable

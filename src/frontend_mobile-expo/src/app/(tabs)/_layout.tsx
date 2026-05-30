@@ -47,42 +47,22 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
-        options={{
-          title: "Alerts",
-          tabBarLabel: "Alerts",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="appointments"
         options={{
-          title: "Slots",
-          tabBarLabel: "Slots",
+          title: "Lịch hẹn",
+          tabBarLabel: "Lịch hẹn",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-outline" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="yard"
-        options={{
-          title: "Parking",
-          tabBarLabel: "Parking",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="car-sport-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="settings"
         options={{
-          title: "Ops",
-          tabBarLabel: "Ops",
+          title: "Tài khoản",
+          tabBarLabel: "Tài khoản",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="reader-outline" color={color} size={size} />
+            <Ionicons name="person-circle-outline" color={color} size={size} />
           ),
         }}
       />

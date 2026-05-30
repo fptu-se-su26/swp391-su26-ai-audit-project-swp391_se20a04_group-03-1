@@ -175,7 +175,10 @@ export default function () {
                   style={styles.primaryAction}
                   onPress={() => {
                     if (isConfirmed) {
-                      router.push({ pathname: "/modal/qr" as any, params: {} });
+                      Alert.alert(
+                        'Pass tạm ẩn',
+                        'Mã QR / pass tạm thời đã bị ẩn trong bản mobile này. Liên hệ điều phối để hỗ trợ.',
+                      );
                       return;
                     }
 
