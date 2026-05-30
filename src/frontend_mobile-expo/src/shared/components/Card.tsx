@@ -19,7 +19,7 @@
  */
 import React, { type ReactNode } from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 
 // ─── Card Container ──────────────────────────────────────────────────────────
 

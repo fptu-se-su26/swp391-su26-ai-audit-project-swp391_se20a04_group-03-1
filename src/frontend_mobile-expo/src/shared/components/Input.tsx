@@ -23,7 +23,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 
 interface InputProps extends TextInputProps {
   /** Error message to display below the input */

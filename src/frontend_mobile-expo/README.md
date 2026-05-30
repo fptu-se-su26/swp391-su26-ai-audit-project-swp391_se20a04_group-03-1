@@ -41,13 +41,22 @@ Press `i` to open in iOS Simulator, `a` for Android Emulator, or scan the QR cod
 
 We organize the codebase using a **Modular/Feature-Sliced Design (FSD)** approach to keep concerns separated and scalable:
 
-- **`app/`**: Used by Expo Router for file-based routing and entry points.
-- **`components/`**: Reusable, generic UI components (Buttons, Cards, Inputs).
-- **`core/`**: Application-wide configurations.
+- **`src/app/`**: Used by Expo Router for file-based routing and entry points. This layer handles navigation logic.
+- **`src/modules/`**: Feature-specific slices containing their own components, hooks, services, and local state (e.g., `appointments`, `dashboard`, `yard`).
+- **`src/shared/`**: Global resources shared across the entire application.
   - `api/`: Axios client, interceptors, and API mock files (`portal-api.ts`).
+  - `components/ui/`: Reusable, generic UI components (Buttons, Cards, Inputs).
+  - `config/`: Configuration files (e.g., `navigation.ts`).
+  - `hooks/`: Global custom React hooks.
+  - `providers/`: Context providers.
   - `theme/`: Design tokens, colors, typography.
-- **`modules/`**: Feature-specific slices containing their own components, hooks, and services (e.g., `appointments`, `dashboard`, `yard`).
-- **`shared/`**: Shared types, utilities, and helper functions used across modules.
-- **`navigation/`**: Stack and tab navigator configurations.
-- **`constants/`**: Hardcoded data, layout constants.
-- **`hooks/`**: Global custom React hooks.
+  - `types/`: Global TypeScript definitions.
+  - `utils/`: Helper functions.
+- **`src/constants/`**: Hardcoded data, layout constants.
+- **`assets/`**: Static assets like images and fonts.
+- **`scripts/migration/`**: Contains legacy scripts used during the React Native to Expo migration.
+
+### 📜 FSD Guidelines for Developers
+- **Do not mix domains**: A module (e.g., `dashboard`) should not directly import from another module (e.g., `appointments`). If they need to share logic, extract it to `src/shared`.
+- **UI Components**: If a component is specific to a feature (e.g., `AppointmentCard`), place it in `src/modules/appointments/components/`. If it is generic (e.g., `Card`), place it in `src/shared/components/ui/`.
+- **Routing**: Keep UI clean. Only `src/app` should define routes. Use standard exports from `src/modules/*/screens/` to map routes.

@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 
 
 import { ScreenShell } from '@/shared/components/layout/ScreenShell';
-import { fetchAppointments } from '@/core/api/portal-api';
+import { fetchAppointments } from '@/shared/api/portal-api';
 
-import { stitchPalette } from '@/core/theme';
+import { stitchPalette } from '@/shared/theme';
 import { QueryStateHandler } from "@/shared/components/query-state-handler";
 
 

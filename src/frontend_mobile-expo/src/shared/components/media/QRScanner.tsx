@@ -20,7 +20,7 @@ import {
   type BarcodeScanningResult,
 } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 import { Button } from '../Button';
 
 interface QRScannerProps {

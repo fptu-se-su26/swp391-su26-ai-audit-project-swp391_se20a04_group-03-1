@@ -19,7 +19,7 @@
 import React, { type ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 
 // ─── Skeleton Block ──────────────────────────────────────────────────────────
 

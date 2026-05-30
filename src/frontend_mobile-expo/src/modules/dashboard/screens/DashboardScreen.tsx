@@ -15,7 +15,7 @@ import {
   fetchNotifications,
   fetchAppointments,
   fetchYardSpots,
-} from '@/core/api/portal-api';
+} from '@/shared/api/portal-api';
 import { QueryStateHandler } from '@/shared/components/query-state-handler';
 
 export default function DashboardScreen() {

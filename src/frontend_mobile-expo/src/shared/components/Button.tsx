@@ -32,7 +32,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { palette } from '@/core/theme';
+import { palette } from '@/shared/theme';
 
 // ─── Variant Definitions ─────────────────────────────────────────────────────
 

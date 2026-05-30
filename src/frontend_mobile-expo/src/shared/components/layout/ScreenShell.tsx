@@ -13,7 +13,7 @@
  */
 import React, { type ReactNode } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 
 interface ScreenShellProps {
   /** Screen title */

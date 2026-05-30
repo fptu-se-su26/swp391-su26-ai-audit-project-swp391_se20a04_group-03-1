@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { stitchPalette } from '@/core/theme';
+import { stitchPalette } from '@/shared/theme';
 
 export default function TabLayout() {
   return (

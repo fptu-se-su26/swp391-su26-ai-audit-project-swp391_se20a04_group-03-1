@@ -12,7 +12,7 @@ The mobile app relies on a stateless JWT authentication model. It does NOT use c
 ### Flow Summary:
 1. **Login:** Mobile sends credentials to `/api/auth/driver/login`.
 2. **Token Receipt:** Backend returns a JWT `token`.
-3. **Storage:** The frontend securely persists this token using `expo-secure-store` (`src/core/api/client.ts`).
+3. **Storage:** The frontend securely persists this token using `expo-secure-store` (`src/shared/api/client.ts`).
 4. **Authorized Requests:** The Axios request interceptor automatically attaches the token as `Authorization: Bearer <token>` to all outgoing API calls.
 5. **Session Expiry:** If the backend returns a `401 Unauthorized`, the frontend will automatically clear the local token and redirect the user back to the Login screen.
 
@@ -20,7 +20,7 @@ The mobile app relies on a stateless JWT authentication model. It does NOT use c
 
 ## 2. Expected API Endpoints (REST)
 
-Based on the mobile app's mock services (`portal-api.ts`) and expected functionality, the following RESTful endpoints need to be implemented by the backend.
+Based on the mobile app's mock services (`src/shared/api/portal-api.ts`) and expected functionality, the following RESTful endpoints need to be implemented by the backend.
 
 | Method | Endpoint | Description |
 |:-------|:---------|:------------|

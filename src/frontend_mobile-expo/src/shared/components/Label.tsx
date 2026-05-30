@@ -12,7 +12,7 @@
  */
 import React, { type ReactNode } from 'react';
 import { StyleSheet, Text, type TextStyle } from 'react-native';
-import { palette } from '@/core/theme';
+import { palette } from '@/shared/theme';
 
 interface LabelProps {
   children: ReactNode;

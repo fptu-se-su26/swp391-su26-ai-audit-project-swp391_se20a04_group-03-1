@@ -23,7 +23,7 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 
 interface VideoStreamProps {
   title: string;

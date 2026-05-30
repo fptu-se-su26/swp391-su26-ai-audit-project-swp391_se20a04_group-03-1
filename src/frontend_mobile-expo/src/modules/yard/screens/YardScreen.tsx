@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { ScreenShell } from '@/shared/components/layout/ScreenShell';
-import { fetchYardSpots } from '@/core/api/portal-api';
+import { fetchYardSpots } from '@/shared/api/portal-api';
 import { QueryStateHandler } from '@/shared/components/';
 
 export default function YardScreen() {

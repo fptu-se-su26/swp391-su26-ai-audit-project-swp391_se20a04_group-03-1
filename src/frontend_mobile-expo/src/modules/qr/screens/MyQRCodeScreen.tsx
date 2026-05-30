@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { stitchPalette } from '@/core/theme';
+import { stitchPalette } from '@/shared/theme';
 
 
 

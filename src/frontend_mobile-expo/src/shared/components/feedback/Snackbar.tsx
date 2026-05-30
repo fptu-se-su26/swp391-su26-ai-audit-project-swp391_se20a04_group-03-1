@@ -19,7 +19,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MotiView, AnimatePresence } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
-import { palette, radii, spacing } from '@/core/theme';
+import { palette, radii, spacing } from '@/shared/theme';
 import { Button } from '../Button';
 
 interface SnackbarProps {
