@@ -1,7 +1,7 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { stitchPalette } from '@/shared/theme';
+import React from "react";
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { stitchPalette } from "@/shared/theme";
 
 export default function TabLayout() {
   return (
@@ -25,10 +25,10 @@ export default function TabLayout() {
         tabBarActiveTintColor: stitchPalette.ink,
         tabBarInactiveTintColor: stitchPalette.textSubtle,
         tabBarActiveBackgroundColor: stitchPalette.accent,
-        tabBarInactiveBackgroundColor: 'transparent',
+        tabBarInactiveBackgroundColor: "transparent",
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '700',
+          fontWeight: "700",
           marginBottom: 2,
         },
         tabBarIconStyle: {
@@ -39,8 +39,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Trang chủ',
-          tabBarLabel: 'Trang chủ',
+          title: "Dashboard",
+          tabBarLabel: "Dashboard",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="grid-outline" color={color} size={size} />
           ),
@@ -49,8 +49,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: 'Thông báo',
-          tabBarLabel: 'Thông báo',
+          title: "Alerts",
+          tabBarLabel: "Alerts",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="notifications-outline" color={color} size={size} />
           ),
@@ -59,8 +59,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="appointments"
         options={{
-          title: 'Lịch hẹn',
-          tabBarLabel: 'Lịch hẹn',
+          title: "Slots",
+          tabBarLabel: "Slots",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-outline" color={color} size={size} />
           ),
@@ -69,20 +69,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="yard"
         options={{
-          title: 'Bãi xe',
-          tabBarLabel: 'Bãi xe',
+          title: "Parking",
+          tabBarLabel: "Parking",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="locate-outline" color={color} size={size} />
+            <Ionicons name="car-sport-outline" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Cài đặt',
-          tabBarLabel: 'Cài đặt',
+          title: "Ops",
+          tabBarLabel: "Ops",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" color={color} size={size} />
+            <Ionicons name="reader-outline" color={color} size={size} />
           ),
         }}
       />

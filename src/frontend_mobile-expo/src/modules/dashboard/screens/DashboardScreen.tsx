@@ -1,74 +1,69 @@
-import React from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import React, { useMemo, useState, useEffect } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { ScreenShell } from '@/shared/components/layout/ScreenShell';
-import {
-  fetchDashboardSummary,
-  fetchNotifications,
-  fetchAppointments,
-  fetchYardSpots,
-} from '@/shared/api/portal-api';
-import { QueryStateHandler } from '@/shared/components/query-state-handler';
+import { ScreenShell } from "@/shared/components/layout/ScreenShell";
+import { Snackbar } from "@/shared/components/feedback/Snackbar";
+import { subscribeToScanResults } from "@/shared/api/portal-api";
+
+type GateState = "waiting" | "success" | "error";
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const summaryQuery = useQuery({
-    queryKey: ["dashboard-summary"],
-    queryFn: fetchDashboardSummary,
-  });
+  const [gateState, setGateState] = useState<GateState>("waiting");
+  const [snackVisible, setSnackVisible] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
 
-  const notificationsQuery = useQuery({
-    queryKey: ["notifications"],
-    queryFn: fetchNotifications,
-  });
+  const gateStatus = useMemo(() => {
+    switch (gateState) {
+      case "success":
+        return {
+          header: "TRẠNG THÁI HIỆN TẠI",
+          message: "GIAI ĐOẠN: ĐÃ VÀO CỔNG",
+          banner: styles.statusBannerSuccess,
+          stripe: styles.statusStripeSuccess,
+          text: styles.statusHeadlineSuccess,
+        };
+      case "error":
+        return {
+          header: "TRẠNG THÁI HIỆN TẠI",
+          message: "CẢNH BÁO: MÃ KHÔNG HỢP LỆ",
+          banner: styles.statusBannerError,
+          stripe: styles.statusStripeError,
+          text: styles.statusHeadlineError,
+        };
+      default:
+        return {
+          header: "TRẠNG THÁI HIỆN TẠI",
+          message: "GIAI ĐOẠN: ĐANG CHỜ TẠI CỔNG",
+          banner: styles.statusBannerWaiting,
+          stripe: styles.statusStripeWaiting,
+          text: styles.statusHeadlineWaiting,
+        };
+    }
+  }, [gateState]);
 
-  const appointmentsQuery = useQuery({
-    queryKey: ["appointments"],
-    queryFn: fetchAppointments,
-  });
+  useEffect(() => {
+    let resetTimer: ReturnType<typeof setTimeout> | null = null;
+    const unsub = subscribeToScanResults((payload) => {
+      if (payload.result === "ok") {
+        setGateState("success");
+        setSnackMessage("Đã quét thành công — Cho phép vào");
+      } else {
+        setGateState("error");
+        setSnackMessage("Mã không hợp lệ — Không được phép vào");
+      }
+      setSnackVisible(true);
 
-  const yardQuery = useQuery({
-    queryKey: ["yard-spots"],
-    queryFn: fetchYardSpots,
-  });
+      // auto-reset to waiting after a short period to return UI to default
+      if (resetTimer) clearTimeout(resetTimer as ReturnType<typeof setTimeout>);
+      resetTimer = setTimeout(() => setGateState("waiting"), 8000);
+    });
 
-  const anyLoading =
-    summaryQuery.isLoading ||
-    notificationsQuery.isLoading ||
-    appointmentsQuery.isLoading ||
-    yardQuery.isLoading;
-
-  const anyError =
-    summaryQuery.isError ||
-    notificationsQuery.isError ||
-    appointmentsQuery.isError ||
-    yardQuery.isError;
-
-  const summary = summaryQuery.data;
-  const notifications = notificationsQuery.data ?? [];
-  const yardSpots = yardQuery.data ?? [];
-  const scheduleItems = appointmentsQuery.data ?? [];
-  const topScheduleItems = scheduleItems.slice(0, 2);
-  const activeAlerts =
-    summary?.activeAlerts ??
-    notifications.filter((item) => item.status === "Unread").length;
-  const freeSpots =
-    summary?.freeSpots ??
-    yardSpots.filter((spot) => spot.status === "Free").length;
-  const pendingTasks =
-    summary?.pendingTasks ??
-    scheduleItems.filter((item) => item.status !== "Confirmed").length;
-  const nextAppointmentTime = (summary?.nextAppointment ?? "14:20").split(
-    " - ",
-  )[0];
+    return () => {
+      unsub();
+      if (resetTimer) clearTimeout(resetTimer as ReturnType<typeof setTimeout>);
+    };
+  }, []);
 
   return (
     <ScreenShell
@@ -76,184 +71,91 @@ export default function DashboardScreen() {
       subtitle="Cảng thông minh IoT · giao diện tối cho tài xế"
       hideHeader
     >
-      <QueryStateHandler
-        isLoading={anyLoading}
-        isError={anyError}
-        spinnerOnly
-        errorMessage="Không tải được dữ liệu trang chủ. Vui lòng kiểm tra kết nối và thử lại."
-      >
-        <View style={styles.headerBar}>
-          <View style={styles.brandRow}>
-            <View style={styles.brandMark}>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <View key={`brand-dot-${index}`} style={styles.brandDot} />
-              ))}
-            </View>
-            <View>
-              <Text style={styles.brandText}>TÀI XẾ CẢNG</Text>
-              <Text style={styles.brandSubtext}>CẢNG THÔNG MINH IOT</Text>
-            </View>
+      <View style={styles.headerBar}>
+        <View style={styles.brandRow}>
+          <View style={styles.brandMark}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <View key={`brand-dot-${index}`} style={styles.brandDot} />
+            ))}
           </View>
-          <View style={styles.signalGlyph} />
-        </View>
-
-
-        <View style={styles.sectionPanel}>
-          <View style={styles.sectionHeaderRow}>
-            <View style={styles.connectionRow}>
-              <View style={styles.connectionDot} />
-              <Text style={styles.sectionHeaderLeft}>KẾT NỐI ĐANG HOẠT ĐỘNG</Text>
-            </View>
-            <Text style={styles.sectionHeaderRight}>SENS-ORCH-729</Text>
-          </View>
-          <View style={styles.statusBanner}>
-            <View style={styles.statusStripe} />
-            <View style={styles.statusBody}>
-              <Text style={styles.statusKicker}>TRẠNG THÁI HIỆN TẠI</Text>
-              <Text style={styles.statusHeadline}>
-                GIAI ĐOẠN: ĐANG CHỜ TẠI CỔNG
-              </Text>
-            </View>
+          <View>
+            <Text style={styles.brandText}>PORT DRIVER</Text>
+            <Text style={styles.brandSubtext}>SMART PORT IOT</Text>
           </View>
         </View>
+        <View style={styles.signalGlyph} />
+      </View>
 
-        <View style={styles.sectionPanel}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionHeaderLeft}>LỆNH ĐIỆN TỬ</Text>
-            <Text style={styles.sectionHeaderRight}>TXN-992-K</Text>
+      <View style={styles.sectionPanel}>
+        <View style={styles.sectionHeaderRow}>
+          <View style={styles.connectionRow}>
+            <View style={styles.connectionDot} />
+            <Text style={styles.sectionHeaderLeft}>ACTIVE UPLINK</Text>
           </View>
-
-          <Pressable
-            style={styles.qrCard}
-            onPress={() =>
-              router.push({
-                pathname: "/modal/qr",
-                params: {
-                  appointmentCode: "AP-1024",
-                  driverName: "Nguyen Van An",
-                  licensePlate: "51C-123.45",
-                  timeSlot: "09:30",
-                }
-              })
-            }
-            accessibilityRole="button"
-            accessibilityLabel="Chạm để check-in QR"
-          >
-            <View style={styles.qrFrame}>
-              <MiniQrPreview />
-            </View>
-            <View style={styles.qrBadge}>
-              <Text style={styles.qrBadgeText}>CHẠM ĐỂ CHECK-IN</Text>
-            </View>
-          </Pressable>
-
-          <View style={styles.infoGrid}>
-            <InfoTile label="KHÓA BÃI" value="ZONE-4" />
-            <InfoTile
-              label="GIỜ VÀO CỔNG DỰ KIẾN"
-              value={nextAppointmentTime}
-              align="right"
-            />
+          <Text style={styles.sectionHeaderRight}>SENS-ORCH-729</Text>
+        </View>
+        <View style={[styles.statusBannerBase, gateStatus.banner]}>
+          <View style={[styles.statusStripeBase, gateStatus.stripe]} />
+          <View style={styles.statusBody}>
+            <Text style={styles.statusKicker}>{gateStatus.header}</Text>
+            <Text style={[styles.statusHeadlineBase, gateStatus.text]}>
+              {gateStatus.message}
+            </Text>
           </View>
-        </View>
-
-        <View style={styles.sectionRowTitle}>
-          <Text style={styles.sectionRowTitleText}>LỊCH TRONG NGÀY</Text>
-        </View>
-
-        <View style={styles.scheduleStack}>
-          {topScheduleItems.map((item, index) => (
-            <ScheduleCard
-              key={item.code}
-              time={item.time}
-              tag={mapScheduleStatus(item.status)}
-              containerCode={`CONT: ${item.code.replace("AP-", "MSCU ")}`}
-              gate={index === 0 ? "G-12" : "G-08"}
-              accent={index === 0 ? styles.accentMint : styles.accentSand}
-            />
-          ))}
-        </View>
-
-        <View style={styles.footerStats}>
-          <StatChip label="LẦN CHECK-IN" value={summary?.checkInsToday ?? 0} />
-          <StatChip label="Ô TRỐNG" value={freeSpots} />
-          <StatChip label="CẢNH BÁO" value={activeAlerts} />
-          <StatChip label="ĐANG CHỜ XỬ LÝ" value={pendingTasks} />
-        </View>
-
-        <View style={styles.footerSpacer} />
-      </QueryStateHandler>
-    </ScreenShell>
-  );
-}
-
-function InfoTile({
-  label,
-  value,
-  align = "left",
-}: {
-  label: string;
-  value: string;
-  align?: "left" | "right";
-}) {
-  return (
-    <View style={[styles.infoTile, align === "right" && styles.infoTileRight]}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text
-        style={[styles.infoValue, align === "right" && styles.infoValueRight]}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-}
-
-function ScheduleCard({
-  time,
-  tag,
-  containerCode,
-  gate,
-  accent,
-}: {
-  time: string;
-  tag: string;
-  containerCode: string;
-  gate: string;
-  accent: StyleProp<ViewStyle>;
-}) {
-  return (
-    <View style={styles.scheduleCard}>
-      <View style={[styles.scheduleAccent, accent]} />
-      <View style={styles.scheduleContent}>
-        <View style={styles.scheduleLeft}>
-          <Text style={styles.scheduleTime}>{time}</Text>
-          <Text style={styles.scheduleTag}>{tag}</Text>
-          <Text style={styles.scheduleCode}>{containerCode}</Text>
-        </View>
-        <View style={styles.scheduleRight}>
-          <Text style={styles.scheduleGateLabel}>CỔNG</Text>
-          <Text style={styles.scheduleGateValue}>{gate}</Text>
         </View>
       </View>
-    </View>
-  );
-}
 
-function mapScheduleStatus(status: string) {
-  switch (status.toLowerCase()) {
-    case "confirmed":
-      return "ĐÃ XÁC NHẬN";
-    case "pending":
-      return "ĐANG CHỜ";
-    case "waiting":
-      return "ĐANG CHỜ XỬ LÝ";
-    case "cancelled":
-      return "ĐÃ HỦY";
-    case "completed":
-      return "HOÀN TẤT";
-    default:
-      return status.toUpperCase();
-  }
+      <View style={styles.sectionPanel}>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderLeft}>DIGITAL MANIFEST</Text>
+          <Text style={styles.sectionHeaderRight}>TXN-992-K</Text>
+        </View>
+
+        <Pressable
+          style={styles.qrCard}
+          onPress={() =>
+            router.push({
+              pathname: "/modal/qr",
+              params: {
+                appointmentCode: "AP-1024",
+                driverName: "Nguyen Van An",
+                licensePlate: "51C-123.45",
+                timeSlot: "14:20",
+              },
+            })
+          }
+          accessibilityRole="button"
+          accessibilityLabel="Chạm để mở mã QR check-in"
+        >
+          <View style={styles.qrFrame}>
+            <MiniQrPreview />
+          </View>
+          <View style={styles.qrBadge}>
+            <Text style={styles.qrBadgeText}>TAP TO CHECK-IN</Text>
+          </View>
+        </Pressable>
+      </View>
+
+      <View style={styles.hintPanel}>
+        <Text style={styles.hintTitle}>LUỒNG THAO TÁC NHANH CHO TÀI XẾ</Text>
+        <Text style={styles.hintText}>
+          1. Mở mã QR bằng nút TAP TO CHECK-IN.
+        </Text>
+        <Text style={styles.hintText}>2. Đưa mã cho bảo vệ quét tại cổng.</Text>
+        <Text style={styles.hintText}>
+          3. Bảo vệ quét mã — ứng dụng sẽ nhận thông báo kết quả tự động.
+        </Text>
+      </View>
+
+      <Snackbar
+        visible={snackVisible}
+        message={snackMessage}
+        onDismiss={() => setSnackVisible(false)}
+      />
+
+      <View style={styles.footerSpacer} />
+    </ScreenShell>
+  );
 }
 
 function MiniQrPreview() {
@@ -280,15 +182,6 @@ function MiniQrPreview() {
         </View>
       ))}
       <View style={styles.qrCenterDot} />
-    </View>
-  );
-}
-
-function StatChip({ label, value }: { label: string; value: string | number }) {
-  return (
-    <View style={styles.statChip}>
-      <Text style={styles.statChipLabel}>{label}</Text>
-      <Text style={styles.statChipValue}>{value}</Text>
     </View>
   );
 }
@@ -383,15 +276,31 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.5,
   },
-  statusBanner: {
+  statusBannerBase: {
     minHeight: 156,
-    backgroundColor: "#4a3b28",
     flexDirection: "row",
     overflow: "hidden",
   },
-  statusStripe: {
+  statusBannerWaiting: {
+    backgroundColor: "#4a3b28",
+  },
+  statusBannerSuccess: {
+    backgroundColor: "#0f3b2c",
+  },
+  statusBannerError: {
+    backgroundColor: "#3d1f25",
+  },
+  statusStripeBase: {
     width: 8,
+  },
+  statusStripeWaiting: {
     backgroundColor: "#f6c06a",
+  },
+  statusStripeSuccess: {
+    backgroundColor: "#10b981",
+  },
+  statusStripeError: {
+    backgroundColor: "#ef4444",
   },
   statusBody: {
     flex: 1,
@@ -406,12 +315,20 @@ const styles = StyleSheet.create({
     letterSpacing: 1.4,
     marginBottom: 12,
   },
-  statusHeadline: {
-    color: "#f8c883",
+  statusHeadlineBase: {
     fontSize: 31,
     fontWeight: "900",
     lineHeight: 37,
     letterSpacing: 0.3,
+  },
+  statusHeadlineWaiting: {
+    color: "#f8c883",
+  },
+  statusHeadlineSuccess: {
+    color: "#7df0c6",
+  },
+  statusHeadlineError: {
+    color: "#ff9c9c",
   },
   qrCard: {
     alignItems: "center",
@@ -473,141 +390,92 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: 0.5,
   },
-  infoGrid: {
+  quickActionsRow: {
     flexDirection: "row",
-    gap: 0,
+    gap: 10,
   },
-  infoTile: {
+  quickAction: {
     flex: 1,
-    paddingTop: 18,
-    paddingBottom: 10,
-    borderTopWidth: 1,
-    borderColor: "rgba(246, 192, 106, 0.22)",
-  },
-  infoTileRight: {
-    alignItems: "flex-start",
-    paddingLeft: 18,
-    borderLeftWidth: 1,
-    borderLeftColor: "rgba(246, 192, 106, 0.22)",
-  },
-  infoLabel: {
-    color: "#d8c3ad",
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0.7,
-    marginBottom: 8,
-  },
-  infoValue: {
-    color: "#e5ebff",
-    fontSize: 25,
-    fontWeight: "900",
-  },
-  infoValueRight: {
-    fontSize: 22,
-  },
-  sectionRowTitle: {
-    paddingTop: 4,
-  },
-  sectionRowTitleText: {
-    color: "#dbe3fb",
-    fontSize: 16,
-    fontWeight: "900",
-    letterSpacing: 1,
-  },
-  scheduleStack: {
-    gap: 12,
-  },
-  scheduleCard: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "rgba(246, 192, 106, 0.24)",
-    backgroundColor: "rgba(16, 24, 44, 0.88)",
-    minHeight: 96,
-  },
-  scheduleAccent: {
-    width: 6,
-  },
-  accentMint: {
-    backgroundColor: "#60d5b2",
-  },
-  accentSand: {
-    backgroundColor: "#5d4b34",
-  },
-  scheduleContent: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-  },
-  scheduleLeft: {
-    flex: 1,
-    gap: 6,
-    paddingRight: 10,
-  },
-  scheduleRight: {
-    width: 78,
-    alignItems: "flex-end",
+    minHeight: 52,
+    borderRadius: 12,
+    alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
   },
-  scheduleTime: {
-    color: "#dfe7ff",
-    fontSize: 16,
-    fontWeight: "900",
+  quickActionSuccess: {
+    backgroundColor: "rgba(16, 185, 129, 0.16)",
+    borderColor: "rgba(16, 185, 129, 0.55)",
   },
-  scheduleTag: {
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(246, 192, 106, 0.18)",
-    color: "#d9d0c0",
-    fontSize: 11,
-    fontWeight: "900",
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    letterSpacing: 0.7,
+  quickActionError: {
+    backgroundColor: "rgba(239, 68, 68, 0.16)",
+    borderColor: "rgba(239, 68, 68, 0.55)",
   },
-  scheduleCode: {
-    color: "#dfe7ff",
-    fontSize: 16,
-    fontWeight: "900",
-    lineHeight: 24,
-  },
-  scheduleGateLabel: {
-    color: "#d8c3ad",
-    fontSize: 12,
+  quickActionSuccessText: {
+    color: "#86efcd",
+    fontSize: 14,
     fontWeight: "900",
     letterSpacing: 0.6,
   },
-  scheduleGateValue: {
-    color: "#f6c06a",
-    fontSize: 21,
+  quickActionErrorText: {
+    color: "#fecaca",
+    fontSize: 14,
     fontWeight: "900",
-    marginTop: 4,
+    letterSpacing: 0.6,
   },
-  footerStats: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  statChip: {
-    minWidth: 78,
-    flexGrow: 1,
+  errorPanel: {
     borderWidth: 1,
-    borderColor: "rgba(246, 192, 106, 0.18)",
-    backgroundColor: "rgba(9, 15, 28, 0.6)",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderColor: "rgba(239, 68, 68, 0.5)",
+    backgroundColor: "rgba(61, 31, 37, 0.78)",
+    borderRadius: 12,
+    padding: 12,
+    gap: 6,
   },
-  statChipLabel: {
-    color: "#bfc8df",
-    fontSize: 10,
+  errorTitle: {
+    color: "#ffb4b4",
+    fontSize: 13,
     fontWeight: "900",
-    letterSpacing: 1.1,
-    marginBottom: 4,
+    letterSpacing: 0.8,
   },
-  statChipValue: {
+  errorText: {
+    color: "#fcd5d5",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600",
+  },
+  resetButton: {
+    minHeight: 50,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(246, 192, 106, 0.5)",
+    backgroundColor: "rgba(245, 158, 11, 0.14)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  resetButtonText: {
     color: "#f6c06a",
-    fontSize: 18,
+    fontSize: 13,
     fontWeight: "900",
+    letterSpacing: 0.5,
+  },
+  hintPanel: {
+    borderWidth: 1,
+    borderColor: "rgba(246, 192, 106, 0.25)",
+    backgroundColor: "rgba(16, 24, 44, 0.66)",
+    borderRadius: 12,
+    padding: 12,
+    gap: 5,
+  },
+  hintTitle: {
+    color: "#dbe3fb",
+    fontSize: 13,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+  },
+  hintText: {
+    color: "#bfc8df",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600",
   },
   footerSpacer: {
     height: 12,

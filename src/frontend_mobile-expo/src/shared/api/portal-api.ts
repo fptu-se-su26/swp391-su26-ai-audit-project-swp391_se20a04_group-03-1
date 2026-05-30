@@ -84,3 +84,25 @@ export async function fetchYardSpots(): Promise<YardSpot[]> {
   await delay(300);
   return yardSpots;
 }
+
+/**
+ * Dev helper: subscribe to simulated scan results (manager scans driver's QR)
+ * Returns an unsubscribe function.
+ */
+export function subscribeToScanResults(
+  handler: (payload: { appointmentCode: string; result: 'ok' | 'invalid' }) => void,
+) {
+  let active = true;
+
+  // Simulate a scan result after a short delay — in real app this will be
+  // replaced by a WebSocket / Push / SSE subscription that forwards backend events.
+  const timeout = setTimeout(() => {
+    if (!active) return;
+    handler({ appointmentCode: 'AP-1024', result: Math.random() > 0.3 ? 'ok' : 'invalid' });
+  }, 4000);
+
+  return () => {
+    active = false;
+    clearTimeout(timeout);
+  };
+}
