@@ -1,56 +1,53 @@
-# Welcome to your Expo app 👋
+# LogiPort Mobile - Expo Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to the LogiPort mobile application! This project is a complete migration of our legacy React Native codebase to a modern **Expo (SDK 56)** and **React Native (0.85)** stack.
 
-## Get started
+## 🚀 Technologies Used
 
-1. Install dependencies
+- **Framework:** [Expo SDK 56](https://expo.dev/) & React Native 0.85
+- **Routing:** [React Navigation 7](https://reactnavigation.org/) (Custom structure) & Expo Router
+- **State Management:** [Zustand 5](https://zustand-demo.pmnd.rs/) (Client State) & [TanStack Query 5](https://tanstack.com/query/latest) (Server State/API Caching)
+- **Networking:** `axios` with centralized interceptors
+- **Styling/UI:** Tailwind CSS (via `nativewind` or custom global.css), `lucide-react-native`, `react-native-paper`
+- **Animations:** React Native Reanimated 4, Moti, Lottie
+- **Security:** `expo-secure-store` for JWT persistence
 
-   ```bash
-   npm install
-   ```
+## 🛠 Getting Started
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1. Install Dependencies
+Ensure you have Node.js installed, then run:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Configure Environment
+Create a `.env` file in the root based on `.env.example` (if available) and specify the API Base URL:
+```env
+EXPO_PUBLIC_API_URL=http://localhost:4000/api
+```
 
-### Other setup steps
+### 3. Start the Development Server
+```bash
+npm start
+# or
+npx expo start
+```
+Press `i` to open in iOS Simulator, `a` for Android Emulator, or scan the QR code with the **Expo Go** app on your physical device.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+---
 
-## Learn more
+## 📁 Modular Directory Structure (FSD Inspired)
 
-To learn more about developing your project with Expo, look at the following resources:
+We organize the codebase using a **Modular/Feature-Sliced Design (FSD)** approach to keep concerns separated and scalable:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **`app/`**: Used by Expo Router for file-based routing and entry points.
+- **`components/`**: Reusable, generic UI components (Buttons, Cards, Inputs).
+- **`core/`**: Application-wide configurations.
+  - `api/`: Axios client, interceptors, and API mock files (`portal-api.ts`).
+  - `theme/`: Design tokens, colors, typography.
+- **`modules/`**: Feature-specific slices containing their own components, hooks, and services (e.g., `appointments`, `dashboard`, `yard`).
+- **`shared/`**: Shared types, utilities, and helper functions used across modules.
+- **`navigation/`**: Stack and tab navigator configurations.
+- **`constants/`**: Hardcoded data, layout constants.
+- **`hooks/`**: Global custom React hooks.
