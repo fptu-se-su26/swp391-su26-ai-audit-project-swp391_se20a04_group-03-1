@@ -16,6 +16,12 @@ export const requireAuth = async (
   next: NextFunction,
 ) => {
   try {
+    // 0. Bỏ qua xác thực nếu là request nội bộ từ AI Server
+    const internalSecret = req.headers["x-internal-secret"];
+    if (internalSecret === "AI_SERVER_SECRET_KEY") {
+      return next();
+    }
+
     // 1. Lấy token từ cookie
     const token = req.cookies.tokenAdmin;
     if (!token) {

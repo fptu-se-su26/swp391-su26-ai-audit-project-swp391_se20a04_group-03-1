@@ -359,6 +359,12 @@ export default function AppointmentsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link href="/admin/appointments/completed">
+            <Button variant="outline" className="gap-2 border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition-colors">
+              <CheckCircle className="h-4 w-4" />
+              Đã hoàn thành
+            </Button>
+          </Link>
           <Link href="/admin/appointments/trash">
             <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-colors">
               <Trash2 className="h-4 w-4" />
