@@ -12,6 +12,7 @@ import {
 
 
 import { ScreenShell } from '@/shared/components/layout/ScreenShell';
+import { getProfile } from '@/shared/state/profile';
 import { Ionicons } from "@expo/vector-icons";
 
 export default function SettingsScreen() {
@@ -19,13 +20,7 @@ export default function SettingsScreen() {
   const [pushEnabled, setPushEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
 
-  const profile = {
-    fullName: "Nguyen Van An",
-    license: "VN-99283-8821",
-    company: "Saigon Port Logistics J.S.C",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=300&auto=format&fit=crop",
-  };
+  const profile = getProfile();
 
   return (
     <ScreenShell title="Cài đặt" subtitle="Quản lý tài khoản và thiết bị">
@@ -40,7 +35,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
+          <Text style={styles.sectionTitle}>Tùy chọn</Text>
           <View style={styles.row}>
             <View style={styles.rowLeft}>
               <Ionicons
@@ -50,7 +45,7 @@ export default function SettingsScreen() {
                 style={{ marginRight: 10 }}
               />
               <View>
-                <Text style={styles.rowLabel}>Push Notifications</Text>
+                <Text style={styles.rowLabel}>Thông báo đẩy</Text>
                 <Text style={styles.rowSub}>Nhận cảnh báo và nhắc nhở</Text>
               </View>
             </View>
@@ -66,7 +61,7 @@ export default function SettingsScreen() {
                 style={{ marginRight: 10 }}
               />
               <View>
-                <Text style={styles.rowLabel}>Industrial Dark Mode</Text>
+                <Text style={styles.rowLabel}>Giao diện tối</Text>
                 <Text style={styles.rowSub}>
                   Giao diện tối theo theme công nghiệp
                 </Text>

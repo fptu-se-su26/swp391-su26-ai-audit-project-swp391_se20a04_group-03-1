@@ -27,6 +27,8 @@ interface SnackbarProps {
   visible: boolean;
   /** The message to display */
   message: string;
+  /** Visual tone for the snackbar */
+  variant?: 'neutral' | 'success' | 'error';
   /** Callback when the snackbar is dismissed */
   onDismiss: () => void;
   /** Optional undo callback — shows an "Undo" button if provided */
@@ -38,6 +40,7 @@ interface SnackbarProps {
 export function Snackbar({
   visible,
   message,
+  variant = 'neutral',
   onDismiss,
   onUndo,
   duration = 4000,
@@ -58,17 +61,38 @@ export function Snackbar({
           transition={{ type: 'spring', damping: 18, stiffness: 200 }}
           style={styles.wrapper}
         >
-          <View style={styles.container}>
+          <View
+            style={[
+              styles.container,
+              variant === 'success' && styles.containerSuccess,
+              variant === 'error' && styles.containerError,
+            ]}
+          >
             <View style={styles.left}>
               <View style={styles.iconBox}>
-                <Ionicons name="notifications" size={16} color={palette.accent} />
+                <Ionicons
+                  name={variant === 'success' ? 'checkmark-circle' : variant === 'error' ? 'alert-circle' : 'notifications'}
+                  size={16}
+                  color={variant === 'success' ? '#7df0c6' : variant === 'error' ? '#ff9c9c' : palette.accent}
+                />
               </View>
               <View style={styles.textGroup}>
-                <Text style={styles.message} numberOfLines={2}>
+                <Text
+                  style={[
+                    styles.message,
+                    variant === 'success' && styles.messageSuccess,
+                    variant === 'error' && styles.messageError,
+                  ]}
+                  numberOfLines={2}
+                >
                   {message}
                 </Text>
                 <Text style={styles.hint}>
-                  Hoàn tác sẽ khôi phục trạng thái trước đó.
+                  {variant === 'success'
+                    ? 'Cổng đã ghi nhận mã hợp lệ.'
+                    : variant === 'error'
+                    ? 'Vui lòng kiểm tra lại mã và thử lại.'
+                    : 'Hoàn tác sẽ khôi phục trạng thái trước đó.'}
                 </Text>
               </View>
             </View>
@@ -120,6 +144,14 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  containerSuccess: {
+    borderColor: 'rgba(125, 240, 198, 0.32)',
+    backgroundColor: '#0f3b2cf2',
+  },
+  containerError: {
+    borderColor: 'rgba(255, 156, 156, 0.32)',
+    backgroundColor: '#3d1f25f2',
+  },
   left: {
     flex: 1,
     flexDirection: 'row',
@@ -141,6 +173,12 @@ const styles = StyleSheet.create({
     color: palette.text,
     fontSize: 13,
     fontWeight: '600',
+  },
+  messageSuccess: {
+    color: '#e7fff6',
+  },
+  messageError: {
+    color: '#fff1f1',
   },
   hint: {
     color: palette.textSubtle,

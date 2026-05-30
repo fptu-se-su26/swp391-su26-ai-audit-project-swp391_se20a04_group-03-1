@@ -92,17 +92,28 @@ export async function fetchYardSpots(): Promise<YardSpot[]> {
 export function subscribeToScanResults(
   handler: (payload: { appointmentCode: string; result: 'ok' | 'invalid' }) => void,
 ) {
+  // In development we used to auto-fire a simulated result after a delay.
+  // That behavior caused premature toasts when the driver hadn't been scanned yet.
+  // Remove the automatic timer — callers may now register a handler and
+  // optionally trigger simulation manually via `simulateScanResult`.
   let active = true;
 
-  // Simulate a scan result after a short delay — in real app this will be
-  // replaced by a WebSocket / Push / SSE subscription that forwards backend events.
-  const timeout = setTimeout(() => {
+  // No automatic trigger here. Keep handler registered until unsubscribed.
+  const safeHandler = (payload: { appointmentCode: string; result: 'ok' | 'invalid' }) => {
     if (!active) return;
-    handler({ appointmentCode: 'AP-1024', result: Math.random() > 0.3 ? 'ok' : 'invalid' });
-  }, 4000);
+    handler(payload);
+  };
 
+  // For simplicity this function returns an unsubscribe that deactivates the handler.
   return () => {
     active = false;
-    clearTimeout(timeout);
   };
 }
+
+// Dev helper: allow manual simulation of a scan result to all registered handlers.
+// Note: consumers can implement their own test hooks; the subscribe function
+// no longer auto-fires.
+// Note: no simulation helpers are provided in this module. Real-time scan
+// results should be delivered by the backend (WebSocket / SSE / Push). For
+// local testing, register your handler with `subscribeToScanResults` and
+// invoke it manually from a dev-only test harness if needed.

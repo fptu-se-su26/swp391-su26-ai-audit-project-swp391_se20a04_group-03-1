@@ -97,8 +97,8 @@ export default function () {
         errorMessage="Không tải được danh sách lịch hẹn. Vui lòng thử lại sau."
       >
         <View style={styles.heroCard}>
-          <Text style={styles.heroKicker}>PORT DRIVER</Text>
-          <Text style={styles.heroTitle}>Active Slots</Text>
+          <Text style={styles.heroKicker}>TÀI XẾ CẢNG</Text>
+          <Text style={styles.heroTitle}>Lượt hoạt động</Text>
           <Text style={styles.heroSubtitle}>
             Tài xế chỉ xem thông tin, check-in QR và liên hệ điều phối khi cần.
           </Text>
