@@ -39,8 +39,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
-          tabBarLabel: "Dashboard",
+          title: "Trang chủ",
+          tabBarLabel: "Trang chủ",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="grid-outline" color={color} size={size} />
           ),

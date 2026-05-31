@@ -6,7 +6,7 @@ import { Snackbar } from "@/shared/components/feedback/Snackbar";
 import { subscribeToScanResults } from "@/shared/api/portal-api";
 import styles from "../style/Dashboard.style";
 import DriverPassModal from "../components/DriverPassModal";
-import { getProfile } from '@/shared/state/profile';
+import { getProfile } from "@/shared/state/profile";
 
 type GateState = "waiting" | "success" | "error";
 
@@ -53,17 +53,20 @@ export default function DashboardScreen() {
     if (!showQrModal) return;
 
     let resetTimer: ReturnType<typeof setTimeout> | null = null;
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
     const unsub = subscribeToScanResults((payload) => {
       if (payload.result === "ok") {
         setGateState("success");
         setSnackMessage("Đã quét thành công — Cho phép vào");
+        if (closeTimer)
+          clearTimeout(closeTimer as ReturnType<typeof setTimeout>);
+        closeTimer = setTimeout(() => setShowQrModal(false), 1800);
       } else {
         setGateState("error");
         setSnackMessage("Mã không hợp lệ — Không được phép vào");
+        setShowQrModal(false);
       }
       setSnackVisible(true);
-      // close QR modal when result arrives
-      setShowQrModal(false);
 
       // auto-reset to waiting after a short period to return UI to default
       if (resetTimer) clearTimeout(resetTimer as ReturnType<typeof setTimeout>);
@@ -73,6 +76,7 @@ export default function DashboardScreen() {
     return () => {
       unsub();
       if (resetTimer) clearTimeout(resetTimer as ReturnType<typeof setTimeout>);
+      if (closeTimer) clearTimeout(closeTimer as ReturnType<typeof setTimeout>);
     };
   }, [showQrModal]);
 
@@ -120,7 +124,7 @@ export default function DashboardScreen() {
 
       <View style={styles.sectionPanel}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderLeft}>DIGITAL MANIFEST</Text>
+          <Text style={styles.sectionHeaderLeft}>MÃ QR QUÉT CỔNG </Text>
           <Text style={styles.sectionHeaderRight}>TXN-992-K</Text>
         </View>
 
@@ -134,7 +138,7 @@ export default function DashboardScreen() {
         >
           <View style={styles.qrFrame}>
             <Image
-              source={require('../../../../assets/images/qr.png')}
+              source={require("../../../../assets/images/qr.png")}
               style={styles.qrImage}
               resizeMode="contain"
             />
@@ -148,15 +152,15 @@ export default function DashboardScreen() {
           visible={showQrModal}
           onClose={() => setShowQrModal(false)}
           profile={getProfile()}
-          appointment={{ code: 'AP-1024', time: '09:30' }}
-          verified={gateState === 'success'}
+          appointment={{ code: "AP-1024", time: "09:30" }}
+          verified={gateState === "success"}
         />
       </View>
 
       <View style={styles.hintPanel}>
         <Text style={styles.hintTitle}>LUỒNG THAO TÁC NHANH CHO TÀI XẾ</Text>
         <Text style={styles.hintText}>
-          1. Mở mã QR bằng nút TAP TO CHECK-IN.
+          1. Vào cổng bằng cách ấn nút MỞ MÃ QR.
         </Text>
         <Text style={styles.hintText}>2. Đưa mã cho bảo vệ quét tại cổng.</Text>
         <Text style={styles.hintText}>
@@ -167,6 +171,13 @@ export default function DashboardScreen() {
       <Snackbar
         visible={snackVisible}
         message={snackMessage}
+        variant={
+          gateState === "success"
+            ? "success"
+            : gateState === "error"
+              ? "error"
+              : "neutral"
+        }
         onDismiss={() => setSnackVisible(false)}
       />
 

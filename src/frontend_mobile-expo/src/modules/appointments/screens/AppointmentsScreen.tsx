@@ -1,16 +1,22 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import * as Haptics from "expo-haptics";
 import { useQuery } from "@tanstack/react-query";
 
+import { ScreenShell } from "@/shared/components/layout/ScreenShell";
+import { fetchAppointments } from "@/shared/api/portal-api";
+import DriverPassModal from "@/modules/dashboard/components/DriverPassModal";
+import { getProfile } from "@/shared/state/profile";
 
-import { ScreenShell } from '@/shared/components/layout/ScreenShell';
-import { fetchAppointments } from '@/shared/api/portal-api';
-
-import { stitchPalette } from '@/shared/theme';
+import { stitchPalette } from "@/shared/theme";
 import { QueryStateHandler } from "@/shared/components/query-state-handler";
-
-
-
 
 type FilterKey = "all" | "active" | "pending" | "history";
 
@@ -47,9 +53,23 @@ function getStatusTone(status: string) {
   }
 }
 
-import { useRouter } from 'expo-router';
+function getStatusTextColor(status: string) {
+  switch (status) {
+    case "Confirmed":
+      return "#ffffff";
+    case "Pending":
+      return "#ffffff";
+    case "Waiting":
+      return "#f8fafc";
+    default:
+      return "#ffffff";
+  }
+}
+
+import { useRouter } from "expo-router";
 export default function () {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
 
   const {
@@ -61,20 +81,24 @@ export default function () {
     queryFn: fetchAppointments,
   });
 
+  // Only show Confirmed and Pending appointments per product requirement
   const visibleAppointments = useMemo(() => {
+    const filtered = appointments.filter(
+      (item) => item.status === "Confirmed" || item.status === "Pending",
+    );
+
     switch (activeFilter) {
       case "active":
-        return appointments.filter(
-          (item) => item.status === "Confirmed" || item.status === "Waiting",
-        );
+        return filtered.filter((item) => item.status === "Confirmed");
       case "pending":
-        return appointments.filter((item) => item.status === "Pending");
-      case "history":
-        return appointments.filter((item) => item.status !== "Pending");
+        return filtered.filter((item) => item.status === "Pending");
       default:
-        return appointments;
+        return filtered;
     }
   }, [activeFilter, appointments]);
+
+  const [showPass, setShowPass] = useState(false);
+  const [selected, setSelected] = useState<any | undefined>(undefined);
 
   const confirmedCount = appointments.filter(
     (item) => item.status === "Confirmed",
@@ -96,125 +120,139 @@ export default function () {
         isError={isError}
         errorMessage="Không tải được danh sách lịch hẹn. Vui lòng thử lại sau."
       >
-        <View style={styles.heroCard}>
-          <Text style={styles.heroKicker}>TÀI XẾ CẢNG</Text>
-          <Text style={styles.heroTitle}>Lượt hoạt động</Text>
-          <Text style={styles.heroSubtitle}>
-            Tài xế chỉ xem thông tin, check-in QR và liên hệ điều phối khi cần.
-          </Text>
+        <View style={styles.pageContainer}>
+          <View style={styles.heroCard}>
+            <Text style={styles.heroKicker}>TÀI XẾ CẢNG</Text>
+            <Text style={styles.heroTitle}>Lượt hoạt động</Text>
+            <Text style={styles.heroSubtitle}>
+              Tài xế chỉ xem thông tin, check-in QR và liên hệ điều phối khi
+              cần.
+            </Text>
 
-          <View style={styles.summaryRow}>
-            <SummaryChip label="Đã xác nhận" value={confirmedCount} />
-            <SummaryChip label="Đang chờ" value={pendingCount} />
-            <SummaryChip label="Chờ xử lý" value={waitingCount} />
-          </View>
-        </View>
-
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const selected = filter.key === activeFilter;
-            return (
-              <Pressable
-                key={filter.key}
-                onPress={() => setActiveFilter(filter.key)}
-                style={[
-                  styles.filterChip,
-                  selected && styles.filterChipActive,
-                  { marginRight: 10 },
-                ]}
-              >
-                <Text
-                  style={[styles.filterText, selected && styles.filterTextActive]}
-                >
-                  {filter.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <View style={styles.listHeader}>
-          <Text style={styles.listHeaderTitle}>Lịch trong ngày</Text>
-          <Text style={styles.listHeaderSub}>
-            {visibleAppointments.length} mục hiển thị
-          </Text>
-        </View>
-
-        {visibleAppointments.map((item) => {
-          const isConfirmed = item.status === "Confirmed";
-
-          return (
-            <View key={item.code} style={styles.card}>
-              <View style={styles.cardTopRow}>
-                <View>
-                  <Text style={styles.cardCode}>{item.code}</Text>
-                  <Text style={styles.cardTime}>{item.time}</Text>
-                </View>
-                <View style={[styles.statusPill, getStatusTone(item.status)]}>
-                  <Text style={styles.statusText}>
-                    {formatStatus(item.status)}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.metaBlock}>
-                <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>Xe</Text>
-                  <Text style={styles.metaValue}>{item.truck}</Text>
-                </View>
-                <View style={styles.metaRow}>
-                  <Text style={styles.metaLabel}>Khuyến nghị</Text>
-                  <Text style={styles.metaValue}>
-                    {isConfirmed ? "Xem pass và quét QR" : "Chờ điều phối xử lý"}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.actionRow}>
-                <Pressable
-                  style={styles.primaryAction}
-                  onPress={() => {
-                    if (isConfirmed) {
-                      Alert.alert(
-                        'Pass tạm ẩn',
-                        'Mã QR / pass tạm thời đã bị ẩn trong bản mobile này. Liên hệ điều phối để hỗ trợ.',
-                      );
-                      return;
-                    }
-
-                    Alert.alert(
-                      "Chưa thể mở pass",
-                      "Lịch này chưa ở trạng thái xác nhận. Hãy chờ điều phối hoặc liên hệ hỗ trợ.",
-                    );
-                  }}
-                >
-                  <Text style={styles.primaryActionText}>
-                    {isConfirmed ? "Xem pass / Quét QR" : "Xem hướng dẫn"}
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.secondaryAction}
-                  onPress={() => {
-                    Alert.alert(
-                      "Liên hệ điều phối",
-                      "Vui lòng liên hệ điều phối để xử lý lịch đang chờ hoặc hỗ trợ vào cổng.",
-                    );
-                  }}
-                >
-                  <Text style={styles.secondaryActionText}>Điều phối</Text>
-                </Pressable>
-              </View>
+            <View style={styles.summaryRow}>
+              <SummaryChip label="Đã xác nhận" value={confirmedCount} />
+              <SummaryChip label="Đang chờ" value={pendingCount} />
+              <SummaryChip label="Chờ xử lý" value={waitingCount} />
             </View>
-          );
-        })}
+          </View>
 
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>Hỗ trợ điều phối</Text>
-          <Text style={styles.infoBody}>
-            Nếu cần hỗ trợ đổi khung giờ, xác nhận lịch hoặc kiểm tra pass, hãy
-            liên hệ điều phối để được hướng dẫn.
-          </Text>
+          <View style={styles.filterRow}>
+            {filters.map((filter) => {
+              const selected = filter.key === activeFilter;
+              return (
+                <Pressable
+                  key={filter.key}
+                  onPress={() => setActiveFilter(filter.key)}
+                  style={[
+                    styles.filterChip,
+                    selected && styles.filterChipActive,
+                    { marginRight: 10 },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.filterText,
+                      selected && styles.filterTextActive,
+                    ]}
+                  >
+                    {filter.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <View style={styles.listHeader}>
+            <Text style={styles.listHeaderTitle}>Lịch trong ngày</Text>
+            <Text style={styles.listHeaderSub}>
+              {visibleAppointments.length} mục hiển thị
+            </Text>
+          </View>
+
+          <View style={styles.listContainer}>
+            {visibleAppointments.map((item) => {
+              const isConfirmed = item.status === "Confirmed";
+              return (
+                <Pressable
+                  key={item.code}
+                  style={[styles.card, width >= 900 && styles.cardWide]}
+                  onPress={() => {
+                    // gentle haptic feedback to confirm touch
+                    Haptics.selectionAsync();
+                  }}
+                >
+                  <View style={styles.cardTopRowCentered}>
+                    <View style={styles.timeBlock}>
+                      <Text style={styles.cardTimeLarge}>{item.time}</Text>
+                      <Text style={styles.cardLocation}>
+                        {item.truck ?? "—"}
+                      </Text>
+                    </View>
+                    <View
+                      style={[styles.statusPill, getStatusTone(item.status)]}
+                    >
+                      <Text
+                        style={[
+                          styles.statusText,
+                          { color: getStatusTextColor(item.status) },
+                        ]}
+                      >
+                        {formatStatus(item.status)}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.metaBlockCompact}>
+                    <Text style={styles.cardCodeCompact}>{item.code}</Text>
+                    <Text style={styles.metaValueCompact}>
+                      {item.truck ?? "-"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.actionRow}>
+                    <Pressable
+                      style={styles.primaryActionLarge}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        if (isConfirmed) {
+                          // show driver's pass modal (fast path)
+                          setSelected(item);
+                          setShowPass(true);
+                          return;
+                        }
+
+                        Alert.alert(
+                          "Chưa thể mở pass",
+                          "Lịch này chưa ở trạng thái xác nhận. Hãy chờ điều phối hoặc liên hệ hỗ trợ.",
+                        );
+                      }}
+                    >
+                      <Text style={styles.primaryActionTextLarge}>
+                        {isConfirmed ? "Xem thẻ thông hành" : "Hướng dẫn"}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {/* Reuse DriverPassModal for quick pass view */}
+          <DriverPassModal
+            visible={showPass}
+            onClose={() => setShowPass(false)}
+            profile={getProfile()}
+            appointment={selected}
+            verified={true}
+          />
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoTitle}>Hỗ trợ điều phối</Text>
+            <Text style={styles.infoBody}>
+              Nếu cần hỗ trợ đổi khung giờ, xác nhận lịch hoặc kiểm tra pass,
+              hãy liên hệ điều phối để được hướng dẫn.
+            </Text>
+          </View>
         </View>
       </QueryStateHandler>
     </ScreenShell>
@@ -357,24 +395,28 @@ const styles = StyleSheet.create({
     color: stitchPalette.ink,
   },
   statusConfirmed: {
-    backgroundColor: "rgba(77,215,165,0.12)",
+    backgroundColor: "rgba(34,197,94,0.18)",
     borderWidth: 1,
-    borderColor: "rgba(77,215,165,0.28)",
-    shadowColor: "rgba(77,215,165,0.16)",
-    shadowOffset: { width: 0, height: 8 },
+    borderColor: "rgba(34,197,94,0.5)",
+    shadowColor: "rgba(34,197,94,0.16)",
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.22,
-    shadowRadius: 16,
+    shadowRadius: 12,
     elevation: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
   },
   statusPending: {
-    backgroundColor: "rgba(244,172,28,0.12)",
+    backgroundColor: "rgba(245,158,11,0.18)",
     borderWidth: 1,
-    borderColor: "rgba(244,172,28,0.28)",
-    shadowColor: "rgba(244,172,28,0.14)",
-    shadowOffset: { width: 0, height: 8 },
+    borderColor: "rgba(245,158,11,0.5)",
+    shadowColor: "rgba(245,158,11,0.14)",
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.22,
-    shadowRadius: 14,
+    shadowRadius: 12,
     elevation: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
   },
   statusWaiting: {
     backgroundColor: "rgba(121,168,255,0.12)",
@@ -468,5 +510,72 @@ const styles = StyleSheet.create({
     color: stitchPalette.textMuted,
     fontSize: 13,
     lineHeight: 20,
+  },
+  // New styles for stitch-driven appointments layout
+  cardTopRowCentered: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 8,
+  },
+  timeBlock: {
+    alignItems: "flex-start",
+  },
+  cardTimeLarge: {
+    color: "#f8fafc",
+    fontSize: 28,
+    fontWeight: "900",
+  },
+  cardLocation: {
+    color: "#94f2c9",
+    fontSize: 13,
+    marginTop: 4,
+    fontWeight: "800",
+  },
+  metaBlockCompact: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 6,
+    paddingBottom: 10,
+  },
+  cardCodeCompact: {
+    color: "#f6f7fb",
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  metaValueCompact: {
+    color: "#cbd5e1",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  primaryActionLarge: {
+    flex: 1,
+    backgroundColor: "#f59e0b",
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryActionTextLarge: {
+    color: "#071122",
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  // responsive / web parity
+  pageContainer: {
+    alignSelf: "center",
+    width: "100%",
+    maxWidth: 980,
+    paddingHorizontal: 16,
+  },
+  listContainer: {
+    gap: 12,
+    marginTop: 12,
+  },
+  cardWide: {
+    width: 840,
+    alignSelf: "center",
+    cursor: "pointer",
   },
 });
