@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
   heroCard: {
     backgroundColor: stitchPalette.surface,
     borderRadius: 24,
-    padding: 18,
+    padding: 16,
     borderWidth: 1,
     borderColor: stitchPalette.borderStrong,
     gap: 10,
@@ -30,17 +30,18 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 6,
+    marginTop: 4,
+    gap: 8,
   },
   summaryChip: {
-    minWidth: 96,
+    minWidth: 84,
     flexGrow: 1,
     backgroundColor: stitchPalette.surfaceAlt,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: stitchPalette.borderSoft,
-    padding: 12,
-    marginRight: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
   summaryLabel: {
     color: stitchPalette.textSubtle,
@@ -58,10 +59,12 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: "row",
     paddingVertical: 8,
+    flexWrap: "wrap",
+    gap: 8,
   },
   filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     borderRadius: 16,
     backgroundColor: stitchPalette.surface,
     borderWidth: 1,
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 1,
     borderColor: stitchPalette.borderStrong,
-    padding: 16,
+    padding: 14,
   },
   cardTopRow: {
     flexDirection: "row",
@@ -227,6 +230,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   infoCard: {
+    marginTop: 16,
     backgroundColor: stitchPalette.surfaceAlt,
     borderRadius: 20,
     borderWidth: 1,
@@ -297,15 +301,15 @@ const styles = StyleSheet.create({
   pageContainer: {
     alignSelf: "center",
     width: "100%",
-    maxWidth: 980,
-    paddingHorizontal: 16,
+    maxWidth: 760,
+    paddingHorizontal: 12,
   },
   listContainer: {
     gap: 12,
     marginTop: 12,
   },
   cardWide: {
-    width: 840,
+    width: 720,
     alignSelf: "center",
     cursor: "pointer",
   },

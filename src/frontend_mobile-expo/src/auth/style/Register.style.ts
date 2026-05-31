@@ -8,12 +8,17 @@ const styles = StyleSheet.create({
   scroll: {
     flexGrow: 1,
     justifyContent: "center",
-    padding: 20,
+    alignItems: "center",
+    paddingVertical: 24,
+    paddingHorizontal: 20,
   },
   card: {
+    width: "100%",
+    maxWidth: 460,
     backgroundColor: "#0f1a2a",
     borderRadius: 24,
-    padding: 22,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
   },
@@ -44,11 +49,11 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: "#cbd5e1",
-    marginTop: 12,
+    marginTop: 10,
     lineHeight: 20,
   },
   fieldGroup: {
-    marginTop: 16,
+    marginTop: 12,
   },
   label: {
     color: "#e2e8f0",
@@ -65,7 +70,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 11,
   },
   inputWrapError: {
     borderColor: "rgba(239,124,84,0.8)",
@@ -82,7 +87,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   submitButton: {
-    marginTop: 20,
+    marginTop: 16,
     backgroundColor: "#79a8ff",
     borderRadius: 16,
     paddingVertical: 14,
@@ -97,7 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   linkWrap: {
-    marginTop: 18,
+    marginTop: 16,
     alignItems: "center",
   },
   link: {

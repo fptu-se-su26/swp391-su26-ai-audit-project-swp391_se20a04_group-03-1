@@ -8,7 +8,9 @@ const styles = StyleSheet.create({
   scroll: {
     flexGrow: 1,
     justifyContent: "center",
-    padding: 20,
+    alignItems: "center",
+    paddingVertical: 28,
+    paddingHorizontal: 20,
   },
   backdropTop: {
     position: "absolute",
@@ -29,9 +31,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.05)",
   },
   card: {
+    width: "100%",
+    maxWidth: 440,
     backgroundColor: "#0f1a2a",
     borderRadius: 24,
-    padding: 22,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
@@ -67,11 +72,11 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: "#cbd5e1",
-    marginTop: 12,
+    marginTop: 10,
     lineHeight: 20,
   },
   fieldGroup: {
-    marginTop: 18,
+    marginTop: 14,
   },
   label: {
     color: "#e2e8f0",
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 11,
   },
   input: {
     flex: 1,
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
   },
   formError: {
     color: "#ffd1d1",
-    marginTop: 14,
+    marginTop: 12,
     backgroundColor: "rgba(239,124,84,0.16)",
     borderColor: "rgba(239,124,84,0.32)",
     borderWidth: 1,
@@ -113,7 +118,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   loginButton: {
-    marginTop: 18,
+    marginTop: 16,
     backgroundColor: "#f6b11c",
     borderRadius: 16,
     paddingVertical: 14,
@@ -128,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   guestButton: {
-    marginTop: 12,
+    marginTop: 10,
     backgroundColor: "transparent",
     borderRadius: 16,
     paddingVertical: 14,
@@ -145,7 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   linksRow: {
-    marginTop: 18,
+    marginTop: 16,
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 12,

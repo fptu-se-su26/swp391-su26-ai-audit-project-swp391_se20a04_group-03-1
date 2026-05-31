@@ -1,13 +1,21 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
   identityCard: {
+    width: "100%",
+    maxWidth: 760,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#0f1a2a",
     borderRadius: 12,
-    padding: 12,
+    padding: 14,
     borderWidth: 1,
     borderColor: "rgba(246,192,106,0.18)",
     shadowColor: "#000",
@@ -22,7 +30,9 @@ const styles = StyleSheet.create({
   license: { color: "#f6b11c", marginTop: 4 },
   company: { color: "#cbd5e1", marginTop: 2 },
   section: {
-    marginTop: 20,
+    marginTop: 16,
+    width: "100%",
+    maxWidth: 760,
     backgroundColor: "#0b1528",
     padding: 12,
     borderRadius: 12,
@@ -32,7 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 9,
   },
   rowLeft: { flexDirection: "row", alignItems: "center" },
   rowLabel: { color: "#f8fafc", fontWeight: "600" },
@@ -49,7 +59,9 @@ const styles = StyleSheet.create({
   },
   navLabel: { color: "#f8fafc", fontWeight: "600" },
   logoutBtn: {
-    marginTop: 20,
+    marginTop: 16,
+    width: "100%",
+    maxWidth: 760,
     backgroundColor: "#ef7c54",
     padding: 12,
     borderRadius: 10,

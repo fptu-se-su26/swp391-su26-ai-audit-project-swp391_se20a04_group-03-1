@@ -11,9 +11,9 @@
  * </ScreenShell>
  * ```
  */
-import React, { type ReactNode } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { palette, radii, spacing } from '@/shared/theme';
+import React, { type ReactNode } from "react";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { palette, radii, spacing } from "@/shared/theme";
 
 interface ScreenShellProps {
   /** Screen title */
@@ -55,32 +55,32 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
-    gap: spacing.lg,
+    gap: spacing.md,
   },
   header: {
     backgroundColor: palette.surfaceAlt,
-    borderRadius: radii['2xl'],
-    padding: spacing.xl,
+    borderRadius: radii["2xl"],
+    padding: spacing.lg,
     borderWidth: 1,
     borderColor: palette.borderSoft,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   accentBar: {
     height: 4,
-    width: 72,
+    width: 56,
     borderRadius: 9999,
     backgroundColor: palette.accent,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
   title: {
     color: palette.text,
-    fontSize: 28,
-    fontWeight: '800',
-    marginBottom: 6,
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 4,
   },
   subtitle: {
     color: palette.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
   },
 });

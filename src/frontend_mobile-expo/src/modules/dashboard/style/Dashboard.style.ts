@@ -2,10 +2,13 @@ import { Platform, StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   headerBar: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 6,
+    marginBottom: 4,
   },
   brandRow: {
     flexDirection: "row",
@@ -29,10 +32,14 @@ export const styles = StyleSheet.create({
   },
   brandText: {
     color: "#f6c06a",
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "900",
     letterSpacing: 1.2,
-    fontFamily: Platform.select({ ios: "Avenir Next Condensed", android: "sans-serif-condensed", default: undefined }),
+    fontFamily: Platform.select({
+      ios: "Avenir Next Condensed",
+      android: "sans-serif-condensed",
+      default: undefined,
+    }),
   },
   brandSubtext: {
     color: "#bac7e7",
@@ -68,11 +75,14 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   sectionPanel: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
     borderWidth: 1,
     borderColor: "rgba(246, 192, 106, 0.35)",
     backgroundColor: "rgba(16, 24, 44, 0.88)",
-    padding: 14,
-    gap: 14,
+    padding: 13,
+    gap: 12,
   },
   sectionHeaderRow: {
     flexDirection: "row",
@@ -92,7 +102,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 1.1,
   },
   statusBannerBase: {
-    minHeight: 156,
+    minHeight: 138,
     flexDirection: "row",
     overflow: "hidden",
   },
@@ -119,23 +129,27 @@ export const styles = StyleSheet.create({
   },
   statusBody: {
     flex: 1,
-    paddingHorizontal: 18,
-    paddingVertical: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     justifyContent: "center",
   },
   statusKicker: {
     color: "#f5cf92",
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "800",
     letterSpacing: 1.8,
     marginBottom: 12,
   },
   statusHeadlineBase: {
-    fontSize: 29,
+    fontSize: 25,
     fontWeight: "900",
-    lineHeight: 37,
+    lineHeight: 32,
     letterSpacing: 0.3,
-    fontFamily: Platform.select({ ios: "Avenir Next Condensed", android: "sans-serif-condensed", default: undefined }),
+    fontFamily: Platform.select({
+      ios: "Avenir Next Condensed",
+      android: "sans-serif-condensed",
+      default: undefined,
+    }),
   },
   statusHeadlineWaiting: {
     color: "#f8c883",
@@ -148,12 +162,12 @@ export const styles = StyleSheet.create({
   },
   qrCard: {
     alignItems: "center",
-    gap: 16,
+    gap: 12,
   },
   qrFrame: {
-    width: 300,
-    height: 300,
-    padding: 16,
+    width: 270,
+    height: 270,
+    padding: 14,
     borderRadius: 20,
     backgroundColor: "#f4ead9",
     borderWidth: 1,
@@ -165,8 +179,8 @@ export const styles = StyleSheet.create({
     elevation: 8,
   },
   qrImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 14,
   },
   qrGrid: {
@@ -200,14 +214,14 @@ export const styles = StyleSheet.create({
   qrBadge: {
     width: "100%",
     backgroundColor: "#f6c06a",
-    paddingVertical: 15,
+    paddingVertical: 12,
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#111827",
   },
   qrBadgeText: {
     color: "#111827",
-    fontSize: 19,
+    fontSize: 17,
     fontWeight: "900",
     letterSpacing: 0.5,
   },
@@ -287,6 +301,9 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   hintPanel: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
     borderWidth: 1,
     borderColor: "rgba(246, 192, 106, 0.25)",
     backgroundColor: "rgba(16, 24, 44, 0.66)",
