@@ -6,10 +6,10 @@ const styles = StyleSheet.create({
   heroCard: {
     backgroundColor: stitchPalette.surface,
     borderRadius: 24,
-    padding: 16,
+    padding: 14,
     borderWidth: 1,
     borderColor: stitchPalette.borderStrong,
-    gap: 10,
+    gap: 8,
   },
   heroKicker: {
     color: stitchPalette.accentSoft,
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: stitchPalette.text,
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: "900",
   },
   heroSubtitle: {
@@ -30,17 +30,17 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 4,
-    gap: 8,
+    marginTop: 2,
+    gap: 6,
   },
   summaryChip: {
-    minWidth: 84,
+    minWidth: 78,
     flexGrow: 1,
     backgroundColor: stitchPalette.surfaceAlt,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: stitchPalette.borderSoft,
-    paddingVertical: 10,
+    paddingVertical: 9,
     paddingHorizontal: 12,
   },
   summaryLabel: {
@@ -58,13 +58,13 @@ const styles = StyleSheet.create({
   },
   filterRow: {
     flexDirection: "row",
-    paddingVertical: 8,
+    paddingVertical: 6,
     flexWrap: "wrap",
-    gap: 8,
+    gap: 7,
   },
   filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
     borderRadius: 16,
     backgroundColor: stitchPalette.surface,
     borderWidth: 1,
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   listHeaderTitle: {
     color: "#f8fafc",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "800",
   },
   listHeaderSub: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 1,
     borderColor: stitchPalette.borderStrong,
-    padding: 14,
+    padding: 12,
   },
   cardTopRow: {
     flexDirection: "row",
@@ -230,12 +230,12 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   infoCard: {
-    marginTop: 16,
+    marginTop: 14,
     backgroundColor: stitchPalette.surfaceAlt,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: stitchPalette.borderSoft,
-    padding: 16,
+    padding: 14,
     gap: 8,
   },
   infoTitle: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   cardTimeLarge: {
     color: "#f8fafc",
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: "900",
   },
   cardLocation: {
@@ -301,15 +301,15 @@ const styles = StyleSheet.create({
   pageContainer: {
     alignSelf: "center",
     width: "100%",
-    maxWidth: 760,
-    paddingHorizontal: 12,
+    maxWidth: 680,
+    paddingHorizontal: 10,
   },
   listContainer: {
-    gap: 12,
-    marginTop: 12,
+    gap: 10,
+    marginTop: 10,
   },
   cardWide: {
-    width: 720,
+    width: 640,
     alignSelf: "center",
     cursor: "pointer",
   },

@@ -60,7 +60,10 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: palette.surfaceAlt,
     borderRadius: radii["2xl"],
-    padding: spacing.lg,
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
+    padding: spacing.md,
     borderWidth: 1,
     borderColor: palette.borderSoft,
     overflow: "hidden",
@@ -74,13 +77,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: palette.text,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "800",
     marginBottom: 4,
   },
   subtitle: {
     color: palette.textMuted,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 17,
   },
 });
