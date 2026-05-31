@@ -3,6 +3,7 @@ import { Yard } from "../models/yard.model";
 import { io } from "../index";
 import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
+import { Gate } from "../models/gate.model";
 
 export const yardsGet = async (req: Request, res: Response) => {
   try {
@@ -16,6 +17,17 @@ export const yardsGet = async (req: Request, res: Response) => {
 export const createYardPost = async (req: Request, res: Response) => {
   try {
     const { name, cameraIp } = req.body;
+    const existYard = await Yard.findOne({ cameraIp: cameraIp });
+    if (existYard) {
+      return res.json({ code: "error", message: "Camera IP đã tồn tại" });
+    }
+    const otherExistCamera = await Gate.findOne({ cameraIp: cameraIp });
+    if (otherExistCamera) {
+      return res.json({
+        code: "error",
+        message: "Camera IP đã tồn tại ở cổng",
+      });
+    }
     const newYard = new Yard({ name, cameraIp });
     await newYard.save();
     res.json({
@@ -112,6 +124,13 @@ export const updateYardInfoPatch = async (req: Request, res: Response) => {
     if (!yard) {
       return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
     }
+    const otherExistCamera = await Gate.findOne({ cameraIp: cameraIp });
+    if (otherExistCamera) {
+      return res.json({
+        code: "error",
+        message: "Camera IP đã tồn tại ở cổng",
+      });
+    }
 
     yard.name = name;
     yard.cameraIp = cameraIp;
@@ -135,9 +154,14 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
     }
 
     // 1. Fetch snapshot from AI server
-    const aiResponse = await fetch(`http://127.0.0.1:5001/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`);
+    const aiResponse = await fetch(
+      `http://127.0.0.1:5001/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`,
+    );
     if (!aiResponse.ok) {
-       return res.json({ code: "error", message: "Không thể lấy ảnh từ luồng Camera" });
+      return res.json({
+        code: "error",
+        message: "Không thể lấy ảnh từ luồng Camera",
+      });
     }
 
     const arrayBuffer = await aiResponse.arrayBuffer();
@@ -151,7 +175,7 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
           (error, result) => {
             if (result) resolve(result);
             else reject(error);
-          }
+          },
         );
         streamifier.createReadStream(buffer).pipe(stream);
       });
@@ -166,7 +190,7 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
     res.json({
       code: "success",
       message: "Chụp và lưu ảnh thành công",
-      data: { snapshotUrl: yard.snapshotUrl }
+      data: { snapshotUrl: yard.snapshotUrl },
     });
   } catch (error) {
     console.error("Lỗi snapshot:", error);

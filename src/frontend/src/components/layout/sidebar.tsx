@@ -13,6 +13,7 @@ import {
   Lock,
   BarChart3,
   X,
+  Building2,
 } from "lucide-react"
 
 interface SidebarProps {
@@ -30,6 +31,11 @@ const menuItems = [
     label: "Đặt lịch xe",
     href: "/admin/appointments",
     icon: Calendar,
+  },
+  {
+    label: "Quản lý công ty",
+    href: "/admin/companies",
+    icon: Building2,
   },
   {
     label: "Quản lý cổng",

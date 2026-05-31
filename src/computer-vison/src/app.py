@@ -8,6 +8,7 @@ import cv2
 import threading
 import time
 import requests
+import queue
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from src.config import (
@@ -22,6 +23,55 @@ from src.services.ai_processor import AIProcessor
 
 app = Flask(__name__)
 CORS(app)  # Enable Cross-Origin Resource Sharing
+
+class AsyncVideoReader:
+    """Reads frames from cv2.VideoCapture in a dedicated background thread to prevent lag/buffering delay."""
+    def __init__(self, url):
+        self.url = url
+        if isinstance(url, str) and url.startswith("rtsp://"):
+            os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp|fflags;nobuffer|flags;low_delay"
+            
+        # Fix string digit "0" to integer 0 for local cameras
+        if isinstance(url, str) and url.isdigit():
+            url = int(url)
+            
+        self.cap = cv2.VideoCapture(url)
+        if isinstance(self.url, str) and self.url.startswith("rtsp://"):
+            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+            
+        self.running = True
+        self.q = queue.Queue(maxsize=1)
+        
+        if self.cap.isOpened():
+            self.t = threading.Thread(target=self._update, daemon=True)
+            self.t.start()
+            
+    def _update(self):
+        while self.running and self.cap.isOpened():
+            ret, frame = self.cap.read()
+            if not ret: 
+                self.running = False
+                break
+            try:
+                self.q.get_nowait() # drop old frame
+            except queue.Empty:
+                pass
+            self.q.put(frame)
+        self.running = False
+        self.cap.release()
+        
+    def read_latest(self, timeout=2.0):
+        try:
+            return True, self.q.get(timeout=timeout)
+        except queue.Empty:
+            return self.running, None
+            
+    def isOpened(self):
+        return self.cap.isOpened()
+        
+    def release(self):
+        self.running = False
+
 
 # Global variables for thread-safe frame sharing
 latest_processed_frame = None
@@ -39,7 +89,6 @@ def video_capture_loop():
     
     print(f"[Server] Starting background camera capture thread (Camera Index: {CAMERA_INDEX})...")
     
-    # Initialize the AI Processor inside the thread to keep the main thread startup instant
     try:
         processor = AIProcessor()
     except Exception as e:
@@ -48,8 +97,8 @@ def video_capture_loop():
         return
 
     while camera_running:
-        cap = cv2.VideoCapture(CAMERA_INDEX)
-        if not cap.isOpened():
+        reader = AsyncVideoReader(CAMERA_INDEX)
+        if not reader.isOpened():
             print(f"[Server] ERROR: Cannot open camera index {CAMERA_INDEX}. Retrying in 5 seconds...")
             camera_status = "Disconnected (Error opening camera)"
             time.sleep(5.0)
@@ -58,12 +107,14 @@ def video_capture_loop():
         camera_status = "Connected"
         print(f"[Server] Camera capture active on device {CAMERA_INDEX}")
         
-        while camera_running and cap.isOpened():
-            ret, frame = cap.read()
+        while camera_running and reader.isOpened():
+            ret, frame = reader.read_latest()
             if not ret:
                 print("[Server] Camera frame read error. Re-initializing camera capture...")
                 camera_status = "Error Reading Frames"
                 break
+            if frame is None:
+                continue
                 
             try:
                 # 1. Process frame with YOLO and EasyOCR
@@ -79,10 +130,9 @@ def video_capture_loop():
             except Exception as e:
                 print(f"[Server] Exception during background frame processing: {e}")
                 
-            # Yield CPU slice to prevent 100% core usage
             time.sleep(0.01)
             
-        cap.release()
+        reader.release()
         
     camera_status = "Stopped"
     print("[Server] Background camera capture thread finished.")
@@ -99,16 +149,12 @@ def generate_stream():
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n')
         else:
-            # Yield a tiny transparent 1x1 spacer if no camera frame is ready
-            # to prevent connection drop outs
             time.sleep(0.1)
             
-        # Match rate-limiting to roughly ~30fps stream output
         time.sleep(0.033)
 
 @app.route('/')
 def index():
-    """Root landing page with links to video feed and status."""
     return '''
     <!DOCTYPE html>
     <html lang="vi">
@@ -163,14 +209,36 @@ def index():
     </html>
     '''
 
+def verify_auth(token):
+    try:
+        backend_api = BACKEND_URL.replace("/gate/scan", "") 
+        cookies = {"tokenAdmin": token}
+        res = requests.get(f"{backend_api}/yards", cookies=cookies, timeout=2.0)
+        data = res.json()
+        if data.get("code") == "error":
+            return False
+        return True
+    except Exception:
+        return False
+
 @app.route('/favicon.ico')
 def favicon():
-    """Return empty response for favicon to prevent 404 logs."""
     return Response(status=204)
 
 @app.route('/video_feed')
 def video_feed():
-    """Renders the motion-JPEG streaming stream."""
+    token = request.cookies.get('tokenAdmin')
+    if not token or not verify_auth(token):
+        return jsonify({"code": "error", "message": "Unauthorized"}), 401
+
+    import urllib.parse
+    raw_url = request.args.get('rtsp_url')
+    if raw_url:
+        rtsp_url = urllib.parse.unquote(raw_url)
+        return Response(
+            generate_gate_stream(rtsp_url), 
+            mimetype='multipart/x-mixed-replace; boundary=frame'
+        )
     return Response(
         generate_stream(), 
         mimetype='multipart/x-mixed-replace; boundary=frame'
@@ -178,7 +246,6 @@ def video_feed():
 
 @app.route('/status')
 def get_status():
-    """Diagnostics and health checking API endpoint."""
     import os
     return jsonify({
         "status": "online",
@@ -200,16 +267,13 @@ def get_status():
 
 @app.route('/snapshot')
 def snapshot():
-    """Captures a single frame from the provided RTSP URL and returns it as JPEG."""
     import urllib.parse
     raw_url = request.args.get('rtsp_url')
     if not raw_url:
         return jsonify({"code": "error", "message": "Missing rtsp_url"}), 400
         
     rtsp_url = urllib.parse.unquote(raw_url)
-    
-    # Force TCP for RTSP to prevent UDP timeout issues
-    os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
+    os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp|fflags;nobuffer|flags;low_delay"
     
     cap = cv2.VideoCapture(rtsp_url)
     if not cap.isOpened():
@@ -228,9 +292,69 @@ def snapshot():
     return Response(buffer.tobytes(), mimetype='image/jpeg')
 
 active_yard_streams = {} # yard_id -> {"frame_data": bytes, "running": bool, "last_accessed": float}
+active_gate_streams = {} # rtsp_url -> {"frame_data": bytes, "running": bool, "last_accessed": float}
+
+def gate_capture_worker(rtsp_url, gate_type="in"):
+    import os
+    from src.services.ai_processor import AIProcessor
+    
+    try:
+        processor = AIProcessor(gate_type=gate_type)
+    except Exception as e:
+        print(f"[Gate Feed Worker] CRITICAL: Failed to initialize AI Processor: {e}")
+        if rtsp_url in active_gate_streams:
+            active_gate_streams[rtsp_url]["running"] = False
+        return
+
+    reader = AsyncVideoReader(rtsp_url)
+    if not reader.isOpened():
+        print(f"[Gate Feed Worker] Cannot open RTSP stream: {rtsp_url}")
+        if rtsp_url in active_gate_streams:
+            active_gate_streams[rtsp_url]["running"] = False
+        return
+        
+    print(f"[Gate Feed Worker] Started stream for RTSP: {rtsp_url}")
+
+    while active_gate_streams.get(rtsp_url, {}).get("running", False) and reader.isOpened():
+        ret, frame = reader.read_latest()
+        if not ret: 
+            break
+        if frame is None:
+            continue
+            
+        try:
+            processed_frame = processor.process_frame(frame)
+            stream_frame = cv2.resize(processed_frame, (640, 480))
+            ret_encode, buffer = cv2.imencode('.jpg', stream_frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
+            if ret_encode:
+                active_gate_streams[rtsp_url]["frame_data"] = buffer.tobytes()
+        except Exception as e:
+            print(f"[Gate Feed Worker] Exception: {e}")
+            
+        time.sleep(0.01)
+        
+    reader.release()
+    active_gate_streams.pop(rtsp_url, None)
+    print(f"[Gate Feed Worker] Stream ended for RTSP: {rtsp_url}")
+
+def generate_gate_stream(rtsp_url):
+    while True:
+        stream_state = active_gate_streams.get(rtsp_url)
+        if not stream_state or not stream_state.get("running"):
+            time.sleep(1)
+            continue
+            
+        frame_data = stream_state.get("frame_data")
+        
+        if frame_data:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n')
+        else:
+            time.sleep(0.1)
+            
+        time.sleep(0.1)
 
 def yard_capture_worker(yard_id, camera_ip):
-    """Background thread that captures and runs AI for a specific yard."""
     from ultralytics import YOLO
     import torch
     import os
@@ -244,11 +368,8 @@ def yard_capture_worker(yard_id, camera_ip):
             active_yard_streams[yard_id]["running"] = False
         return
 
-    os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
-    cap = cv2.VideoCapture(camera_ip)
-    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-    
-    if not cap.isOpened():
+    reader = AsyncVideoReader(camera_ip)
+    if not reader.isOpened():
         print(f"[Yard Feed Worker] Cannot open RTSP stream: {camera_ip}")
         if yard_id in active_yard_streams:
             active_yard_streams[yard_id]["running"] = False
@@ -265,35 +386,49 @@ def yard_capture_worker(yard_id, camera_ip):
 
     frame_count = 0
     previous_occupied_slots = set()
-    while active_yard_streams.get(yard_id, {}).get("running", False) and cap.isOpened():
-        # Stop thread if no clients requested a frame in the last 30 seconds
-        if time.time() - active_yard_streams[yard_id]["last_accessed"] > 30:
-            print(f"[Yard Feed Worker] Stopping stream {yard_id} due to inactivity (0 clients).")
-            break
-            
-        ret, frame = cap.read()
+    last_occupied_slots = set()
+    last_ai_boxes = []
+    
+    while active_yard_streams.get(yard_id, {}).get("running", False) and reader.isOpened():
+        ret, frame = reader.read_latest()
         if not ret: break
+        if frame is None:
+            continue
             
         frame_count += 1
-        if frame_count % 3 != 0: continue
-            
         h, w, _ = frame.shape
-        results = vehicle_model(frame, device=device, verbose=False)
-        occupied_slots = set()
         
-        if len(results) > 0 and results[0].boxes is not None:
-            boxes = results[0].boxes
-            xyxys = boxes.xyxy.cpu().tolist()
-            confs = boxes.conf.cpu().tolist()
-            for xyxy, conf in zip(xyxys, confs):
-                if conf > 0.5:
-                    x1, y1, x2, y2 = map(int, xyxy)
-                    current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
-                    for slot in current_slots:
-                        if check_overlap(x1, y1, x2, y2, slot['x'], slot['y'], slot['width'], slot['height'], w, h):
-                            occupied_slots.add(slot.get('slotName'))
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 165, 0), 2)
+        # Only run YOLO every 3 frames to save CPU/GPU
+        if frame_count % 3 == 0:
+            results = vehicle_model(frame, device=device, verbose=False)
+            occupied_slots = set()
+            current_ai_boxes = []
+            
+            if len(results) > 0 and results[0].boxes is not None:
+                boxes = results[0].boxes
+                xyxys = boxes.xyxy.cpu().tolist()
+                confs = boxes.conf.cpu().tolist()
+                for xyxy, conf in zip(xyxys, confs):
+                    if conf > 0.5:
+                        x1, y1, x2, y2 = map(int, xyxy)
+                        current_ai_boxes.append((x1, y1, x2, y2))
+                        current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
+                        for slot in current_slots:
+                            if check_overlap(x1, y1, x2, y2, slot['x'], slot['y'], slot['width'], slot['height'], w, h):
+                                occupied_slots.add(slot.get('slotName'))
+                                
+            last_occupied_slots = occupied_slots
+            last_ai_boxes = current_ai_boxes
+        else:
+            # Use previous results for intermediate frames
+            occupied_slots = last_occupied_slots
+            current_ai_boxes = last_ai_boxes
+            
+        # Draw AI boxes
+        for (x1, y1, x2, y2) in current_ai_boxes:
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 165, 0), 2)
                     
+        # Draw slots
         current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
         for slot in current_slots:
             sx = int(slot['x'] / 100.0 * w)
@@ -310,7 +445,8 @@ def yard_capture_worker(yard_id, camera_ip):
             cv2.rectangle(frame, (sx, sy), (sx + sw, sy + sh), color, 2)
             cv2.putText(frame, f"{slot['slotName']} - {status_text}", (sx, sy - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
             
-        ret_encode, buffer = cv2.imencode('.jpg', frame)
+        stream_frame = cv2.resize(frame, (640, 480))
+        ret_encode, buffer = cv2.imencode('.jpg', stream_frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
         if ret_encode:
             active_yard_streams[yard_id]["frame_data"] = buffer.tobytes()
             
@@ -327,78 +463,18 @@ def yard_capture_worker(yard_id, camera_ip):
             
         time.sleep(0.01)
         
-    cap.release()
+    reader.release()
     active_yard_streams.pop(yard_id, None)
     print(f"[Yard Feed Worker] Stream ended for Yard ID: {yard_id}")
 
-
 def generate_yard_stream(yard_id):
-    """Generator function that yields frames from the background yard worker."""
-    # ALWAYS fetch the latest config when a client connects to update live threads
-    try:
-        backend_api = BACKEND_URL.replace("/gate/scan", "") # get base url e.g. http://localhost:4000/api
-        res = requests.get(f"{backend_api}/yards/{yard_id}")
-        data = res.json()
-        if data.get("code") == "error":
-            print(f"[Yard Feed] API Error: {data.get('message')}")
-            yield b''
-            return
-            
-        yard = data.get("data", {})
-        camera_ip = yard.get("cameraIp")
-        slots = yard.get("slots", [])
-    except Exception as e:
-        print(f"[Yard Feed] Failed to fetch yard config: {e}")
-        yield b''
-        return
-        
-    if not camera_ip:
-        print(f"[Yard Feed] No camera IP found for yard {yard_id}")
-        yield b''
-        return
-
-    if yard_id not in active_yard_streams:
-        # Initialize state and start background thread
-        active_yard_streams[yard_id] = {
-            "frame_data": None, 
-            "running": True, 
-            "last_accessed": time.time(),
-            "slots": slots,
-            "camera_ip": camera_ip
-        }
-        t = threading.Thread(target=yard_capture_worker, args=(yard_id, camera_ip), daemon=True)
-        t.start()
-        # Give thread a moment to fetch first frame
-        time.sleep(1)
-    else:
-        if active_yard_streams[yard_id].get("camera_ip") != camera_ip:
-            print(f"[Yard Feed] RTSP URL changed for yard {yard_id}. Restarting stream...")
-            active_yard_streams[yard_id]["running"] = False
-            time.sleep(0.5) # Allow old thread to exit
-            
-            active_yard_streams[yard_id] = {
-                "frame_data": None, 
-                "running": True, 
-                "last_accessed": time.time(),
-                "slots": slots,
-                "camera_ip": camera_ip
-            }
-            t = threading.Thread(target=yard_capture_worker, args=(yard_id, camera_ip), daemon=True)
-            t.start()
-            time.sleep(1)
-        else:
-            # Update slots in real-time for existing thread
-            active_yard_streams[yard_id]["slots"] = slots
-        
-    # Client stream loop
     while True:
         stream_state = active_yard_streams.get(yard_id)
-        if not stream_state or not stream_state["running"]:
-            break
+        if not stream_state or not stream_state.get("running"):
+            time.sleep(1)
+            continue
             
-        # Keep alive
-        stream_state["last_accessed"] = time.time()
-        frame_data = stream_state["frame_data"]
+        frame_data = stream_state.get("frame_data")
         
         if frame_data:
             yield (b'--frame\r\n'
@@ -406,29 +482,101 @@ def generate_yard_stream(yard_id):
         else:
             time.sleep(0.1)
             
-        time.sleep(0.033)
+        time.sleep(0.1)
 
 @app.route('/yard_feed')
 def yard_feed():
-    """Renders the motion-JPEG streaming stream for a specific yard."""
     yard_id = request.args.get('yard_id')
     if not yard_id:
         return "Missing yard_id", 400
+        
+    token = request.cookies.get('tokenAdmin')
+    if not token:
+        return jsonify({"code": "error", "message": "Unauthorized"}), 401
         
     return Response(
         generate_yard_stream(yard_id), 
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
 
+def sync_cameras_worker():
+    backend_api = BACKEND_URL.replace("/gate/scan", "")
+    headers = {"x-internal-secret": "AI_SERVER_SECRET_KEY"}
+    
+    while camera_running:
+        try:
+            # Sync Gates
+            res_gates = requests.get(f"{backend_api}/gates", headers=headers, timeout=5)
+            if res_gates.status_code == 200:
+                data_gates = res_gates.json().get("data", [])
+                valid_gate_ips = set()
+                for gate in data_gates:
+                    cam_ip = gate.get("cameraIp")
+                    gate_type = gate.get("type", "in")
+                    if not cam_ip: continue
+                    valid_gate_ips.add(cam_ip)
+                    
+                    if cam_ip not in active_gate_streams:
+                        active_gate_streams[cam_ip] = {"frame_data": None, "running": True}
+                        t = threading.Thread(target=gate_capture_worker, args=(cam_ip, gate_type), daemon=True)
+                        t.start()
+                        
+                # Stop removed gates
+                for cam_ip in list(active_gate_streams.keys()):
+                    if cam_ip not in valid_gate_ips:
+                        active_gate_streams[cam_ip]["running"] = False
+            
+            # Sync Yards
+            res_yards = requests.get(f"{backend_api}/yards", headers=headers, timeout=5)
+            if res_yards.status_code == 200:
+                data_yards = res_yards.json().get("data", [])
+                valid_yard_ids = set()
+                for yard in data_yards:
+                    yid = yard.get("_id")
+                    cam_ip = yard.get("cameraIp")
+                    slots = yard.get("slots", [])
+                    if not yid or not cam_ip: continue
+                    valid_yard_ids.add(yid)
+                    
+                    if yid not in active_yard_streams:
+                        active_yard_streams[yid] = {
+                            "frame_data": None, "running": True, 
+                            "camera_ip": cam_ip, "slots": slots
+                        }
+                        t = threading.Thread(target=yard_capture_worker, args=(yid, cam_ip), daemon=True)
+                        t.start()
+                    else:
+                        active_yard_streams[yid]["slots"] = slots
+                        if active_yard_streams[yid]["camera_ip"] != cam_ip:
+                            active_yard_streams[yid]["running"] = False
+                            time.sleep(0.5)
+                            active_yard_streams[yid] = {
+                                "frame_data": None, "running": True, 
+                                "camera_ip": cam_ip, "slots": slots
+                            }
+                            t = threading.Thread(target=yard_capture_worker, args=(yid, cam_ip), daemon=True)
+                            t.start()
+                
+                # Stop removed yards
+                for yid in list(active_yard_streams.keys()):
+                    if yid not in valid_yard_ids:
+                        active_yard_streams[yid]["running"] = False
+
+        except Exception as e:
+            print(f"[Sync Worker] Error syncing cameras: {e}")
+            
+        time.sleep(10)
+
 def start_server():
     global camera_running
     camera_running = True
     
-    # Start the background frame processor thread
     capture_thread = threading.Thread(target=video_capture_loop, daemon=True)
     capture_thread.start()
     
-    # Launch Flask
+    sync_thread = threading.Thread(target=sync_cameras_worker, daemon=True)
+    sync_thread.start()
+    
     print(f"=== FLASK COMPUTER VISION SERVICE RUNNING ON http://{FLASK_HOST}:{FLASK_PORT} ===")
     app.run(host=FLASK_HOST, port=FLASK_PORT, threaded=True)
 
