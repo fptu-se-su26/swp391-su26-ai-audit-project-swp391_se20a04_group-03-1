@@ -8,7 +8,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -16,6 +15,7 @@ import {
 
 import { Snackbar } from "@/shared/components/feedback/Snackbar";
 import { signIn, signInAsGuest, useAuth } from "@/shared/state/auth";
+import styles from "../style/Login.style";
 
 const isFilled = (value: string) => value.trim().length > 0;
 
@@ -48,7 +48,6 @@ export default function LoginScreen() {
       const timer = setTimeout(() => setRegisterToastVisible(false), 2800);
       return () => clearTimeout(timer);
     }
-
     return undefined;
   }, [params.authToast]);
 
@@ -206,163 +205,3 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#08101f",
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  backdropTop: {
-    position: "absolute",
-    top: -80,
-    right: -80,
-    width: 180,
-    height: 180,
-    borderRadius: 999,
-    backgroundColor: "rgba(121,168,255,0.12)",
-  },
-  backdropBottom: {
-    position: "absolute",
-    bottom: -100,
-    left: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.05)",
-  },
-  card: {
-    backgroundColor: "#0f1a2a",
-    borderRadius: 24,
-    padding: 22,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 16 },
-    elevation: 8,
-  },
-  brandRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  brandMark: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f6b11c",
-  },
-  kicker: {
-    color: "#79a8ff",
-    fontSize: 12,
-    letterSpacing: 1.6,
-    fontWeight: "800",
-  },
-  title: {
-    color: "#f8fafc",
-    fontSize: 26,
-    fontWeight: "800",
-    marginTop: 2,
-  },
-  subtitle: {
-    color: "#cbd5e1",
-    marginTop: 12,
-    lineHeight: 20,
-  },
-  fieldGroup: {
-    marginTop: 18,
-  },
-  label: {
-    color: "#e2e8f0",
-    fontSize: 13,
-    marginBottom: 8,
-    fontWeight: "700",
-  },
-  inputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    backgroundColor: "#091122",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  input: {
-    flex: 1,
-    color: "#f8fafc",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  errorText: {
-    color: "#ff9c9c",
-    marginTop: 6,
-    fontSize: 12,
-  },
-  formError: {
-    color: "#ffd1d1",
-    marginTop: 14,
-    backgroundColor: "rgba(239,124,84,0.16)",
-    borderColor: "rgba(239,124,84,0.32)",
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 14,
-    lineHeight: 18,
-  },
-  loginButton: {
-    marginTop: 18,
-    backgroundColor: "#f6b11c",
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  loginButtonPressed: {
-    backgroundColor: "#ffbf3f",
-  },
-  loginButtonText: {
-    color: "#071122",
-    fontWeight: "900",
-    fontSize: 16,
-  },
-  guestButton: {
-    marginTop: 12,
-    backgroundColor: "transparent",
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(121,168,255,0.45)",
-  },
-  guestButtonPressed: {
-    backgroundColor: "rgba(121,168,255,0.12)",
-  },
-  guestButtonText: {
-    color: "#dbeafe",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  linksRow: {
-    marginTop: 18,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  link: {
-    color: "#79a8ff",
-    fontWeight: "700",
-  },
-  linkMuted: {
-    color: "#cbd5e1",
-    fontWeight: "600",
-  },
-});

@@ -8,13 +8,13 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 
-import { registerAccount } from "@/shared/state/auth";
+import { registerAccount, signOut } from "@/shared/state/auth";
+import styles from "../style/Register.style";
 
 type RegisterForm = {
   fullName: string;
@@ -37,7 +37,6 @@ const phonePattern = /^(\+?\d{9,15})$/;
 
 function validate(form: RegisterForm) {
   const errors: Partial<Record<keyof RegisterForm, string>> = {};
-
   if (form.fullName.trim().length < 3)
     errors.fullName = "Họ tên phải có ít nhất 3 ký tự.";
   if (!phonePattern.test(form.phone.replace(/\s+/g, "")))
@@ -47,7 +46,6 @@ function validate(form: RegisterForm) {
   if (form.password.length < 6) errors.password = "Mật khẩu tối thiểu 6 ký tự.";
   if (form.confirmPassword !== form.password)
     errors.confirmPassword = "Mật khẩu xác nhận không khớp.";
-
   return errors;
 }
 
@@ -63,7 +61,13 @@ export default function RegisterScreen() {
         "Thông tin chưa hợp lệ",
         "Vui lòng kiểm tra lại các trường được đánh dấu.",
       );
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      try {
+        await Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Warning,
+        );
+      } catch (error) {
+        // ignore haptics on web / unsupported devices
+      }
       return;
     }
 
@@ -79,14 +83,16 @@ export default function RegisterScreen() {
       return;
     }
 
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.replace({
-      pathname: "/login",
-      params: {
-        authToast: "register-success",
-        username: result.account.username,
-      },
-    });
+    try {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      // ignore haptics on web / unsupported devices
+    }
+
+    signOut();
+    router.replace(
+      `/login?authToast=register-success&username=${encodeURIComponent(result.account.username)}`,
+    );
   }
 
   return (
@@ -240,109 +246,3 @@ function Field({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#08101f",
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  card: {
-    backgroundColor: "#0f1a2a",
-    borderRadius: 24,
-    padding: 22,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-  },
-  brandRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  brandMark: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#79a8ff",
-  },
-  kicker: {
-    color: "#79a8ff",
-    fontSize: 12,
-    letterSpacing: 1.6,
-    fontWeight: "800",
-  },
-  title: {
-    color: "#f8fafc",
-    fontSize: 26,
-    fontWeight: "800",
-    marginTop: 2,
-  },
-  subtitle: {
-    color: "#cbd5e1",
-    marginTop: 12,
-    lineHeight: 20,
-  },
-  fieldGroup: {
-    marginTop: 16,
-  },
-  label: {
-    color: "#e2e8f0",
-    fontSize: 13,
-    marginBottom: 8,
-    fontWeight: "700",
-  },
-  inputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    backgroundColor: "#091122",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  inputWrapError: {
-    borderColor: "rgba(239,124,84,0.8)",
-  },
-  input: {
-    flex: 1,
-    color: "#f8fafc",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  errorText: {
-    color: "#ff9c9c",
-    marginTop: 6,
-    fontSize: 12,
-  },
-  submitButton: {
-    marginTop: 20,
-    backgroundColor: "#79a8ff",
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  submitButtonPressed: {
-    backgroundColor: "#92bbff",
-  },
-  submitButtonText: {
-    color: "#071122",
-    fontWeight: "900",
-    fontSize: 16,
-  },
-  linkWrap: {
-    marginTop: 18,
-    alignItems: "center",
-  },
-  link: {
-    color: "#f8fafc",
-    fontWeight: "700",
-  },
-});
