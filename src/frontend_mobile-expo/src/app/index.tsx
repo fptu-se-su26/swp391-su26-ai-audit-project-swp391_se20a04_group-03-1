@@ -1,5 +1,16 @@
-import { Redirect } from 'expo-router';
+import { useEffect } from "react";
+import { useRouter } from "expo-router";
+
+import { useAuth } from "@/shared/state/auth";
 
 export default function Index() {
-  return <Redirect href={'/(tabs)' as any} />
+  const router = useRouter();
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (!auth.isReady) return;
+    router.replace(auth.isAuthenticated ? "/(tabs)" : "/login");
+  }, [auth.isAuthenticated, auth.isReady, router]);
+
+  return null;
 }

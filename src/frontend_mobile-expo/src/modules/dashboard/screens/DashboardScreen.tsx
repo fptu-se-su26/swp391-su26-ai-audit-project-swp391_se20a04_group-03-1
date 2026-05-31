@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Pressable, Text, View, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenShell } from "@/shared/components/layout/ScreenShell";
 import { Snackbar } from "@/shared/components/feedback/Snackbar";
 import { subscribeToScanResults } from "@/shared/api/portal-api";
@@ -12,9 +12,11 @@ type GateState = "waiting" | "success" | "error";
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ authToast?: string }>();
   const [gateState, setGateState] = useState<GateState>("waiting");
   const [snackVisible, setSnackVisible] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  const [loginToastVisible, setLoginToastVisible] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
 
   const gateStatus = useMemo(() => {
@@ -45,6 +47,16 @@ export default function DashboardScreen() {
         };
     }
   }, [gateState]);
+
+  useEffect(() => {
+    if (params.authToast === "login-success") {
+      setLoginToastVisible(true);
+      const timer = setTimeout(() => setLoginToastVisible(false), 2600);
+      return () => clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [params.authToast]);
 
   useEffect(() => {
     // Only subscribe to scan results while the QR modal is open. This avoids
@@ -167,6 +179,15 @@ export default function DashboardScreen() {
           3. Bảo vệ quét mã — ứng dụng sẽ nhận thông báo kết quả tự động.
         </Text>
       </View>
+
+      <Snackbar
+        position="top-right"
+        visible={loginToastVisible}
+        message="Đăng nhập thành công"
+        variant="success"
+        onDismiss={() => setLoginToastVisible(false)}
+        duration={2600}
+      />
 
       <Snackbar
         visible={snackVisible}

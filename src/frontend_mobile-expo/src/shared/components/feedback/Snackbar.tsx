@@ -15,12 +15,12 @@
  * />
  * ```
  */
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { MotiView, AnimatePresence } from 'moti';
-import { Ionicons } from '@expo/vector-icons';
-import { palette, radii, spacing } from '@/shared/theme';
-import { Button } from '../Button';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { MotiView, AnimatePresence } from "moti";
+import { Ionicons } from "@expo/vector-icons";
+import { palette, radii, spacing } from "@/shared/theme";
+import { Button } from "../Button";
 
 interface SnackbarProps {
   /** Whether the snackbar is visible */
@@ -28,7 +28,9 @@ interface SnackbarProps {
   /** The message to display */
   message: string;
   /** Visual tone for the snackbar */
-  variant?: 'neutral' | 'success' | 'error';
+  variant?: "neutral" | "success" | "error";
+  /** Screen position of the toast */
+  position?: "bottom" | "top-right";
   /** Callback when the snackbar is dismissed */
   onDismiss: () => void;
   /** Optional undo callback — shows an "Undo" button if provided */
@@ -40,7 +42,8 @@ interface SnackbarProps {
 export function Snackbar({
   visible,
   message,
-  variant = 'neutral',
+  variant = "neutral",
+  position = "bottom",
   onDismiss,
   onUndo,
   duration = 4000,
@@ -58,41 +61,57 @@ export function Snackbar({
           from={{ opacity: 0, translateY: 60 }}
           animate={{ opacity: 1, translateY: 0 }}
           exit={{ opacity: 0, translateY: 60 }}
-          transition={{ type: 'spring', damping: 18, stiffness: 200 }}
-          style={styles.wrapper}
+          transition={{ type: "spring", damping: 18, stiffness: 200 }}
+          style={
+            position === "top-right"
+              ? styles.wrapperTopRight
+              : styles.wrapperBottom
+          }
         >
           <View
             style={[
               styles.container,
-              variant === 'success' && styles.containerSuccess,
-              variant === 'error' && styles.containerError,
+              variant === "success" && styles.containerSuccess,
+              variant === "error" && styles.containerError,
             ]}
           >
             <View style={styles.left}>
               <View style={styles.iconBox}>
                 <Ionicons
-                  name={variant === 'success' ? 'checkmark-circle' : variant === 'error' ? 'alert-circle' : 'notifications'}
+                  name={
+                    variant === "success"
+                      ? "checkmark-circle"
+                      : variant === "error"
+                        ? "alert-circle"
+                        : "notifications"
+                  }
                   size={16}
-                  color={variant === 'success' ? '#7df0c6' : variant === 'error' ? '#ff9c9c' : palette.accent}
+                  color={
+                    variant === "success"
+                      ? "#7df0c6"
+                      : variant === "error"
+                        ? "#ff9c9c"
+                        : palette.accent
+                  }
                 />
               </View>
               <View style={styles.textGroup}>
                 <Text
                   style={[
                     styles.message,
-                    variant === 'success' && styles.messageSuccess,
-                    variant === 'error' && styles.messageError,
+                    variant === "success" && styles.messageSuccess,
+                    variant === "error" && styles.messageError,
                   ]}
                   numberOfLines={2}
                 >
                   {message}
                 </Text>
                 <Text style={styles.hint}>
-                  {variant === 'success'
-                    ? 'Cổng đã ghi nhận mã hợp lệ.'
-                    : variant === 'error'
-                    ? 'Vui lòng kiểm tra lại mã và thử lại.'
-                    : 'Hoàn tác sẽ khôi phục trạng thái trước đó.'}
+                  {variant === "success"
+                    ? "Cổng đã ghi nhận mã hợp lệ."
+                    : variant === "error"
+                      ? "Vui lòng kiểm tra lại mã và thử lại."
+                      : "Hoàn tác sẽ khôi phục trạng thái trước đó."}
                 </Text>
               </View>
             </View>
@@ -121,50 +140,58 @@ export function Snackbar({
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    position: 'absolute',
+  wrapperBottom: {
+    position: "absolute",
     bottom: 24,
     left: 16,
     right: 16,
     zIndex: 50,
   },
+  wrapperTopRight: {
+    position: "absolute",
+    top: 20,
+    right: 16,
+    width: 320,
+    maxWidth: "92%",
+    zIndex: 60,
+  },
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: spacing.md,
     borderRadius: radii.lg,
     borderWidth: 1,
     borderColor: palette.borderSoft,
     backgroundColor: `${palette.surface}F2`, // 95% opacity
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   containerSuccess: {
-    borderColor: 'rgba(125, 240, 198, 0.32)',
-    backgroundColor: '#0f3b2cf2',
+    borderColor: "rgba(125, 240, 198, 0.32)",
+    backgroundColor: "#0f3b2cf2",
   },
   containerError: {
-    borderColor: 'rgba(255, 156, 156, 0.32)',
-    backgroundColor: '#3d1f25f2',
+    borderColor: "rgba(255, 156, 156, 0.32)",
+    backgroundColor: "#3d1f25f2",
   },
   left: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
   },
   iconBox: {
     width: 32,
     height: 32,
     borderRadius: radii.sm,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255,255,255,0.05)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   textGroup: {
     flex: 1,
@@ -172,13 +199,13 @@ const styles = StyleSheet.create({
   message: {
     color: palette.text,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   messageSuccess: {
-    color: '#e7fff6',
+    color: "#e7fff6",
   },
   messageError: {
-    color: '#fff1f1',
+    color: "#fff1f1",
   },
   hint: {
     color: palette.textSubtle,
@@ -186,8 +213,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
   },
 });

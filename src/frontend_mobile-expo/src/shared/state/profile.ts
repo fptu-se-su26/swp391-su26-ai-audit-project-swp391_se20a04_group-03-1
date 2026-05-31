@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Profile = {
   fullName: string;
@@ -39,19 +40,67 @@ const DEFAULT_PROFILE: Profile = {
 
 let profileState: Profile = DEFAULT_PROFILE;
 
+const subscribers: Array<(p: Profile) => void> = [];
+const STORAGE_KEY = "@app:driver_profile_v1";
+
+async function loadProfileFromStorage() {
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Profile;
+      profileState = { ...DEFAULT_PROFILE, ...parsed };
+      subscribers.forEach((s) => {
+        try {
+          s(profileState);
+        } catch (e) {
+          // ignore
+        }
+      });
+    }
+  } catch (e) {
+    // ignore storage errors
+  }
+}
+
+// kick off async load (fire-and-forget)
+loadProfileFromStorage();
+
 export function getProfile(): Profile {
   return profileState;
 }
 
 export function setProfile(p: Profile) {
   profileState = p;
+  // notify subscribers
+  subscribers.forEach((s) => {
+    try {
+      s(profileState);
+    } catch (e) {
+      // swallow subscriber errors
+    }
+  });
+  // persist in background
+  (async () => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(profileState));
+    } catch (e) {
+      // ignore
+    }
+  })();
 }
 
-// Lightweight hook for components that want reactive updates in future.
+// Lightweight hook for components to get reactive profile updates
 export function useProfile() {
-  const [, setTick] = useState(0);
+  const [local, setLocal] = useState<Profile>(profileState);
   useEffect(() => {
-    // no-op for now; placeholder for subscription-based updates
+    const sub = (p: Profile) => setLocal(p);
+    subscribers.push(sub);
+    // sync initial
+    setLocal(profileState);
+    return () => {
+      const idx = subscribers.indexOf(sub);
+      if (idx >= 0) subscribers.splice(idx, 1);
+    };
   }, []);
-  return getProfile();
+  return local;
 }
