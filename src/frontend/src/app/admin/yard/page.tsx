@@ -82,12 +82,20 @@ export default function YardPage() {
             Quản lý các bãi đỗ, kết nối Camera và cấu hình ô đỗ xe thông minh.
           </p>
         </div>
-        <Link href="/admin/yard/create">
-          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all duration-200">
-            <Plus className="h-4 w-4" />
-            Tạo bãi đỗ mới
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/yard/create">
+            <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all duration-200">
+              <Plus className="h-4 w-4" />
+              Tạo bãi đỗ mới
+            </Button>
+          </Link>
+          <Link href="/admin/yard/trash">
+            <Button variant="outline" className="gap-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:text-red-700">
+              <Trash2 className="h-4 w-4" />
+              Thùng rác
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {error && (

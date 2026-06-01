@@ -14,6 +14,7 @@ import {
   BarChart3,
   X,
   Building2,
+  IdCard,
 } from "lucide-react"
 
 interface SidebarProps {
@@ -36,6 +37,11 @@ const menuItems = [
     label: "Quản lý công ty",
     href: "/admin/companies",
     icon: Building2,
+  },
+  {
+    label: "Quản lý tài xế",
+    href: "/admin/drivers",
+    icon: IdCard,
   },
   {
     label: "Quản lý cổng",
@@ -75,7 +81,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed left-0 top-16 bottom-0 w-64 border-r border-slate-200/60 dark:border-slate-800 bg-white dark:bg-[#1e293b] p-4 transition-transform duration-200 lg:relative lg:top-0 lg:translate-x-0",
+          "fixed left-0 top-16 bottom-0 w-64 border-r border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 transition-transform duration-200 lg:relative lg:top-0 lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

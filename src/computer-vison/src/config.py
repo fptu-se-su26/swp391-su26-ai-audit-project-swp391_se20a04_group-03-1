@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 # API / Server Configuration
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000/api/gate/scan")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000/api/scan")
 FLASK_HOST = os.getenv("FLASK_HOST", "0.0.0.0")
 FLASK_PORT = int(os.getenv("FLASK_PORT", 5001))
 

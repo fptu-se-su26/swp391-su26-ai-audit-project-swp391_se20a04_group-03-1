@@ -59,6 +59,7 @@ GLOBAL_MODELS_LOADED = False
 GLOBAL_MODEL_LOCK = threading.Lock()
 
 GLOBAL_OCR_QUEUE = Queue(maxsize=50)
+GLOBAL_CONTAINER_OCR_QUEUE = Queue(maxsize=50)
 GLOBAL_OCR_THREAD_STARTED = False
 GLOBAL_OCR_EXEC_LOCK = threading.Lock()
 
@@ -73,6 +74,7 @@ def get_ocr():
             
         if not GLOBAL_OCR_THREAD_STARTED:
             threading.Thread(target=global_ocr_worker, daemon=True).start()
+            threading.Thread(target=global_container_ocr_worker, daemon=True).start()
             GLOBAL_OCR_THREAD_STARTED = True
             
     return GLOBAL_OCR_READER
@@ -82,7 +84,7 @@ def global_ocr_worker():
         task = GLOBAL_OCR_QUEUE.get()
         if task is None: break
         
-        track_state_dict, track_id, cropped_plate, gate_type = task
+        track_state_dict, track_id, cropped_plate, gate_type, camera_ip = task
         
         if track_id not in track_state_dict or track_state_dict[track_id]["ocr_status"] == "done":
             GLOBAL_OCR_QUEUE.task_done()
@@ -119,7 +121,7 @@ def global_ocr_worker():
                     track_state_dict[track_id]["ocr_status"] = "done"
                     track_state_dict[track_id]["color"] = (0, 255, 0)
                     print(f"\n[OCR ỔN ĐỊNH] ID: {track_id} | BIỂN SỐ: {best_plate}")
-                    send_scan_event(best_plate, "plate", 1.0, gate_type)
+                    send_scan_event(best_plate, "plate", 1.0, gate_type, camera_ip)
                 else:
                     track_state_dict[track_id]["ocr_status"] = "pending"
                     track_state_dict[track_id]["color"] = (0, 255, 255)
@@ -129,10 +131,30 @@ def global_ocr_worker():
                 
         GLOBAL_OCR_QUEUE.task_done()
 
+def global_container_ocr_worker():
+    while True:
+        task = GLOBAL_CONTAINER_OCR_QUEUE.get()
+        if task is None: break
+        
+        cropped_container, gate_type, camera_ip = task
+        
+        with GLOBAL_OCR_EXEC_LOCK:
+            ocr_results = GLOBAL_OCR_READER.readtext(cropped_container)
+            
+        for (bbox, text, prob) in ocr_results:
+            if prob >= OCR_CONFIDENCE_THRESHOLD:
+                clean_text = text.strip().upper()
+                if len(clean_text) >= 4:
+                    print(f"\\n[CONTAINER OCR] TEXT: {clean_text} | PROB: {prob}")
+                    send_scan_event(clean_text, "container", prob, gate_type, camera_ip)
+                    
+        GLOBAL_CONTAINER_OCR_QUEUE.task_done()
+
 class AIProcessor:
-    def __init__(self, gate_type="in"):
+    def __init__(self, gate_type="in", camera_ip=None):
         self.ocr_reader = get_ocr()
         self.gate_type = gate_type
+        self.camera_ip = camera_ip
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         
         # Load independent YOLO instances to isolate Tracker states
@@ -167,7 +189,7 @@ class AIProcessor:
             try:
                 yolo_results = self.plate_model.track(
                     frame, persist=True, tracker="bytetrack.yaml", 
-                    device=self.device, verbose=False, conf=0.35, imgsz=1024
+                    device=self.device, verbose=False, conf=0.35, imgsz=640
                 )
                 
                 if yolo_results and len(yolo_results) > 0 and yolo_results[0].boxes is not None:
@@ -212,7 +234,7 @@ class AIProcessor:
                                     cropped_plate = frame[y1_org:y2_org, x1_org:x2_org]
                                     if cropped_plate.size > 0 and not GLOBAL_OCR_QUEUE.full():
                                         state["ocr_status"] = "processing"
-                                        GLOBAL_OCR_QUEUE.put((self.track_state, track_id, cropped_plate, self.gate_type))
+                                        GLOBAL_OCR_QUEUE.put((self.track_state, track_id, cropped_plate, self.gate_type, self.camera_ip))
                                 
                                 display_text = f"ID:{track_id} - {state['plate_text'] if state['plate_text'] else 'SCANNING'}"
                                 
@@ -261,14 +283,8 @@ class AIProcessor:
                             y2_org = int(y2 * h_orig / 600)
                             
                             cropped_container = frame[y1_org:y2_org, x1_org:x2_org]
-                            if cropped_container.size > 0:
-                                with GLOBAL_OCR_EXEC_LOCK:
-                                    ocr_results = self.ocr_reader.readtext(cropped_container)
-                                for (bbox, text, prob) in ocr_results:
-                                    if prob >= OCR_CONFIDENCE_THRESHOLD:
-                                        clean_text = text.strip().upper()
-                                        if len(clean_text) >= 4:
-                                            send_scan_event(clean_text, "container", prob, self.gate_type)
+                            if cropped_container.size > 0 and not GLOBAL_CONTAINER_OCR_QUEUE.full():
+                                GLOBAL_CONTAINER_OCR_QUEUE.put((cropped_container, self.gate_type, self.camera_ip))
                 
                 # Draw container boxes from cache
                 for (x1, y1, x2, y2, conf) in self.last_container_boxes:

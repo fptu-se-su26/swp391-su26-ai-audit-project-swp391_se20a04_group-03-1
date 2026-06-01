@@ -397,12 +397,12 @@ export default function HomePage() {
                 <div className="absolute w-56 h-56 border border-indigo-500/10 dark:border-indigo-500/5 rounded-full animate-ping [animation-delay:1s] pointer-events-none" />
 
                 {/* Floating tech nodes */}
-                <div className="absolute -top-4 -left-2 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-800 rounded-2xl p-2.5 shadow-lg flex items-center gap-2 transform -rotate-6 hover:rotate-0 transition-transform duration-300">
+                <div className="absolute -top-4 -left-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2.5 shadow-lg flex items-center gap-2 transform -rotate-6 hover:rotate-0 transition-transform duration-300">
                   <Cpu className="h-4 w-4 text-emerald-500" />
                   <span className="text-[10px] font-black uppercase tracking-wider">YOLOv8 AI</span>
                 </div>
 
-                <div className="absolute bottom-2 -right-4 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-800 rounded-2xl p-2.5 shadow-lg flex items-center gap-2 transform rotate-12 hover:rotate-0 transition-transform duration-300">
+                <div className="absolute bottom-2 -right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2.5 shadow-lg flex items-center gap-2 transform rotate-12 hover:rotate-0 transition-transform duration-300">
                   <Layers className="h-4 w-4 text-indigo-500" />
                   <span className="text-[10px] font-black uppercase tracking-wider">Yard Slot Optimizer</span>
                 </div>
@@ -930,9 +930,9 @@ export default function HomePage() {
               Được nghiên cứu và phát triển bởi Nhóm 03 - lớp SE20A04 trong học kỳ mùa hè năm 2026.
             </p>
             <div className="flex gap-2.5 mt-2 flex-wrap">
-              <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800/50 text-[10px] font-mono text-slate-500 dark:text-slate-400 border dark:border-slate-800">SWP391_SE20A04</span>
-              <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800/50 text-[10px] font-mono text-slate-500 dark:text-slate-400 border dark:border-slate-800">FPT University</span>
-              <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800/50 text-[10px] font-mono text-slate-500 dark:text-slate-400 border dark:border-slate-800">Group 03</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-[10px] font-mono text-slate-500 dark:text-slate-400 border dark:border-slate-800">SWP391_SE20A04</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-[10px] font-mono text-slate-500 dark:text-slate-400 border dark:border-slate-800">FPT University</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-[10px] font-mono text-slate-500 dark:text-slate-400 border dark:border-slate-800">Group 03</span>
             </div>
           </div>
 
@@ -966,7 +966,7 @@ export default function HomePage() {
               <Input 
                 type="email" 
                 placeholder="Nhập email của bạn..." 
-                className="rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 text-xs font-medium focus-visible:ring-indigo-500 h-9 shrink-0 flex-1"
+                className="rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-medium focus-visible:ring-indigo-500 h-9 shrink-0 flex-1"
               />
               <Button size="sm" className="bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl h-9 cursor-pointer">
                 Gửi

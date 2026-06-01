@@ -4,7 +4,9 @@ import appointmentRouter from "./appointments.route";
 import yardRouter from "./yards.route";
 import companyRouter from "./companies.route";
 import gateRouter from "./gates.route";
+import driversRouter from "./drivers.route";
 import { requireAuth } from "../middlewares/auth.middleware";
+import scanRouter from "./scan.route";
 
 const rootRouter = Router();
 
@@ -14,9 +16,7 @@ rootRouter.use("/appointments", requireAuth, appointmentRouter);
 rootRouter.use("/yards", requireAuth, yardRouter);
 rootRouter.use("/companies", requireAuth, companyRouter);
 rootRouter.use("/gates", requireAuth, gateRouter);
-
-import * as scanController from "../controllers/scan.controller";
-rootRouter.post("/gate/scan", scanController.scanPost);
-rootRouter.get("/gate/logs", scanController.getLogs);
+rootRouter.use("/drivers", requireAuth, driversRouter);
+rootRouter.use("/scan", scanRouter);
 
 export default rootRouter;

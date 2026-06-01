@@ -8,12 +8,9 @@ const appointmentSchema = new Schema(
       uppercase: true,
       required: true,
     },
-    driverName: {
-      type: String,
-      required: true,
-    },
-    driverPhone: {
-      type: String,
+    driverId: {
+      type: Schema.Types.ObjectId,
+      ref: "Driver",
       required: true,
     },
     containerNo: {

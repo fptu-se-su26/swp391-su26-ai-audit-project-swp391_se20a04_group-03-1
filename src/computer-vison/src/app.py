@@ -90,7 +90,7 @@ def video_capture_loop():
     print(f"[Server] Starting background camera capture thread (Camera Index: {CAMERA_INDEX})...")
     
     try:
-        processor = AIProcessor()
+        processor = AIProcessor(camera_ip=str(CAMERA_INDEX))
     except Exception as e:
         print(f"[Server] CRITICAL: Failed to initialize AI Processor: {e}")
         camera_status = f"AI Init Error: {e}"
@@ -107,6 +107,8 @@ def video_capture_loop():
         camera_status = "Connected"
         print(f"[Server] Camera capture active on device {CAMERA_INDEX}")
         
+        last_process_time = 0
+        
         while camera_running and reader.isOpened():
             ret, frame = reader.read_latest()
             if not ret:
@@ -115,6 +117,12 @@ def video_capture_loop():
                 break
             if frame is None:
                 continue
+                
+            current_time = time.time()
+            if current_time - last_process_time < 0.2: # 5 FPS limit
+                time.sleep(0.01)
+                continue
+            last_process_time = current_time
                 
             try:
                 # 1. Process frame with YOLO and EasyOCR
@@ -211,7 +219,7 @@ def index():
 
 def verify_auth(token):
     try:
-        backend_api = BACKEND_URL.replace("/gate/scan", "") 
+        backend_api = BACKEND_URL.replace("/scan", "") 
         cookies = {"tokenAdmin": token}
         res = requests.get(f"{backend_api}/yards", cookies=cookies, timeout=2.0)
         data = res.json()
@@ -299,7 +307,7 @@ def gate_capture_worker(rtsp_url, gate_type="in"):
     from src.services.ai_processor import AIProcessor
     
     try:
-        processor = AIProcessor(gate_type=gate_type)
+        processor = AIProcessor(gate_type=gate_type, camera_ip=rtsp_url)
     except Exception as e:
         print(f"[Gate Feed Worker] CRITICAL: Failed to initialize AI Processor: {e}")
         if rtsp_url in active_gate_streams:
@@ -454,7 +462,7 @@ def yard_capture_worker(yard_id, camera_ip):
             print(f"[Yard Feed Worker] Trạng thái bãi {yard_id} thay đổi! Gửi webhook...")
             try:
                 payload = { "occupied_slots": list(occupied_slots) }
-                backend_api_base = BACKEND_URL.replace("/gate/scan", "") 
+                backend_api_base = BACKEND_URL.replace("/scan", "") 
                 webhook_url = f"{backend_api_base}/yards/{yard_id}/sync-status"
                 requests.post(webhook_url, json=payload, timeout=2.0)
             except Exception as e:
@@ -500,7 +508,7 @@ def yard_feed():
     )
 
 def sync_cameras_worker():
-    backend_api = BACKEND_URL.replace("/gate/scan", "")
+    backend_api = BACKEND_URL.replace("/scan", "")
     headers = {"x-internal-secret": "AI_SERVER_SECRET_KEY"}
     
     while camera_running:

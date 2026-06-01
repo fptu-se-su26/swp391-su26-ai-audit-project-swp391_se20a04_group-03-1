@@ -162,7 +162,7 @@ export default function EditCompanyPage({
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/admin/companies">
-          <Button variant="outline" size="icon" className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+          <Button variant="outline" size="icon" className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
@@ -191,7 +191,7 @@ export default function EditCompanyPage({
       )}
 
       <Card className="border border-slate-200 shadow-lg dark:border-slate-800">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-900/50 dark:border-slate-800/80">
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-900 dark:border-slate-800/80">
           <CardTitle className="text-slate-900 dark:text-white">Thông tin chi tiết</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
@@ -261,7 +261,7 @@ export default function EditCompanyPage({
             </div>
             <div className="flex gap-2 justify-end border-t border-slate-100 dark:border-slate-800/80 pt-4">
               <Link href="/admin/companies">
-                <Button type="button" variant="outline" className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                <Button type="button" variant="outline" className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800">
                   Hủy bỏ
                 </Button>
               </Link>

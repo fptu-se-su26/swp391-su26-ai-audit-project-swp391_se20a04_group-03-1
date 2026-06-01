@@ -23,7 +23,7 @@ def clean_expired_cooldowns():
     for key in expired_keys:
         del _cooldown_registry[key]
 
-def send_scan_event(text: str, scan_type: str, confidence: float, gate_type: str = "in") -> bool:
+def send_scan_event(text: str, scan_type: str, confidence: float, gate_type: str = "in", camera_ip: str = None) -> bool:
     """
     Sends a detected plate or container text to the NodeJS backend.
     Includes cooldown checks to prevent sending the same value continuously.
@@ -33,6 +33,7 @@ def send_scan_event(text: str, scan_type: str, confidence: float, gate_type: str
         scan_type (str): Type of scanning ('plate' or 'container').
         confidence (float): Confidence score of OCR detection (0.0 to 1.0).
         gate_type (str): The gate type where it was scanned ('in' or 'out').
+        camera_ip (str): The RTSP URL or IP of the camera.
         
     Returns:
         bool: True if the request was sent and succeeded, False otherwise (or if throttled).
@@ -60,6 +61,7 @@ def send_scan_event(text: str, scan_type: str, confidence: float, gate_type: str
         "type": scan_type,
         "confidence": round(confidence, 4),
         "status": gate_type, # sent to backend as status indicating gate type
+        "cameraIp": camera_ip,
         "timestamp": datetime.utcnow().isoformat() + "Z"
     }
     

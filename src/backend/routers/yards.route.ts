@@ -17,4 +17,8 @@ router.post("/:id/snapshot", yardController.takeYardSnapshotPost);
 router.delete("/:id", yardController.deleteYardDelete);
 router.post("/:id/sync-status", yardController.syncYardDataPost);
 
+router.get("/trash/list", yardController.yardsTrashGet);
+router.patch("/:id/restore", yardController.restoreYardPatch);
+router.delete("/:id/force", yardController.hardDeleteYardDelete);
+
 export default router;
