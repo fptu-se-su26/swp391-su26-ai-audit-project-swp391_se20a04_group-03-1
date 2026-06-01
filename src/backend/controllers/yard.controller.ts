@@ -220,8 +220,9 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
     }
 
     // 1. Fetch snapshot from AI server
+    const pythonApiUrl = process.env.PYTHON_API_URL || "http://127.0.0.1:5001";
     const aiResponse = await fetch(
-      `http://127.0.0.1:5001/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`,
+      `${pythonApiUrl}/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`,
     );
     if (!aiResponse.ok) {
       return res.json({

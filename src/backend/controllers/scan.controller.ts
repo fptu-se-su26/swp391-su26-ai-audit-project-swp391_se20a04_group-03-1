@@ -7,7 +7,8 @@ import streamifier from "streamifier";
 
 const captureAndSaveImageAsync = async (transactionId: string, cameraIp: string) => {
   try {
-    const aiResponse = await fetch(`http://127.0.0.1:5001/snapshot?rtsp_url=${encodeURIComponent(cameraIp)}`);
+    const pythonApiUrl = process.env.PYTHON_API_URL || "http://127.0.0.1:5001";
+    const aiResponse = await fetch(`${pythonApiUrl}/snapshot?rtsp_url=${encodeURIComponent(cameraIp)}`);
     if (!aiResponse.ok) return;
 
     const arrayBuffer = await aiResponse.arrayBuffer();
