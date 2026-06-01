@@ -58,7 +58,7 @@ Sinh viên/nhóm cần ghi lại:
 |   4 | 24/05/2026 | Antigravity              | Tạo tính năng quét biển số - demo               | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8                                                                                                                                                       | Đã nhận diện được biển số cơ bản                  | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
 |   5 | 27/05/2026 | Gemini                   | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi                                                                                                                                                                   | Đã có được module quản lí bãi cơ bản              | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
 |   6 | 24/05/2026 | Antigravity              | Xử lí module quản lí đặt lịch hẹn               | Hướng dẫn các tính năng của quản lí đặt lịch hẹn                                                                                                                                                                       | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
-|   7 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
+|   7 |  25/05/2026        |  Github Copilot/Gemini                        |   Xây dựng cấu trúc thư mục và triển khai các trang cần thiết cho mobile app           | Bạn hãy đóng vai là senior với 10 năm kinh nghiệm phát triển dự án react native mobile app, hãy xây dựng cho tôi cấu trúc thư mục chuẩn cho dự án của tôi và triển khai các trang cần thiết cho dự án mobile                                   |                                                   | Có            |            https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/d025e5fd221ea04336efd89c42373eac053b6794              |
 |   8 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
 |   9 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
 |  10 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                   | Có / Không                |                                                                                                                                        |
@@ -967,35 +967,117 @@ Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI
 
 ---
 
-## 6. Prompt quan trọng nhất
+### Prompt số 7
+
+| Nội dung            | Thông tin                         |
+| ------------------- | --------------------------------- |
+| Ngày sử dụng        | 25/05/2026                        |
+| Công cụ AI          | GithubCoplilot, Gemini                    |
+| Mục đích            | Xây dựng trang dashboard, với chức năng hiện thị mã QR để quản lý xe quét mã |
+| Phần việc liên quan | Coding                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                     |
+| Phần liên quan      |                                   |
+
+#### 7.1. Prompt nguyên văn
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 7.2. Bối cảnh khi viết prompt
+
+```text
+--- Bắt đầu xây dựng một ứng dụng di động cho tài xế, tâi xế cần một ứng dụng để dễ dàng xác thực, dễ dàng quản lý từ phía nhà xe
+--- Tài xế phải được xác thực thông tin trước khi vào bãi đỗ xe, đàm bảo tính bảo mật và dễ quản lý xe ra vào
+--- Tài xế được cấp một mã QR nhằm để xác thực, mã QR được sinh ra từ phía quản lý nhà xe khi tạo lịch đỗ xe ứng với thông tin người tài xế
+--- Tài xế chỉ được show mã và không thực hiện bất kỳ một tác vụ nào chỉ được xem và show mã QR
+```
+
+#### 7.3. Kết quả AI trả về
+
+```text
+Kết luận chung: Đa phần AI trả về theo đúng kết quả kỳ vọng, tuy nhiên vẫn còn rất nhiều điểm chưa ưng ý, đủ đáp ứng yêu cầu toàn phần từ phía người dùng
+1. Trang dashboard sau khi thiết kế, trả về kết quả như sau:
+	1.1 Giao diện:
+		Giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+	1.2 Về phần xử lý quét mã QR:
+		Hiểu được luồng hoạt động của trang. Khi tài xế mở app trang dashboard hiện lên, khung lớn của trang sẽ chứa phần để quét mã QR. Tài xế nhấn vào button thì sẽ hiển thị mã QR với các thông tin dành cho tài xế và lái xe
+2. Phần điều hướng đến các trang còn lại
+	2.1 Kết quả: Giao diện có trả về phần footer mà một block gồm các href được style phù hợp đế điều hướng đến các trang cần thiết
+		
+```
+
+#### 7.4. Kết quả đã áp dụng vào bài
+
+```text
+		Áp dụng giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+		Áp dụng phần tính năng xử lý nghiệp vụ mã QR
+		Áp dụng phần điều hướng, phân trang để điều hướng tới các trang tiếp theo
+```
+#### 7.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Github Copilot) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: bố cục các block, layouts của trang dashboard để nhìn đẹp mắt
+```
+#### 7.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 7.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                         |
+| File liên quan        | `src\frontend_mobile-expo\src\modules\dashboard\screens\DashboardScreen.tsx` |
+| Screenshot            | (Ảnh màn hình trang dashboard với tính năng hiển thị mã QR)                                                          |
+| Kết quả chạy/test     | Form validate chính xác, phân bổ bố cục các block hợp lý, layouts các thư viện shadcin UI được sửu dụng để đẹp mắt       |
+| Link tài liệu/báo cáo |                                                                                                         |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                 |
+
+#### 7.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi bắt đầu thiết kế 1 trang, việc yêu cầu AI thiết kế giao diện cần cung cấp đầy đủ thư viện phù hợp, không install quá nhiều thư viện không cần thiết
+```
+
+---
+
+## 8. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.
 
-### 6.1. Prompt được chọn
+### 8.1. Prompt được chọn
 
 ```text
 Dán prompt quan trọng nhất tại đây.
 ```
 
-### 6.2. Vì sao prompt này quan trọng?
+### 8.2. Vì sao prompt này quan trọng?
 
 ```text
 Viết tại đây...
 ```
 
-### 6.3. Kết quả prompt này mang lại
+### 8.3. Kết quả prompt này mang lại
 
 ```text
 Viết tại đây...
 ```
 
-### 6.4. Sinh viên/nhóm đã kiểm tra kết quả như thế nào?
+### 8.4. Sinh viên/nhóm đã kiểm tra kết quả như thế nào?
 
 ```text
 Viết tại đây...
 ```
 
-### 6.5. Sinh viên/nhóm đã cải tiến gì từ kết quả AI?
+### 8.5. Sinh viên/nhóm đã cải tiến gì từ kết quả AI?
 
 ```text
 Viết tại đây...
@@ -1003,17 +1085,17 @@ Viết tại đây...
 
 ---
 
-## 7. Prompt chưa hiệu quả
+## 9. Prompt chưa hiệu quả
 
 Ghi lại ít nhất một prompt chưa tạo ra kết quả tốt hoặc chưa phù hợp.
 
-### 7.1. Prompt chưa hiệu quả
+### 9.1. Prompt chưa hiệu quả
 
 ```text
 Dán prompt chưa hiệu quả tại đây.
 ```
 
-### 7.2. Vì sao prompt này chưa hiệu quả?
+### 9.2. Vì sao prompt này chưa hiệu quả?
 
 ```text
 Viết tại đây...
@@ -1030,19 +1112,19 @@ Gợi ý nguyên nhân:
 - Không yêu cầu AI giải thích.
 - Hỏi AI làm toàn bộ thay vì hỏi từng phần.
 
-### 7.3. Cách cải thiện prompt
+### 9.3. Cách cải thiện prompt
 
 ```text
 Viết tại đây...
 ```
 
-### 7.4. Prompt sau khi cải tiến
+### 9.4. Prompt sau khi cải tiến
 
 ```text
 Dán prompt đã được cải tiến tại đây.
 ```
 
-### 7.5. Kết quả sau khi cải tiến prompt
+### 9.5. Kết quả sau khi cải tiến prompt
 
 ```text
 Viết tại đây...
@@ -1050,9 +1132,9 @@ Viết tại đây...
 
 ---
 
-## 8. Bài học về cách viết prompt
+## 10. Bài học về cách viết prompt
 
-### 8.1. Khi viết prompt, em/nhóm cần cung cấp thông tin gì để AI trả lời tốt hơn?
+### 10.1. Khi viết prompt, em/nhóm cần cung cấp thông tin gì để AI trả lời tốt hơn?
 
 ```text
 Viết tại đây...
@@ -1069,13 +1151,13 @@ Gợi ý:
 - Format kết quả mong muốn.
 - Yêu cầu AI giải thích từng bước.
 
-### 8.2. Em/nhóm đã học được gì về cách đặt câu hỏi cho AI?
+### 10.2. Em/nhóm đã học được gì về cách đặt câu hỏi cho AI?
 
 ```text
 Viết tại đây...
 ```
 
-### 8.3. Lần sau em/nhóm sẽ cải thiện prompt như thế nào?
+### 10.3. Lần sau em/nhóm sẽ cải thiện prompt như thế nào?
 
 ```text
 Viết tại đây...
@@ -1083,7 +1165,7 @@ Viết tại đây...
 
 ---
 
-## 9. Phân loại prompt đã sử dụng
+## 11. Phân loại prompt đã sử dụng
 
 Đánh dấu số lượng prompt theo từng nhóm.
 
@@ -1104,7 +1186,7 @@ Viết tại đây...
 
 ---
 
-## 10. Checklist chất lượng prompt
+## 12. Checklist chất lượng prompt
 
 Sinh viên/nhóm tự kiểm tra chất lượng prompt đã dùng.
 
@@ -1123,7 +1205,7 @@ Sinh viên/nhóm tự kiểm tra chất lượng prompt đã dùng.
 
 ---
 
-## 11. Cam kết sử dụng prompt minh bạch
+## 13. Cam kết sử dụng prompt minh bạch
 
 Sinh viên/nhóm cam kết rằng:
 
