@@ -215,13 +215,13 @@ export default function GatePage() {
 
   const handleManualCheckout = async (id: string) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace("/api", "")
-        : "http://localhost:4000";
-      const res = await fetch(`${apiUrl}/api/scan/logs/${id}/checkout`, {
-        method: "PATCH",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/scan/logs/${id}/checkout`,
+        {
+          method: "PATCH",
+          credentials: "include",
+        },
+      );
       const data = await res.json();
       if (data.code === "success") {
         setSuccessMsg("Đã check-out thủ công thành công.");
