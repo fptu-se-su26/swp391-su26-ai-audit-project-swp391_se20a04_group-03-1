@@ -694,6 +694,116 @@ Viết tại đây...
 ```
 
 ---
+### Lần sử dụng AI số 5
+
+| Nội dung            | Thông tin                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| Ngày sử dụng        | 27/05/2026                                                                                       |
+| Công cụ AI          | Antigravity                                                                                      |
+| Mục đích sử dụng    | Phát triển tính năng quản lý bãi đỗ xe                                                           |
+| Phần việc liên quan | Coding                                                                                           |
+| Mức độ sử dụng      | Hỏi hướng triển khai + hỗ trợ code                                                               |
+| Phần liên quan      | Module quản lý bãi xe, cụ thể là file `admin.routes.ts`, `admin.controller.ts`, `admin.model.ts` |
+
+#### 5.1. Prompt đã sử dụng
+
+```text
+Ở trang bãi đỗ như tôi tưởng tượng thì sẽ có 1 đường liên kết tới trang tạo bãi đỗ, ở trang đó sẽ cấu hình tên bãi đỗ và địa chỉ của camera để truyền video-streaming.
+
+Khi tạo xong bãi đỗ, sẽ có thể cấu hình bãi đỗ bằng cách chụp một bức ảnh nền (Snapshot) từ IP Camera của bãi đó và hiển thị làm hình nền (Background), sau đó Admin tạo và kéo thả các khung hình chữ nhật vào đúng với ô đỗ trên hình và đặt tên từng ô đỗ.
+
+Vấn đề ở đây là tôi chưa có camera để có thể tạo và nhập IP Camera để stream tới bãi nhưng tôi muốn làm tính năng cấu hình bãi đỗ trước: admin có thể tạo, kéo thả chọn ô đỗ trước.
+
+Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận và xử lí kết quả backend trả về theo đúng chuẩn.
+```
+
+#### 5.2. Bối cảnh khi viết prompt
+
+```text
+- Đang phát triển module quản lý bãi đỗ xe (Yard Management) cho hệ thống cảng biển thông minh.
+- Cần xây dựng tính năng tạo bãi đỗ xe và cấu hình vị trí các ô đỗ trên sơ đồ.
+- Ý tưởng chính là sử dụng ảnh Snapshot từ IP Camera làm Background, sau đó Admin có thể kéo thả và vẽ các Bounding Box đại diện cho từng ô đỗ xe.
+- Tuy nhiên tại thời điểm phát triển nhóm chưa có camera thực tế nên cần ưu tiên hoàn thiện chức năng kéo thả và lưu tọa độ trước.
+- Ngoài Frontend, nhóm cũng cần xây dựng Backend API để lưu thông tin bãi đỗ và danh sách ô đỗ xe.
+- Yêu cầu validate dữ liệu form bằng thư viện `just-validate` trước khi gửi dữ liệu lên Backend.
+- Mong muốn AI đóng vai trò hỗ trợ định hướng triển khai tổng thể cả Frontend lẫn Backend thay vì chỉ sinh code đơn lẻ.
+```
+
+#### 5.3. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ gồm Frontend và Backend:
+
+1. **Frontend - Giao diện tạo bãi đỗ (`/admin/yard/create`)**
+   - Xây dựng form nhập liệu gồm: tên bãi đỗ, IP Camera, sức chứa,...
+   - Tích hợp thư viện `just-validate` để validate dữ liệu phía Client trước khi gọi API Backend.
+
+2. **Backend - API quản lý bãi đỗ**
+   - Đề xuất tạo schema `yard.model.ts` để lưu thông tin bãi đỗ và danh sách các ô đỗ (`slots`).
+   - Mỗi ô đỗ gồm các thuộc tính như: `x`, `y`, `width`, `height`, `name`.
+   - Gợi ý xây dựng Router và Controller phục vụ thao tác CRUD.
+
+3. **Frontend - Chức năng cấu hình ô đỗ (`/admin/yard/[id]/config`)**
+   - AI gợi ý sử dụng các sự kiện chuột của React (`onMouseDown`, `onMouseMove`, `onMouseUp`) để xây dựng tính năng kéo thả và vẽ Bounding Box.
+   - Tọa độ các ô đỗ được quy đổi sang phần trăm (%) để giữ đúng vị trí khi thay đổi kích thước màn hình hoặc responsive.
+   - Gợi ý hiển thị ảnh Snapshot từ camera làm Background để Admin dễ cấu hình sơ đồ bãi đỗ.
+
+4. **Hướng tích hợp Camera và AI**
+   - AI cũng gợi ý hướng xử lý Snapshot và Video Stream thông qua service riêng để kết nối với IP Camera trong tương lai.
+```
+
+#### 5.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng workflow và kiến trúc AI gợi ý để triển khai module quản lý bãi đỗ xe.
+- Xây dựng giao diện tạo bãi đỗ (`/yard/create`) và giao diện cấu hình ô đỗ (`/yard/[id]/config`).
+- Áp dụng logic kéo thả và vẽ Bounding Box trên ảnh bằng React.
+- Xây dựng Backend API gồm Router, Controller và Model cho module Yard.
+- Lưu danh sách tọa độ các ô đỗ xe lên MongoDB thông qua API `PATCH /yards/:id/slots`.
+- Sử dụng thư viện `just-validate` để validate dữ liệu nhập vào trước khi gửi lên Backend.
+- Áp dụng cơ chế quy đổi tọa độ sang phần trăm (%) để giao diện responsive khi thay đổi kích thước màn hình.
+```
+
+#### 5.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Chỉnh sửa lại giao diện Config Yard để phù hợp với UI tổng thể của hệ thống.
+- Thêm Dark Mode, danh sách ô đỗ bên phải và nút lưu đồng bộ dữ liệu.
+- Chủ động sửa các lỗi phát sinh liên quan đến camera stream và xung đột kết nối giữa các trang.
+- Bổ sung cơ chế giải phóng camera (`camera.release()`) khi thoát trang để tránh nhiều kết nối cùng lúc.
+- Tự mở rộng thêm cơ chế fallback sử dụng webcam máy tính khi IP Camera gặp sự cố kết nối.
+- Kiểm tra và chỉnh sửa lại logic responsive khi quy đổi tọa độ từ pixel sang phần trăm (%).
+- Tối ưu lại cách lưu dữ liệu Bounding Box để giảm lỗi sai vị trí khi tải lại trang.
+```
+
+#### 5.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [x] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 5.7. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                                 |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | Cập nhật sau...                                                                                                                          |
+| File liên quan    | `src/frontend/src/app/admin/yard/[id]/config/page.tsx`, `src/backend/controllers/yard.controller.ts`, `src/backend/models/yard.model.ts` |
+| Screenshot        | Ảnh giao diện vẽ ô đỗ và cấu hình bãi đỗ                                                                                                 |
+| Kết quả chạy/test | Chức năng vẽ hoạt động ổn định, gọi API thành công, lưu tọa độ đúng và giao diện responsive                                              |
+| Link video demo   |                                                                                                                                          |
+| Ghi chú khác      | AI hỗ trợ tốt trong phần xử lý kéo thả Bounding Box và định vị tọa độ responsive.                                                        |
+
+#### 5.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Với các module có UI phức tạp như kéo thả và xử lý tọa độ, việc yêu cầu AI phân tích workflow và hướng triển khai trước giúp nhóm hiểu rõ kiến trúc hệ thống hơn thay vì viết code ngay từ đầu. Điều này giúp giảm lỗi logic và dễ mở rộng tính năng trong tương lai.
+```
+
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
