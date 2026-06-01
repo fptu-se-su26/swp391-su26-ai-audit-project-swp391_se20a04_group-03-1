@@ -1,21 +1,39 @@
-FROM node:18-alpine
+# Stage 1: Build
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package.json
+# Copy package metadata
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install ALL dependencies (including devDependencies like typescript)
+RUN npm ci
 
 # Copy source code
 COPY . .
 
-# Expose port (assuming Express runs on 4000)
+# Compile TypeScript to JavaScript
+RUN npx tsc
+
+# Stage 2: Production
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Set Node environment to production
+ENV NODE_ENV=production
+
+# Copy package metadata
+COPY package*.json ./
+
+# Install ONLY production dependencies (reduces image size significantly)
+RUN npm ci --omit=dev
+
+# Copy compiled JavaScript from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Expose port 4000 for the backend API
 EXPOSE 4000
 
-# Start command
-# For production, it is recommended to compile TypeScript and run the JS output
-# Here we use ts-node to run directly for simplicity
-RUN npm install -g ts-node typescript
-CMD ["npx", "ts-node", "index.ts"]
+# Start the compiled application
+CMD ["node", "dist/index.js"]

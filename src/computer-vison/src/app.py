@@ -579,8 +579,8 @@ def start_server():
     global camera_running
     camera_running = True
     
-    capture_thread = threading.Thread(target=video_capture_loop, daemon=True)
-    capture_thread.start()
+    # capture_thread = threading.Thread(target=video_capture_loop, daemon=True)
+    # capture_thread.start()
     
     sync_thread = threading.Thread(target=sync_cameras_worker, daemon=True)
     sync_thread.start()

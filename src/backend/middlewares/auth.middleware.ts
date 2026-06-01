@@ -33,7 +33,16 @@ export const requireAuth = async (
     const activeVersion = await redisClient.get(`auth:session:${decoded.id}`);
     // So sánh Version trong Token gửi lên VÀ Version trong Redis
     if (!activeVersion || decoded.tokenVersion !== activeVersion) {
-      res.clearCookie("tokenAdmin"); // Xóa cookie rác ở client
+      res.clearCookie("tokenAdmin", {
+        httpOnly: true,
+        sameSite: "lax", //cho phep gui cookie linh hoat giua cac website
+        domain:
+          process.env.NODE_ENV === "production"
+            ? (process.env.COOKIE_DOMAIN ? process.env.COOKIE_DOMAIN.replace(/['"]/g, '').trim() : undefined)
+            : "localhost", // Thêm dấu chấm này để Token có hiệu lực ở mọi nơi
+        path: "/",
+        secure: process.env.NODE_ENV === "production", // https: true, http: false
+      });
       return res.json({
         code: "error",
         message: "Tài khoản của bạn đã được đăng nhập ở một thiết bị khác.",
@@ -43,7 +52,16 @@ export const requireAuth = async (
     req.user = decoded;
     next();
   } catch (error) {
-    res.clearCookie("tokenAdmin");
+    res.clearCookie("tokenAdmin", {
+      httpOnly: true,
+      sameSite: "lax", //cho phep gui cookie linh hoat giua cac website
+      domain:
+        process.env.NODE_ENV === "production"
+          ? (process.env.COOKIE_DOMAIN ? process.env.COOKIE_DOMAIN.replace(/['"]/g, '').trim() : undefined)
+          : "localhost", // Thêm dấu chấm này để Token có hiệu lực ở mọi nơi
+      path: "/",
+      secure: process.env.NODE_ENV === "production", // https: true, http: false
+    });
     return res.json({
       code: "error",
       message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",

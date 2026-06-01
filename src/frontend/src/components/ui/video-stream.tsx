@@ -10,7 +10,7 @@ interface VideoStreamProps {
   streamUrl?: string
 }
 
-export function VideoStream({ title, cameraId, streamUrl = "http://localhost:5001/video_feed" }: VideoStreamProps) {
+export function VideoStream({ title, cameraId, streamUrl = `${process.env.NEXT_PUBLIC_CV_URL || "http://localhost:5001"}/video_feed` }: VideoStreamProps) {
   const [isMuted, setIsMuted] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hasError, setHasError] = useState(false)
