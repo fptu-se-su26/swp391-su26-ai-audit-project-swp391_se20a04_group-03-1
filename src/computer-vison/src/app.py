@@ -235,9 +235,9 @@ def favicon():
 
 @app.route('/video_feed')
 def video_feed():
-    token = request.cookies.get('tokenAdmin')
-    if not token or not verify_auth(token):
-        return jsonify({"code": "error", "message": "Unauthorized"}), 401
+    # token = request.cookies.get('tokenAdmin')
+    # if not token or not verify_auth(token):
+    #     return jsonify({"code": "error", "message": "Unauthorized"}), 401
 
     import urllib.parse
     raw_url = request.args.get('rtsp_url')
