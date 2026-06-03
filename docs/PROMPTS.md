@@ -1092,6 +1092,447 @@ Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI
 
 ---
 
+### Prompt số 8
+
+| Nội dung            | Thông tin                                                   |
+| ------------------- | ----------------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                                  |
+| Công cụ AI          | Antigravity                                                 |
+| Mục đích            | Phát triển tính năng quản lí camera cổng và video streaming |
+| Phần việc liên quan | Coding                                                      |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                               |
+| Phần liên quan      | Gate Management                                             |
+
+#### 8.1. Prompt nguyên văn
+
+```text
+Phân tích kỹ dự án này, tôi muốn hoàn thiện tính năng cho trang quản lí cổng ở src/frontend/src/app/admin/gate/page.tsx.
+
+Ở trang này tôi muốn giữ lại section Active Vehicles và Gate Log.
+
+Phân tích tiếp module Yard vì ở đó đã có chức năng tạo và quản lí camera. Tôi muốn trang Gate có các tính năng tương tự.
+
+Sẽ có một đường link dẫn sang trang tạo camera mới, người dùng có thể nhập tên camera và địa chỉ RTSP.
+
+Sau khi tạo xong camera thì video stream phải hiển thị trực tiếp trên trang Gate giống như giao diện demo hiện tại.
+
+Trong mỗi khung camera cần hiển thị:
+- Tên camera
+- RTSP URL
+- Chỉnh sửa camera
+- Xóa camera
+- Nút phóng to video
+
+Trước tiên hãy hoàn thành các tính năng này và truyền được video streaming từ RTSP lên giao diện, các chức năng AI khác sẽ triển khai sau.
+```
+
+#### 8.2. Bối cảnh khi viết prompt
+
+```text
+Nhóm đang phát triển phân hệ quản lí cổng (Gate Management) cho hệ thống quản lí cảng biển.
+
+Trước đó hệ thống đã có module Yard Management với khả năng quản lí camera. Nhóm muốn tái sử dụng ý tưởng này cho khu vực cổng ra vào.
+
+Ngoài việc CRUD camera, mục tiêu chính là hiển thị video RTSP trực tiếp trên giao diện quản lí cổng để phục vụ cho các tính năng AI nhận diện biển số trong giai đoạn tiếp theo.
+```
+
+#### 8.3. Kết quả AI trả về
+
+```text
+AI đề xuất triển khai đầy đủ luồng quản lí camera cổng.
+
+Các chức năng chính bao gồm:
+- Tạo model Gate lưu thông tin camera.
+- Xây dựng API CRUD camera cổng.
+- Tạo trang thêm camera mới.
+- Hiển thị danh sách camera trên trang Gate.
+- Hỗ trợ chỉnh sửa và xóa camera.
+- Hiển thị video streaming từ RTSP.
+- Bổ sung chức năng phóng to video.
+- Giữ nguyên các khu vực Active Vehicles và Gate Log.
+
+Ngoài ra AI cũng đề xuất nâng cấp AI Server (Flask) để hỗ trợ nhiều RTSP stream động thay vì chỉ đọc từ một camera cố định.
+```
+
+#### 8.4. Kết quả đã áp dụng vào bài
+
+```text
+- Xây dựng giao diện quản lí camera cổng.
+- Tạo trang thêm camera mới.
+- Hiển thị danh sách camera từ dữ liệu lưu trữ.
+- Hỗ trợ chỉnh sửa và xóa camera.
+- Hiển thị video stream từ RTSP trên giao diện quản lí cổng.
+- Tích hợp nút phóng to video.
+- Nâng cấp AI Server để nhận RTSP URL động thông qua API video_feed.
+```
+
+#### 8.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm tiếp tục trao đổi với AI trong nhiều prompt sau để tối ưu hiệu năng video streaming.
+- Điều chỉnh giao diện hiển thị camera phù hợp với bố cục thực tế của hệ thống.
+- Tối ưu cơ chế quản lí nhiều RTSP stream đồng thời để tránh tiêu tốn tài nguyên máy chủ.
+- Chuẩn bị sẵn kiến trúc phục vụ cho các tính năng nhận diện biển số và container trong các giai đoạn tiếp theo.
+```
+
+#### 8.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 8.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                 |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/frontend/src/app/admin/gate/create/page.tsx`, `src/backend/models/gate.model.ts`, `src/computer-vision/app.py` |
+| Screenshot            | Trang quản lí cổng hiển thị camera streaming                                                                                                                    |
+| Kết quả chạy/test     | Camera RTSP hiển thị thành công trên giao diện quản lí cổng                                                                                                     |
+| Link tài liệu/báo cáo |                                                                                                                                                                 |
+| Ghi chú khác          | Đây là nền tảng cho các chức năng AI Computer Vision được triển khai sau này.                                                                                   |
+
+#### 8.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Việc hoàn thiện luồng camera và video streaming trước khi triển khai AI giúp nhóm dễ dàng kiểm thử hệ thống từng bước, giảm độ phức tạp khi tích hợp các chức năng nhận diện tự động ở giai đoạn sau.
+```
+
+---
+
+### Prompt số 9
+
+| Nội dung            | Thông tin                                                          |
+| ------------------- | ------------------------------------------------------------------ |
+| Ngày sử dụng        | 30/05/2026                                                         |
+| Công cụ AI          | Antigravity                                                        |
+| Mục đích            | Sửa lỗi giao diện và tối ưu video streaming cho trang quản lí cổng |
+| Phần việc liên quan | Coding                                                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                      |
+| Phần liên quan      | Gate Management                                                    |
+
+#### 9.1. Prompt nguyên văn
+
+```text
+Có nhiều vấn đề cần sửa ở đây:
+
+1. Chỉnh sửa lại giao diện của trang gate cho phù hợp với giao diện sáng và tối.
+2. Khi phóng to khung camera thì bị lỗi.
+3. Video stream lên khá lag và delay tầm 20s.
+
+Trước tiên hãy fix 3 lỗi này cho tôi.
+```
+
+#### 9.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thành chức năng quản lí camera và hiển thị video streaming trên trang Gate, nhóm tiến hành kiểm thử thực tế.
+
+Trong quá trình sử dụng phát hiện một số vấn đề ảnh hưởng đến trải nghiệm người dùng như giao diện chưa tương thích tốt với Dark Mode, chức năng phóng to camera hoạt động chưa ổn định và video RTSP có độ trễ khá lớn khi hiển thị trên trình duyệt.
+```
+
+#### 9.3. Kết quả AI trả về
+
+```text
+AI đề xuất các giải pháp xử lí cho cả ba vấn đề.
+
+Đối với giao diện:
+- Chuyển các màu sắc cố định sang hệ thống theme động của Shadcn UI và Tailwind.
+- Đồng bộ giao diện với chế độ sáng và tối của toàn hệ thống.
+
+Đối với chức năng phóng to:
+- Loại bỏ cách xử lí fullscreen cũ.
+- Sử dụng HTML5 Fullscreen API để hiển thị video toàn màn hình ổn định hơn.
+
+Đối với video streaming:
+- Phân tích nguyên nhân gây delay đến từ cơ chế buffering của FFmpeg.
+- Đề xuất cấu hình low latency cho OpenCV và FFmpeg.
+- Giảm đáng kể độ trễ của RTSP stream khi hiển thị trên giao diện.
+```
+
+#### 9.4. Kết quả đã áp dụng vào bài
+
+```text
+- Điều chỉnh giao diện trang Gate tương thích với cả Light Mode và Dark Mode.
+- Sửa lỗi phóng to camera bằng Fullscreen API.
+- Tối ưu luồng RTSP streaming.
+- Cập nhật cấu hình OpenCV/FFmpeg để giảm buffering.
+- Giảm độ trễ video từ mức rất cao xuống mức có thể sử dụng trong thời gian thực.
+```
+
+#### 9.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm tiếp tục kiểm thử trên nhiều camera RTSP khác nhau để đánh giá độ ổn định.
+- Điều chỉnh lại bố cục giao diện sau khi áp dụng Dark Mode.
+- Tinh chỉnh thêm cấu hình streaming để phù hợp với môi trường triển khai thực tế.
+- Kết hợp các thay đổi cho cả Gate Camera và Yard Camera nhằm đảm bảo tính đồng nhất của hệ thống.
+```
+
+#### 9.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 9.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                      |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/frontend/components/video-stream.tsx`, `src/computer-vision/app.py` |
+| Screenshot            | Giao diện Gate sau khi hỗ trợ Dark Mode và Fullscreen                                                                |
+| Kết quả chạy/test     | Video stream hoạt động ổn định hơn, độ trễ giảm đáng kể                                                              |
+| Link tài liệu/báo cáo |                                                                                                                      |
+| Ghi chú khác          | Đây là bước tối ưu quan trọng trước khi triển khai các tính năng AI nhận diện biển số trong thời gian thực.          |
+
+#### 9.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Sau khi hoàn thiện chức năng chính, việc kiểm thử thực tế và tối ưu hiệu năng là rất quan trọng. Những vấn đề như độ trễ video hoặc lỗi giao diện có thể ảnh hưởng lớn đến trải nghiệm người dùng dù hệ thống đã hoạt động đúng về mặt chức năng.
+```
+
+---
+
+### Prompt số 10
+
+| Nội dung            | Thông tin                                          |
+| ------------------- | -------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                         |
+| Công cụ AI          | Antigravity                                        |
+| Mục đích            | Phát triển tính năng OCR và quản lí giao dịch cổng |
+| Phần việc liên quan | Coding                                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                      |
+| Phần liên quan      | Gate Management, Computer Vision                   |
+
+#### 10.1. Prompt nguyên văn
+
+```text
+Trước tiên phân tích dự án này, sau đó phân tích src/computer-vision và src/backend.
+
+Ở trong computer-vision quét nhận diện biển số, khi nhận diện được biển số xong sẽ gửi lên backend các trường dữ liệu là:
+{
+text,
+status: in hoặc out,
+type: plate hoặc container_code,
+confidence
+}
+
+Trên backend có các việc sau cần làm:
+
+Tạo model GateTransaction gồm:
+- TruckPlate
+- DriverId
+- ContainerNo
+- AppointmentID
+- GateType
+- CheckInTime
+- CheckOutTime
+- Status
+- OCRConfidence
+- ImageUrl
+
+Khi có tính năng nhận diện mã container thì backend sẽ kiểm tra container và biển số có khớp với Appointment hay không, kiểm tra trạng thái Confirmed, kiểm tra thời gian hợp lệ và chống nhận diện trùng lặp.
+
+Ngoài ra cần bổ sung trạng thái Completed cho Appointment và cập nhật các nghiệp vụ liên quan.
+```
+
+#### 10.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thành chức năng quản lí camera và video streaming tại cổng, nhóm bắt đầu triển khai phần AI nhận diện biển số xe.
+
+Mục tiêu là xây dựng luồng xử lí dữ liệu từ Computer Vision sang Backend, đồng thời thiết kế cơ sở dữ liệu và các nghiệp vụ liên quan đến xe ra vào cổng.
+
+Nhóm cũng muốn đảm bảo dữ liệu OCR được xác thực với Appointment trước khi ghi nhận vào hệ thống nhằm hạn chế các trường hợp nhận diện sai hoặc trùng lặp.
+```
+
+#### 10.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng một model GateTransaction để lưu trữ toàn bộ lịch sử xe ra vào cổng.
+
+Các nghiệp vụ chính bao gồm:
+- Tiếp nhận dữ liệu OCR từ Computer Vision.
+- Kiểm tra Appointment hợp lệ.
+- Kiểm tra trạng thái Confirmed.
+- Kiểm tra khung giờ được phép vào cảng.
+- Đối chiếu biển số xe và mã container.
+- Chống nhận diện trùng lặp bằng cách kiểm tra trạng thái giao dịch hiện tại.
+- Lưu ảnh OCR phục vụ việc kiểm tra và truy vết sau này.
+- Tự động cập nhật Appointment sang trạng thái Completed khi hoàn thành quy trình ra vào cổng.
+```
+
+#### 10.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế model GateTransaction.
+- Xây dựng luồng nhận dữ liệu OCR từ Python sang Backend.
+- Thiết kế cơ chế kiểm tra Appointment trước khi ghi nhận giao dịch.
+- Bổ sung trạng thái Completed cho Appointment.
+- Thiết kế cơ chế chống nhận diện trùng lặp.
+- Thiết kế lưu trữ ảnh OCR phục vụ tra cứu và kiểm tra sau này.
+```
+
+#### 10.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm bổ sung khoảng thời gian sai số khi đối chiếu lịch hẹn với thời điểm nhận diện thực tế.
+- Điều chỉnh logic kiểm tra Check-In và Check-Out để phù hợp với quy trình vận hành của cảng.
+- Tối ưu cơ chế chống duplicate scan khi xe di chuyển chậm trước camera.
+- Chuẩn bị sẵn cấu trúc để mở rộng chức năng nhận diện mã container trong tương lai.
+```
+
+#### 10.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 10.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                      |
+| File liên quan        | `src/computer-vision/app.py`, `src/backend/models/gateTransaction.model.ts`, `src/backend/controllers/scan.controller.ts`, `src/backend/models/appointment.model.ts` |
+| Screenshot            | Luồng OCR gửi dữ liệu từ AI Server sang Backend                                                                                                                      |
+| Kết quả chạy/test     | Backend tiếp nhận và xử lí dữ liệu OCR thành công                                                                                                                    |
+| Link tài liệu/báo cáo |                                                                                                                                                                      |
+| Ghi chú khác          | Đây là bước nền tảng để tích hợp AI Computer Vision với hệ thống quản lí cảng.                                                                                       |
+
+#### 10.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi tích hợp AI với hệ thống nghiệp vụ thực tế, việc xác thực dữ liệu ở phía Backend là rất quan trọng để đảm bảo tính chính xác và tránh các trường hợp nhận diện sai hoặc ghi nhận trùng lặp.
+```
+
+---
+
+### Prompt số 11
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                           |
+| Công cụ AI          | Antigravity                                          |
+| Mục đích            | Phát triển tính năng realtime cho trang quản lí cổng |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 11.1. Prompt nguyên văn
+
+```text
+Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
+
+Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
+- Biển số xe
+- Tên tài xế
+- Mã container
+- Thời gian
+- Trạng thái IN hoặc OUT
+
+Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
+
+Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
+
+Ở section Active Vehicles hiển thị:
+- Số xe đã vào
+- Số xe đã ra
+- Số xe chờ
+
+Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
+
+Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
+```
+
+#### 11.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện luồng OCR và xử lí giao dịch cổng ở phía Backend, nhóm muốn xây dựng cơ chế cập nhật dữ liệu theo thời gian thực trên giao diện quản lí cổng.
+
+Mục tiêu là giúp nhân viên vận hành có thể theo dõi ngay lập tức các xe ra vào cảng mà không cần tải lại trang. Đồng thời nhóm cũng muốn hiển thị các thông tin thống kê và nhật ký hoạt động một cách trực quan.
+```
+
+#### 11.3. Kết quả AI trả về
+
+```text
+AI đề xuất sử dụng Socket.IO để đồng bộ dữ liệu giữa Backend và Frontend theo thời gian thực.
+
+Các chức năng được đề xuất gồm:
+- Emit dữ liệu khi phát sinh giao dịch mới tại cổng.
+- Tính toán số lượng xe đã vào và xe đã ra.
+- Đồng bộ dữ liệu lên trang Gate ngay khi có thay đổi.
+- Hiển thị Gate Log theo thời gian thực.
+- Hiển thị thống kê Active Vehicles mà không cần refresh trang.
+
+Ngoài ra AI cũng đề xuất bổ sung trang Appointment Completed để quản lí các lịch hẹn đã hoàn thành sau khi xe hoàn tất quy trình ra vào cảng.
+```
+
+#### 11.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế cơ chế Socket.IO cho module Gate.
+- Đồng bộ dữ liệu giao dịch cổng theo thời gian thực.
+- Cập nhật Active Vehicles ngay khi phát sinh giao dịch mới.
+- Hiển thị Gate Log theo thời gian thực.
+- Thiết kế trang Appointment Completed để quản lí các lịch hẹn đã hoàn tất.
+- Kết nối Socket.IO Client trên giao diện quản lí cổng.
+```
+
+#### 11.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh dữ liệu emit để chỉ gửi các trường cần thiết nhằm giảm tải cho hệ thống.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Thiết kế giao diện thống kê phù hợp với nhu cầu giám sát thực tế tại cổng.
+- Chuẩn bị sẵn cấu trúc để mở rộng thêm các sự kiện realtime khác trong tương lai.
+```
+
+#### 11.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 11.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
+| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
+| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực.                                                     |
+
+#### 11.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Việc sử dụng Socket.IO giúp hệ thống phản hồi nhanh hơn rất nhiều so với cơ chế tải lại dữ liệu thủ công. Điều này đặc biệt quan trọng đối với các hệ thống giám sát vận hành thời gian thực như quản lí cổng cảng biển.
+```
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.
