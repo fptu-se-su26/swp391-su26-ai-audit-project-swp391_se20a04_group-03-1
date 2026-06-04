@@ -1093,7 +1093,7 @@ Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI
 
 | Nội dung            | Thông tin                           |
 | ------------------- | ----------------------------------- |
-| Ngày sử dụng        | ...                                 |
+| Ngày sử dụng        | 31/05/2026                          |
 | Công cụ AI          | Antigravity                         |
 | Mục đích            | Phát triển tính năng quản lí tài xế |
 | Phần việc liên quan | Coding                              |
@@ -1190,7 +1190,7 @@ Kinh nghiệm rút ra: Khi xây dựng các module CRUD mới, việc tái sử 
 
 | Nội dung            | Thông tin                                               |
 | ------------------- | ------------------------------------------------------- |
-| Ngày sử dụng        | ...                                                     |
+| Ngày sử dụng        | 31/05/2026                                                |
 | Công cụ AI          | Antigravity                                             |
 | Mục đích            | Tối ưu chức năng lựa chọn công ty trong biểu mẫu tài xế |
 | Phần việc liên quan | Coding                                                  |

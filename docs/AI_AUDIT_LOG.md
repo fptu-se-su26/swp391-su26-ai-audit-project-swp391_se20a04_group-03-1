@@ -807,7 +807,7 @@ Kinh nghiệm rút ra: Với các module có UI phức tạp như kéo thả và
 
 | Nội dung | Thông tin |
 |---|---|
-| Ngày sử dụng | 24/05/2026 |
+| Ngày sử dụng | 31/05/2026 |
 | Công cụ AI | Antigravity |
 | Mục đích sử dụng | Phát triển tính năng quản lí tài xế |
 | Phần việc liên quan | coding|
