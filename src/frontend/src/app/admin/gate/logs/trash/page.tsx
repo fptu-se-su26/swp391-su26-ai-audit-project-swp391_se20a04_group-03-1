@@ -179,8 +179,8 @@ export default function GateLogsTrashPage() {
  ) : (
  logs.map((log) => (
  <tr key={log._id} className="bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900/50 transition-colors">
- <td className="px-4 py-3 font-bold">{log.truckPlate}</td>
- <td className="px-4 py-3">{log.containerNo ||"-"}</td>
+ <td className="px-4 py-3 font-bold">{log.actualTruckPlate}</td>
+ <td className="px-4 py-3">{log.actualContainerNo ||"-"}</td>
  <td className="px-4 py-3">
  {new Date(log.checkInTime).toLocaleString("vi-VN")}
  </td>
@@ -209,7 +209,7 @@ export default function GateLogsTrashPage() {
  <AlertDialogHeader>
  <AlertDialogTitle>Xóa vĩnh viễn?</AlertDialogTitle>
  <AlertDialogDescription>
- Nhật ký của xe {log.truckPlate} sẽ bị xóa vĩnh viễn khỏi hệ thống.
+ Nhật ký của xe {log.actualTruckPlate} sẽ bị xóa vĩnh viễn khỏi hệ thống.
  </AlertDialogDescription>
  </AlertDialogHeader>
  <AlertDialogFooter>

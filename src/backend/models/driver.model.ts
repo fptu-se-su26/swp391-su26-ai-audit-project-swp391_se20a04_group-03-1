@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 export interface IDriver {
   driverId: string;
-  companyId: string;
+  companyId: mongoose.Types.ObjectId;
   driverName: string;
   driverPhone: string;
   isDeleted: boolean;
@@ -11,12 +11,20 @@ export interface IDriver {
 const driverSchema = new Schema<IDriver>(
   {
     driverId: { type: String, required: true, unique: true },
-    companyId: { type: String, ref: "Company", required: true },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
     driverName: { type: String, required: true },
     driverPhone: { type: String },
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export const Driver = mongoose.model<IDriver>("Driver", driverSchema, "drivers");
+export const Driver = mongoose.model<IDriver>(
+  "Driver",
+  driverSchema,
+  "drivers",
+);

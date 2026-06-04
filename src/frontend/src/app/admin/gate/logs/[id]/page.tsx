@@ -84,14 +84,14 @@ export default function GateLogDetailPage() {
           <CardContent className="space-y-4">
             <div className="flex justify-between border-b pb-2">
               <span className="text-muted-foreground">Biển số xe:</span>
-              <span className="font-bold text-lg">{log.truckPlate}</span>
+              <span className="font-bold text-lg">{log.actualTruckPlate}</span>
             </div>
             <div className="flex justify-between border-b pb-2">
               <span className="text-muted-foreground flex items-center gap-1">
                 <Box className="h-4 w-4" /> Container:
               </span>
               <span className="font-semibold">
-                {log.containerNo || "Không có"}
+                {log.actualContainerNo || "Không có"}
               </span>
             </div>
             <div className="flex justify-between border-b pb-2">
@@ -99,7 +99,7 @@ export default function GateLogDetailPage() {
                 <User className="h-4 w-4" /> Tài xế:
               </span>
               <span className="font-semibold">
-                {log.appointmentId?.driverName || "Không xác định"}
+                {log.appointmentId?.driverId?.driverName || "Không xác định"}
               </span>
             </div>
             <div className="flex justify-between pb-2">
