@@ -694,7 +694,7 @@ Viết tại đây...
 ```
 
 ---
-### Lần sử dụng AI số 5
+### Lần sử dụng AI số 6
 
 | Nội dung            | Thông tin                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------ |
@@ -705,7 +705,7 @@ Viết tại đây...
 | Mức độ sử dụng      | Hỏi hướng triển khai + hỗ trợ code                                                               |
 | Phần liên quan      | Module quản lý bãi xe, cụ thể là file `admin.routes.ts`, `admin.controller.ts`, `admin.model.ts` |
 
-#### 5.1. Prompt đã sử dụng
+#### 4.1. Prompt đã sử dụng
 
 ```text
 Ở trang bãi đỗ như tôi tưởng tượng thì sẽ có 1 đường liên kết tới trang tạo bãi đỗ, ở trang đó sẽ cấu hình tên bãi đỗ và địa chỉ của camera để truyền video-streaming.
@@ -717,7 +717,7 @@ Vấn đề ở đây là tôi chưa có camera để có thể tạo và nhập
 Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận và xử lí kết quả backend trả về theo đúng chuẩn.
 ```
 
-#### 5.2. Bối cảnh khi viết prompt
+#### 4.2. Bối cảnh khi viết prompt
 
 ```text
 - Đang phát triển module quản lý bãi đỗ xe (Yard Management) cho hệ thống cảng biển thông minh.
@@ -729,7 +729,7 @@ Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận
 - Mong muốn AI đóng vai trò hỗ trợ định hướng triển khai tổng thể cả Frontend lẫn Backend thay vì chỉ sinh code đơn lẻ.
 ```
 
-#### 5.3. Kết quả AI gợi ý
+#### 4.3. Kết quả AI gợi ý
 
 ```text
 AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ gồm Frontend và Backend:
@@ -752,7 +752,7 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
    - AI cũng gợi ý hướng xử lý Snapshot và Video Stream thông qua service riêng để kết nối với IP Camera trong tương lai.
 ```
 
-#### 5.4. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 4.4. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
 - Áp dụng workflow và kiến trúc AI gợi ý để triển khai module quản lý bãi đỗ xe.
@@ -764,7 +764,7 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 - Áp dụng cơ chế quy đổi tọa độ sang phần trăm (%) để giao diện responsive khi thay đổi kích thước màn hình.
 ```
 
-#### 5.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 4.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
 - Chỉnh sửa lại giao diện Config Yard để phù hợp với UI tổng thể của hệ thống.
@@ -776,7 +776,7 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 - Tối ưu lại cách lưu dữ liệu Bounding Box để giảm lỗi sai vị trí khi tải lại trang.
 ```
 
-#### 5.6. Đánh giá chất lượng prompt
+#### 4.6. Đánh giá chất lượng prompt
 
 * [x] Prompt rõ ràng
 * [x] Prompt có đủ bối cảnh
@@ -787,7 +787,7 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 * [x] Cần tự kiểm tra và chỉnh sửa nhiều
 * [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
-#### 5.7. Minh chứng
+#### 4.7. Minh chứng
 
 | Loại minh chứng   | Nội dung                                                                                                                                 |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -798,12 +798,166 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 | Link video demo   |                                                                                                                                          |
 | Ghi chú khác      | AI hỗ trợ tốt trong phần xử lý kéo thả Bounding Box và định vị tọa độ responsive.                                                        |
 
-#### 5.8. Ghi chú thêm
+#### 4.8. Ghi chú thêm
 
 ```text
 Kinh nghiệm rút ra: Với các module có UI phức tạp như kéo thả và xử lý tọa độ, việc yêu cầu AI phân tích workflow và hướng triển khai trước giúp nhóm hiểu rõ kiến trúc hệ thống hơn thay vì viết code ngay từ đầu. Điều này giúp giảm lỗi logic và dễ mở rộng tính năng trong tương lai.
 ```
+### Lần sử dụng AI số 12
 
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 24/05/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Phát triển tính năng quản lí tài xế |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi hướng dẫn  |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Bây giờ, tôi muốn triển khai chi tiết dự án hơn bằng việc thêm vào model Tài xế:
+
+Model driver có các trường sau:
+- driverId
+- companyId
+- driverName
+- driverPhone
+- isDeleted
+- createdAt
+- updatedAt
+
+Tạo trang quản lí tài xế có đầy đủ các chức năng CRUD và các trang con như edit, trash,... tương tự như quản lí công ty và quản lí appointment. 
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất xây dựng đầy đủ module Driver Management bao gồm Backend và Frontend.
+
+Các chức năng chính:
+- Tạo model Driver.
+- Xây dựng API CRUD tài xế.
+- Hỗ trợ tìm kiếm và phân trang.
+- Soft Delete và Hard Delete.
+- Khôi phục dữ liệu từ thùng rác.
+- Xây dựng giao diện danh sách tài xế.
+- Xây dựng giao diện thêm mới và chỉnh sửa tài xế.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Thiết kế model Driver.
+- Xây dựng API CRUD cho tài xế.
+- Tạo giao diện danh sách tài xế.
+- Tạo giao diện thêm mới và chỉnh sửa tài xế.
+- Xây dựng chức năng thùng rác và khôi phục dữ liệu.
+- Tích hợp tìm kiếm và phân trang.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh giao diện để đồng bộ với module Company và Appointment.
+- Tối ưu các bộ lọc tìm kiếm và phân trang.
+- Kiểm thử lại toàn bộ luồng CRUD để đảm bảo dữ liệu hoạt động ổn định.
+- Chuẩn bị cấu trúc để liên kết Driver với các module khác trong tương lai.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | Cập nhật sau... |
+| File liên quan | `src/backend/models/driver.model.ts`, `src/backend/controllers/drivers.controller.ts`, `src/frontend/src/app/admin/drivers/page.tsx` |
+| Screenshot | Trang quản lí tài xế |
+| Kết quả chạy/test | CRUD tài xế hoạt động ổn định |
+| Link video demo |  |
+| Ghi chú khác |  |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Kinh nghiệm rút ra: Khi xây dựng các module CRUD mới, việc tái sử dụng cấu trúc từ các module đã hoàn thành giúp giảm đáng kể thời gian phát triển và đảm bảo tính nhất quán của hệ thống.
+```
+### Lần sử dụng AI số 13
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 31/05/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích sử dụng | Tối ưu chức năng lựa chọn công ty trong biểu mẫu tài xế |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi hướng dẫn  |
+
+#### 4.1. Prompt đã sử dụng
+
+```text
+Tôi có lưu ý trong form create hay edit cho driver thì ở trường company là một thẻ select chứa danh sách công ty.
+
+Tuy nhiên tôi nghĩ sẽ có khá nhiều công ty nên nếu fetch toàn bộ dữ liệu một lần sẽ gây lag.
+
+Tôi muốn xử lí theo hướng:
+- Cho phép người dùng nhập tên công ty.
+- Dùng debounce để tìm kiếm.
+- Chuyển từ khóa thành regex để tìm công ty phù hợp.
+- Hiển thị danh sách công ty cho người dùng lựa chọn.
+
+Hoặc thay vì select truyền thống thì chỉ tải khoảng 20 công ty mỗi lần. Nếu người dùng cuộn xuống cuối danh sách thì tiếp tục tải thêm dữ liệu từ database.
+
+Hãy xử lí các tính năng này một cách mượt mà và ít lỗi nhất.
+```
+
+#### 4.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất thay thế select truyền thống bằng Async Company Select.
+
+Các chức năng chính:
+- Tìm kiếm công ty theo từ khóa.
+- Debounce để giảm số lượng request.
+- Chỉ tải dữ liệu theo nhu cầu sử dụng.
+- Hiển thị danh sách công ty dạng dropdown động.
+- Hỗ trợ tải thêm dữ liệu khi người dùng cuộn xuống cuối danh sách.
+- Tự động đóng danh sách khi người dùng nhấn ra ngoài.
+```
+
+#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Thiết kế Async Company Select.
+- Tích hợp debounce cho chức năng tìm kiếm công ty.
+- Tích hợp API tìm kiếm theo từ khóa.
+- Giới hạn số lượng dữ liệu tải về mỗi lần.
+- Hỗ trợ tải thêm dữ liệu khi cuộn danh sách.
+- Cải thiện trải nghiệm người dùng khi chọn công ty.
+```
+
+#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh thời gian debounce để phù hợp với tốc độ phản hồi của hệ thống.
+- Tối ưu API tìm kiếm công ty nhằm giảm tải cho cơ sở dữ liệu.
+- Cải thiện giao diện dropdown để hiển thị rõ ràng hơn trên các màn hình có kích thước khác nhau.
+- Kiểm thử với số lượng dữ liệu lớn để đánh giá hiệu năng thực tế.
+```
+
+#### 4.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | Cập nhật sau... |
+| File liên quan | `src/frontend/src/components/AsyncCompanySelect.tsx`, `src/frontend/src/app/admin/drivers/create/page.tsx`, `src/frontend/src/app/admin/drivers/edit/[id]/page.tsx` |
+| Screenshot | Chức năng tìm kiếm và lựa chọn công ty |
+| Kết quả chạy/test | Tìm kiếm công ty hoạt động mượt mà với lượng dữ liệu lớn |
+| Link video demo |  |
+| Ghi chú khác |  |
+
+#### 4.6. Nhận xét cá nhân/nhóm
+
+```text
+Kinh nghiệm rút ra: Không phải lúc nào select truyền thống cũng phù hợp. Khi dữ liệu tăng lên, việc áp dụng debounce, lazy loading và tìm kiếm theo thời gian thực giúp cải thiện đáng kể hiệu năng và trải nghiệm người dùng.
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
