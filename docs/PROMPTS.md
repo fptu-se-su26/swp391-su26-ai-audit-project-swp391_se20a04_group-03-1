@@ -50,18 +50,34 @@ Sinh viên/nhóm cần ghi lại:
 
 ## 4. Bảng tổng hợp prompt đã sử dụng
 
-| STT | Ngày       | Công cụ AI               | Mục đích                                        | Prompt tóm tắt                                                                                                                                                                                                         | Kết quả chính                                              | Có sử dụng vào bài không? | Minh chứng                                                                                                                             |
+<<<<<<< HEAD
+| STT | Ngày | Công cụ AI | Mục đích | Prompt tóm tắt | Kết quả chính | Có sử dụng vào bài không? | Minh chứng |
+| --: | ---------- | ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | 19/05/2026 | Claude | Tạo giao diện | Là senior về nextJs, tạo ra các trang cần thiết cho dự án | | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+| 2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI | | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
+| 3 | 21/05/2026 | Gemini | Làm chức năng register | Phân tích và tạo code cho module register | Đã tạo được module register | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
+| 4 | 24/05/2026 | Antigravity | Tạo tính năng quét biển số - demo | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8 | Đã nhận diện được biển số cơ bản | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
+| 5 | 27/05/2026 | Gemini | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi | Đã có được module quản lí bãi cơ bản | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
+| 6 | 24/05/2026 | Antigravity | Xử lí module quản lí đặt lịch hẹn | Hướng dẫn các tính năng của quản lí đặt lịch hẹn | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| 7 | 25/05/2026 | Github Copilot/Gemini | Xây dựng cấu trúc thư mục và triển khai các trang cần thiết cho mobile app | Bạn hãy đóng vai là senior với 10 năm kinh nghiệm phát triển dự án react native mobile app, hãy xây dựng cho tôi cấu trúc thư mục chuẩn cho dự án của tôi và triển khai các trang cần thiết cho dự án mobile | | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/d025e5fd221ea04336efd89c42373eac053b6794 |
+| 8 | | | | | | Có / Không | |
+| 9 | | | | | | Có / Không | |
+| 10 | | | | | | Có / Không | |
+=======
+| STT | Ngày | Công cụ AI | Mục đích | Prompt tóm tắt | Kết quả chính | Có sử dụng vào bài không? | Minh chứng |
 | --: | ---------- | ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-|   1 | 19/05/2026 | Claude                   | Tạo giao diện                                   | Là senior về nextJs, tạo ra các trang cần thiết cho dự án                                                                                                                                                              |                                                            | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
-|   2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend                | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI |                                                            | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
-|   3 | 21/05/2026 | Gemini                   | Làm chức năng register                          | Phân tích và tạo code cho module register                                                                                                                                                                              | Đã tạo được module register                                | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
-|   4 | 24/05/2026 | Antigravity              | Tạo tính năng quét biển số - demo               | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8                                                                                                                                                       | Đã nhận diện được biển số cơ bản                           | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
-|   5 | 27/05/2026 | Gemini                   | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi                                                                                                                                                                   | Đã có được module quản lí bãi cơ bản                       | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
-|   6 | 24/05/2026 | Antigravity              | Xử lí module quản lí đặt lịch hẹn               | Hướng dẫn các tính năng của quản lí đặt lịch hẹn                                                                                                                                                                       | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch          | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
-|   7 | 29/05/2026 | Antigravity              | Tạo tính năng quản lí công ty                   | Hướng dẫn xây dựng các tính năng quản lí công ty                                                                                                                                                                       | Nhận được hướng dẫn chi tiết cho tính năng quản lí công ty | Có                        | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38 |
-|   8 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                            | Có / Không                |                                                                                                                                        |
-|   9 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                            | Có / Không                |                                                                                                                                        |
-|  10 |            |                          |                                                 |                                                                                                                                                                                                                        |                                                            | Có / Không                |                                                                                                                                        |
+| 1 | 19/05/2026 | Claude | Tạo giao diện | Là senior về nextJs, tạo ra các trang cần thiết cho dự án | | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+| 2 | 19/05/2026 | StitchAI, Github Copilot | Tạo cấu trúc folder cho frontend | Hãy đóng vai là một lập trình viên có 10 năm kinh nghiệm trong thiết kế, triển khai hệ thống Website, tạo ra các folder chuẩn cho front, trong folder chứa các page hay các file giao diện, theo thiết kế của stitchAI | | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/983478b30b29663de310916648c25ab2f1e9f157 |
+| 3 | 21/05/2026 | Gemini | Làm chức năng register | Phân tích và tạo code cho module register | Đã tạo được module register | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/a752ef9d89e62c5d250898c20b5f6ef59392f841 |
+| 4 | 24/05/2026 | Antigravity | Tạo tính năng quét biển số - demo | Sinh code để demo tính năng quét biển bằng python sử dụng yolov8 | Đã nhận diện được biển số cơ bản | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/f7bea3df7eddae13b8c3f8713ffb20eab82e1729 |
+| 5 | 27/05/2026 | Gemini | Phân tích và tạo code cho tính năng quản lí bãi | Từ cấu trúc thư mục dự án hãy xử lí phần quản lí bãi | Đã có được module quản lí bãi cơ bản | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/642f01e89ed8dc0fb883702e022a80ec23b39d90 |
+| 6 | 24/05/2026 | Antigravity | Xử lí module quản lí đặt lịch hẹn | Hướng dẫn các tính năng của quản lí đặt lịch hẹn | AI hướng dẫn cơ bản về tính năng quản lí đặt lịch | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| 7 | 29/05/2026 | Antigravity | Tạo tính năng quản lí công ty | Hướng dẫn xây dựng các tính năng quản lí công ty | Nhận được hướng dẫn chi tiết cho tính năng quản lí công ty | Có | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38 |
+| 8 | | | | | | Có / Không | |
+| 9 | | | | | | Có / Không | |
+| 10 | | | | | | Có / Không | |
+
+> > > > > > > main
 
 ---
 
@@ -258,7 +274,7 @@ Viết tại đây...
 
 #### 5.1. Prompt nguyên văn
 
-```text
+````text
 # Dự án: LogiPort System - Hê thống quản lý  cảng v2.0
 
 ## Tổng quan hệ thống
@@ -383,7 +399,66 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 
 ---
 
+### Prompt số: Appointments (mobile)
+
+| Nội dung            | Thông tin                                      |
+| ------------------- | ---------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                     |
+| Công cụ AI          | Gemini / Github Copilot / Antigravity         |
+| Mục đích            | Thiết kế `Appointments` page (mobile)          |
+| Phần việc liên quan | UI/UX, Coding, Hooks                          |
+| Mức độ sử dụng      | Hỏi sinh code, Hỏi tối ưu                      |
+
+#### Prompt nguyên văn
+
+```text
+Vai trò: Bạn là một senior chuyên về React Native (Expo) và mobile UX.
+Bối cảnh: Ứng dụng di động dùng Expo Router, có `ScreenShell` và `Snackbar` chung.
+Yêu cầu: Thiết kế và triển khai màn `Appointments` dành cho tài xế (mobile-first). Màn phải:
+- Hiển thị danh sách lịch hẹn đã được xác nhận hoặc đang chờ (không hiển thị lịch hủy/quá hạn).
+- Group theo ngày, mỗi item hiển thị: thời gian, yard/kho, trạng thái (badge), quick actions (View Pass, Contact).
+- Layout compact: giới hạn `maxWidth`, giảm padding, đảm bảo tap-target >=44px.
+- Thêm pull-to-refresh, empty/loading/error states, và optimistic updates cho các action.
+- Kết nối với `useProfile`/`auth` store, dùng `Snackbar` cho feedback và haptics cho hành động confirm.
+Trả về: 1) `AppointmentsScreen.tsx` (TSX), 2) `Appointments.style.ts`, 3) `useAppointments` hook mẫu (fetch + optimistic), 4) mock data và acceptance checklist.
+````
+
+#### Kết quả & Ghi chú
+
+- AI gợi ý component structure: grouped list, item card, detail modal, hook, styles và checklist.
+- Nhóm đã áp dụng: tách style, giới hạn maxWidth, pull-to-refresh, mock data, chỉnh spacing và thêm support card.
+
+---
+
+### Prompt số: Settings (mobile)
+
+| Nội dung            | Thông tin                             |
+| ------------------- | ------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                            |
+| Công cụ AI          | Gemini / Github Copilot / Antigravity |
+| Mục đích            | Thiết kế `Settings` page (mobile)     |
+| Phần việc liên quan | UI/UX, Coding, State Management       |
+| Mức độ sử dụng      | Hỏi sinh code, Hỏi tối ưu             |
+
+#### Prompt nguyên văn
+
+```text
+Vai trò: Bạn là một senior phát triển mobile app (React Native + Expo).
+Bối cảnh: `Settings` là nơi người dùng (tài xế) quản lý thông tin cá nhân, tuỳ chọn ứng dụng và hành động đăng xuất.
+Yêu cầu: Thiết kế và triển khai màn `Settings` cho mobile với các phần: Profile (hiển thị tên, số điện thoại), Account actions (Change Password, Sign out), App preferences (notification toggle, theme), và Support (link, hotline).
+- Giao diện compact, giới hạn `maxWidth`, đảm bảo button lớn và rõ ràng.
+- Khi sign out: gọi `auth.signOut()` và `router.replace('/login')`.
+- Tích hợp `useProfile` để edit thông tin và persist via hook.
+Trả về: 1) `SettingsScreen.tsx`, 2) `Settings.style.ts`, 3) sample `useProfile` integration, 4) acceptance checklist.
+```
+
+#### Kết quả & Ghi chú
+
+- AI gợi ý layout và handlers cho sign out + profile update.
+- Nhóm đã áp dụng: profile card, sign out flow, compact styles, thêm xác nhận sign out và mock offline support.
+
 ## Mock Data
+
 - Mỗi trang sử dụng mock data tĩnh (TypeScript interfaces + faker-style constants)
 - Không cần gọi API thật, nhưng cấu trúc phải chuẩn để sau này swap sang real API dễ dàng
 - Dùng `const mockXxx: XxxType[] = [...]` trong `lib/mock/` hoặc ngay trong file page
@@ -391,6 +466,7 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 ---
 
 ## Conventions
+
 - Mỗi file page chỉ là layout + composition, logic tách vào custom hooks nếu phức tạp
 - Tất cả form dùng React Hook Form + Zod schema
 - Tất cả table dùng DataTable component tái sử dụng với TanStack Table v8
@@ -404,13 +480,14 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
   - **Nâng/Hạ**: Phiếu nâng/hạ
   - **IoT**: Cảm biến ô đỗ, Giám sát niêm phong
   - **Cài đặt**: Doanh nghiệp, Tài xế, Xe, Tài khoản
-```
+
+````
 
 #### 5.2. Bối cảnh khi viết prompt
 
 ```text
 Cần build giao diện nhanh, với những công cụ bổ trợ  tinh gọn, giúp việc thiết kế trở nên đẹp mắt
-```
+````
 
 #### 5.3. Kết quả AI trả về
 
@@ -969,30 +1046,64 @@ Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI
 
 ### Prompt số 7
 
-| Nội dung            | Thông tin                            |
+<<<<<<< HEAD
+| Nội dung | Thông tin |
+| ------------------- | --------------------------------- |
+| Ngày sử dụng | 25/05/2026 |
+| Công cụ AI | GithubCoplilot, Gemini |
+| Mục đích | Xây dựng trang dashboard, với chức năng hiện thị mã QR để quản lý xe quét mã |
+| Phần việc liên quan | Coding |
+| Mức độ sử dụng | Hỏi hướng dẫn |
+| Phần liên quan | |
+=======
+| Nội dung | Thông tin |
 | ------------------- | ------------------------------------ |
-| Ngày sử dụng        | 29/05/2026                           |
-| Công cụ AI          | Antigravity                          |
-| Mục đích            | Phát triển tính năng quản lí công ty |
-| Phần việc liên quan | Coding                               |
-| Mức độ sử dụng      | Hỏi hướng dẫn                        |
-| Phần liên quan      |                                      |
+| Ngày sử dụng | 29/05/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Phát triển tính năng quản lí công ty |
+| Phần việc liên quan | Coding |
+| Mức độ sử dụng | Hỏi hướng dẫn |
+| Phần liên quan | |
+
+> > > > > > > main
 
 #### 7.1. Prompt nguyên văn
 
 ```text
+<<<<<<< HEAD
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+=======
  phân tích kĩ source code, trong front end tôi muốn thêm trang quản lí công ty, chức năng của trang quản lí công ty bao gôm tất cả các chức năng tương tự như trang appointments. Hãy chỉ xử lí phần front end cho tôi và đưa ra hướng dẫn backend để tôi tự triển khai
+>>>>>>> main
 ```
 
 #### 7.2. Bối cảnh khi viết prompt
 
 ```text
+<<<<<<< HEAD
+--- Bắt đầu xây dựng một ứng dụng di động cho tài xế, tâi xế cần một ứng dụng để dễ dàng xác thực, dễ dàng quản lý từ phía nhà xe
+--- Tài xế phải được xác thực thông tin trước khi vào bãi đỗ xe, đàm bảo tính bảo mật và dễ quản lý xe ra vào
+--- Tài xế được cấp một mã QR nhằm để xác thực, mã QR được sinh ra từ phía quản lý nhà xe khi tạo lịch đỗ xe ứng với thông tin người tài xế
+--- Tài xế chỉ được show mã và không thực hiện bất kỳ một tác vụ nào chỉ được xem và show mã QR
+=======
 Cần viết trang quản lí công ty cùng với các tính năng CRUD cơ bản để xử lí nghiệp vụ của trang quản lí công ty. Ngoài ra cần làm thêm tính năng soft delete cho trang quản lí công ty để xử lí các trường hợp xóa không mong muốn.
+>>>>>>> main
 ```
 
 #### 7.3. Kết quả AI trả về
 
 ```text
+<<<<<<< HEAD
+Kết luận chung: Đa phần AI trả về theo đúng kết quả kỳ vọng, tuy nhiên vẫn còn rất nhiều điểm chưa ưng ý, đủ đáp ứng yêu cầu toàn phần từ phía người dùng
+1. Trang dashboard sau khi thiết kế, trả về kết quả như sau:
+	1.1 Giao diện:
+		Giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+	1.2 Về phần xử lý quét mã QR:
+		Hiểu được luồng hoạt động của trang. Khi tài xế mở app trang dashboard hiện lên, khung lớn của trang sẽ chứa phần để quét mã QR. Tài xế nhấn vào button thì sẽ hiển thị mã QR với các thông tin dành cho tài xế và lái xe
+2. Phần điều hướng đến các trang còn lại
+	2.1 Kết quả: Giao diện có trả về phần footer mà một block gồm các href được style phù hợp đế điều hướng đến các trang cần thiết
+
+=======
 Các thay đổi chính đã thực hiện
 1. Giao diện (Frontend)
 Menu Navigation: Đã thêm liên kết "Quản lý công ty" với biểu tượng Building2 vào Sidebar (
@@ -1019,48 +1130,66 @@ Hiển thị các công ty đã bị "Xóa mềm" (Soft delete).
 Hỗ trợ chức năng Khôi phục (Restore) để đưa công ty hoạt động trở lại.
 Chức năng Xóa vĩnh viễn (Hard delete) khỏi hệ thống.
 
+>>>>>>> main
 ```
 
 #### 7.4. Kết quả đã áp dụng vào bài
 
 ```text
-1. Giao diện (Frontend)
-Menu Navigation: Đã thêm liên kết "Quản lý công ty" với biểu tượng Building2 vào Sidebar (
-sidebar.tsx
-).
-Trang Danh sách công ty: (
-page.tsx
-)
-Hiển thị danh sách các công ty vận tải.
-Tích hợp tìm kiếm (Debounce 500ms) theo mã, tên, SĐT...
-Lọc theo Trạng thái (Đang hoạt động, Đình chỉ, Ngừng hoạt động).
-Lọc theo ngày đăng ký (Từ ngày - Đến ngày).
-Phân trang (Pagination) mượt mà.
-Tích hợp JustValidate vào form thêm công ty mới với các validation chuẩn xác (VD: Regex biển số/số điện thoại/Email).
-Trang Chỉnh sửa công ty: (
-edit/[id]/page.tsx
-)
-Lấy dữ liệu công ty theo ID để đưa vào form.
-Cho phép quản trị viên chỉnh sửa toàn bộ thông tin (Tên, Mã CT, Liên hệ, Trạng thái) và cập nhật qua API.
-Trang Thùng rác (Trash): (
-trash/page.tsx
-)
-Hiển thị các công ty đã bị "Xóa mềm" (Soft delete).
-Hỗ trợ chức năng Khôi phục (Restore) để đưa công ty hoạt động trở lại.
-Chức năng Xóa vĩnh viễn (Hard delete) khỏi hệ thống.
-2. Backend
-Models: Tạo model (company.model.ts) và schema MongoDB hỗ trợ các trường cần thiết (tên, mã, liên hệ, logo, trạng thái) và trường deletedAt cho soft delete.
-Controller: Xây dựng logic CRUD completo (cả xoá mềm và xoá vĩnh viễn) trong company.controller.ts.
-Validation: Áp dụng validation cho các request API.
-Route: Định tuyến các API và đảm bảo bảo mật bằng middleware.
+<<<<<<< HEAD
+		Áp dụng giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+		Áp dụng phần tính năng xử lý nghiệp vụ mã QR
+		Áp dụng phần điều hướng, phân trang để điều hướng tới các trang tiếp theo
 ```
+
+#### 7.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Github Copilot) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: bố cục các block, layouts của trang dashboard để nhìn đẹp mắt
+```
+
+=======
+
+1. Giao diện (Frontend)
+   Menu Navigation: Đã thêm liên kết "Quản lý công ty" với biểu tượng Building2 vào Sidebar (
+   sidebar.tsx
+   ).
+   Trang Danh sách công ty: (
+   page.tsx
+   )
+   Hiển thị danh sách các công ty vận tải.
+   Tích hợp tìm kiếm (Debounce 500ms) theo mã, tên, SĐT...
+   Lọc theo Trạng thái (Đang hoạt động, Đình chỉ, Ngừng hoạt động).
+   Lọc theo ngày đăng ký (Từ ngày - Đến ngày).
+   Phân trang (Pagination) mượt mà.
+   Tích hợp JustValidate vào form thêm công ty mới với các validation chuẩn xác (VD: Regex biển số/số điện thoại/Email).
+   Trang Chỉnh sửa công ty: (
+   edit/[id]/page.tsx
+   )
+   Lấy dữ liệu công ty theo ID để đưa vào form.
+   Cho phép quản trị viên chỉnh sửa toàn bộ thông tin (Tên, Mã CT, Liên hệ, Trạng thái) và cập nhật qua API.
+   Trang Thùng rác (Trash): (
+   trash/page.tsx
+   )
+   Hiển thị các công ty đã bị "Xóa mềm" (Soft delete).
+   Hỗ trợ chức năng Khôi phục (Restore) để đưa công ty hoạt động trở lại.
+   Chức năng Xóa vĩnh viễn (Hard delete) khỏi hệ thống.
+2. Backend
+   Models: Tạo model (company.model.ts) và schema MongoDB hỗ trợ các trường cần thiết (tên, mã, liên hệ, logo, trạng thái) và trường deletedAt cho soft delete.
+   Controller: Xây dựng logic CRUD completo (cả xoá mềm và xoá vĩnh viễn) trong company.controller.ts.
+   Validation: Áp dụng validation cho các request API.
+   Route: Định tuyến các API và đảm bảo bảo mật bằng middleware.
+
+````
 
 #### 7.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
 - Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
 - Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
-```
+````
+
+> > > > > > > main
 
 #### 7.6. Đánh giá chất lượng prompt
 
@@ -1075,52 +1204,1035 @@ Route: Định tuyến các API và đảm bảo bảo mật bằng middleware.
 
 #### 7.7. Minh chứng liên quan
 
-| Loại minh chứng       | Nội dung                                                                                                                                                                                           |
+<<<<<<< HEAD
+| Loại minh chứng | Nội dung |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Link commit | Cập nhật sau... |
+| File liên quan | `src\frontend_mobile-expo\src\modules\dashboard\screens\DashboardScreen.tsx` |
+| Screenshot | (Ảnh màn hình trang dashboard với tính năng hiển thị mã QR) |
+| Kết quả chạy/test | Form validate chính xác, phân bổ bố cục các block hợp lý, layouts các thư viện shadcin UI được sửu dụng để đẹp mắt |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code. |
+=======
+| Loại minh chứng | Nội dung |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit           | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38                                                             |
-| File liên quan        | `src/frontend/src/app/admin/companies/page.tsx`, `src/frontend/src/app/admin/companies/edit/[id]/page.tsx`, `src/backend/controllers/company.controller.ts`, `src/backend/models/company.model.ts` |
-| Screenshot            |                                                                                                                                                                                                    |
-| Kết quả chạy/test     | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                                                                                    |
-| Link tài liệu/báo cáo |                                                                                                                                                                                                    |
-| Ghi chú khác          |                                                                                                                                                                                                    |
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38 |
+| File liên quan | `src/frontend/src/app/admin/companies/page.tsx`, `src/frontend/src/app/admin/companies/edit/[id]/page.tsx`, `src/backend/controllers/company.controller.ts`, `src/backend/models/company.model.ts` |
+| Screenshot | |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng. |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+> > > > > > > main
 
 #### 7.8. Ghi chú thêm
 
 ```text
+<<<<<<< HEAD
+Kinh nghiệm rút ra: Khi bắt đầu thiết kế 1 trang, việc yêu cầu AI thiết kế giao diện cần cung cấp đầy đủ thư viện phù hợp, không install quá nhiều thư viện không cần thiết
+=======
 Kinh nghiệm rút ra: Khi bắt đầu một module lớn, việc yêu cầu AI giải thích Workflow và kiến trúc trước (thay vì bắt viết code ngay) giúp team hiểu rõ bản chất nghiệp vụ, dễ dàng mở rộng (thêm bộ lọc, soft delete, phân trang) và giảm thiểu bug logic về sau.
+>>>>>>> main
+```
+
+---
+
+<<<<<<< HEAD
+
+## 8. Prompt quan trọng nhất
+
+=======
+
+### Prompt số 8
+
+| Nội dung            | Thông tin                                                   |
+| ------------------- | ----------------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                                  |
+| Công cụ AI          | Antigravity                                                 |
+| Mục đích            | Phát triển tính năng quản lí camera cổng và video streaming |
+| Phần việc liên quan | Coding                                                      |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                               |
+| Phần liên quan      | Gate Management                                             |
+
+#### 8.1. Prompt nguyên văn
+
+```text
+Phân tích kỹ dự án này, tôi muốn hoàn thiện tính năng cho trang quản lí cổng ở src/frontend/src/app/admin/gate/page.tsx.
+
+Ở trang này tôi muốn giữ lại section Active Vehicles và Gate Log.
+
+Phân tích tiếp module Yard vì ở đó đã có chức năng tạo và quản lí camera. Tôi muốn trang Gate có các tính năng tương tự.
+
+Sẽ có một đường link dẫn sang trang tạo camera mới, người dùng có thể nhập tên camera và địa chỉ RTSP.
+
+Sau khi tạo xong camera thì video stream phải hiển thị trực tiếp trên trang Gate giống như giao diện demo hiện tại.
+
+Trong mỗi khung camera cần hiển thị:
+- Tên camera
+- RTSP URL
+- Chỉnh sửa camera
+- Xóa camera
+- Nút phóng to video
+
+Trước tiên hãy hoàn thành các tính năng này và truyền được video streaming từ RTSP lên giao diện, các chức năng AI khác sẽ triển khai sau.
+```
+
+#### 8.2. Bối cảnh khi viết prompt
+
+```text
+Nhóm đang phát triển phân hệ quản lí cổng (Gate Management) cho hệ thống quản lí cảng biển.
+
+Trước đó hệ thống đã có module Yard Management với khả năng quản lí camera. Nhóm muốn tái sử dụng ý tưởng này cho khu vực cổng ra vào.
+
+Ngoài việc CRUD camera, mục tiêu chính là hiển thị video RTSP trực tiếp trên giao diện quản lí cổng để phục vụ cho các tính năng AI nhận diện biển số trong giai đoạn tiếp theo.
+```
+
+#### 8.3. Kết quả AI trả về
+
+```text
+AI đề xuất triển khai đầy đủ luồng quản lí camera cổng.
+
+Các chức năng chính bao gồm:
+- Tạo model Gate lưu thông tin camera.
+- Xây dựng API CRUD camera cổng.
+- Tạo trang thêm camera mới.
+- Hiển thị danh sách camera trên trang Gate.
+- Hỗ trợ chỉnh sửa và xóa camera.
+- Hiển thị video streaming từ RTSP.
+- Bổ sung chức năng phóng to video.
+- Giữ nguyên các khu vực Active Vehicles và Gate Log.
+
+Ngoài ra AI cũng đề xuất nâng cấp AI Server (Flask) để hỗ trợ nhiều RTSP stream động thay vì chỉ đọc từ một camera cố định.
+```
+
+#### 8.4. Kết quả đã áp dụng vào bài
+
+```text
+- Xây dựng giao diện quản lí camera cổng.
+- Tạo trang thêm camera mới.
+- Hiển thị danh sách camera từ dữ liệu lưu trữ.
+- Hỗ trợ chỉnh sửa và xóa camera.
+- Hiển thị video stream từ RTSP trên giao diện quản lí cổng.
+- Tích hợp nút phóng to video.
+- Nâng cấp AI Server để nhận RTSP URL động thông qua API video_feed.
+```
+
+#### 8.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm tiếp tục trao đổi với AI trong nhiều prompt sau để tối ưu hiệu năng video streaming.
+- Điều chỉnh giao diện hiển thị camera phù hợp với bố cục thực tế của hệ thống.
+- Tối ưu cơ chế quản lí nhiều RTSP stream đồng thời để tránh tiêu tốn tài nguyên máy chủ.
+- Chuẩn bị sẵn kiến trúc phục vụ cho các tính năng nhận diện biển số và container trong các giai đoạn tiếp theo.
+```
+
+#### 8.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 8.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                 |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/frontend/src/app/admin/gate/create/page.tsx`, `src/backend/models/gate.model.ts`, `src/computer-vision/app.py` |
+| Screenshot            | Trang quản lí cổng hiển thị camera streaming                                                                                                                    |
+| Kết quả chạy/test     | Camera RTSP hiển thị thành công trên giao diện quản lí cổng                                                                                                     |
+| Link tài liệu/báo cáo |                                                                                                                                                                 |
+| Ghi chú khác          | Đây là nền tảng cho các chức năng AI Computer Vision được triển khai sau này.                                                                                   |
+
+#### 8.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Việc hoàn thiện luồng camera và video streaming trước khi triển khai AI giúp nhóm dễ dàng kiểm thử hệ thống từng bước, giảm độ phức tạp khi tích hợp các chức năng nhận diện tự động ở giai đoạn sau.
+```
+
+---
+
+### Prompt số 9
+
+| Nội dung            | Thông tin                                                          |
+| ------------------- | ------------------------------------------------------------------ |
+| Ngày sử dụng        | 30/05/2026                                                         |
+| Công cụ AI          | Antigravity                                                        |
+| Mục đích            | Sửa lỗi giao diện và tối ưu video streaming cho trang quản lí cổng |
+| Phần việc liên quan | Coding                                                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                      |
+| Phần liên quan      | Gate Management                                                    |
+
+#### 9.1. Prompt nguyên văn
+
+```text
+Có nhiều vấn đề cần sửa ở đây:
+
+1. Chỉnh sửa lại giao diện của trang gate cho phù hợp với giao diện sáng và tối.
+2. Khi phóng to khung camera thì bị lỗi.
+3. Video stream lên khá lag và delay tầm 20s.
+
+Trước tiên hãy fix 3 lỗi này cho tôi.
+```
+
+#### 9.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thành chức năng quản lí camera và hiển thị video streaming trên trang Gate, nhóm tiến hành kiểm thử thực tế.
+
+Trong quá trình sử dụng phát hiện một số vấn đề ảnh hưởng đến trải nghiệm người dùng như giao diện chưa tương thích tốt với Dark Mode, chức năng phóng to camera hoạt động chưa ổn định và video RTSP có độ trễ khá lớn khi hiển thị trên trình duyệt.
+```
+
+#### 9.3. Kết quả AI trả về
+
+```text
+AI đề xuất các giải pháp xử lí cho cả ba vấn đề.
+
+Đối với giao diện:
+- Chuyển các màu sắc cố định sang hệ thống theme động của Shadcn UI và Tailwind.
+- Đồng bộ giao diện với chế độ sáng và tối của toàn hệ thống.
+
+Đối với chức năng phóng to:
+- Loại bỏ cách xử lí fullscreen cũ.
+- Sử dụng HTML5 Fullscreen API để hiển thị video toàn màn hình ổn định hơn.
+
+Đối với video streaming:
+- Phân tích nguyên nhân gây delay đến từ cơ chế buffering của FFmpeg.
+- Đề xuất cấu hình low latency cho OpenCV và FFmpeg.
+- Giảm đáng kể độ trễ của RTSP stream khi hiển thị trên giao diện.
+```
+
+#### 9.4. Kết quả đã áp dụng vào bài
+
+```text
+- Điều chỉnh giao diện trang Gate tương thích với cả Light Mode và Dark Mode.
+- Sửa lỗi phóng to camera bằng Fullscreen API.
+- Tối ưu luồng RTSP streaming.
+- Cập nhật cấu hình OpenCV/FFmpeg để giảm buffering.
+- Giảm độ trễ video từ mức rất cao xuống mức có thể sử dụng trong thời gian thực.
+```
+
+#### 9.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm tiếp tục kiểm thử trên nhiều camera RTSP khác nhau để đánh giá độ ổn định.
+- Điều chỉnh lại bố cục giao diện sau khi áp dụng Dark Mode.
+- Tinh chỉnh thêm cấu hình streaming để phù hợp với môi trường triển khai thực tế.
+- Kết hợp các thay đổi cho cả Gate Camera và Yard Camera nhằm đảm bảo tính đồng nhất của hệ thống.
+```
+
+#### 9.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 9.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                      |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/frontend/components/video-stream.tsx`, `src/computer-vision/app.py` |
+| Screenshot            | Giao diện Gate sau khi hỗ trợ Dark Mode và Fullscreen                                                                |
+| Kết quả chạy/test     | Video stream hoạt động ổn định hơn, độ trễ giảm đáng kể                                                              |
+| Link tài liệu/báo cáo |                                                                                                                      |
+| Ghi chú khác          | Đây là bước tối ưu quan trọng trước khi triển khai các tính năng AI nhận diện biển số trong thời gian thực.          |
+
+#### 9.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Sau khi hoàn thiện chức năng chính, việc kiểm thử thực tế và tối ưu hiệu năng là rất quan trọng. Những vấn đề như độ trễ video hoặc lỗi giao diện có thể ảnh hưởng lớn đến trải nghiệm người dùng dù hệ thống đã hoạt động đúng về mặt chức năng.
+```
+
+---
+
+### Prompt số 10
+
+| Nội dung            | Thông tin                                          |
+| ------------------- | -------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                         |
+| Công cụ AI          | Antigravity                                        |
+| Mục đích            | Phát triển tính năng OCR và quản lí giao dịch cổng |
+| Phần việc liên quan | Coding                                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                      |
+| Phần liên quan      | Gate Management, Computer Vision                   |
+
+#### 10.1. Prompt nguyên văn
+
+```text
+Trước tiên phân tích dự án này, sau đó phân tích src/computer-vision và src/backend.
+
+Ở trong computer-vision quét nhận diện biển số, khi nhận diện được biển số xong sẽ gửi lên backend các trường dữ liệu là:
+{
+text,
+status: in hoặc out,
+type: plate hoặc container_code,
+confidence
+}
+
+Trên backend có các việc sau cần làm:
+
+Tạo model GateTransaction gồm:
+- TruckPlate
+- DriverId
+- ContainerNo
+- AppointmentID
+- GateType
+- CheckInTime
+- CheckOutTime
+- Status
+- OCRConfidence
+- ImageUrl
+
+Khi có tính năng nhận diện mã container thì backend sẽ kiểm tra container và biển số có khớp với Appointment hay không, kiểm tra trạng thái Confirmed, kiểm tra thời gian hợp lệ và chống nhận diện trùng lặp.
+
+Ngoài ra cần bổ sung trạng thái Completed cho Appointment và cập nhật các nghiệp vụ liên quan.
+```
+
+#### 10.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thành chức năng quản lí camera và video streaming tại cổng, nhóm bắt đầu triển khai phần AI nhận diện biển số xe.
+
+Mục tiêu là xây dựng luồng xử lí dữ liệu từ Computer Vision sang Backend, đồng thời thiết kế cơ sở dữ liệu và các nghiệp vụ liên quan đến xe ra vào cổng.
+
+Nhóm cũng muốn đảm bảo dữ liệu OCR được xác thực với Appointment trước khi ghi nhận vào hệ thống nhằm hạn chế các trường hợp nhận diện sai hoặc trùng lặp.
+```
+
+#### 10.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng một model GateTransaction để lưu trữ toàn bộ lịch sử xe ra vào cổng.
+
+Các nghiệp vụ chính bao gồm:
+- Tiếp nhận dữ liệu OCR từ Computer Vision.
+- Kiểm tra Appointment hợp lệ.
+- Kiểm tra trạng thái Confirmed.
+- Kiểm tra khung giờ được phép vào cảng.
+- Đối chiếu biển số xe và mã container.
+- Chống nhận diện trùng lặp bằng cách kiểm tra trạng thái giao dịch hiện tại.
+- Lưu ảnh OCR phục vụ việc kiểm tra và truy vết sau này.
+- Tự động cập nhật Appointment sang trạng thái Completed khi hoàn thành quy trình ra vào cổng.
+```
+
+#### 10.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế model GateTransaction.
+- Xây dựng luồng nhận dữ liệu OCR từ Python sang Backend.
+- Thiết kế cơ chế kiểm tra Appointment trước khi ghi nhận giao dịch.
+- Bổ sung trạng thái Completed cho Appointment.
+- Thiết kế cơ chế chống nhận diện trùng lặp.
+- Thiết kế lưu trữ ảnh OCR phục vụ tra cứu và kiểm tra sau này.
+```
+
+#### 10.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm bổ sung khoảng thời gian sai số khi đối chiếu lịch hẹn với thời điểm nhận diện thực tế.
+- Điều chỉnh logic kiểm tra Check-In và Check-Out để phù hợp với quy trình vận hành của cảng.
+- Tối ưu cơ chế chống duplicate scan khi xe di chuyển chậm trước camera.
+- Chuẩn bị sẵn cấu trúc để mở rộng chức năng nhận diện mã container trong tương lai.
+```
+
+#### 10.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 10.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                      |
+| File liên quan        | `src/computer-vision/app.py`, `src/backend/models/gateTransaction.model.ts`, `src/backend/controllers/scan.controller.ts`, `src/backend/models/appointment.model.ts` |
+| Screenshot            | Luồng OCR gửi dữ liệu từ AI Server sang Backend                                                                                                                      |
+| Kết quả chạy/test     | Backend tiếp nhận và xử lí dữ liệu OCR thành công                                                                                                                    |
+| Link tài liệu/báo cáo |                                                                                                                                                                      |
+| Ghi chú khác          | Đây là bước nền tảng để tích hợp AI Computer Vision với hệ thống quản lí cảng.                                                                                       |
+
+#### 10.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi tích hợp AI với hệ thống nghiệp vụ thực tế, việc xác thực dữ liệu ở phía Backend là rất quan trọng để đảm bảo tính chính xác và tránh các trường hợp nhận diện sai hoặc ghi nhận trùng lặp.
+```
+
+---
+
+### Prompt số 11
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                           |
+| Công cụ AI          | Antigravity                                          |
+| Mục đích            | Phát triển tính năng realtime cho trang quản lí cổng |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 11.1. Prompt nguyên văn
+
+```text
+Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
+
+Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
+- Biển số xe
+- Tên tài xế
+- Mã container
+- Thời gian
+- Trạng thái IN hoặc OUT
+
+Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
+
+Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
+
+Ở section Active Vehicles hiển thị:
+- Số xe đã vào
+- Số xe đã ra
+- Số xe chờ
+
+Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
+
+Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
+```
+
+#### 11.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện luồng OCR và xử lí giao dịch cổng ở phía Backend, nhóm muốn xây dựng cơ chế cập nhật dữ liệu theo thời gian thực trên giao diện quản lí cổng.
+
+Mục tiêu là giúp nhân viên vận hành có thể theo dõi ngay lập tức các xe ra vào cảng mà không cần tải lại trang. Đồng thời nhóm cũng muốn hiển thị các thông tin thống kê và nhật ký hoạt động một cách trực quan.
+```
+
+#### 11.3. Kết quả AI trả về
+
+```text
+AI đề xuất sử dụng Socket.IO để đồng bộ dữ liệu giữa Backend và Frontend theo thời gian thực.
+
+Các chức năng được đề xuất gồm:
+- Emit dữ liệu khi phát sinh giao dịch mới tại cổng.
+- Tính toán số lượng xe đã vào và xe đã ra.
+- Đồng bộ dữ liệu lên trang Gate ngay khi có thay đổi.
+- Hiển thị Gate Log theo thời gian thực.
+- Hiển thị thống kê Active Vehicles mà không cần refresh trang.
+
+Ngoài ra AI cũng đề xuất bổ sung trang Appointment Completed để quản lí các lịch hẹn đã hoàn thành sau khi xe hoàn tất quy trình ra vào cảng.
+```
+
+#### 11.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế cơ chế Socket.IO cho module Gate.
+- Đồng bộ dữ liệu giao dịch cổng theo thời gian thực.
+- Cập nhật Active Vehicles ngay khi phát sinh giao dịch mới.
+- Hiển thị Gate Log theo thời gian thực.
+- Thiết kế trang Appointment Completed để quản lí các lịch hẹn đã hoàn tất.
+- Kết nối Socket.IO Client trên giao diện quản lí cổng.
+```
+
+#### 11.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh dữ liệu emit để chỉ gửi các trường cần thiết nhằm giảm tải cho hệ thống.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Thiết kế giao diện thống kê phù hợp với nhu cầu giám sát thực tế tại cổng.
+- Chuẩn bị sẵn cấu trúc để mở rộng thêm các sự kiện realtime khác trong tương lai.
+```
+
+#### 11.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 11.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
+| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
+| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực.                                                     |
+
+#### 11.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Việc sử dụng Socket.IO giúp hệ thống phản hồi nhanh hơn rất nhiều so với cơ chế tải lại dữ liệu thủ công. Điều này đặc biệt quan trọng đối với các hệ thống giám sát vận hành thời gian thực như quản lí cổng cảng biển.
+```
+
+---
+### Prompt số 12
+
+| Nội dung            | Thông tin                           |
+| ------------------- | ----------------------------------- |
+| Ngày sử dụng        | ...                                 |
+| Công cụ AI          | Antigravity                         |
+| Mục đích            | Phát triển tính năng quản lí tài xế |
+| Phần việc liên quan | Coding                              |
+| Mức độ sử dụng      | Hỏi hướng dẫn                       |
+| Phần liên quan      | Driver Management                   |
+
+#### 12.1. Prompt nguyên văn
+
+```text
+Bây giờ, tôi muốn triển khai chi tiết dự án hơn bằng việc thêm vào model Tài xế:
+
+Model driver có các trường sau:
+- driverId
+- companyId
+- driverName
+- driverPhone
+- isDeleted
+- createdAt
+- updatedAt
+
+Tạo trang quản lí tài xế có đầy đủ các chức năng CRUD và các trang con như edit, trash,... tương tự như quản lí công ty và quản lí appointment.
+```
+
+#### 12.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các chức năng quản lí công ty và lịch hẹn, nhóm tiếp tục mở rộng hệ thống bằng việc xây dựng phân hệ quản lí tài xế.
+
+Mục tiêu là quản lí tập trung thông tin tài xế thuộc các công ty vận tải, đồng thời đảm bảo giao diện và nghiệp vụ thống nhất với các module đã triển khai trước đó.
+```
+
+#### 12.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng đầy đủ module Driver Management bao gồm Backend và Frontend.
+
+Các chức năng chính:
+- Tạo model Driver.
+- Xây dựng API CRUD tài xế.
+- Hỗ trợ tìm kiếm và phân trang.
+- Soft Delete và Hard Delete.
+- Khôi phục dữ liệu từ thùng rác.
+- Xây dựng giao diện danh sách tài xế.
+- Xây dựng giao diện thêm mới và chỉnh sửa tài xế.
+```
+
+#### 12.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế model Driver.
+- Xây dựng API CRUD cho tài xế.
+- Tạo giao diện danh sách tài xế.
+- Tạo giao diện thêm mới và chỉnh sửa tài xế.
+- Xây dựng chức năng thùng rác và khôi phục dữ liệu.
+- Tích hợp tìm kiếm và phân trang.
+```
+
+#### 12.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh giao diện để đồng bộ với module Company và Appointment.
+- Tối ưu các bộ lọc tìm kiếm và phân trang.
+- Kiểm thử lại toàn bộ luồng CRUD để đảm bảo dữ liệu hoạt động ổn định.
+- Chuẩn bị cấu trúc để liên kết Driver với các module khác trong tương lai.
+```
+
+#### 12.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+#### 12.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                                      |
+| File liên quan        | `src/backend/models/driver.model.ts`, `src/backend/controllers/drivers.controller.ts`, `src/frontend/src/app/admin/drivers/page.tsx` |
+| Screenshot            | Trang quản lí tài xế                                                                                                                 |
+| Kết quả chạy/test     | CRUD tài xế hoạt động ổn định                                                                                                        |
+| Link tài liệu/báo cáo |                                                                                                                                      |
+| Ghi chú khác          |                                                                                                                                      |
+
+#### 12.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi xây dựng các module CRUD mới, việc tái sử dụng cấu trúc từ các module đã hoàn thành giúp giảm đáng kể thời gian phát triển và đảm bảo tính nhất quán của hệ thống.
+```
+### Prompt số 13
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | ...                                                     |
+| Công cụ AI          | Antigravity                                             |
+| Mục đích            | Tối ưu chức năng lựa chọn công ty trong biểu mẫu tài xế |
+| Phần việc liên quan | Coding                                                  |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                           |
+| Phần liên quan      | Driver Management                                       |
+
+#### 13.1. Prompt nguyên văn
+
+```text
+Tôi có lưu ý trong form create hay edit cho driver thì ở trường company là một thẻ select chứa danh sách công ty.
+
+Tuy nhiên tôi nghĩ sẽ có khá nhiều công ty nên nếu fetch toàn bộ dữ liệu một lần sẽ gây lag.
+
+Tôi muốn xử lí theo hướng:
+- Cho phép người dùng nhập tên công ty.
+- Dùng debounce để tìm kiếm.
+- Chuyển từ khóa thành regex để tìm công ty phù hợp.
+- Hiển thị danh sách công ty cho người dùng lựa chọn.
+
+Hoặc thay vì select truyền thống thì chỉ tải khoảng 20 công ty mỗi lần. Nếu người dùng cuộn xuống cuối danh sách thì tiếp tục tải thêm dữ liệu từ database.
+
+Hãy xử lí các tính năng này một cách mượt mà và ít lỗi nhất.
+```
+
+#### 13.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện chức năng quản lí tài xế, nhóm nhận thấy việc lựa chọn công ty bằng select truyền thống không phù hợp khi số lượng công ty tăng lên.
+
+Nhóm muốn tối ưu trải nghiệm người dùng cũng như hiệu năng hệ thống bằng cách chỉ tải dữ liệu cần thiết và hỗ trợ tìm kiếm theo thời gian thực.
+```
+
+#### 13.3. Kết quả AI trả về
+
+```text
+AI đề xuất thay thế select truyền thống bằng Async Company Select.
+
+Các chức năng chính:
+- Tìm kiếm công ty theo từ khóa.
+- Debounce để giảm số lượng request.
+- Chỉ tải dữ liệu theo nhu cầu sử dụng.
+- Hiển thị danh sách công ty dạng dropdown động.
+- Hỗ trợ tải thêm dữ liệu khi người dùng cuộn xuống cuối danh sách.
+- Tự động đóng danh sách khi người dùng nhấn ra ngoài.
+```
+
+#### 13.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế Async Company Select.
+- Tích hợp debounce cho chức năng tìm kiếm công ty.
+- Tích hợp API tìm kiếm theo từ khóa.
+- Giới hạn số lượng dữ liệu tải về mỗi lần.
+- Hỗ trợ tải thêm dữ liệu khi cuộn danh sách.
+- Cải thiện trải nghiệm người dùng khi chọn công ty.
+```
+
+#### 13.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh thời gian debounce để phù hợp với tốc độ phản hồi của hệ thống.
+- Tối ưu API tìm kiếm công ty nhằm giảm tải cho cơ sở dữ liệu.
+- Cải thiện giao diện dropdown để hiển thị rõ ràng hơn trên các màn hình có kích thước khác nhau.
+- Kiểm thử với số lượng dữ liệu lớn để đánh giá hiệu năng thực tế.
+```
+
+#### 13.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 13.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                     |
+| File liên quan        | `src/frontend/src/components/AsyncCompanySelect.tsx`, `src/frontend/src/app/admin/drivers/create/page.tsx`, `src/frontend/src/app/admin/drivers/edit/[id]/page.tsx` |
+| Screenshot            | Chức năng tìm kiếm và lựa chọn công ty                                                                                                                              |
+| Kết quả chạy/test     | Tìm kiếm công ty hoạt động mượt mà với lượng dữ liệu lớn                                                                                                            |
+| Link tài liệu/báo cáo |                                                                                                                                                                     |
+| Ghi chú khác          |                                                                                                                                                                     |
+
+#### 13.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Không phải lúc nào select truyền thống cũng phù hợp. Khi dữ liệu tăng lên, việc áp dụng debounce, lazy loading và tìm kiếm theo thời gian thực giúp cải thiện đáng kể hiệu năng và trải nghiệm người dùng.
+```
+---
+
+## Prompt số 12
+
+| Nội dung            | Thông tin                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                                                          |
+| Công cụ AI          | Github Copilot/ Gemini                                                              |
+| Mục đích            | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang cần thiết cho tài xế |
+| Phần việc liên quan | Coding                                                                              |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                                       |
+| Phần liên quan      | Gate Management                                                                     |
+
+#### 12.1. Prompt nguyên văn
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 12.2. Bối cảnh khi viết prompt
+
+```text
+--- Bắt đầu xây dựng một ứng dụng di động cho tài xế, tâi xế cần một ứng dụng để dễ dàng xác thực, dễ dàng quản lý từ phía nhà xe
+--- Tài xế phải được xác thực thông tin trước khi vào bãi đỗ xe, đàm bảo tính bảo mật và dễ quản lý xe ra vào
+--- Tài xế được cấp một mã QR nhằm để xác thực, mã QR được sinh ra từ phía quản lý nhà xe khi tạo lịch đỗ xe ứng với thông tin người tài xế
+--- Tài xế chỉ được show mã và không thực hiện bất kỳ một tác vụ nào chỉ được xem và show mã QR
+```
+
+#### 12.3. Kết quả AI trả về
+
+```text
+Kết luận chung: Đa phần AI trả về theo đúng kết quả kỳ vọng, tuy nhiên vẫn còn rất nhiều điểm chưa ưng ý, đủ đáp ứng yêu cầu toàn phần từ phía người dùng
+   1. Trang dashboard sau khi thiết kế, trả về kết quả như sau:
+      1.1 Giao diện:
+         Giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+      1.2 Về phần xử lý quét mã QR:
+         Hiểu được luồng hoạt động của trang. Khi tài xế mở app trang dashboard hiện lên, khung lớn của trang sẽ chứa phần để quét mã QR. Tài xế nhấn vào button thì sẽ hiển thị mã QR với các thông tin dành cho tài xế và lái xe
+   2. Phần điều hướng đến các trang còn lại
+      2.1 Kết quả: Giao diện có trả về phần footer mà một block gồm các href được style phù hợp đế điều hướng đến các trang cần thiết
+```
+
+#### 12.4. Kết quả đã áp dụng vào bài
+
+```text
+	   Áp dụng giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+		Áp dụng phần tính năng xử lý nghiệp vụ mã QR
+		Áp dụng phần điều hướng, phân trang để điều hướng tới các trang tiếp theo
+```
+
+#### 12.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh dữ liệu emit để chỉ gửi các trường cần thiết nhằm giảm tải cho hệ thống.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Thiết kế giao diện thống kê phù hợp với nhu cầu giám sát thực tế tại cổng.
+- Chuẩn bị sẵn cấu trúc để mở rộng thêm các sự kiện realtime khác trong tương lai.
+```
+
+#### 12.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 12.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                    |
+| File liên quan        | `src\frontend_mobile-expo\src\modules\dashboard\screens\DashboardScreen.tsx`                                       |
+| Screenshot            | (Ảnh màn hình trang dashboard với tính năng hiển thị mã QR)                                                        |
+| Kết quả chạy/test     | Form validate chính xác, phân bổ bố cục các block hợp lý, layouts các thư viện shadcin UI được sửu dụng để đẹp mắt |
+| Link tài liệu/báo cáo |                                                                                                                    |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                            |
+
+#### 12.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi bắt đầu thiết kế 1 trang, việc yêu cầu AI thiết kế giao diện cần cung cấp đầy đủ thư viện phù hợp, không install quá nhiều thư viện không cần thiết
+```
+
+---
+
+## Prompt số 13
+
+| Nội dung            | Thông tin                                  |
+| ------------------- | ------------------------------------------ |
+| Ngày sử dụng        | 25/05/2026                                 |
+| Công cụ AI          | Github Copilot/ Gemini                     |
+| Mục đích            | Xây dựng trang Appointment, trang Settings |
+| Phần việc liên quan | Coding                                     |
+| Mức độ sử dụng      | Hỏi hướng dẫn                              |
+| Phần liên quan      | Appointment Management                     |
+
+#### 13.1. Prompt nguyên văn
+
+```text
+Vai trò: Bạn là một senior developer chuyên React Native (Expo) và mobile UX.
+Bối cảnh: App mobile dùng Expo Router; project có ScreenShell, Snackbar, useProfile/auth store; giao diện cần compact, thao tác nhanh cho tài xế.
+Mục tiêu: Thiết kế và triển khai màn Appointments dành cho tài xế (mobile-first).
+Yêu cầu chức năng:
+
+Hiển thị danh sách lịch hẹn group theo ngày (Today, Tomorrow, Earlier).
+Mỗi item hiển thị: khung giờ (ví dụ 09:00–10:00), tên yard/kho, biển số, trạng thái (badge: pending/confirmed/completed), và quick actions: View Pass, Call, Check-in (nếu được phép).
+Hỗ trợ pull-to-refresh, infinite scroll hoặc pagination (tuỳ dataset).
+Thêm empty/loading/error states rõ ràng (skeleton khi loading, CTA khi empty).
+Hành động xác nhận/cancel dùng optimistic update; feedback bằng Snackbar và haptics.
+Tối ưu cho tap-target >= 44px; accessibility labels + keyboard focusable nếu có.
+Yêu cầu kỹ thuật đầu ra:
+AppointmentsScreen.tsx (TypeScript React Native) sử dụng ScreenShell.
+Appointments.style.ts (hoặc module style tương thích) chứa mọi style màn này.
+useAppointments.ts hook mẫu (fetch, pull-to-refresh, optimistic update, mock adapter).
+AppointmentItem component nhỏ, AppointmentDetailModal (nếu cần).
+Mock data file __mocks__/appointments.json và ví dụ cách gọi API.
+Acceptance criteria: tệp build Không lỗi TypeScript; màn hoạt động với mock data; pull-to-refresh thay đổi UI; optimistic update hiển thị ngay và rollback nếu lỗi.
+Yêu cầu trả về: code TSX + style + hook + mock data + ngắn gọn checklist để QA.
+```
+
+#### 13.2. Bối cảnh khi viết prompt
+
+```text
+Mục đích kinh doanh: giảm ùn tắc tại cổng bằng cách cho phép doanh nghiệp vận tải đặt trước khung giờ (slot) cho xe container, từ đó điều phối lưu lượng và giảm thời gian chờ tại gate.
+Vấn đề hiện tại: nhiều xe đến không theo kế hoạch → xếp hàng dài, tắc nghẽn, tăng chi phí vận hành và rủi ro trễ lịch giao nhận.
+Lợi ích chức năng của Appointments:
+Cân bằng tải theo khung giờ, giới hạn số slot để tránh quá tải.
+Cho phép xác nhận/huỷ/đổi slot, minh bạch trạng thái cho doanh nghiệp vận tải.
+Tích hợp với check‑in/check‑out tại gate để tự động hoá xử lý và giảm thao tác thủ công.
+```
+
+#### 13.3. Kết quả AI trả về
+
+```text
+Danh sách artefact tạo ra: AppointmentsScreen.tsx, Appointments.style.ts, useAppointments.ts (hook), AppointmentItem, AppointmentDetailModal, __mocks__/appointments.json.
+UI/UX: giao diện group theo ngày (Today/Tomorrow/Earlier), item card chứa khung giờ, yard, biển số, trạng thái (badge), quick actions (View Pass / Call / Check‑in).
+Behaviour: pull‑to‑refresh, skeleton loading, empty/error states, infinite scroll/pagination, optimistic updates với rollback, Snackbar + haptics cho feedback.
+Kỹ thuật: tích hợp ScreenShell, đọc/ghi qua useProfile/auth store; accessibility labels; tap-target ≥44px; TypeScript TSX chuẩn.
+Mock & test: mock data + ví dụ API call, kịch bản QA (load, refresh, action success/fail rollback).
+```
+
+#### 13.4. Kết quả đã áp dụng vào bài
+
+```text
+	   Appointments: Triển khai AppointmentsScreen.tsx, Appointments.style.ts, AppointmentItem và AppointmentDetailModal — hiển thị danh sách group theo ngày (Today/Tomorrow/Earlier).
+
+Thực hiện pull-to-refresh, skeleton loading, empty/error states và pagination/infinite-scroll với mock data (__mocks__/appointments.json).
+
+Thực thi optimistic updates cho hành động (confirm/cancel/check‑in) kèm rollback khi lỗi; feedback bằng Snackbar và haptics.
+
+Tích hợp với useProfile/auth store và ScreenShell; đảm bảo tap-target ≥44px và accessibility labels.
+
+Thêm hook mẫu useAppointments.ts (fetch + refresh + optimistic + mock adapter) và checklist QA (load/refresh/action success/fail).
+
+Settings: Triển khai SettingsScreen.tsx, Settings.style.ts, ConfirmSignOutModal và tích hợp useProfile.ts — profile card, edit profile, toggles (notifications/theme).
+
+Sign‑out flow gọi auth.signOut() và router.replace('/login') sau xác nhận; profile edit lưu mock và hiển thị Snackbar.
+
+Acceptance: tất cả màn hoạt động với mock data và có checklist kiểm thử TypeScript + UX (edit profile, toggles, sign out).
+```
+
+#### 13.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Thêm khoảng thời gian sai số khi đối chiếu thời điểm OCR với Appointment để tránh false‑negative khi xe đến sớm/muộn.
+Tách style cho từng màn: tạo Appointments.style.ts và Settings.style.ts để dễ bảo trì và tái sử dụng.
+Triển khai optimistic updates cho hành động (confirm/cancel/check‑in) kèm rollback khi lỗi, với phản hồi bằng Snackbar và haptics.
+Compact UI: giảm padding, giới hạn maxWidth, tối ưu tap‑target ≥44px và cải thiện header nhỏ gọn cho mobile.
+Tái hiện lại màn auth bị lỗi: tạo lại login.tsx/register.tsx/forgot.tsx và sửa routing/sign‑out (auth.signOut() + router.replace('/login')).
+Thêm mock data và hook mẫu (useAppointments.ts, useProfile.ts) để dễ test offline và chạy npx tsc --noEmit.
+Sửa/chuẩn hoá import CSS/module types (thêm shim nếu cần) và điều chỉnh icon props để tránh lỗi TypeScript.
+Tối ưu realtime: giảm payload emit Socket.IO, ưu tiên trường cần thiết cho Gate realtime view.
+Cải tiến chống duplicate scan: debounce/lock logic khi xe di chuyển chậm trước camera.
+```
+
+#### 13.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 13.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                    |
+| File liên quan        | `src/frontend_mobile-expo/src/modules/appointments/screens/AppointmentsScreen.tsx`                                 |
+| Screenshot            | (Ảnh màn hình trang appointment với tính năng hiển thị lịch hẹn)                                                   |
+| Kết quả chạy/test     | Form validate chính xác, phân bổ bố cục các block hợp lý, layouts các thư viện shadcin UI được sửu dụng để đẹp mắt |
+| Link tài liệu/báo cáo |                                                                                                                    |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                            |
+
+#### 13.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi bắt đầu thiết kế 1 trang, việc yêu cầu AI thiết kế giao diện cần cung cấp đầy đủ thư viện phù hợp, không install quá nhiều thư viện không cần thiết
+```
+
+---
+
+## Prompt số 14
+
+| Nội dung            | Thông tin                                                             |
+| ------------------- | --------------------------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                                            |
+| Công cụ AI          | Github Copilot/ Gemini                                                |
+| Mục đích            | Xây dựng và triển khai trang Appointment và trang Settings cho tài xế |
+| Phần việc liên quan | Coding                                                                |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                         |
+| Phần liên quan      | Gate Management                                                       |
+
+#### 14.1. Prompt nguyên văn
+
+```text
+Vai trò: Bạn là một senior developer chuyên React Native (Expo) và mobile UX.
+Bối cảnh: Settings là nơi tài xế quản lý profile, tuỳ chọn app, và thao tác đăng xuất.
+Mục tiêu: Thiết kế và triển khai màn Settings thân thiện, compact, dễ thao tác.
+Yêu cầu chức năng:
+
+Profile card: avatar, tên, số điện thoại, nút Edit Profile (dẫn tới modal hoặc màn edit).
+Account actions: Change Password, Sign out (khi sign out gọi auth.signOut() và router.replace('/login')).
+App preferences: Notifications (toggle), Theme (Light / Dark), Use Cellular Data for Uploads (toggle).
+Support: Help & Support link, hotline (click to call).
+Khi chỉnh profile: validate, persist qua useProfile hook, hiển thị Snackbar khi lưu thành công/ lỗi.
+Sign out: show confirmation modal before thực hiện.
+Yêu cầu kỹ thuật đầu ra:
+SettingsScreen.tsx (TypeScript React Native) dùng ScreenShell.
+Settings.style.ts.
+useProfile.ts integration mẫu (get/update/persist mock).
+ConfirmSignOutModal component.
+Acceptance criteria: TypeScript clean; sign out chuyển route; toggles lưu trạng thái mock; profile edit có validation & feedback.
+Yêu cầu trả về: code TSX + style + hook + acceptance checklist.
+```
+
+#### 14.2. Bối cảnh khi viết prompt
+
+```text
+Quản lý thông tin cá nhân: cho phép tài xế cập nhật tên, số điện thoại, avatar để dữ liệu booking/check‑in chính xác.
+Bảo mật & tài khoản: cung cấp đổi mật khẩu, xác thực và thao tác đăng xuất an toàn (auth.signOut() + chuyển về /login).
+Tuỳ chọn ứng dụng: bật/tắt thông báo, chọn theme, dùng mạng di động — cải thiện trải nghiệm cá nhân và tiết kiệm dữ liệu.
+Hỗ trợ & phản hồi: cung cấp hotline/help, gửi logs/feedback khi gặp lỗi vận hành.
+Kỹ thuật & vận hành: lưu trạng thái cấu hình (mock/real), dễ test offline via useProfile, giúp QA/Dev tái tạo lỗi.
+Truy vết & tuân thủ: ghi nhận thay đổi profile/consent cho audit và kiểm toán nghiệp vụ cảng.
+UX ổn định: một vị trí tập trung cho các action ít dùng (sign out, change password), giữ giao diện chính gọn và thao tác nhanh.
+```
+
+#### 14.3. Kết quả AI trả về
+
+```text
+Artifacts: AppointmentsScreen, Appointments.style, useAppointments hook, AppointmentItem, AppointmentDetailModal, mocks/appointments.json; SettingsScreen, Settings.style, ConfirmSignOutModal, useProfile hook.
+UI/UX: Danh sách lịch hẹn group theo ngày (Today/Tomorrow/Earlier), item card với giờ/yard/biển số/status badge, quick actions (View Pass/Call/Check‑in); Settings: profile card, toggles, edit profile, sign‑out flow.
+Behaviour: Pull‑to‑refresh, skeleton loading, empty/error states, pagination/infinite scroll, optimistic updates + rollback, Snackbar + haptics feedback.
+Integration: Tích hợp với ScreenShell và auth/useProfile store; signOut gọi auth.signOut() rồi router.replace('/login').
+Testing / Mocks: Mock data + example API adapter; acceptance checklist (TS noEmit, load/refresh/action success/fail, accessibility).
+Ops / Improvements: Đề xuất thêm shim cho CSS types, điều chỉnh icon props (size vs className), placeholder CSS modules, giảm payload Socket.IO, debounce duplicate-scan logic.
+```
+
+#### 14.4. Kết quả đã áp dụng vào bài
+
+```text
+   Appointments: thêm AppointmentsScreen.tsx, Appointments.style.ts, AppointmentItem, AppointmentDetailModal.
+   Hook & mock: thêm useAppointments.ts + __mocks__/appointments.json (fetch, pull-to-refresh, optimistic update, rollback).
+   UX/behaviour: group theo ngày (Today/Tomorrow/Earlier), pull-to-refresh, skeleton loading, empty/error states, pagination/infinite-scroll, quick‑actions (View Pass / Call / Check‑in).
+   Feedback: Snackbar + haptics cho hành động; optimistic update với rollback khi lỗi.
+   Settings: thêm SettingsScreen.tsx, Settings.style.ts, ConfirmSignOutModal, tích hợp useProfile.ts (edit profile, toggles notification/theme, sign out flow).
+   Auth flow: tái tạo login.tsx/register.tsx/forgot.tsx khi cần; sign‑out gọi auth.signOut() rồi router.replace('/login').
+   Style & cấu trúc: tách style per-screen (dễ bảo trì), compact UI (giảm padding, maxWidth, tap-target ≥44px), header nhỏ gọn.
+   TS & build: thêm shim / điều chỉnh import CSS-module và sửa icon props (size thay className) để giảm lỗi TypeScript; đã chạy npx tsc --noEmit và fix các lỗi chủ chốt.
+   Realtime & Ops: tối ưu payload Socket.IO (emit trường cần thiết), debounce/lock logic chống duplicate-scan.
+```
+
+#### 14.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+   Thêm khoảng thời gian sai số khi đối chiếu thời điểm OCR với Appointment để tránh false‑negative khi xe đến sớm/muộn.
+   Tách style theo màn: tạo Appointments.style.ts và Settings.style.ts để dễ bảo trì và tái sử dụng.
+   Triển khai optimistic updates cho hành động (confirm/cancel/check‑in) kèm rollback khi lỗi; phản hồi bằng Snackbar và haptics.
+   Compact UI: giảm padding, giới hạn maxWidth, tối ưu tap‑target ≥44px và thu nhỏ header cho mobile.
+   Tái tạo màn auth bị lỗi: tạo lại login.tsx / register.tsx / forgot.tsx và chuẩn hoá flow đăng xuất (auth.signOut() → router.replace('/login')).
+   Thêm mock data và hook mẫu để test offline: __mocks__/appointments.json, useAppointments.ts, useProfile.ts.
+   Sửa/chuẩn hoá import CSS/module types (thêm shim src/global.d.ts) và điều chỉnh props icon (dùng size={...} thay className) để fix lỗi TypeScript.
+   Thêm placeholder CSS module cho component web (ví dụ animated-icon.module.css) khi cần.
+   Tối ưu realtime: giảm payload emit Socket.IO, chỉ gửi trường cần thiết để giảm tắt nghẽn.
+   Cải tiến chống duplicate scan: thêm debounce/lock logic khi xe di chuyển chậm trước camera.
+```
+
+#### 14.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 14.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | `https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/46ebbb55d573fd028df0e46c8f9a229c2dc79dcd` |
+| File liên quan        | `src/frontend_mobile-expo/src/modules/settings/screens/SettingsScreen.ts`                                                                |
+| Screenshot            | (Ảnh màn hình trang Settings với tính năng hiển thị mã QR)                                                                               |
+| Kết quả chạy/test     | Form validate chính xác, phân bổ bố cục các block hợp lý, layouts các thư viện shadcin UI được sửu dụng để đẹp mắt                       |
+| Link tài liệu/báo cáo |                                                                                                                                          |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                  |
+
+#### 14.8. Ghi chú thêm
+
+```text
+
 ```
 
 ---
 
 ## 6. Prompt quan trọng nhất
 
+> > > > > > > main
+
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.
 
-### 6.1. Prompt được chọn
+### 8.1. Prompt được chọn
 
 ```text
 Dán prompt quan trọng nhất tại đây.
 ```
 
-### 6.2. Vì sao prompt này quan trọng?
+### 8.2. Vì sao prompt này quan trọng?
 
 ```text
 Viết tại đây...
 ```
 
-### 6.3. Kết quả prompt này mang lại
+### 8.3. Kết quả prompt này mang lại
 
 ```text
 Viết tại đây...
 ```
 
-### 6.4. Sinh viên/nhóm đã kiểm tra kết quả như thế nào?
+### 8.4. Sinh viên/nhóm đã kiểm tra kết quả như thế nào?
 
 ```text
 Viết tại đây...
 ```
 
-### 6.5. Sinh viên/nhóm đã cải tiến gì từ kết quả AI?
+### 8.5. Sinh viên/nhóm đã cải tiến gì từ kết quả AI?
 
 ```text
 Viết tại đây...
@@ -1128,17 +2240,17 @@ Viết tại đây...
 
 ---
 
-## 7. Prompt chưa hiệu quả
+## 9. Prompt chưa hiệu quả
 
 Ghi lại ít nhất một prompt chưa tạo ra kết quả tốt hoặc chưa phù hợp.
 
-### 7.1. Prompt chưa hiệu quả
+### 9.1. Prompt chưa hiệu quả
 
 ```text
 Dán prompt chưa hiệu quả tại đây.
 ```
 
-### 7.2. Vì sao prompt này chưa hiệu quả?
+### 9.2. Vì sao prompt này chưa hiệu quả?
 
 ```text
 Viết tại đây...
@@ -1155,19 +2267,19 @@ Gợi ý nguyên nhân:
 - Không yêu cầu AI giải thích.
 - Hỏi AI làm toàn bộ thay vì hỏi từng phần.
 
-### 7.3. Cách cải thiện prompt
+### 9.3. Cách cải thiện prompt
 
 ```text
 Viết tại đây...
 ```
 
-### 7.4. Prompt sau khi cải tiến
+### 9.4. Prompt sau khi cải tiến
 
 ```text
 Dán prompt đã được cải tiến tại đây.
 ```
 
-### 7.5. Kết quả sau khi cải tiến prompt
+### 9.5. Kết quả sau khi cải tiến prompt
 
 ```text
 Viết tại đây...
@@ -1175,9 +2287,9 @@ Viết tại đây...
 
 ---
 
-## 8. Bài học về cách viết prompt
+## 10. Bài học về cách viết prompt
 
-### 8.1. Khi viết prompt, em/nhóm cần cung cấp thông tin gì để AI trả lời tốt hơn?
+### 10.1. Khi viết prompt, em/nhóm cần cung cấp thông tin gì để AI trả lời tốt hơn?
 
 ```text
 Viết tại đây...
@@ -1194,13 +2306,13 @@ Gợi ý:
 - Format kết quả mong muốn.
 - Yêu cầu AI giải thích từng bước.
 
-### 8.2. Em/nhóm đã học được gì về cách đặt câu hỏi cho AI?
+### 10.2. Em/nhóm đã học được gì về cách đặt câu hỏi cho AI?
 
 ```text
 Viết tại đây...
 ```
 
-### 8.3. Lần sau em/nhóm sẽ cải thiện prompt như thế nào?
+### 10.3. Lần sau em/nhóm sẽ cải thiện prompt như thế nào?
 
 ```text
 Viết tại đây...
@@ -1208,7 +2320,7 @@ Viết tại đây...
 
 ---
 
-## 9. Phân loại prompt đã sử dụng
+## 11. Phân loại prompt đã sử dụng
 
 Đánh dấu số lượng prompt theo từng nhóm.
 
@@ -1229,7 +2341,7 @@ Viết tại đây...
 
 ---
 
-## 10. Checklist chất lượng prompt
+## 12. Checklist chất lượng prompt
 
 Sinh viên/nhóm tự kiểm tra chất lượng prompt đã dùng.
 
@@ -1248,7 +2360,7 @@ Sinh viên/nhóm tự kiểm tra chất lượng prompt đã dùng.
 
 ---
 
-## 11. Cam kết sử dụng prompt minh bạch
+## 13. Cam kết sử dụng prompt minh bạch
 
 Sinh viên/nhóm cam kết rằng:
 

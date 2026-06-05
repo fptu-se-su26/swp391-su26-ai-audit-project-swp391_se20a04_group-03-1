@@ -2,18 +2,18 @@
 
 ## 1. Thông tin chung
 
-| Thông tin | Nội dung |
-|---|---|
-| Môn học | Software development project |
-| Mã môn học | SWP391 |
-| Lớp | SE20A04 |
-| Học kỳ | SU26 |
-| Tên bài tập / Project | LogiPort - Port Operations Management Solution |
-| Tên sinh viên / Nhóm | 3 |
+| Thông tin             | Nội dung                                         |
+| --------------------- | ------------------------------------------------ |
+| Môn học               | Software development project                     |
+| Mã môn học            | SWP391                                           |
+| Lớp                   | SE20A04                                          |
+| Học kỳ                | SU26                                             |
+| Tên bài tập / Project | LogiPort - Port Operations Management Solution   |
+| Tên sinh viên / Nhóm  | 3                                                |
 | MSSV / Danh sách MSSV | DE190953, DE191024, DE190478, DE190972, DE190658 |
-| Giảng viên hướng dẫn | QuangLTN3 |
-| Ngày bắt đầu | 15/05/2026 |
-| Ngày hoàn thành |  |
+| Giảng viên hướng dẫn  | QuangLTN3                                        |
+| Ngày bắt đầu          | 15/05/2026                                       |
+| Ngày hoàn thành       |                                                  |
 
 ---
 
@@ -54,12 +54,12 @@ Ví dụ:
 
 ### Mô tả mục tiêu sử dụng AI
 
-```text
+````text
 Viết tại đây...
 
 ## 4. Nhật ký sử dụng AI chi tiết
 
-> Mỗi lần sử dụng AI cho một phần quan trọng của bài tập/project, sinh viên cần ghi lại theo mẫu bên dưới.  
+> Mỗi lần sử dụng AI cho một phần quan trọng của bài tập/project, sinh viên cần ghi lại theo mẫu bên dưới.
 > Sinh viên/nhóm có thể nhân bản mẫu “Lần sử dụng AI” nhiều lần tùy theo số lần sử dụng AI thực tế.
 
 ---
@@ -74,7 +74,7 @@ Viết tại đây...
 | Phần việc liên quan | Front end |
 | Mức độ sử dụng | Hỏi sinh code  |
 
-#### 4.1. Prompt đã sử dụng
+#### 1.1. Prompt đã sử dụng
 
 ```text
 
@@ -158,14 +158,14 @@ cảnh báo bất thường;
 hiệu suất xử lý theo khung giờ"
 
 Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về nextJs, trong phần front end đi từ src/frontend, hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Với những trang xác thực sẽ nằm trong frontend/src/app/admin/(auth), và những trang còn lại sẽ nằm trong frontend/src/app/admin. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng.
-```
+````
 
-#### 4.2. Kết quả AI gợi ý
+#### 1.2. Kết quả AI gợi ý
 
 Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
 
 ```text
-AI đã tạo được các trang cơ bản với nội dung sau: 
+AI đã tạo được các trang cơ bản với nội dung sau:
 - Triển khai ReportsPage với các tùy chọn lọc và bảng báo cáo
 - Tạo SealPage để theo dõi trạng thái niêm phong với cảnh báo và bảng dữ liệu
 - Phát triển YardPage để quản lý các vị trí đỗ xe và hiển thị tổng quan bãi đỗ xe
@@ -176,7 +176,7 @@ AI đã tạo được các trang cơ bản với nội dung sau:
 - Thêm các hàm tiện ích để hợp nhất tên lớp
 ```
 
-#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 1.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
 
@@ -191,7 +191,7 @@ Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
 - Thêm các hàm tiện ích để hợp nhất tên lớp
 ```
 
-#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 1.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
 
@@ -200,18 +200,18 @@ Trong trang Gate và Yard mà AI đã gen bị thiếu khung video streaming t�
 Một vài tiêu đề hoặc tên dự án chưa đồng bị hoặc hợp lí, em đã sửa lại nó
 ```
 
-#### 4.5. Minh chứng
+#### 1.5. Minh chứng
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Loại minh chứng   | Nội dung                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/2d7a0b7406063f917bc74946d71ecd1eac60c27f |
+| File liên quan    |                                                                                                                                        |
+| Screenshot        |                                                                                                                                        |
+| Kết quả chạy/test |                                                                                                                                        |
+| Link video demo   |                                                                                                                                        |
+| Ghi chú khác      |                                                                                                                                        |
 
-#### 4.6. Nhận xét cá nhân/nhóm
+#### 1.6. Nhận xét cá nhân/nhóm
 
 Sinh viên/nhóm học được gì sau lần sử dụng AI này?
 
@@ -223,15 +223,15 @@ Muốn AI hiểu được dự án, hiểu công việc làm gì cần phải cu
 
 ### Lần sử dụng AI số 2
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 19/05/2026 |
-| Công cụ AI | Gemini Claude GitHub Copilot Antigravity |
-| Mục đích sử dụng | Xây dựng Frontend cho hệ thống |
-| Phần việc liên quan | Design Frontend  |
-| Mức độ sử dụng | Hỗ trợ sinh code, tối ưu giao diện  |
+| Nội dung            | Thông tin                                |
+| ------------------- | ---------------------------------------- |
+| Ngày sử dụng        | 19/05/2026                               |
+| Công cụ AI          | Gemini Claude GitHub Copilot Antigravity |
+| Mục đích sử dụng    | Xây dựng Frontend cho hệ thống           |
+| Phần việc liên quan | Design Frontend                          |
+| Mức độ sử dụng      | Hỗ trợ sinh code, tối ưu giao diện       |
 
-#### 4.1. Prompt đã sử dụng
+#### 2.1. Prompt đã sử dụng
 
 ```text
 # Dự án: LogiPort System - Hê thống quản lý  cảng v2.0
@@ -381,10 +381,10 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
   - **Cài đặt**: Doanh nghiệp, Tài xế, Xe, Tài khoản
 ```
 
-#### 4.2. Kết quả AI gợi ý
+#### 2.2. Kết quả AI gợi ý
 
 ```text
- AI đã triển khai các trang cơ bản với nội dung sau: 
+ AI đã triển khai các trang cơ bản với nội dung sau:
 - Triển khai tốt các page liên quan đến Admin đã đề cập trên prompt
 - Tạo Inventory để theo dõi, quan lý các thung hàng cho các xe booking, chưa booking
 - Phát triển YardPage để quản lý các vị trí đỗ xe và hiển thị tổng quan bãi đỗ xe
@@ -395,7 +395,7 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 - Thêm các hàm tiện ích để hợp nhất tên lớp
 ```
 
-#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 2.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
 - Triển khai tốt các page liên quan đến Admin đã đề cập trên prompt
@@ -408,24 +408,24 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 - Thêm các hàm tiện ích để hợp nhất tên lớp
 ```
 
-#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 2.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
   Vẫn còn có một số lỗi giữa các kích thước, phân bố navigation, layout, lệch kích thước giữa các button. Đã yêu cầu cải tiến thêm. Mục yard map cần cập nhật lại video live streaming
 ```
 
-#### 4.5. Minh chứng
+#### 2.5. Minh chứng
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | 	https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/main...DE190478-frontend |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Loại minh chứng   | Nội dung                                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/main...DE190478-frontend |
+| File liên quan    |                                                                                                                         |
+| Screenshot        |                                                                                                                         |
+| Kết quả chạy/test |                                                                                                                         |
+| Link video demo   |                                                                                                                         |
+| Ghi chú khác      |                                                                                                                         |
 
-#### 4.6. Nhận xét cá nhân/nhóm
+#### 2.6. Nhận xét cá nhân/nhóm
 
 ```text
 Viết tại đây...
@@ -435,21 +435,21 @@ Viết tại đây...
 
 ### Lần sử dụng AI số 3
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 21/05/2026 |
-| Công cụ AI | Antigravity |
-| Mục đích sử dụng | Tạo api register |
-| Phần việc liên quan | coding|
-| Mức độ sử dụng | Hỏi sinh code |
+| Nội dung            | Thông tin        |
+| ------------------- | ---------------- |
+| Ngày sử dụng        | 21/05/2026       |
+| Công cụ AI          | Antigravity      |
+| Mục đích sử dụng    | Tạo api register |
+| Phần việc liên quan | coding           |
+| Mức độ sử dụng      | Hỏi sinh code    |
 
-#### 4.1. Prompt đã sử dụng
+#### 3.1. Prompt đã sử dụng
 
 ```text
-Phân tích dự án hiện có , hãy bắt đầu viết tính năng register. Từ trang register của frontend hãy sửa lại dùng just-validate để xác thực và lấy dữ liệu gửi lên backend,  xong hãy viết tiếp tính năng này cho backend, yêu cầu sử dụng các thư viện đã cài, dùng joi để validate cho người dùng, viết schema cho account-admin trong model (yêu cầu schema đầy đủ các thuộc tính cần có của account-admin trong dự án, viết schema đơn giản không cần các cú pháp phức tạp như enum, ....) 
+Phân tích dự án hiện có , hãy bắt đầu viết tính năng register. Từ trang register của frontend hãy sửa lại dùng just-validate để xác thực và lấy dữ liệu gửi lên backend,  xong hãy viết tiếp tính năng này cho backend, yêu cầu sử dụng các thư viện đã cài, dùng joi để validate cho người dùng, viết schema cho account-admin trong model (yêu cầu schema đầy đủ các thuộc tính cần có của account-admin trong dự án, viết schema đơn giản không cần các cú pháp phức tạp như enum, ....)
 ```
 
-#### 4.2. Kết quả AI gợi ý
+#### 3.2. Kết quả AI gợi ý
 
 ```text
 # Bàn giao tính năng - Đăng ký (Register / Account Admin)
@@ -499,7 +499,7 @@ Hệ thống backend đã được thiết lập cấu trúc MVC hoàn chỉnh t
 Bây giờ bạn chỉ cần mở các terminal cho cả 2 cổng (`npm run dev` ở Frontend và Backend) là toàn bộ tính năng này có thể hoạt động hoàn hảo!
 ```
 
-#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 3.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
 - Sử dụng Just-Validate để xác thực Frontend
@@ -509,7 +509,7 @@ Bây giờ bạn chỉ cần mở các terminal cho cả 2 cổng (`npm run dev`
 - API sẽ xử lý logic đăng ký: kiểm tra email đã tồn tại, băm mật khẩu với bcryptjs, lưu vào MongoDB
 ```
 
-#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 3.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
 - Chỉ lấy được đoạn mã trong phần Backend, phần frontend cần chỉnh sửa lại
@@ -517,33 +517,32 @@ Bây giờ bạn chỉ cần mở các terminal cho cả 2 cổng (`npm run dev`
 - Tính năng của hàm trong validator AI sử dụng trong controller nhưng em đã tách ra thành 1 middleware và nhúng vào route auth (em đã chỉnh sửa trong file auth.router.ts)
 ```
 
-#### 4.5. Minh chứng
+#### 3.5. Minh chứng
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main |
+| File liên quan    |                                                                                                                                     |
+| Screenshot        |                                                                                                                                     |
+| Kết quả chạy/test |                                                                                                                                     |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
 
-#### 4.6. Nhận xét cá nhân/nhóm
+#### 3.6. Nhận xét cá nhân/nhóm
 
 ```text
 Viết tại đây...
 ```
 
-
 ### Lần sử dụng AI số 4
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 24/05/2026 |
-| Công cụ AI | Gemini / Claude / GitHub Copilot / Cursor / Antigravity |
-| Mục đích sử dụng | Hỗ trợ xây dựng và tối ưu Computer Vision Service |
-| Phần việc liên quan | Testing / Debug / Design / Requirement|
-| Mức độ sử dụng | Hỗ trợ ý tưởng |
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 24/05/2026                                              |
+| Công cụ AI          | Gemini / Claude / GitHub Copilot / Cursor / Antigravity |
+| Mục đích sử dụng    | Hỗ trợ xây dựng và tối ưu Computer Vision Service       |
+| Phần việc liên quan | Testing / Debug / Design / Requirement                  |
+| Mức độ sử dụng      | Hỗ trợ ý tưởng                                          |
 
 #### 4.1. Prompt đã sử dụng
 
@@ -567,9 +566,9 @@ computer-vision/
 │
 ├── .gitignore               # Bỏ qua môi trường ảo (venv) và các file log khi push lên GitHub
 ├── requirements.txt         # Danh sách các thư viện Python cần cài đặt
-└── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)    
+└── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)
 
-dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py) 
+dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py)
 ```
 
 #### 4.2. Kết quả AI gợi ý
@@ -605,14 +604,14 @@ Sử dụng nguyên văn các gợi ý từ AI để có thể xây dựng phầ
 
 #### 4.5. Minh chứng
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main |
-| File liên quan |  |
-| Screenshot |  |
-| Kết quả chạy/test |  |
-| Link video demo |  |
-| Ghi chú khác |  |
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/compare/feat/de191024-computer-vision...main |
+| File liên quan    |                                                                                                                                     |
+| Screenshot        |                                                                                                                                     |
+| Kết quả chạy/test |                                                                                                                                     |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
 
 #### 4.6. Nhận xét cá nhân/nhóm
 
@@ -624,15 +623,15 @@ Viết tại đây...
 
 ### Lần sử dụng AI số 5
 
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 24/05/2026 |
-| Công cụ AI | Antigravity |
-| Mục đích sử dụng | Phát triển tính năng đặt lịch hẹn |
-| Phần việc liên quan | coding|
-| Mức độ sử dụng | Hỏi hướng dẫn  |
+| Nội dung            | Thông tin                         |
+| ------------------- | --------------------------------- |
+| Ngày sử dụng        | 24/05/2026                        |
+| Công cụ AI          | Antigravity                       |
+| Mục đích sử dụng    | Phát triển tính năng đặt lịch hẹn |
+| Phần việc liên quan | coding                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                     |
 
-#### 4.1. Prompt đã sử dụng
+#### 5.1. Prompt đã sử dụng
 
 ```text
 Module 1: 	Đặt lịch xe container vào cảng
@@ -646,10 +645,10 @@ Module 1: 	Đặt lịch xe container vào cảng
 	Khung giờ	Slot được phép vào cảng
 	Trạng thái	Chờ duyệt, đã xác nhận, đã vào, đã ra, hủy
 
-Từ module 1 như trên, hãy cho tôi work-flow chi tiết 
+Từ module 1 như trên, hãy cho tôi work-flow chi tiết
 ```
 
-#### 4.2. Kết quả AI gợi ý
+#### 5.2. Kết quả AI gợi ý
 
 ```text
 AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
@@ -660,7 +659,7 @@ AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình �
 Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
 ```
 
-#### 4.3. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 5.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
 - Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
@@ -669,32 +668,234 @@ AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình �
 - Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
 ```
 
-#### 4.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 5.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
 - Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
 - Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
 ```
 
-#### 4.5. Minh chứng
+#### 5.5. Minh chứng
 
-| Loại minh chứng | Nội dung |
-|---|---|
-| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
-| File liên quan | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
-| Screenshot | (Ảnh màn hình danh sách lịch hẹn và Thùng rác) |
-| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng. |
-| Link video demo |  |
-| Ghi chú khác | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code. |
+| Loại minh chứng   | Nội dung                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan    | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts`                                |
+| Screenshot        | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                                                         |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                        |
+| Link video demo   |                                                                                                                                        |
+| Ghi chú khác      | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                |
 
-#### 4.6. Nhận xét cá nhân/nhóm
+#### 5.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+### Lần sử dụng AI số 6
+
+| Nội dung            | Thông tin                                                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                                                                                       |
+| Công cụ AI          | GithubCopilot, Gemini                                                                                            |
+| Mục đích sử dụng    | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
+| Phần việc liên quan | coding                                                                                                           |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                                                                    |
+
+#### 6.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 6.2. Kết quả AI gợi ý
+
+```text
+Mục tiêu chính: ưu tiên quét QR nhanh (QR-first) và hiển thị Driver Pass tức thì.
+UI/UX:
+Thêm/điều chỉnh màn quét QR lớn, khung QR tập trung ở trên cùng, kích thước và padding giảm để thao tác nhanh hơn.
+Hiển thị DriverPassModal ngay khi quét hợp lệ, kèm haptics/feedback.
+Thêm toast/snackbar vị trí top-right cho thông báo đăng nhập/scan (đã mở rộng Snackbar để hỗ trợ vị trí).
+Card và block nội dung được compact (giới hạn maxWidth, giảm padding) để tránh chiếm chỗ thừa trên màn nhỏ.
+Header của ScreenShell giảm kích thước để cân bằng không gian.
+Tích hợp hoạt động:
+Liên kết chặt với auth store (điều hướng về (tabs) sau login/guest, nhận authToast để show toast).
+Quét → xử lý luồng (validate → show modal → commit) đã được nối với state hiện tại.
+File chính thay đổi: DashboardScreen.tsx, Dashboard.style.ts, DriverPassModal (component), Snackbar.tsx (vị trí), và một vài chỉnh style chung (ScreenShell.tsx).
+```
+
+#### 6.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện & bố cục:
+Thêm khung quét QR lớn, đặt ở vị trí nổi bật trên đầu màn hình để quét nhanh.
+Giảm padding / thu nhỏ các card và giới hạn maxWidth để giao diện compact, phù hợp màn nhỏ.
+Giảm kích thước header trong ScreenShell để nhường không gian cho QR.
+Tương tác & phản hồi:
+Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
+Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
+Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest).
+Files (chỉnh sửa chính):
+DashboardScreen.tsx — UI/flow quét QR.
+Dashboard.style.ts — compact layout, kích thước QR/card.
+ScreenShell.tsx — giảm header/padding chung.
+Snackbar.tsx — hỗ trợ vị trí top-right.
+DriverPassModal (component) — hiển thị dữ liệu sau quét.
+```
+
+#### 6.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
+Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
+```
+
+#### 6.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3                                                                                                                                              |
+| File liên quan    | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,                                                                                                                      |
+| Screenshot        | (Ảnh màn hình trang dashboard)                                                                                                                                                                                                                                                      |
+| Kết quả chạy/test | Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
+| Link video demo   |                                                                                                                                                                                                                                                                                     |
+| Ghi chú khác      | Prompt này cho phep tai xe co the su dung truc tiep nhanh chong.                                                                                                                                                                                                                    |
+
+#### 6.6. Nhận xét cá nhân/nhóm
 
 ```text
 Viết tại đây...
 ```
 
 ---
-### Lần sử dụng AI số 5
+
+### Lần sử dụng AI số 7
+
+| Nội dung            | Thông tin               |
+| ------------------- | ----------------------- |
+| Ngày sử dụng        | 25/05/2026              |
+| Công cụ AI          | GithubCopilot, Gemini   |
+| Mục đích sử dụng    | Xây dựng trang lịch hẹn |
+| Phần việc liên quan | coding                  |
+| Mức độ sử dụng      | Hỏi hướng dẫn           |
+
+#### 7.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 7.2. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 7.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 7.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 7.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan    | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts`                                |
+| Screenshot        | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                                                         |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                        |
+| Link video demo   |                                                                                                                                        |
+| Ghi chú khác      | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                |
+
+#### 7.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Lần sử dụng AI số 8
+
+| Nội dung            | Thông tin                                                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                                                                                       |
+| Công cụ AI          | GithubCopilot, Gemini                                                                                            |
+| Mục đích sử dụng    | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
+| Phần việc liên quan | coding                                                                                                           |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                                                                    |
+
+#### 8.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 8.2. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 8.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 8.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 8.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan    | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts`                                |
+| Screenshot        | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                                                         |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                        |
+| Link video demo   |                                                                                                                                        |
+| Ghi chú khác      | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                |
+
+#### 8.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Lần sử dụng AI số 6
 
 | Nội dung            | Thông tin                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------ |
@@ -705,7 +906,7 @@ Viết tại đây...
 | Mức độ sử dụng      | Hỏi hướng triển khai + hỗ trợ code                                                               |
 | Phần liên quan      | Module quản lý bãi xe, cụ thể là file `admin.routes.ts`, `admin.controller.ts`, `admin.model.ts` |
 
-#### 5.1. Prompt đã sử dụng
+#### 6.1. Prompt đã sử dụng
 
 ```text
 Ở trang bãi đỗ như tôi tưởng tượng thì sẽ có 1 đường liên kết tới trang tạo bãi đỗ, ở trang đó sẽ cấu hình tên bãi đỗ và địa chỉ của camera để truyền video-streaming.
@@ -717,7 +918,7 @@ Vấn đề ở đây là tôi chưa có camera để có thể tạo và nhập
 Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận và xử lí kết quả backend trả về theo đúng chuẩn.
 ```
 
-#### 5.2. Bối cảnh khi viết prompt
+#### 6.2. Bối cảnh khi viết prompt
 
 ```text
 - Đang phát triển module quản lý bãi đỗ xe (Yard Management) cho hệ thống cảng biển thông minh.
@@ -729,7 +930,7 @@ Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận
 - Mong muốn AI đóng vai trò hỗ trợ định hướng triển khai tổng thể cả Frontend lẫn Backend thay vì chỉ sinh code đơn lẻ.
 ```
 
-#### 5.3. Kết quả AI gợi ý
+#### 6.3. Kết quả AI gợi ý
 
 ```text
 AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ gồm Frontend và Backend:
@@ -752,7 +953,7 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
    - AI cũng gợi ý hướng xử lý Snapshot và Video Stream thông qua service riêng để kết nối với IP Camera trong tương lai.
 ```
 
-#### 5.4. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 6.4. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
 - Áp dụng workflow và kiến trúc AI gợi ý để triển khai module quản lý bãi đỗ xe.
@@ -764,7 +965,7 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 - Áp dụng cơ chế quy đổi tọa độ sang phần trăm (%) để giao diện responsive khi thay đổi kích thước màn hình.
 ```
 
-#### 5.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 6.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
 - Chỉnh sửa lại giao diện Config Yard để phù hợp với UI tổng thể của hệ thống.
@@ -776,18 +977,18 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 - Tối ưu lại cách lưu dữ liệu Bounding Box để giảm lỗi sai vị trí khi tải lại trang.
 ```
 
-#### 5.6. Đánh giá chất lượng prompt
+#### 6.6. Đánh giá chất lượng prompt
 
-* [x] Prompt rõ ràng
-* [x] Prompt có đủ bối cảnh
-* [ ] Prompt còn thiếu thông tin
-* [x] Prompt tạo ra kết quả tốt
-* [ ] Prompt tạo ra kết quả chưa phù hợp
-* [x] Cần hỏi lại AI nhiều lần
-* [x] Cần tự kiểm tra và chỉnh sửa nhiều
-* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
-#### 5.7. Minh chứng
+#### 6.7. Minh chứng
 
 | Loại minh chứng   | Nội dung                                                                                                                                 |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -798,32 +999,979 @@ AI đã phân tích và gợi ý cách triển khai module quản lý bãi đỗ
 | Link video demo   |                                                                                                                                          |
 | Ghi chú khác      | AI hỗ trợ tốt trong phần xử lý kéo thả Bounding Box và định vị tọa độ responsive.                                                        |
 
-#### 5.8. Ghi chú thêm
+#### 6.8. Ghi chú thêm
 
 ```text
 Kinh nghiệm rút ra: Với các module có UI phức tạp như kéo thả và xử lý tọa độ, việc yêu cầu AI phân tích workflow và hướng triển khai trước giúp nhóm hiểu rõ kiến trúc hệ thống hơn thay vì viết code ngay từ đầu. Điều này giúp giảm lỗi logic và dễ mở rộng tính năng trong tương lai.
 ```
 
+---
+
+### Lần sử dụng AI số 7
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 29/05/2026                                              |
+| Công cụ AI          | Antigravity                                             |
+| Mục đích sử dụng    | Hỗ trợ phát triển module Quản lý công ty                |
+| Phần việc liên quan | Coding                                                  |
+| Mức độ sử dụng      | Tham khảo hướng triển khai và hỗ trợ xây dựng chức năng |
+| Phần liên quan      | Module Company Management                               |
+
+#### 7.1. Prompt đã sử dụng
+
+```text
+Phân tích kĩ source code, trong front end tôi muốn thêm trang quản lí công ty, chức năng của trang quản lí công ty bao gồm tất cả các chức năng tương tự như trang appointments. Hãy chỉ xử lí phần front end cho tôi và đưa ra hướng dẫn backend để tôi tự triển khai.
+```
+
+#### 7.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình phát triển hệ thống quản lý cảng, nhóm cần bổ sung chức năng quản lý công ty nhằm lưu trữ và theo dõi thông tin các doanh nghiệp vận tải. Để đảm bảo tính đồng nhất trong giao diện và luồng xử lý, nhóm mong muốn xây dựng module này dựa trên cấu trúc của trang Appointments đã có sẵn.
+
+Ngoài các chức năng CRUD cơ bản, nhóm cũng muốn áp dụng cơ chế Soft Delete để hạn chế việc mất dữ liệu khi người dùng thao tác xóa nhầm. Do đó cần tham khảo thêm hướng triển khai cả phía Frontend và Backend trước khi tiến hành phát triển.
+```
+
+#### 7.3. Kết quả AI gợi ý
+
+```text
+AI đề xuất xây dựng module Quản lý công ty theo cấu trúc tương tự module Appointments hiện có.
+
+Các nội dung được gợi ý gồm:
+- Bổ sung mục "Quản lý công ty" vào Sidebar quản trị.
+- Xây dựng trang danh sách công ty với chức năng tìm kiếm, lọc trạng thái, lọc theo thời gian và phân trang.
+- Thiết kế form thêm mới và chỉnh sửa công ty có tích hợp JustValidate để kiểm tra dữ liệu đầu vào.
+- Xây dựng trang chỉnh sửa thông tin công ty theo ID.
+- Đề xuất cơ chế Soft Delete thông qua trang Trash để quản lý các bản ghi đã xóa.
+- Hướng dẫn cấu trúc Backend bao gồm Model, Controller, Route và Validation phục vụ cho các thao tác CRUD.
+```
+
+#### 7.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm đã sử dụng các đề xuất từ AI để triển khai module Quản lý công ty trong hệ thống.
+
+Các chức năng đã được áp dụng bao gồm:
+- Thêm menu điều hướng đến trang Quản lý công ty.
+- Xây dựng giao diện danh sách công ty.
+- Tích hợp tìm kiếm và bộ lọc dữ liệu.
+- Thực hiện phân trang danh sách.
+- Xây dựng form thêm mới và cập nhật thông tin công ty.
+- Áp dụng thư viện JustValidate cho các trường dữ liệu đầu vào.
+- Thiết kế chức năng Soft Delete, Restore và Hard Delete.
+- Xây dựng API Backend phục vụ quản lý dữ liệu công ty.
+```
+
+#### 7.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi tham khảo kết quả từ AI, nhóm đã chủ động điều chỉnh và mở rộng thêm nhiều chức năng để phù hợp với yêu cầu thực tế của hệ thống.
+
+Các phần được cải tiến gồm:
+- Điều chỉnh giao diện để đồng bộ với các module quản trị khác.
+- Bổ sung trang Thùng rác (Trash) để quản lý dữ liệu đã xóa mềm.
+- Tối ưu luồng tìm kiếm và lọc dữ liệu nhằm cải thiện trải nghiệm người dùng.
+- Sửa lỗi kết nối API và xử lý dữ liệu trả về từ Backend.
+- Khắc phục lỗi liên quan đến route động và tham số ID trong Next.js.
+- Kiểm tra lại toàn bộ luồng CRUD để đảm bảo dữ liệu được cập nhật chính xác.
+```
+
+#### 7.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 7.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/062ca2d3eca1b3d5feb87854ca1b29627fb20c38                                                             |
+| File liên quan        | `src/frontend/src/app/admin/companies/page.tsx`, `src/frontend/src/app/admin/companies/edit/[id]/page.tsx`, `src/backend/controllers/company.controller.ts`, `src/backend/models/company.model.ts` |
+| Screenshot            | Giao diện danh sách công ty, form chỉnh sửa và trang thùng rác                                                                                                                                     |
+| Kết quả chạy/test     | Tìm kiếm, lọc, phân trang và các chức năng CRUD hoạt động ổn định                                                                                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                                                                                                    |
+| Ghi chú khác          | Chức năng Soft Delete và Restore được triển khai thành công                                                                                                                                        |
+
+#### 7.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra là đối với các module có quy mô tương đối lớn, việc yêu cầu AI phân tích cấu trúc và đề xuất kiến trúc triển khai trước giúp tiết kiệm đáng kể thời gian phát triển. Tuy nhiên, các phần liên quan đến nghiệp vụ và xử lý dữ liệu vẫn cần được kiểm tra, chỉnh sửa và hoàn thiện thủ công để đảm bảo phù hợp với yêu cầu thực tế của dự án.
+```
+
+---
+
+### Lần sử dụng AI số 8
+
+| Nội dung            | Thông tin                                                          |
+| ------------------- | ------------------------------------------------------------------ |
+| Ngày sử dụng        | 30/05/2026                                                         |
+| Công cụ AI          | Antigravity                                                        |
+| Mục đích sử dụng    | Hỗ trợ phát triển tính năng quản lý camera cổng và video streaming |
+| Phần việc liên quan | Coding                                                             |
+| Mức độ sử dụng      | Tham khảo hướng triển khai và hỗ trợ phát triển chức năng          |
+| Phần liên quan      | Gate Management                                                    |
+
+#### 8.1. Prompt đã sử dụng
+
+```text
+Phân tích kỹ dự án này, tôi muốn hoàn thiện tính năng cho trang quản lí cổng ở src/frontend/src/app/admin/gate/page.tsx.
+
+Ở trang này tôi muốn giữ lại section Active Vehicles và Gate Log.
+
+Phân tích tiếp module Yard vì ở đó đã có chức năng tạo và quản lí camera. Tôi muốn trang Gate có các tính năng tương tự.
+
+Sẽ có một đường link dẫn sang trang tạo camera mới, người dùng có thể nhập tên camera và địa chỉ RTSP.
+
+Sau khi tạo xong camera thì video stream phải hiển thị trực tiếp trên trang Gate giống như giao diện demo hiện tại.
+
+Trong mỗi khung camera cần hiển thị:
+- Tên camera
+- RTSP URL
+- Chỉnh sửa camera
+- Xóa camera
+- Nút phóng to video
+
+Trước tiên hãy hoàn thành các tính năng này và truyền được video streaming từ RTSP lên giao diện, các chức năng AI khác sẽ triển khai sau.
+```
+
+#### 8.2. Bối cảnh khi viết prompt
+
+```text
+Nhóm đang phát triển phân hệ Gate Management cho hệ thống quản lý cảng biển thông minh. Một trong những yêu cầu quan trọng của phân hệ này là quản lý các camera giám sát tại khu vực cổng ra vào.
+
+Trước đó hệ thống đã có module Yard Management hỗ trợ quản lý camera, vì vậy nhóm mong muốn tái sử dụng mô hình này để đảm bảo tính đồng nhất giữa các phân hệ.
+
+Ngoài chức năng CRUD camera, mục tiêu chính của giai đoạn này là xây dựng hệ thống video streaming từ RTSP lên giao diện Web nhằm chuẩn bị nền tảng cho các tính năng AI nhận diện biển số xe, container và giám sát phương tiện trong tương lai.
+```
+
+#### 8.3. Kết quả AI gợi ý
+
+```text
+Antigravity đề xuất xây dựng đầy đủ quy trình quản lý camera cho khu vực cổng.
+
+Các nội dung chính được gợi ý gồm:
+- Thiết kế Model lưu trữ thông tin camera cổng.
+- Xây dựng API phục vụ các thao tác thêm, sửa, xóa và lấy danh sách camera.
+- Tạo giao diện thêm camera mới và quản lý camera hiện có.
+- Hiển thị danh sách camera trực tiếp trên trang Gate.
+- Hỗ trợ chỉnh sửa, xóa và cập nhật thông tin camera.
+- Truyền luồng video RTSP lên giao diện người dùng.
+- Bổ sung chức năng phóng to khung hình camera.
+- Giữ nguyên các khu vực Active Vehicles và Gate Log trong giao diện hiện tại.
+
+Ngoài ra AI còn đề xuất mở rộng AI Server để hỗ trợ nhiều camera RTSP hoạt động đồng thời thay vì chỉ xử lý một nguồn video cố định.
+```
+
+#### 8.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm đã tham khảo và áp dụng nhiều đề xuất từ AI để triển khai module quản lý camera cổng.
+
+Các chức năng đã được sử dụng gồm:
+- Xây dựng giao diện quản lý camera trên trang Gate.
+- Tạo trang thêm camera mới.
+- Hiển thị danh sách camera đã lưu.
+- Hỗ trợ cập nhật và xóa camera.
+- Hiển thị video streaming từ RTSP trực tiếp trên giao diện.
+- Bổ sung tính năng phóng to video để hỗ trợ quan sát.
+- Nâng cấp AI Server để nhận RTSP URL động thông qua API truyền video.
+```
+
+#### 8.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi tham khảo kết quả từ Antigravity, nhóm tiếp tục điều chỉnh và tối ưu thêm nhiều thành phần để phù hợp với hệ thống thực tế.
+
+Các cải tiến bao gồm:
+- Điều chỉnh bố cục giao diện camera để phù hợp với Dashboard quản trị.
+- Tối ưu cơ chế hiển thị nhiều camera đồng thời.
+- Giảm số lượng kết nối dư thừa nhằm tiết kiệm tài nguyên máy chủ.
+- Chuẩn hóa dữ liệu camera giữa Frontend, Backend và AI Server.
+- Bổ sung cơ chế xử lý lỗi khi camera mất kết nối hoặc RTSP không khả dụng.
+- Chuẩn bị sẵn kiến trúc để tích hợp các chức năng AI nhận diện biển số và container trong các giai đoạn tiếp theo.
+```
+
+#### 8.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 8.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau                                                                                                                                                    |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/frontend/src/app/admin/gate/create/page.tsx`, `src/backend/models/gate.model.ts`, `src/computer-vision/app.py` |
+| Screenshot            | Giao diện quản lý camera cổng và video streaming                                                                                                                |
+| Kết quả chạy/test     | Camera RTSP hiển thị thành công trên giao diện quản lý cổng                                                                                                     |
+| Link tài liệu/báo cáo |                                                                                                                                                                 |
+| Ghi chú khác          | Đây là nền tảng cho các chức năng AI Computer Vision được triển khai ở các giai đoạn sau                                                                        |
+
+#### 8.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra là đối với các tính năng liên quan đến Computer Vision, việc hoàn thiện luồng camera và video streaming trước khi triển khai AI giúp quá trình phát triển trở nên dễ kiểm soát hơn. Nhóm có thể kiểm thử từng thành phần riêng biệt, xác định lỗi nhanh hơn và giảm độ phức tạp khi tích hợp các mô hình nhận diện trong tương lai.
+```
+
+---
+
+### Lần sử dụng AI số 9
+
+| Nội dung            | Thông tin                                                          |
+| ------------------- | ------------------------------------------------------------------ |
+| Ngày sử dụng        | 30/05/2026                                                         |
+| Công cụ AI          | Antigravity                                                        |
+| Mục đích sử dụng    | Sửa lỗi giao diện và tối ưu video streaming cho trang quản lý cổng |
+| Phần việc liên quan | Coding                                                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                      |
+| Phần liên quan      | Gate Management                                                    |
+
+#### 9.1. Prompt đã sử dụng
+
+```text
+Có nhiều vấn đề cần sửa ở đây:
+
+1. Chỉnh sửa lại giao diện của trang gate cho phù hợp với giao diện sáng và tối.
+2. Khi phóng to khung camera thì bị lỗi.
+3. Video stream lên khá lag và delay tầm 20s.
+
+Trước tiên hãy fix 3 lỗi này cho tôi.
+```
+
+#### 9.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thành chức năng quản lý camera và hiển thị video streaming trên trang Gate, nhóm tiến hành kiểm thử thực tế với nhiều nguồn camera RTSP khác nhau.
+
+Trong quá trình sử dụng, nhóm phát hiện một số vấn đề ảnh hưởng đến trải nghiệm người dùng. Giao diện chưa tương thích hoàn toàn với chế độ Dark Mode, chức năng phóng to camera hoạt động chưa ổn định trên một số trình duyệt và video RTSP có độ trễ khá lớn khi hiển thị trên giao diện Web.
+
+Do các tính năng AI nhận diện biển số sẽ yêu cầu dữ liệu video gần thời gian thực nên việc tối ưu giao diện và hiệu năng streaming là yêu cầu cần hoàn thành trước khi tiếp tục phát triển các chức năng AI.
+```
+
+#### 9.3. Kết quả AI gợi ý
+
+```text
+Antigravity đã phân tích nguyên nhân của từng vấn đề và đề xuất hướng xử lý phù hợp.
+
+Đối với giao diện:
+- Chuyển đổi các màu sắc cố định sang hệ thống Theme của Shadcn UI và Tailwind CSS.
+- Đồng bộ màu sắc và thành phần giao diện giữa Light Mode và Dark Mode.
+- Chuẩn hóa các card camera, bảng dữ liệu và khu vực hiển thị trạng thái.
+
+Đối với chức năng phóng to camera:
+- Thay thế cách xử lý cũ bằng HTML5 Fullscreen API.
+- Đảm bảo video có thể hiển thị toàn màn hình ổn định trên các trình duyệt phổ biến.
+- Hạn chế lỗi mất khung hình khi chuyển đổi trạng thái.
+
+Đối với video streaming:
+- Phân tích nguyên nhân gây delay từ RTSP Buffering.
+- Đề xuất cấu hình FFmpeg và OpenCV theo hướng Low Latency.
+- Tối ưu việc đọc frame từ camera để giảm độ trễ khi hiển thị trên trình duyệt.
+- Đề xuất cơ chế xử lý phù hợp cho nhiều camera hoạt động đồng thời.
+```
+
+#### 9.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm đã áp dụng các đề xuất từ AI để cải thiện cả giao diện và hiệu năng hệ thống.
+
+Các nội dung đã được triển khai gồm:
+- Điều chỉnh giao diện trang Gate tương thích với cả Light Mode và Dark Mode.
+- Đồng bộ giao diện camera với các module khác trong hệ thống.
+- Sửa lỗi chức năng phóng to video bằng Fullscreen API.
+- Tối ưu luồng video streaming từ RTSP.
+- Cập nhật cấu hình OpenCV và FFmpeg để giảm buffering.
+- Cải thiện tốc độ hiển thị video trên giao diện Web.
+- Chuẩn bị nền tảng phục vụ cho các tính năng nhận diện thời gian thực trong giai đoạn tiếp theo.
+```
+
+#### 9.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi áp dụng các đề xuất từ Antigravity, nhóm tiếp tục thực hiện nhiều bước kiểm thử và tinh chỉnh bổ sung.
+
+Các cải tiến thực hiện gồm:
+- Kiểm thử trên nhiều camera RTSP khác nhau để đánh giá tính ổn định.
+- Điều chỉnh lại bố cục giao diện sau khi áp dụng Dark Mode.
+- Tinh chỉnh thêm các thông số streaming phù hợp với môi trường triển khai thực tế.
+- Đồng bộ cơ chế xử lý camera giữa Gate Management và Yard Management.
+- Kiểm tra và tối ưu việc sử dụng tài nguyên hệ thống khi chạy nhiều luồng camera đồng thời.
+- Bổ sung xử lý lỗi khi camera mất kết nối hoặc phản hồi chậm.
+```
+
+#### 9.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 9.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                      |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/frontend/components/video-stream.tsx`, `src/computer-vision/app.py` |
+| Screenshot            | Giao diện Gate sau khi hỗ trợ Dark Mode và Fullscreen                                                                |
+| Kết quả chạy/test     | Video stream hoạt động ổn định hơn, độ trễ giảm đáng kể                                                              |
+| Link tài liệu/báo cáo |                                                                                                                      |
+| Ghi chú khác          | Đây là bước tối ưu quan trọng trước khi triển khai các chức năng AI nhận diện biển số trong thời gian thực           |
+
+#### 9.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra là sau khi hoàn thành chức năng chính, việc kiểm thử thực tế và tối ưu hiệu năng đóng vai trò rất quan trọng. Một hệ thống có thể hoạt động đúng về mặt chức năng nhưng vẫn tạo trải nghiệm không tốt nếu giao diện chưa hoàn thiện hoặc hiệu năng chưa đáp ứng yêu cầu thực tế.
+
+Thông qua quá trình tối ưu video streaming, nhóm hiểu rõ hơn về ảnh hưởng của buffering, cấu hình FFmpeg và OpenCV đối với các ứng dụng Computer Vision thời gian thực. Đây là kinh nghiệm hữu ích cho các giai đoạn phát triển AI tiếp theo của dự án.
+```
+
+---
+
+### Lần sử dụng AI số 10
+
+| Nội dung            | Thông tin                                          |
+| ------------------- | -------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                         |
+| Công cụ AI          | Antigravity                                        |
+| Mục đích sử dụng    | Phát triển tính năng OCR và quản lý giao dịch cổng |
+| Phần việc liên quan | Coding                                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                      |
+| Phần liên quan      | Gate Management, Computer Vision                   |
+
+#### 10.1. Prompt đã sử dụng
+
+```text
+Trước tiên phân tích dự án này, sau đó phân tích src/computer-vision và src/backend.
+
+Ở trong computer-vision quét nhận diện biển số, khi nhận diện được biển số xong sẽ gửi lên backend các trường dữ liệu là:
+{
+text,
+status: in hoặc out,
+type: plate hoặc container_code,
+confidence
+}
+
+Trên backend có các việc sau cần làm:
+
+Tạo model GateTransaction gồm:
+- TruckPlate
+- DriverId
+- ContainerNo
+- AppointmentID
+- GateType
+- CheckInTime
+- CheckOutTime
+- Status
+- OCRConfidence
+- ImageUrl
+
+Khi có tính năng nhận diện mã container thì backend sẽ kiểm tra container và biển số có khớp với Appointment hay không, kiểm tra trạng thái Confirmed, kiểm tra thời gian hợp lệ và chống nhận diện trùng lặp.
+
+Ngoài ra cần bổ sung trạng thái Completed cho Appointment và cập nhật các nghiệp vụ liên quan.
+```
+
+#### 10.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thành chức năng quản lý camera và video streaming tại khu vực cổng, nhóm bắt đầu triển khai giai đoạn tích hợp AI nhận diện biển số xe với hệ thống quản lý nghiệp vụ.
+
+Mục tiêu của giai đoạn này là xây dựng luồng xử lý dữ liệu từ Computer Vision Service sang Backend, đồng thời thiết kế cơ sở dữ liệu phục vụ việc lưu trữ lịch sử xe ra vào cổng.
+
+Bên cạnh đó, nhóm muốn xây dựng cơ chế xác thực dữ liệu OCR với thông tin lịch hẹn (Appointment) nhằm đảm bảo các giao dịch được ghi nhận chính xác, hạn chế nhận diện sai và tránh các trường hợp quét trùng lặp trong quá trình vận hành thực tế.
+```
+
+#### 10.3. Kết quả AI gợi ý
+
+```text
+Antigravity đã đề xuất một kiến trúc tổng thể cho luồng xử lý OCR giữa Computer Vision Service và Backend.
+
+Các nội dung chính được đề xuất gồm:
+- Thiết kế model GateTransaction để lưu trữ lịch sử xe ra vào cổng.
+- Xây dựng API tiếp nhận dữ liệu OCR từ Computer Vision Service.
+- Kiểm tra tính hợp lệ của Appointment trước khi tạo giao dịch.
+- Đối chiếu biển số xe với dữ liệu đã đăng ký trong lịch hẹn.
+- Kiểm tra trạng thái Confirmed trước khi cho phép xe thực hiện quy trình Check-In.
+- Xác thực thời gian xe đến có nằm trong khung giờ cho phép hay không.
+- Chuẩn bị cơ chế đối chiếu mã container với lịch hẹn trong tương lai.
+- Thiết kế cơ chế chống nhận diện trùng lặp nhằm tránh tạo nhiều giao dịch cho cùng một xe.
+- Đề xuất lưu ảnh OCR để phục vụ công tác kiểm tra, đối soát và truy vết sau này.
+- Tự động cập nhật trạng thái Appointment sang Completed sau khi hoàn tất quy trình ra vào cổng.
+```
+
+#### 10.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm đã sử dụng các đề xuất từ AI làm cơ sở để thiết kế và triển khai luồng xử lý dữ liệu OCR.
+
+Các nội dung được áp dụng gồm:
+- Thiết kế model GateTransaction phục vụ lưu trữ lịch sử giao dịch cổng.
+- Xây dựng cơ chế tiếp nhận dữ liệu OCR từ Python AI Server.
+- Thiết kế quy trình xác thực Appointment trước khi tạo giao dịch.
+- Bổ sung trạng thái Completed cho Appointment.
+- Xây dựng cơ chế chống duplicate scan.
+- Thiết kế lưu trữ ảnh OCR phục vụ tra cứu và xác minh dữ liệu.
+- Chuẩn bị luồng xử lý cho chức năng nhận diện container trong các giai đoạn tiếp theo.
+```
+
+#### 10.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi tham khảo các đề xuất từ Antigravity, nhóm tiếp tục điều chỉnh nghiệp vụ để phù hợp với thực tế vận hành tại cảng.
+
+Các cải tiến bao gồm:
+- Bổ sung khoảng thời gian sai số cho phép khi đối chiếu lịch hẹn và thời điểm nhận diện thực tế.
+- Điều chỉnh quy trình Check-In và Check-Out để phù hợp với luồng hoạt động của xe trong cảng.
+- Tối ưu cơ chế chống duplicate scan khi phương tiện di chuyển chậm hoặc dừng trước camera trong thời gian dài.
+- Bổ sung các điều kiện kiểm tra nhằm giảm thiểu trường hợp nhận diện sai từ OCR.
+- Chuẩn hóa cấu trúc dữ liệu giữa Computer Vision Service và Backend.
+- Chuẩn bị sẵn kiến trúc để mở rộng nhận diện container và các loại phương tiện khác trong tương lai.
+```
+
+#### 10.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 10.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                      |
+| File liên quan        | `src/computer-vision/app.py`, `src/backend/models/gateTransaction.model.ts`, `src/backend/controllers/scan.controller.ts`, `src/backend/models/appointment.model.ts` |
+| Screenshot            | Luồng OCR gửi dữ liệu từ AI Server sang Backend                                                                                                                      |
+| Kết quả chạy/test     | Backend tiếp nhận và xử lý dữ liệu OCR thành công                                                                                                                    |
+| Link tài liệu/báo cáo |                                                                                                                                                                      |
+| Ghi chú khác          | Đây là bước nền tảng để tích hợp AI Computer Vision với hệ thống quản lý cảng                                                                                        |
+
+#### 10.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra là khi tích hợp AI vào một hệ thống nghiệp vụ thực tế, việc nhận diện chính xác chỉ là một phần của bài toán. Quan trọng hơn là xây dựng được cơ chế xác thực và kiểm tra dữ liệu ở phía Backend để đảm bảo tính toàn vẹn của hệ thống.
+
+Thông qua quá trình thiết kế GateTransaction và luồng xử lý OCR, nhóm hiểu rõ hơn cách kết nối giữa Computer Vision Service với hệ thống quản lý nghiệp vụ. Điều này giúp tạo nền tảng vững chắc cho các tính năng nhận diện container, tự động kiểm soát phương tiện và phân tích dữ liệu trong các giai đoạn tiếp theo.
+```
+
+---
+
+### Lần sử dụng AI số 11
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                           |
+| Công cụ AI          | Antigravity                                          |
+| Mục đích sử dụng    | Phát triển tính năng realtime cho trang quản lý cổng |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 11.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
+
+Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
+- Biển số xe
+- Tên tài xế
+- Mã container
+- Thời gian
+- Trạng thái IN hoặc OUT
+
+Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
+
+Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
+
+Ở section Active Vehicles hiển thị:
+- Số xe đã vào
+- Số xe đã ra
+- Số xe chờ
+
+Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
+
+Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
+```
+
+#### 11.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Sau khi hoàn thiện luồng OCR và xử lý giao dịch cổng ở phía Backend, nhóm tiếp tục triển khai cơ chế cập nhật dữ liệu theo thời gian thực cho hệ thống Gate Management.
+
+Trong quá trình vận hành thực tế, nhân viên giám sát cần theo dõi liên tục các phương tiện ra vào cảng mà không phải tải lại trang hoặc thực hiện thao tác làm mới dữ liệu thủ công. Vì vậy nhóm mong muốn xây dựng một cơ chế realtime giúp mọi thay đổi được phản ánh ngay lập tức trên giao diện.
+
+Bên cạnh đó, nhóm cũng muốn hiển thị các thống kê trực quan về số lượng xe đang hoạt động tại cổng và lịch sử giao dịch mới nhất để hỗ trợ công tác điều phối và giám sát.
+```
+
+#### 11.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Antigravity đề xuất sử dụng Socket.IO để xây dựng cơ chế giao tiếp thời gian thực giữa Backend và Frontend.
+
+Các đề xuất chính bao gồm:
+- Emit dữ liệu ngay sau khi giao dịch cổng được xác thực và lưu thành công vào cơ sở dữ liệu.
+- Chuẩn hóa dữ liệu truyền lên Frontend chỉ bao gồm các trường cần thiết như biển số xe, tài xế, mã container, thời gian và trạng thái.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Tự động cập nhật thống kê Active Vehicles khi có giao dịch mới phát sinh.
+- Giảm số lượng API polling nhằm tối ưu hiệu năng hệ thống.
+- Đề xuất xây dựng khu vực Appointment Completed để quản lý các lịch hẹn đã hoàn thành.
+- Chuẩn bị sẵn kiến trúc cho các sự kiện realtime khác trong tương lai.
+```
+
+#### 11.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Nhóm đã áp dụng các đề xuất từ AI để xây dựng cơ chế realtime cho hệ thống quản lý cổng.
+
+Các nội dung đã được triển khai gồm:
+- Thiết kế và tích hợp Socket.IO cho Backend.
+- Xây dựng cơ chế emit dữ liệu sau khi phát sinh giao dịch mới.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Cập nhật số liệu Active Vehicles mà không cần tải lại trang.
+- Kết nối Socket.IO Client trên Frontend.
+- Thiết kế giao diện hiển thị dữ liệu realtime cho nhân viên vận hành.
+- Xây dựng trang Appointment Completed phục vụ quản lý lịch hẹn đã hoàn tất.
+```
+
+#### 11.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Sau khi tham khảo kết quả từ Antigravity, nhóm tiếp tục điều chỉnh và tối ưu thêm một số thành phần để phù hợp với yêu cầu vận hành thực tế.
+
+Các cải tiến bao gồm:
+- Chỉ emit các trường dữ liệu thực sự cần thiết nhằm giảm tải băng thông truyền tải.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Điều chỉnh giao diện thống kê theo nhu cầu giám sát của nhân viên vận hành.
+- Bổ sung cơ chế giới hạn số lượng bản ghi hiển thị nhằm tránh ảnh hưởng hiệu năng khi dữ liệu tăng lên.
+- Chuẩn hóa cấu trúc dữ liệu realtime giữa Backend và Frontend.
+- Chuẩn bị kiến trúc để mở rộng thêm các sự kiện realtime cho Yard Management và Computer Vision trong tương lai.
+```
+
+#### 11.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 11.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
+| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
+| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực                                                      |
+
+#### 11.8. Ghi chú thêm
+
+```text id="p7c2mv"
+Kinh nghiệm rút ra là đối với các hệ thống giám sát và vận hành thời gian thực, việc cập nhật dữ liệu ngay khi phát sinh sự kiện mang lại trải nghiệm sử dụng tốt hơn rất nhiều so với cơ chế tải lại dữ liệu định kỳ.
+
+Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách xây dựng hệ thống realtime giữa Backend và Frontend, đồng thời giảm đáng kể độ trễ trong việc hiển thị thông tin vận hành. Đây là nền tảng quan trọng để phát triển các chức năng giám sát nâng cao và tích hợp AI trong các giai đoạn tiếp theo của dự án.
+```
+
+---
+### Lần sử dụng AI số 12
+
+| Nội dung            | Thông tin                                                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                                                                                       |
+| Công cụ AI          | GithubCopilot, Gemini                                                                                            |
+| Mục đích sử dụng    | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
+| Phần việc liên quan | Coding                                                                                                           |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                                                                                    |
+| Phần liên quan      | QR Coder Scanner                                                                                                 |
+
+#### 12.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+MTừ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 12.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Mục tiêu chính: ưu tiên quét QR nhanh (QR-first) và hiển thị Driver Pass tức thì.
+UI/UX:
+Thêm/điều chỉnh màn quét QR lớn, khung QR tập trung ở trên cùng, kích thước và padding giảm để thao tác nhanh hơn.
+Hiển thị DriverPassModal ngay khi quét hợp lệ, kèm haptics/feedback.
+Thêm toast/snackbar vị trí top-right cho thông báo đăng nhập/scan (đã mở rộng Snackbar để hỗ trợ vị trí).
+Card và block nội dung được compact (giới hạn maxWidth, giảm padding) để tránh chiếm chỗ thừa trên màn nhỏ.
+Header của ScreenShell giảm kích thước để cân bằng không gian.
+Tích hợp hoạt động:
+Liên kết chặt với auth store (điều hướng về (tabs) sau login/guest, nhận authToast để show toast).
+Quét → xử lý luồng (validate → show modal → commit) đã được nối với state hiện tại.
+File chính thay đổi: DashboardScreen.tsx, Dashboard.style.ts, DriverPassModal (component), Snackbar.tsx (vị trí), và một vài chỉnh style chung (ScreenShell.tsx).
+
+```
+
+#### 12.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện & bố cục:
+Thêm khung quét QR lớn, đặt ở vị trí nổi bật trên đầu màn hình để quét nhanh.
+Giảm padding / thu nhỏ các card và giới hạn maxWidth để giao diện compact, phù hợp màn nhỏ.
+Giảm kích thước header trong ScreenShell để nhường không gian cho QR.
+Tương tác & phản hồi:
+Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
+Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
+Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest).
+Files (chỉnh sửa chính):
+DashboardScreen.tsx — UI/flow quét QR.
+Dashboard.style.ts — compact layout, kích thước QR/card.
+ScreenShell.tsx — giảm header/padding chung.
+Snackbar.tsx — hỗ trợ vị trí top-right.
+DriverPassModal (component) — hiển thị dữ liệu sau quét.
+```
+
+#### 12.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
+Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
+```
+
+#### 12.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
+Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
+```
+
+#### 12.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 12.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                                                                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | `https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3`                                                                                                                                            |
+| File liên quan        | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,                                                                                                                      |
+| Screenshot            | (Ảnh màn hình trang dashboard)                                                                                                                                                                                                                                                      |
+| Kết quả chạy/test     | Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
+| Link tài liệu/báo cáo |                                                                                                                                                                                                                                                                                     |
+| Ghi chú khác          | Đ Prompt này cho phep tai xe co the su dung truc tiep nhanh chong.                                                                                                                                                                                                                  |
+
+#### 12.8. Ghi chú thêm
+
+```text id="p7c2mv"
+
+```
+
+---
+
+### Lần sử dụng AI số 13
+
+| Nội dung            | Thông tin                          |
+| ------------------- | ---------------------------------- |
+| Ngày sử dụng        | 25/05/2026                         |
+| Công cụ AI          | Gemini, Github Copilot             |
+| Mục đích sử dụng    | Xây dựng trang lịch hẹn cho tài xế |
+| Phần việc liên quan | Coding                             |
+| Mức độ sử dụng      | Hỏi hướng dẫn                      |
+| Phần liên quan      | Gate Management                    |
+
+#### 13.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+Vai  trò: Bạn hãy đóng vai là một senior chuyên về phát triển react native mobile app sử dụng các công cụ thư viện  hiện đại với nhiều năm kinh nghiệm
+Bối cảnh: Tôi đang thiết kế trang dashboard với nội dụng như sau:
+Màn hình Lịch hẹn
+
+Quản lý khung giờ: Hiển thị danh sách các lịch hẹn vào cổng với trạng thái rõ ràng (Xác nhận, Đang chờ, Đã hủy).
+Thẻ thông tin chi tiết: Mỗi lịch hẹn bao gồm mã Container, loại dịch vụ và cổng (Gate) chỉ định để tài xế dễ dàng theo dõi.
+Thao tác nhanh: Nút "Xem thẻ thông hành" (View Pass) giúp truy xuất mã QR nhanh chóng khi đến giờ hẹn.
+Yêu cầu: Từ bối cảnh trên,  hãy thiết kế lại trang lịch hẹn , kết hợp với gam mau chủ đạo của hình ảnh stitch  Màu nền (Background/Surface): Sử dụng tông xanh đen đậm (#0b1326) làm chủ đạo. Đây là lựa chọn tối ưu để giảm mỏi mắt cho tài xế khi làm việc trong cabin vào ban đêm và tăng cường độ sâu cho giao diện công nghiệp.
+Màu nhấn chủ đạo (Primary): Màu Vàng Hổ phách (Amber - #f59e0b). Đây là màu sắc đặc trưng của ngành vận tải và logistics, được dùng cho các nút hành động quan trọng (CTA), biểu tượng chính và các trạng thái cần sự chú ý cao.
+Màu bổ trợ (Accents/Status):Xanh lục (Emerald): Biểu thị trạng thái an toàn (Secure), xe đang kết nối (Active Uplink) hoặc ô đỗ trống (Available).
+Đỏ (Critical): Dùng cho các cảnh báo nghiêm trọng như vi phạm niêm phong hoặc dừng khẩn cấp.
+Xám xanh (Surface-Bright): Dùng cho các đường kẻ chia tách (borders) và các thẻ (cards) phụ để tạo chiều sâu mà không làm loãng sự tập trung.
+Rationale (Lý do thiết kế):
+Sự kết hợp giữa nền tối và màu nhấn vàng/xanh neon tạo ra độ tương phản cực cao (High Contrast), giúp tài xế có thể đọc nhanh thông tin ngay cả trong môi trường rung lắc của cabin xe hoặc dưới ánh sáng đèn đường phức tạp tại cảng.
+
+Yêu cầu bắt buộc: Thiết kế theo hình ảnh stitch tôi gửi sử dụng các thư viện có sẵn, ui có sẵn, thông tin khớp với hai trang dashboard, thông tin các nhân. Lưu ý nghiệp vụ:  Tại trang lịch hẹn này, tài xế chỉ được xem các lịch hẹn đã được xác nhận hoặc đang trong trạng thái chờ xử lý, tuyệt đối không hiển thị các lịch trình đã hủy hoặc quá hạn để tránh gây nhiễu thông tin. Mọi thao tác điều hướng cần được tối giản hóa bằng các nút bấm lớn, đảm bảo tài xế không thực hiện bất cứ tác vụ nào trong trang lịch hẹn này mà gây xao nhãng khi xe đang vận hành. Giao diện cần ưu tiên hiển thị thời gian và địa điểm nhận hàng ở vị trí trung tâm, sử dụng phông chữ không chân đậm nét để tối ưu hóa khả năng đọc lướt. Các thông báo trạng thái phải được làm nổi bật bằng hiệu ứng thị giác đặc trưng, đảm bảo tài xế nắm bắt thông tin cốt lõi chỉ trong một cái nhìn thoáng qua, từ đó duy trì sự tập trung tối đa vào việc điều khiển phương tiện và đảm bảo an toàn tuyệt đối trong suốt quá trình làm việc. Các thông tin hiển thị trong mỗi block lịch bao gồm thời gian,  vị trí kho bãi và trạng thái xác nhận hay chưa , được sắp xếp theo trình tự ưu tiên từ trái sang phải. Mỗi block cần có khoảng cách đủ rộng để tránh thao tác nhầm lẫn, đồng thời tích hợp tính năng phản hồi rung nhẹ khi tài xế chạm vào, giúp xác nhận lệnh điều hướng mà không cần rời mắt khỏi cung đường phía trước. Chỉnh giao diện phù hợp với web và ứng dụng di động để đảm bảo tính đồng bộ, như android, ios
+
+```
+
+#### 13.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Người dùng mục tiêu: tài xế/nhân viên điều phối cần xem, lọc, và quản lý lịch hẹn nhanh trên di động — thao tác một tay, tap targets lớn, hiển thị thông tin quan trọng trước.
+Mục tiêu UX: compact layout, thông tin cấp cao (time, yard, status) nổi bật; nhanh chóng mở chi tiết, gọi hành động (check-in, cancel, contact); rõ ràng khoảng cách giữa danh sách và thẻ hỗ trợ.
+Thành phần UI cần có: appointment list (grouped by ngày), item card (time, customer/yard, status badge, quick actions), filters (date / trạng thái), info/support card, empty state, loading & error states, pull-to-refresh.
+Luồng chính: tải danh sách → hiển thị nhóm/ngày → user tap item → mở modal/chi tiết → từ chi tiết gọi hành động (navigate, gọi API, show toast) → cập nhật list. Hỗ trợ guest/local auth flow như hiện tại.
+```
+
+#### 13.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Components: AppointmentsScreen.tsx: list + grouping theo ngày, item card, filters, empty/loading states.
+Styles: Appointments.style.ts: compact layout, maxWidth, card padding và tap-target ≥44px.
+Modal/Support: AppointmentDetailModal.tsx và SupportCard.tsx để xem chi tiết & liên hệ.
+Hooks / Service: useAppointments.ts (fetch, pull-to-refresh, optimistic actions) và appointmentsService.ts (API wrappers + mock).
+Data contract / mocks: mẫu Appointment type và mock responses để dev/test offline.
+Feedback: tích hợp Snackbar (top-right) và haptics cho hành động confirm/check-in.
+Accessibility: aria/labels cho screen-reader, truncation rules, contrast & focus handling.
+Tests / QA: acceptance checklist + small smoke test snippets (load, filter, open detail, optimistic update).
+Docs: README.md ngắn hướng dẫn chạy, mock API, và acceptance criteria.
+Deliverable format: mã TSX + styles + hooks + README + checklist, sẵn để drop vào src/frontend_mobile-expo/src/modules/appointments.
+```
+
+#### 13.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Layout & spacing:
+
+Giới hạn chiều rộng các card (maxWidth) và giảm padding để giao diện compact trên mobile.
+Giảm kích thước header chung (ở ScreenShell) để nhường không gian nội dung.
+Thêm khoảng cách rõ ràng giữa danh sách lịch hẹn và thẻ “Hỗ trợ điều phối”.
+Nội dung item:
+
+Item card hiển thị rõ rệt: giờ (time), tên yard/customer, status badge.
+Thu gọn văn bản dài (truncation) và giữ hit-target ≥44px cho nút/tap.
+Tương tác:
+
+Quick actions giữ nguyên (xem chi tiết, check-in, contact) nhưng nút được tinh chỉnh về kích thước và khoảng cách.
+Thêm pull-to-refresh và xử lý trạng thái loading / empty / error.
+Fix & refactor:
+
+Sửa lỗi trùng/không nhất quán pageContainer và chuẩn hoá container/style cho trang.
+Tách styles ra file riêng (per-screen style) để dễ bảo trì.
+Phản hồi & truy cập:
+
+Dùng Snackbar cho toast phản hồi; thêm haptics cho hành động quan trọng.
+Kết nối với auth/useProfile store để hiển thị thông tin driver và điều hướng phù hợp.
+State & API:
+
+Dùng hook service (fetch + pull-to-refresh); support optimistic updates cho quick actions và revalidate sau success.
+Mocks/shape dữ liệu chuẩn (Appointment: id, timeISO, yardName, status, driverPhone, notes) để dev/test offline nếu cần.
+Kiểm thử & QA:
+
+Acceptance checklist bao gồm: load + grouping theo ngày, filter hoạt động, mở detail/modal, actions gửi request và cập nhật UI, không overflow trên màn nhỏ.
+```
+
+#### 13.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Giảm băng thông truyền tải bằng cách chỉ emit những trường dữ liệu thực sự cần thiết (chỉ gửi id, thời điểm, trạng thái, mã container, tên tài xế khi cần).
+Tối ưu hiển thị Gate Log và danh sách lịch hẹn để ưu tiên các giao dịch mới nhất (sort theo thời gian và nhóm theo ngày).
+Thực hiện giới hạn số lượng bản ghi hiển thị mặc định và bổ sung cơ chế phân trang/tải thêm để tránh ảnh hưởng hiệu năng khi dữ liệu tăng.
+Chuẩn hóa cấu trúc payload realtime giữa Backend và Frontend (giảm độ phức tạp, dễ mở rộng cho sự kiện mới).
+Tách riêng style cho mỗi màn (per-screen styles), thu gọn layout (maxWidth, giảm padding) để tối ưu hiển thị trên thiết bị di động.
+Thêm trải nghiệm người dùng: pull-to-refresh, trạng thái loading/empty, toasts qua Snackbar và phản hồi haptics cho các hành động quan trọng.
+Cải thiện độ tin cậy UI: dùng optimistic updates cho thao tác nhanh, revalidate sau khi server trả về kết quả, và mock API để phát triển offline.
+Chuẩn bị nền tảng mở rộng: kiến trúc cho phép thêm các event realtime cho Yard Management và Computer Vision sau này.
+```
+
+#### 13.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 13.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | `https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/6e6ad9b23242b99dfdb169c4c949df15df3d3a2c` |
+| File liên quan        | `src/frontend_mobile-expo/src/modules/appointments/screens/AppointmentsScreen.tsx`                                                       |
+| Screenshot            | Tài xế có thể xem lịch hẹn trang này                                                                                                     |
+| Kết quả chạy/test     | Test Successfully                                                                                                                        |
+| Link tài liệu/báo cáo |                                                                                                                                          |
+| Ghi chú khác          |                                                                                                                                          |
+
+#### 13.8. Ghi chú thêm
+
+```text id="p7c2mv"
+
+```
+
+---
+
+### Lần sử dụng AI số 14
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                           |
+| Công cụ AI          | Antigravity                                          |
+| Mục đích sử dụng    | Phát triển tính năng realtime cho trang quản lý cổng |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 14.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
+
+Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
+- Biển số xe
+- Tên tài xế
+- Mã container
+- Thời gian
+- Trạng thái IN hoặc OUT
+
+Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
+
+Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
+
+Ở section Active Vehicles hiển thị:
+- Số xe đã vào
+- Số xe đã ra
+- Số xe chờ
+
+Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
+
+Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
+```
+
+#### 14.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Sau khi hoàn thiện luồng OCR và xử lý giao dịch cổng ở phía Backend, nhóm tiếp tục triển khai cơ chế cập nhật dữ liệu theo thời gian thực cho hệ thống Gate Management.
+
+Trong quá trình vận hành thực tế, nhân viên giám sát cần theo dõi liên tục các phương tiện ra vào cảng mà không phải tải lại trang hoặc thực hiện thao tác làm mới dữ liệu thủ công. Vì vậy nhóm mong muốn xây dựng một cơ chế realtime giúp mọi thay đổi được phản ánh ngay lập tức trên giao diện.
+
+Bên cạnh đó, nhóm cũng muốn hiển thị các thống kê trực quan về số lượng xe đang hoạt động tại cổng và lịch sử giao dịch mới nhất để hỗ trợ công tác điều phối và giám sát.
+```
+
+#### 14.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Antigravity đề xuất sử dụng Socket.IO để xây dựng cơ chế giao tiếp thời gian thực giữa Backend và Frontend.
+
+Các đề xuất chính bao gồm:
+- Emit dữ liệu ngay sau khi giao dịch cổng được xác thực và lưu thành công vào cơ sở dữ liệu.
+- Chuẩn hóa dữ liệu truyền lên Frontend chỉ bao gồm các trường cần thiết như biển số xe, tài xế, mã container, thời gian và trạng thái.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Tự động cập nhật thống kê Active Vehicles khi có giao dịch mới phát sinh.
+- Giảm số lượng API polling nhằm tối ưu hiệu năng hệ thống.
+- Đề xuất xây dựng khu vực Appointment Completed để quản lý các lịch hẹn đã hoàn thành.
+- Chuẩn bị sẵn kiến trúc cho các sự kiện realtime khác trong tương lai.
+```
+
+#### 14.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Nhóm đã áp dụng các đề xuất từ AI để xây dựng cơ chế realtime cho hệ thống quản lý cổng.
+
+Các nội dung đã được triển khai gồm:
+- Thiết kế và tích hợp Socket.IO cho Backend.
+- Xây dựng cơ chế emit dữ liệu sau khi phát sinh giao dịch mới.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Cập nhật số liệu Active Vehicles mà không cần tải lại trang.
+- Kết nối Socket.IO Client trên Frontend.
+- Thiết kế giao diện hiển thị dữ liệu realtime cho nhân viên vận hành.
+- Xây dựng trang Appointment Completed phục vụ quản lý lịch hẹn đã hoàn tất.
+```
+
+#### 14.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Sau khi tham khảo kết quả từ Antigravity, nhóm tiếp tục điều chỉnh và tối ưu thêm một số thành phần để phù hợp với yêu cầu vận hành thực tế.
+
+Các cải tiến bao gồm:
+- Chỉ emit các trường dữ liệu thực sự cần thiết nhằm giảm tải băng thông truyền tải.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Điều chỉnh giao diện thống kê theo nhu cầu giám sát của nhân viên vận hành.
+- Bổ sung cơ chế giới hạn số lượng bản ghi hiển thị nhằm tránh ảnh hưởng hiệu năng khi dữ liệu tăng lên.
+- Chuẩn hóa cấu trúc dữ liệu realtime giữa Backend và Frontend.
+- Chuẩn bị kiến trúc để mở rộng thêm các sự kiện realtime cho Yard Management và Computer Vision trong tương lai.
+```
+
+#### 14.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [x] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 14.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
+| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
+| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực                                                      |
+
+#### 14.8. Ghi chú thêm
+
+```text id="p7c2mv"
+Kinh nghiệm rút ra là đối với các hệ thống giám sát và vận hành thời gian thực, việc cập nhật dữ liệu ngay khi phát sinh sự kiện mang lại trải nghiệm sử dụng tốt hơn rất nhiều so với cơ chế tải lại dữ liệu định kỳ.
+
+Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách xây dựng hệ thống realtime giữa Backend và Frontend, đồng thời giảm đáng kể độ trễ trong việc hiển thị thông tin vận hành. Đây là nền tảng quan trọng để phát triển các chức năng giám sát nâng cao và tích hợp AI trong các giai đoạn tiếp theo của dự án.
+```
+
+---
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
 
-| Hạng mục | Không dùng AI | AI hỗ trợ ít | AI hỗ trợ nhiều | AI sinh chính | Ghi chú |
-|---|:---:|:---:|:---:|:---:|---|
-| Phân tích yêu cầu |  |  |  |  |  |
-| Viết user story/use case |  |  |  |  |  |
-| Thiết kế database |  |  |  |  |  |
-| Thiết kế kiến trúc hệ thống |  |  |  |  |  |
-| Thiết kế giao diện |  |  |  |  |  |
-| Code frontend |  |  |  |  |  |
-| Code backend |  |  |  |  |  |
-| Debug lỗi |  |  |  |  |  |
-| Viết test case |  |  |  |  |  |
-| Kiểm thử sản phẩm |  |  |  |  |  |
-| Tối ưu code |  |  |  |  |  |
-| Viết báo cáo |  |  |  |  |  |
-| Làm slide thuyết trình |  |  |  |  |  |
+| Hạng mục                    | Không dùng AI | AI hỗ trợ ít | AI hỗ trợ nhiều | AI sinh chính | Ghi chú |
+| --------------------------- | :-----------: | :----------: | :-------------: | :-----------: | ------- |
+| Phân tích yêu cầu           |               |              |                 |               |         |
+| Viết user story/use case    |               |              |                 |               |         |
+| Thiết kế database           |               |              |                 |               |         |
+| Thiết kế kiến trúc hệ thống |               |              |                 |               |         |
+| Thiết kế giao diện          |               |              |                 |               |         |
+| Code frontend               |               |              |                 |               |         |
+| Code backend                |               |              |                 |               |         |
+| Debug lỗi                   |               |              |                 |               |         |
+| Viết test case              |               |              |                 |               |         |
+| Kiểm thử sản phẩm           |               |              |                 |               |         |
+| Tối ưu code                 |               |              |                 |               |         |
+| Viết báo cáo                |               |              |                 |               |         |
+| Làm slide thuyết trình      |               |              |                 |               |         |
 
 ---
 
@@ -832,10 +1980,10 @@ Kinh nghiệm rút ra: Với các module có UI phức tạp như kéo thả và
 Ghi lại các trường hợp AI trả lời sai, thiếu, chưa phù hợp hoặc sinh code không chạy.
 
 | STT | Lỗi/hạn chế từ AI | Cách phát hiện | Cách xử lý/cải tiến |
-|---:|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
+| --: | ----------------- | -------------- | ------------------- |
+|   1 |                   |                |                     |
+|   2 |                   |                |                     |
+|   3 |                   |                |                     |
 
 ---
 
@@ -877,11 +2025,11 @@ Viết tại đây...
 ### 8.2. Đối với bài nhóm
 
 | Thành viên | MSSV | Nhiệm vụ chính | Có sử dụng AI không? | Minh chứng đóng góp |
-|---|---|---|---|---|
-|  |  |  | Có / Không |  |
-|  |  |  | Có / Không |  |
-|  |  |  | Có / Không |  |
-|  |  |  | Có / Không |  |
+| ---------- | ---- | -------------- | -------------------- | ------------------- |
+|            |      |                | Có / Không           |                     |
+|            |      |                | Có / Không           |                     |
+|            |      |                | Có / Không           |                     |
+|            |      |                | Có / Không           |                     |
 
 ---
 
@@ -936,5 +2084,5 @@ Sinh viên/nhóm cam kết rằng:
 - Hiểu rằng việc sử dụng AI không khai báo có thể ảnh hưởng đến kết quả đánh giá.
 
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
-|---|---|
-|  |  |
+| ----------------------- | ------------- |
+|                         |               |
