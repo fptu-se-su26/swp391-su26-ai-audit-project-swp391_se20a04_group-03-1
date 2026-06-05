@@ -20,7 +20,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="flex h-screen flex-col bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] transition-colors duration-300">
       <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
