@@ -1,0 +1,31 @@
+node_modules
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp
+.pnp.js
+.npm
+
+# Build output
+dist
+build
+coverage
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs
+*.log
+
+# Git and OS files
+.git
+.DS_Store
+Thumbs.db
+
+# TypeScript cache
+*.tsbuildinfo

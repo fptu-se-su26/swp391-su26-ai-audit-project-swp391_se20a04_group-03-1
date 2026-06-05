@@ -15,19 +15,10 @@ export const appointmentPost = (
         "any.required": "Biển số xe là bắt buộc.",
         "string.pattern": "Định dạng biển số không đúng (VD: 15C12345).",
       }),
-    driverName: Joi.string().required().messages({
-      "string.empty": "Tên tài xế là bắt buộc.",
-      "any.required": "Tên tài xế là bắt buộc.",
-      "string.min": "Tên tài xế phải từ 3 ký tự trở lên.",
+        driverId: Joi.string().required().messages({
+      "string.empty": "Tài xế là bắt buộc.",
+      "any.required": "Tài xế là bắt buộc.",
     }),
-    driverPhone: Joi.string()
-      .required()
-      .regex(/^(0[3|5|7|8|9])[0-9]{8}$/)
-      .messages({
-        "string.empty": "Số điện thoại tài xế là bắt buộc.",
-        "any.required": "Số điện thoại tài xế là bắt buộc.",
-        "string.pattern": "Số điện thoại không đúng định dạng Việt Nam.",
-      }),
     containerNo: Joi.string()
       .required()
       .regex(/^[A-Z]{4}[0-9]{7}$/i)
@@ -76,19 +67,10 @@ export const appointmentEdit = (
         "any.required": "Biển số xe là bắt buộc.",
         "string.pattern": "Định dạng biển số không đúng (VD: 15C12345).",
       }),
-    driverName: Joi.string().required().messages({
-      "string.empty": "Tên tài xế là bắt buộc.",
-      "any.required": "Tên tài xế là bắt buộc.",
-      "string.min": "Tên tài xế phải từ 3 ký tự trở lên.",
+        driverId: Joi.string().required().messages({
+      "string.empty": "Tài xế là bắt buộc.",
+      "any.required": "Tài xế là bắt buộc.",
     }),
-    driverPhone: Joi.string()
-      .required()
-      .regex(/^(0[3|5|7|8|9])[0-9]{8}$/)
-      .messages({
-        "string.empty": "Số điện thoại tài xế là bắt buộc.",
-        "any.required": "Số điện thoại tài xế là bắt buộc.",
-        "string.pattern": "Số điện thoại không đúng định dạng Việt Nam.",
-      }),
     containerNo: Joi.string()
       .required()
       .regex(/^[A-Z]{4}[0-9]{7}$/i)

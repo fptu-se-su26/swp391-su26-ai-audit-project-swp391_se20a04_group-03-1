@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { Appointment } from "../models/appointment.model";
+import { Driver } from "../models/driver.model";
 
 export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
     const { truckPlate, scheduledDate, timeSlot } = req.body;
-    
+
     // 1. Kiểm tra 1 xe chỉ được đặt 1 lần/ngày
     const existAppointmentInDay = await Appointment.findOne({
       truckPlate,
       scheduledDate: new Date(scheduledDate),
-      status: { $ne: "Cancelled" },
+      status: { $nin: ["Cancelled", "Completed"] },
       isDeleted: false,
     });
 
@@ -69,7 +70,7 @@ export const appointmentsGet = async (req: Request, res: Response) => {
     const limitNum = parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    let query: any = { isDeleted: false };
+    let query: any = { isDeleted: false, status: { $ne: "Completed" } };
 
     if (status && status !== "ALL") {
       query.status = status;
@@ -90,10 +91,19 @@ export const appointmentsGet = async (req: Request, res: Response) => {
 
     if (search) {
       const searchRegex = new RegExp(search as string, "i");
+      const matchedDrivers = await Driver.find({
+        $or: [
+          { driverName: searchRegex },
+          { driverPhone: searchRegex },
+          { driverId: searchRegex },
+        ],
+      }).select("_id");
+      const driverIds = matchedDrivers.map((d) => d._id);
+
       query.$or = [
         { truckPlate: searchRegex },
-        { driverName: searchRegex },
         { containerNo: searchRegex },
+        { driverId: { $in: driverIds } },
       ];
     }
 
@@ -101,6 +111,7 @@ export const appointmentsGet = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalItems / limitNum);
 
     const appointmentList = await Appointment.find(query)
+      .populate({ path: "driverId", populate: { path: "companyId" } })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum);
@@ -127,7 +138,10 @@ export const appointmentsGet = async (req: Request, res: Response) => {
 export const appointmentDetailGet = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const appointment = await Appointment.findById(id);
+    const appointment = await Appointment.findById(id).populate({
+      path: "driverId",
+      populate: { path: "companyId" },
+    });
     if (!appointment) {
       return res.json({
         code: "error",
@@ -202,7 +216,7 @@ export const appointmentStatusPatch = async (req: Request, res: Response) => {
         _id: { $ne: id },
         truckPlate: appointment.truckPlate,
         scheduledDate: appointment.scheduledDate,
-        status: { $ne: "Cancelled" },
+        status: { $nin: ["Cancelled", "Completed"] },
       });
 
       if (existAppointmentInDay) {
@@ -239,7 +253,7 @@ export const appointmentDeletePatch = async (req: Request, res: Response) => {
         message: "Không tìm thấy lịch hẹn",
       });
     }
-    if (appointment.status === "Cancelled") {
+    if (appointment.isDeleted === true) {
       return res.json({
         code: "error",
         message: "Lịch hẹn đã bị xóa",
@@ -295,10 +309,19 @@ export const appointmentsTrashGet = async (req: Request, res: Response) => {
 
     if (search) {
       const searchRegex = new RegExp(search as string, "i");
+      const matchedDrivers = await Driver.find({
+        $or: [
+          { driverName: searchRegex },
+          { driverPhone: searchRegex },
+          { driverId: searchRegex },
+        ],
+      }).select("_id");
+      const driverIds = matchedDrivers.map((d) => d._id);
+
       query.$or = [
         { truckPlate: searchRegex },
-        { driverName: searchRegex },
         { containerNo: searchRegex },
+        { driverId: { $in: driverIds } },
       ];
     }
 
@@ -306,6 +329,7 @@ export const appointmentsTrashGet = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalItems / limitNum);
 
     const appointmentList = await Appointment.find(query)
+      .populate({ path: "driverId", populate: { path: "companyId" } })
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limitNum);

@@ -215,14 +215,14 @@ export default function YardDetailPage() {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="block w-full px-3 py-1 text-xl font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="block w-full px-3 py-1 text-xl font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Tên bãi đỗ..."
               />
               <input
                 type="text"
                 value={editCameraIp}
                 onChange={(e) => setEditCameraIp(e.target.value)}
-                className="block w-full px-3 py-1 text-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="block w-full px-3 py-1 text-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="RTSP Camera URL..."
               />
             </div>
@@ -318,7 +318,7 @@ export default function YardDetailPage() {
         {/* Live Video / Snapshot View */}
         <div className="lg:col-span-2">
           <Card className="h-full border-slate-200 dark:border-slate-800 overflow-hidden shadow-md">
-            <CardHeader className="bg-slate-50 dark:bg-slate-900/50 border-b dark:border-slate-800 py-3 px-4 flex flex-row items-center justify-between">
+            <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b dark:border-slate-800 py-3 px-4 flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -340,7 +340,7 @@ export default function YardDetailPage() {
         {/* Recent Activities List */}
         <div className="lg:col-span-1">
           <Card className="h-full border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
-            <CardHeader className="py-4 border-b dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+            <CardHeader className="py-4 border-b dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
               <CardTitle className="text-base flex items-center gap-2">
                 <Clock className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                 Hoạt động gần đây

@@ -1,16 +1,24 @@
 import { Router } from "express";
 import * as yardController from "../controllers/yard.controller";
-import { requireAuth } from "../middlewares/auth.middleware";
+import * as yardValidator from "../validators/yard.validator";
 
 const router = Router();
 
-router.get("/", requireAuth, yardController.yardsGet);
-router.post("/create", requireAuth, yardController.createYardPost);
+router.get("/", yardController.yardsGet);
+router.post("/create", yardValidator.yardPost, yardController.createYardPost);
 router.get("/:id", yardController.yardDetailGet); // Public cho Python AI có thể lấy dữ liệu
-router.patch("/:id/slots", requireAuth, yardController.updateYardSlotsPatch);
-router.patch("/:id/info", requireAuth, yardController.updateYardInfoPatch);
-router.post("/:id/snapshot", requireAuth, yardController.takeYardSnapshotPost);
-router.delete("/:id", requireAuth, yardController.deleteYardDelete);
+router.patch("/:id/slots", yardController.updateYardSlotsPatch);
+router.patch(
+  "/:id/info",
+  yardValidator.yardPost,
+  yardController.updateYardInfoPatch,
+);
+router.post("/:id/snapshot", yardController.takeYardSnapshotPost);
+router.delete("/:id", yardController.deleteYardDelete);
 router.post("/:id/sync-status", yardController.syncYardDataPost);
+
+router.get("/trash/list", yardController.yardsTrashGet);
+router.patch("/:id/restore", yardController.restoreYardPatch);
+router.delete("/:id/force", yardController.hardDeleteYardDelete);
 
 export default router;

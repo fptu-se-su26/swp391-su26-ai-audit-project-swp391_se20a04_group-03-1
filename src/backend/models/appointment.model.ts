@@ -8,12 +8,9 @@ const appointmentSchema = new Schema(
       uppercase: true,
       required: true,
     },
-    driverName: {
-      type: String,
-      required: true,
-    },
-    driverPhone: {
-      type: String,
+    driverId: {
+      type: Schema.Types.ObjectId,
+      ref: "Driver",
       required: true,
     },
     containerNo: {
@@ -53,7 +50,7 @@ const appointmentSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["Pending", "Confirmed", "CheckedIn", "CheckedOut", "Cancelled"],
+      enum: ["Pending", "Confirmed", "Cancelled", "Completed"],
       default: "Pending",
     },
     isDeleted: {

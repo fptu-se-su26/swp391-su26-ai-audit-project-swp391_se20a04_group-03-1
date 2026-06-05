@@ -14,6 +14,7 @@ import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
+import { AsyncDriverSelect } from "@/components/AsyncDriverSelect";
 import { useRouter } from "next/navigation";
 
 const TIME_SLOTS = [
@@ -49,6 +50,9 @@ export default function EditAppointmentPage({
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [appointment, setAppointment] = useState<any>(null);
+  const [selectedDriverId, setSelectedDriverId] = useState("");
+  const [selectedDriver, setSelectedDriver] = useState<{id: string, name: string} | null>(null);
+  const [selectedDriverCompany, setSelectedDriverCompany] = useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -72,6 +76,18 @@ export default function EditAppointmentPage({
             .split("T")[0];
         }
         setAppointment(result.data);
+        if (result.data.driverId) {
+            setSelectedDriverId(result.data.driverId._id || "");
+            setSelectedDriver({
+                id: result.data.driverId._id || "", 
+                name: `[${result.data.driverId.driverId}] ${result.data.driverId.driverName} - ${result.data.driverId.driverPhone || ''}`
+            });
+            if (result.data.driverId.companyId) {
+                setSelectedDriverCompany(result.data.driverId.companyId.companyName);
+            } else {
+                setSelectedDriverCompany("Không thuộc công ty nào");
+            }
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -103,22 +119,7 @@ export default function EditAppointmentPage({
           errorMessage: "Định dạng biển số không đúng (VD: 15C12345).",
         },
       ])
-      .addField("#driverName", [
-        { rule: "required", errorMessage: "Tên tài xế là bắt buộc." },
-        {
-          rule: "minLength",
-          value: 3,
-          errorMessage: "Tên tài xế phải từ 3 ký tự trở lên.",
-        },
-      ])
-      .addField("#driverPhone", [
-        { rule: "required", errorMessage: "Số điện thoại là bắt buộc." },
-        {
-          rule: "customRegexp",
-          value: /^(0[3|5|7|8|9])[0-9]{8}$/,
-          errorMessage: "Số điện thoại không đúng định dạng Việt Nam.",
-        },
-      ])
+      
       .addField("#containerNo", [
         { rule: "required", errorMessage: "Mã container là bắt buộc." },
         {
@@ -139,6 +140,11 @@ export default function EditAppointmentPage({
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
+        const driverIdStr = formData.get("driverId")?.toString().trim();
+        if (!driverIdStr) {
+            setError("Vui lòng chọn tài xế.");
+            return;
+        }
         const payload = {
           id: formData.get("id")?.toString(),
           truckPlate: formData
@@ -146,8 +152,7 @@ export default function EditAppointmentPage({
             ?.toString()
             .trim()
             .toUpperCase(),
-          driverName: formData.get("driverName")?.toString().trim(),
-          driverPhone: formData.get("driverPhone")?.toString().trim(),
+          driverId: formData.get("driverId")?.toString().trim(),
           containerNo: formData
             .get("containerNo")
             ?.toString()
@@ -237,7 +242,7 @@ export default function EditAppointmentPage({
       )}
 
       <Card className="border border-slate-200 shadow-lg">
-        <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <CardHeader className="bg-slate-50/50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <CardTitle>Thông tin chi tiết</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
@@ -263,19 +268,24 @@ export default function EditAppointmentPage({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="driverName">Tên tài xế</Label>
-                <Input
-                  id="driverName"
-                  name="driverName"
-                  defaultValue={appointment.driverName}
+                <Label htmlFor="driverId">Chọn tài xế</Label>
+                <AsyncDriverSelect 
+                  value={selectedDriverId}
+                  onChange={(id, name) => {
+                      setSelectedDriverId(id);
+                      setSelectedDriver({id, name});
+                  }}
+                  onCompanyChange={setSelectedDriverCompany}
+                  selectedDriver={selectedDriver}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="driverPhone">Số điện thoại</Label>
+                <Label>Công ty</Label>
                 <Input
-                  id="driverPhone"
-                  name="driverPhone"
-                  defaultValue={appointment.driverPhone}
+                  readOnly
+                  value={selectedDriverCompany}
+                  placeholder="Sẽ tự động hiển thị khi chọn tài xế"
+                  className="bg-slate-50 dark:bg-slate-900/50 cursor-not-allowed"
                 />
               </div>
               <div className="space-y-2">
