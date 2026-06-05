@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "../mobile/src/components/pages/dashboard/qr-scanner.tsx"  ],
   "exclude": ["node_modules"]
 }
