@@ -125,35 +125,74 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b132b] via-[#1c2541] to-[#3a506b] px-4 relative overflow-hidden">
-      {/* Decorative Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
-
-      <div className="w-full max-w-md relative z-10">
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#00D4FF] to-blue-500 shadow-lg shadow-cyan-500/20 mb-4 transition-transform hover:scale-105 duration-300">
-            <Ship className="h-9 w-9 text-slate-900" />
-          </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+    <div className="min-h-screen w-full flex bg-[#0b132b] overflow-hidden">
+      {/* Left Side - Visual/Brand Panel (Hidden on Mobile) */}
+      <div className="hidden lg:flex flex-col relative w-1/2 justify-between p-12 text-white">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/auth-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0b132b]/90 via-[#0b132b]/60 to-transparent pointer-events-none" />
+        
+        <div className="relative z-10 animate-fade-in slide-in-from-left-4">
+          <div className="inline-flex items-center gap-3 font-bold text-2xl tracking-tight mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#00D4FF] to-blue-500 shadow-lg shadow-cyan-500/30 flex items-center justify-center">
+              <Ship className="h-5 w-5 text-slate-900" />
+            </div>
             LogiPort System
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight mt-8">
+            Quản lý cảng <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-blue-500">
+              Thông minh & Toàn diện
+            </span>
           </h1>
-          <p className="text-slate-300 text-sm mt-2">
-            Hệ Thống Quản Lý Cảng Container Thông Minh
+          <p className="mt-4 text-slate-300 max-w-md text-lg leading-relaxed">
+            Hệ thống giám sát, điều phối và tự động hóa quy trình xuất nhập container hiện đại nhất dành cho doanh nghiệp.
           </p>
         </div>
 
-        <Card className="bg-[#1c2541]/60 backdrop-blur-xl border border-slate-700/50 shadow-2xl text-white">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-white">
-              Đăng nhập
-            </CardTitle>
-            <CardDescription className="text-center text-slate-400 text-sm">
-              Nhập tài khoản quản trị để truy cập hệ thống
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="relative z-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 max-w-md animate-fade-in slide-in-from-bottom-4">
+          <div className="flex gap-4 items-start">
+            <div className="w-12 h-12 rounded-full bg-[#00D4FF]/20 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="text-[#00D4FF] h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg">AI Camera Tích Hợp</h4>
+              <p className="text-sm text-slate-400 mt-1">
+                Tự động nhận diện biển số xe và mã container với độ chính xác trên 99%.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Auth Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+
+        <div className="w-full max-w-md relative z-10 animate-fade-in slide-in-from-right-4">
+          <div className="lg:hidden text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#00D4FF] to-blue-500 shadow-lg shadow-cyan-500/20 mb-4 transition-transform hover:scale-105 duration-300">
+              <Ship className="h-9 w-9 text-slate-900" />
+            </div>
+            <h1 className="text-3xl font-extrabold text-white tracking-tight">
+              LogiPort System
+            </h1>
+          </div>
+
+          <Card className="bg-[#1c2541]/40 backdrop-blur-2xl border border-slate-700/50 shadow-2xl text-white rounded-2xl overflow-hidden relative">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00D4FF] to-blue-600" />
+            <CardHeader className="space-y-2 pb-6 pt-8">
+              <CardTitle className="text-2xl font-bold text-center text-white tracking-tight">
+                Đăng nhập tài khoản
+              </CardTitle>
+              <CardDescription className="text-center text-slate-400 text-sm px-4">
+                Nhập email công vụ và mật khẩu để truy cập vào hệ thống điều hành.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-8 pb-8">
             {error && (
               <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-2 text-sm text-red-200 animate-shake">
                 <AlertTriangle className="h-5 w-5 shrink-0 text-red-400" />
@@ -280,6 +319,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

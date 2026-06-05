@@ -103,10 +103,17 @@ export const loginPost = async (req: Request, res: Response) => {
     );
 
     res.cookie("tokenAdmin", tokenAdmin, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "lax", //cho phep gui cookie linh hoat giua cac website
+      domain:
+        process.env.NODE_ENV === "production"
+          ? process.env.COOKIE_DOMAIN
+            ? process.env.COOKIE_DOMAIN.replace(/['"]/g, "").trim()
+            : undefined
+          : "localhost", // Thêm dấu chấm này để Token có hiệu lực ở mọi nơi
+      path: "/",
+      secure: process.env.NODE_ENV === "production", // https: true, http: false
     });
 
     return res.json({
@@ -133,7 +140,18 @@ export const logout = async (req: Request, res: Response) => {
       // Xóa Session trên Redis
       await redisClient.del(`auth:session:${decoded.id}`);
     }
-    res.clearCookie("tokenAdmin");
+    res.clearCookie("tokenAdmin", {
+      httpOnly: true,
+      sameSite: "lax", //cho phep gui cookie linh hoat giua cac website
+      domain:
+        process.env.NODE_ENV === "production"
+          ? process.env.COOKIE_DOMAIN
+            ? process.env.COOKIE_DOMAIN.replace(/['"]/g, "").trim()
+            : undefined
+          : "localhost", // Thêm dấu chấm này để Token có hiệu lực ở mọi nơi
+      path: "/",
+      secure: process.env.NODE_ENV === "production", // https: true, http: false
+    });
     return res.json({
       code: "success",
       message: "Đăng xuất thành công!",

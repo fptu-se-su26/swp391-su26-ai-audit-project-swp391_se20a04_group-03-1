@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX, Maximize2, Minimize2, CameraOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -10,15 +10,33 @@ interface VideoStreamProps {
   streamUrl?: string
 }
 
-export function VideoStream({ title, cameraId, streamUrl = "http://localhost:5001/video_feed" }: VideoStreamProps) {
+export function VideoStream({ title, cameraId, streamUrl = `${process.env.NEXT_PUBLIC_CV_URL || "http://localhost:5001"}/video_feed` }: VideoStreamProps) {
   const [isMuted, setIsMuted] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener("fullscreenchange", onFullscreenChange)
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(console.error)
+    } else {
+      document.exitFullscreen()
+    }
+  }
 
   return (
     <div 
-      className={`relative bg-black rounded-lg overflow-hidden transition-all duration-300 ${
-        isFullscreen ? "fixed inset-0 z-50 w-screen h-screen rounded-none" : "w-full aspect-video"
+      ref={containerRef}
+      className={`relative bg-black overflow-hidden transition-all duration-300 ${
+        isFullscreen ? "w-screen h-screen rounded-none" : "w-full aspect-video rounded-lg"
       }`}
     >
       {/* Video Container */}
@@ -75,7 +93,7 @@ export function VideoStream({ title, cameraId, streamUrl = "http://localhost:500
                 size="sm"
                 variant="ghost"
                 className="text-white hover:bg-white/20 h-8 w-8 p-0"
-                onClick={() => setIsFullscreen(!isFullscreen)}
+                onClick={toggleFullscreen}
               >
                 {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
               </Button>
@@ -96,7 +114,7 @@ export function VideoStream({ title, cameraId, streamUrl = "http://localhost:500
         {/* Nút thoát Fullscreen nhanh ở góc phải */}
         {isFullscreen && (
           <button
-            onClick={() => setIsFullscreen(false)}
+            onClick={toggleFullscreen}
             className="absolute top-4 right-4 z-50 bg-slate-900/80 text-white w-9 h-9 flex items-center justify-center rounded-lg border border-slate-700/50 hover:bg-slate-800 transition-colors"
           >
             ✕

@@ -13,6 +13,9 @@ import {
   Lock,
   BarChart3,
   X,
+  Building2,
+  IdCard,
+  Ship,
 } from "lucide-react"
 
 interface SidebarProps {
@@ -32,6 +35,21 @@ const menuItems = [
     icon: Calendar,
   },
   {
+    label: "Quản lý công ty",
+    href: "/admin/companies",
+    icon: Building2,
+  },
+  {
+    label: "Quản lý hãng tàu",
+    href: "/admin/container-providers",
+    icon: Ship,
+  },
+  {
+    label: "Quản lý tài xế",
+    href: "/admin/drivers",
+    icon: IdCard,
+  },
+  {
     label: "Quản lý cổng",
     href: "/admin/gate",
     icon: Truck,
@@ -45,16 +63,6 @@ const menuItems = [
     label: "Quản lý container",
     href: "/admin/containers",
     icon: Box,
-  },
-  {
-    label: "Phiếu nâng/hạ",
-    href: "/admin/lift",
-    icon: ArrowUpDown,
-  },
-  {
-    label: "Giám sát niêm phong",
-    href: "/admin/seal",
-    icon: Lock,
   },
   {
     label: "Báo cáo",
@@ -79,7 +87,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed left-0 top-16 bottom-0 w-64 border-r border-slate-200/60 dark:border-slate-800 bg-white dark:bg-[#1e293b] p-4 transition-transform duration-200 lg:relative lg:top-0 lg:translate-x-0",
+          "fixed left-0 top-16 bottom-0 w-64 border-r border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 transition-transform duration-200 lg:relative lg:top-0 lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
