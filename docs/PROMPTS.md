@@ -768,10 +768,13 @@ Khi chạy `python src/app.py` từ `computer-vison/`, Python không nhận ra `
 ---
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```bash
 cd LogiPort/computer-vison
 .\venv\Scripts\python.exe src/app.py
 =======
+=======
+>>>>>>> main
 ### Prompt số 5
 
 | Nội dung            | Thông tin                                                                                        |
@@ -795,7 +798,10 @@ cd LogiPort/computer-vison
  và nhập ip camera để stream tới bãi nhưng tôi muốn
  làm tính năng cấu hình bãi đổ : admin có thể tạo, kéo thả chọn ô đỗ trước.
  Dùng thư viện just-validate nếu có gửi dữ liệu lên backend, nhận và xử lí kết quả backend trả về theo đúng chuẩn
+<<<<<<< HEAD
 >>>>>>> origin/main
+=======
+>>>>>>> main
 ```
 
 #### 5.2. Bối cảnh khi viết prompt
@@ -1324,7 +1330,11 @@ Kinh nghiệm rút ra: Sau khi hoàn thiện chức năng chính, việc kiểm 
 #### 10.1. Prompt nguyên văn
 
 ```text
+<<<<<<< HEAD
 Trước tiên phân tích dự án này, sau đó phân tích LogiPort/computer-vision và LogiPort/backend.
+=======
+Trước tiên phân tích dự án này, sau đó phân tích src/computer-vision và src/backend.
+>>>>>>> main
 
 Ở trong computer-vision quét nhận diện biển số, khi nhận diện được biển số xong sẽ gửi lên backend các trường dữ liệu là:
 {
@@ -1624,7 +1634,9 @@ Các chức năng chính:
 | Loại minh chứng       | Nội dung                                                                                                                             |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | Link commit           | Cập nhật sau...                                                                                                                      |
+
 | File liên quan        | `LogiPort/backend/models/driver.model.ts`, `LogiPort/backend/controllers/drivers.controller.ts`, `LogiPort/frontend/src/app/admin/drivers/page.tsx` |
+
 | Screenshot            | Trang quản lí tài xế                                                                                                                 |
 | Kết quả chạy/test     | CRUD tài xế hoạt động ổn định                                                                                                        |
 | Link tài liệu/báo cáo |                                                                                                                                      |
@@ -1723,6 +1735,7 @@ Các chức năng chính:
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Link commit           | Cập nhật sau...                                                                                                                                                     |
 | File liên quan        | `LogiPort/frontend/src/components/AsyncCompanySelect.tsx`, `LogiPort/frontend/src/app/admin/drivers/create/page.tsx`, `LogiPort/frontend/src/app/admin/drivers/edit/[id]/page.tsx` |
+
 | Screenshot            | Chức năng tìm kiếm và lựa chọn công ty                                                                                                                              |
 | Kết quả chạy/test     | Tìm kiếm công ty hoạt động mượt mà với lượng dữ liệu lớn                                                                                                            |
 | Link tài liệu/báo cáo |                                                                                                                                                                     |
