@@ -1597,7 +1597,6 @@ Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách 
 ```
 
 ---
-
 ### Lần sử dụng AI số 12
 
 | Nội dung            | Thông tin                                                                                                        |
