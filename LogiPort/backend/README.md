@@ -14,7 +14,7 @@ The Backend API is built with Express.js and TypeScript, using MongoDB as the da
 
 ## Directory Structure
 ```
-src/backend/
+LogiPort/backend/
 ├── config/          # Application configuration
 ├── controllers/     # Request handling logic
 ├── middlewares/     # Express middlewares

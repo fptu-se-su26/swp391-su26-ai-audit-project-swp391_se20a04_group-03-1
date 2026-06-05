@@ -14,7 +14,7 @@ The Frontend Application is built with Next.js 16 and React 19, utilizing TypeSc
 
 ## Directory Structure
 ```
-src/frontend/
+LogiPort/frontend/
 ├── src/
 │   └── app/                 # Next.js App Router
 ├── public/                  # Static assets
@@ -126,13 +126,13 @@ The frontend communicates with the backend API at http://localhost:4000. Ensure 
 
 Backend:
 ```bash
-cd src/backend
+cd LogiPort/backend
 npm run dev
 ```
 
 Frontend:
 ```bash
-cd src/frontend
+cd LogiPort/frontend
 npm run dev
 ```
 

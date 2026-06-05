@@ -28,13 +28,13 @@
 ## 3. Project Structure
 
 ```text
-port-management-mvp/    # Monorepo ứng dụng LogiPort (frontend, backend, AI, infra)
+LogiPort/               # Monorepo ứng dụng LogiPort (frontend, backend, AI, infra)
 docs/                   # Tài liệu AI audit bắt buộc
 .github/                # Issue templates, PR template, CI workflows
 README.md
 ```
 
-Chi tiết cấu trúc mã nguồn: xem [port-management-mvp/README.md](port-management-mvp/README.md).
+Chi tiết cấu trúc mã nguồn: xem [LogiPort/README.md](LogiPort/README.md).
 
 ---
 

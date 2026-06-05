@@ -102,7 +102,7 @@ src/
 
 ### Cài đặt Dependencies
 ```bash
-cd src/frontend
+cd LogiPort/frontend
 npm install
 ```
 

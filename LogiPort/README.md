@@ -105,7 +105,7 @@
 ## 📂 Project Structure
 
 ```text
-src/
+LogiPort/
 ├── frontend/                  # 🖥️  Next.js 16 Admin Dashboard
 │   ├── src/
 │   │   ├── app/               # App Router pages & layouts
@@ -174,7 +174,7 @@ src/
 
 ```bash
 git clone https://github.com/your-org/logiport.git
-cd logiport/src
+cd logiport/LogiPort
 ```
 
 ### 2. Backend Setup

@@ -162,7 +162,7 @@ số container đang lưu bãi;
 cảnh báo bất thường;
 hiệu suất xử lý theo khung giờ"
 
-Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về nextJs, trong phần front end đi từ src/frontend, hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Với những trang xác thực sẽ nằm trong frontend/src/app/admin/(auth), và những trang còn lại sẽ nằm trong frontend/src/app/admin. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng.
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về nextJs, trong phần front end đi từ LogiPort/frontend, hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Với những trang xác thực sẽ nằm trong frontend/src/app/admin/(auth), và những trang còn lại sẽ nằm trong frontend/src/app/admin. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng.
 ```
 
 #### 5.2. Bối cảnh khi viết prompt
@@ -275,7 +275,7 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 - **Charts**: Recharts hoặc Tremor
 - **Icons**: Lucide React
 - **Form**: React Hook Form + Zod
-- **Cấu trúc thư mục**: `src/frontend`
+- **Cấu trúc thư mục**: `LogiPort/frontend`
   - Auth pages: `frontend/src/app/admin/(auth)/`
   - Protected pages: `frontend/src/app/admin/`
 
@@ -514,7 +514,7 @@ Tính năng Đăng ký tài khoản (Register) đã được triển khai hoàn 
 ### 1. Nâng cấp Frontend với `Just-Validate`
 - Đã cài đặt thư viện `just-validate` (`v4.3.0`) thay thế hoàn toàn cơ chế tự viết validate bằng `useState` thủ công.
 - **Tích hợp vào React Component:**
-  - Đã tái cấu trúc file [register/page.tsx](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/frontend/src/app/admin/(auth)/register/page.tsx) bằng cách sử dụng `useRef` cho thẻ `<form>`.
+  - Đã tái cấu trúc file [register/page.tsx](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/frontend/src/app/admin/(auth)/register/page.tsx) bằng cách sử dụng `useRef` cho thẻ `<form>`.
   - Khởi tạo thư viện `JustValidate` thông minh trong `useEffect`. Nó tự động dán các bộ luật: `required`, `email`, `minLength` và hàm so sánh chuỗi (để đối chiếu xác nhận mật khẩu).
   - Tự động thay đổi class viền đỏ `border-red-500` vào input lỗi và hiện thông báo tiếng Việt trực quan phía bên dưới input ngay khi người dùng gõ.
 - **Kết nối Backend:** Thêm lệnh `fetch` gọi API thực tế tới `POST http://localhost:4000/api/auth/register`, xử lý JSON từ máy chủ và điều hướng sang trang Đăng nhập sau 2 giây khi thành công.
@@ -522,13 +522,13 @@ Tính năng Đăng ký tài khoản (Register) đã được triển khai hoàn 
 ### 2. Xây dựng cấu trúc API Backend chuẩn (Express + MongoDB)
 Hệ thống backend đã được thiết lập cấu trúc MVC hoàn chỉnh thông qua các tệp:
 
-- **Model (Mongoose):** [account-admin.model.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/models/account-admin.model.ts)
+- **Model (Mongoose):** [account-admin.model.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/backend/models/account-admin.model.ts)
   - Khởi tạo bảng `AccountAdmin` với các trường đơn giản: `fullName`, `email`, `role`, và `password`. Không sử dụng Enum hay khóa phụ phức tạp theo đúng yêu cầu.
 
-- **Validator (Joi):** [auth.validator.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/validators/auth.validator.ts)
+- **Validator (Joi):** [auth.validator.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/backend/validators/auth.validator.ts)
   - Bộ kiểm duyệt dữ liệu khắt khe trước khi chạm vào CSDL. Mọi thông tin rác hay email sai định dạng sẽ bị chặn lập tức bằng Joi và trả về thông báo lỗi 400 thân thiện.
 
-- **Controller (Bcryptjs):** [auth.controller.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/controllers/auth.controller.ts)
+- **Controller (Bcryptjs):** [auth.controller.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/backend/controllers/auth.controller.ts)
   - Thực thi quy trình đăng ký:
     1. Kiểm tra Validate qua Joi.
     2. Chặn các trường hợp đăng ký bằng email đã tồn tại.
@@ -536,9 +536,9 @@ Hệ thống backend đã được thiết lập cấu trúc MVC hoàn chỉnh t
     4. Lưu bản ghi dữ liệu vào CSDL MongoDB.
 
 - **Router Configuration:**
-  - [auth.router.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/routers/auth.router.ts) cấu hình đường dẫn nội bộ cho chức năng Auth.
-  - [index.ts (routers)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/routers/index.ts) tập hợp tất cả thành `rootRouter`.
-  - [index.ts (main)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/index.ts) tích hợp toàn bộ các APIs vào tiền tố nhánh `/api`.
+  - [auth.router.ts](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/backend/routers/auth.router.ts) cấu hình đường dẫn nội bộ cho chức năng Auth.
+  - [index.ts (routers)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/backend/routers/index.ts) tập hợp tất cả thành `rootRouter`.
+  - [index.ts (main)](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/backend/index.ts) tích hợp toàn bộ các APIs vào tiền tố nhánh `/api`.
 
 ---
 
@@ -633,7 +633,7 @@ computer-vision/
 ├── requirements.txt         # Danh sách các thư viện Python cần cài đặt
 └── venv/                    # Thư mục môi trường ảo của Python (Tự động sinh ra)    
 
-dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục src/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py) 
+dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi đã gửi, hãy phân tích thư mục LogiPort/computer-vision và hoàn thành các tính năng chính cho tôi[quick_test_cv.py](file;file:///d%3A/SWP/computer-vision/quick_test_cv.py) 
 ```
 
 #### 5.2. Bối cảnh khi viết prompt
@@ -656,7 +656,7 @@ dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi �
 
 ## Tóm tắt
 
-Đã xây dựng một dịch vụ Thị giác máy tính hoàn chỉnh dựa trên Flask trong `src/computer-vison/` xử lý luồng video thời gian thực bằng YOLOv8 + EasyOCR để phát hiện và nhận dạng biển số xe và mã container, sau đó gửi các sự kiện webhook đến máy chủ Node.js.
+Đã xây dựng một dịch vụ Thị giác máy tính hoàn chỉnh dựa trên Flask trong `LogiPort/computer-vison/` xử lý luồng video thời gian thực bằng YOLOv8 + EasyOCR để phát hiện và nhận dạng biển số xe và mã container, sau đó gửi các sự kiện webhook đến máy chủ Node.js.
 
 ---
 
@@ -668,13 +668,13 @@ dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi �
 
 |------|---------|
 
-| [.gitignore](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/.gitignore) | Bỏ qua `venv/`, `__pycache__/`, nhật ký, tệp hệ điều hành |
+| [.gitignore](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/.gitignore) | Bỏ qua `venv/`, `__pycache__/`, nhật ký, tệp hệ điều hành |
 
-| [src/__init__.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/__init__.py) | Dấu hiệu gói cho `src` |
+| [src/__init__.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/src/__init__.py) | Dấu hiệu gói cho `src` |
 
-| [src/services/__init__.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/services/__init__.py) | Dấu hiệu gói cho `src.services` |
+| [src/services/__init__.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/src/services/__init__.py) | Dấu hiệu gói cho `src.services` |
 
-| [src/config.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/config.py) | Các hằng số tập trung: URL máy chủ phụ trợ, cổng Flask, chỉ số camera, đường dẫn mô hình, ngưỡng độ tin cậy, thời gian chờ |
+| [src/config.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/src/config.py) | Các hằng số tập trung: URL máy chủ phụ trợ, cổng Flask, chỉ số camera, đường dẫn mô hình, ngưỡng độ tin cậy, thời gian chờ |
 
 ### Các dịch vụ cốt lõi
 
@@ -682,8 +682,8 @@ dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi �
 
 |------|---------|
 
-| [src/services/api_client.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/services/api_client.py) | Webhook HTTP POST đến máy chủ phụ trợ Node.js với **khử trùng lặp thời gian chờ** (mặc định 5 giây) để ngăn chặn việc gửi quá nhiều kết quả quét giống hệt nhau |
-| [src/services/ai_processor.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/services/ai_processor.py) | Quy trình YOLO + EasyOCR: tải `best.pt` (ảnh) và tùy chọn `container_model.pt`, phát hiện khung bao, cắt vùng, chạy OCR, chú thích khung hình bằng các hộp màu và kích hoạt `api_client` |
+| [src/services/api_client.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/src/services/api_client.py) | Webhook HTTP POST đến máy chủ phụ trợ Node.js với **khử trùng lặp thời gian chờ** (mặc định 5 giây) để ngăn chặn việc gửi quá nhiều kết quả quét giống hệt nhau |
+| [src/services/ai_processor.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/src/services/ai_processor.py) | Quy trình YOLO + EasyOCR: tải `best.pt` (ảnh) và tùy chọn `container_model.pt`, phát hiện khung bao, cắt vùng, chạy OCR, chú thích khung hình bằng các hộp màu và kích hoạt `api_client` |
 
 ### Ứng dụng Flask
 
@@ -691,7 +691,7 @@ dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi �
 
 |------|---------|
 
-| [src/app.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/src/app.py) | Máy chủ Flask chính với CORS, luồng chụp ảnh nền, `/video_feed` (luồng MJPEG) và `/status` (kiểm tra trạng thái JSON) |
+| [src/app.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/src/app.py) | Máy chủ Flask chính với CORS, luồng chụp ảnh nền, `/video_feed` (luồng MJPEG) và `/status` (kiểm tra trạng thái JSON) |
 
 ### Các tập lệnh kiểm thử
 
@@ -699,9 +699,9 @@ dựa vào cấu trúc thư mục như này và xem file python mẫu và tôi �
 
 |------|---------|
 
-| [tests/test_camera.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/tests/test_camera.py) | Tập lệnh OpenCV đơn giản để xác minh kết nối webcam/Iriun cục bộ |
+| [tests/test_camera.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/tests/test_camera.py) | Tập lệnh OpenCV đơn giản để xác minh kết nối webcam/Iriun cục bộ |
 
-| [tests/quick_test_cv.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/tests/quick_test_cv.py) | Bản sao tham chiếu của nguyên mẫu một tệp gốc để so sánh |
+| [tests/quick_test_cv.py](file:///d:/SWP/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/LogiPort/computer-vison/tests/quick_test_cv.py) | Bản sao tham chiếu của nguyên mẫu một tệp gốc để so sánh |
 
 ---
 
@@ -764,7 +764,7 @@ Tất cả các gói đã được nhập thành công!
 ## Cách chạy
 
 ```bash
-cd src/computer-vison
+cd LogiPort/computer-vison
 .\venv\Scripts\python.exe src/app.py
 ```
 

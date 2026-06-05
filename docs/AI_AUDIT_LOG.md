@@ -157,7 +157,7 @@ số container đang lưu bãi;
 cảnh báo bất thường;
 hiệu suất xử lý theo khung giờ"
 
-Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về nextJs, trong phần front end đi từ src/frontend, hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Với những trang xác thực sẽ nằm trong frontend/src/app/admin/(auth), và những trang còn lại sẽ nằm trong frontend/src/app/admin. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng.
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về nextJs, trong phần front end đi từ LogiPort/frontend, hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Với những trang xác thực sẽ nằm trong frontend/src/app/admin/(auth), và những trang còn lại sẽ nằm trong frontend/src/app/admin. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng.
 ```
 
 #### 4.2. Kết quả AI gợi ý
@@ -251,7 +251,7 @@ Xây dựng hệ thống quản lý xe container ra/vào cổng cảng tích h�
 - **Charts**: Recharts hoặc Tremor
 - **Icons**: Lucide React
 - **Form**: React Hook Form + Zod
-- **Cấu trúc thư mục**: `src/frontend`
+- **Cấu trúc thư mục**: `LogiPort/frontend`
   - Auth pages: `frontend/src/app/admin/(auth)/`
   - Protected pages: `frontend/src/app/admin/`
 

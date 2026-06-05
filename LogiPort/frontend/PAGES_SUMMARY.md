@@ -117,7 +117,7 @@ src/
 
 ### Install & Run
 ```bash
-cd src/frontend
+cd LogiPort/frontend
 npm install
 npm run dev
 ```
