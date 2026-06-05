@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Spot } from "@/app/client/parking/parking-map";
+export interface Spot {
+  id: string;
+  zone: string;
+  x: number;
+  y: number;
+  status: "free" | "occupied" | "reserved" | "fault";
+  geo: { lat: number; lon: number };
+}
 
 // Mô phỏng dữ liệu ban đầu cho 4 khu A/B/C/D, mỗi khu có 4 vị trí.
 const initial: Spot[] = [
