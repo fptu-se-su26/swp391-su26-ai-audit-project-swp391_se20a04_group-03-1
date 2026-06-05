@@ -107,7 +107,7 @@ export const scanPost = async (req: Request, res: Response) => {
     // 3. Process Transaction
     // Find if there's an ongoing transaction for this plate
     let transaction = await GateTransaction.findOne({
-      truckPlate: appointment.truckPlate,
+      actualTruckPlate: appointment.truckPlate,
       status: "in",
       isDeleted: false,
     });
@@ -127,10 +127,10 @@ export const scanPost = async (req: Request, res: Response) => {
       } else {
         // Create new check-in
         transaction = new GateTransaction({
-          truckPlate: appointment.truckPlate,
-          containerNo: appointment.containerNo,
+          actualTruckPlate: appointment.truckPlate,
+          actualContainerNo: appointment.containerNo,
           appointmentId: appointment._id,
-          gateType: "in",
+          
           checkInTime: now,
           status: "in",
           ocrConfidence: confidence,
@@ -158,7 +158,7 @@ export const scanPost = async (req: Request, res: Response) => {
         // Update checkout time
         transaction.checkOutTime = now;
         transaction.status = "out";
-        transaction.gateType = "out";
+        transaction.status = "out";
         transaction.ocrConfidence = confidence;
         await transaction.save();
 
@@ -189,9 +189,9 @@ export const scanPost = async (req: Request, res: Response) => {
 
     const emitData = {
       _id: transaction!._id,
-      truckPlate: transaction!.truckPlate,
-      appointmentId: { driverName: (appointment.driverId as any)?.driverName },
-      containerNo: transaction!.containerNo,
+      actualTruckPlate: transaction!.actualTruckPlate,
+      appointmentId: { driverId: { driverName: (appointment.driverId as any)?.driverName } },
+      actualContainerNo: transaction!.actualContainerNo,
       checkInTime: transaction!.checkInTime,
       checkOutTime: transaction!.checkOutTime,
       status: status,
@@ -230,13 +230,13 @@ export const getLogs = async (req: Request, res: Response) => {
     const recentLogs = await GateTransaction.find({ isDeleted: false })
       .sort({ updatedAt: -1 })
       .limit(50)
-      .populate("appointmentId", "driverName");
+      .populate({ path: "appointmentId", populate: { path: "driverId", select: "driverName" } });
 
     const formattedLogs = recentLogs.map((log: any) => ({
       id: log._id.toString(),
-      plate: log.truckPlate,
-      driverName: log.appointmentId?.driverName || "-",
-      containerNo: log.containerNo || "-",
+      plate: log.actualTruckPlate,
+      driverName: log.appointmentId?.driverId?.driverName || "-",
+      containerNo: log.actualContainerNo || "-",
       time: log.status === "in" ? log.checkInTime : log.checkOutTime,
       status: log.status
     }));
@@ -268,7 +268,7 @@ export const getLogsPaginated = async (req: Request, res: Response) => {
 
     const query: any = { isDeleted: false };
     if (search) {
-      query.truckPlate = { $regex: search, $options: "i" };
+      query.actualTruckPlate = { $regex: search, $options: "i" };
     }
     if (status && status !== "ALL") {
       query.status = status;
@@ -286,7 +286,7 @@ export const getLogsPaginated = async (req: Request, res: Response) => {
       .sort({ updatedAt: -1 })
       .skip((pageNum - 1) * limitNum)
       .limit(limitNum)
-      .populate("appointmentId", "driverName driverPhone containerNo");
+      .populate({ path: "appointmentId", populate: { path: "driverId", select: "driverName driverPhone" } });
 
     const activeVehicles = await GateTransaction.countDocuments({ status: "in", isDeleted: false });
     const nowTime = new Date();
@@ -399,7 +399,7 @@ export const logsTrashGet = async (req: Request, res: Response) => {
 
     const query: any = { isDeleted: true };
     if (search) {
-      query.truckPlate = { $regex: search, $options: "i" };
+      query.actualTruckPlate = { $regex: search, $options: "i" };
     }
     if (status && status !== "ALL") {
       query.status = status;
@@ -411,7 +411,7 @@ export const logsTrashGet = async (req: Request, res: Response) => {
       .sort({ updatedAt: -1 })
       .skip((pageNum - 1) * limitNum)
       .limit(limitNum)
-      .populate("appointmentId", "driverName");
+      .populate({ path: "appointmentId", populate: { path: "driverId", select: "driverName" } });
 
     res.json({
       code: "success",

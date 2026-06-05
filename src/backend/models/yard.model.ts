@@ -20,7 +20,11 @@ const yardSchema = new Schema<IYard>(
   {
     name: { type: String, required: true },
     cameraIp: { type: String, required: true },
-    snapshotUrl: { type: String, default: "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?q=80&w=1920&auto=format&fit=crop" },
+    snapshotUrl: {
+      type: String,
+      default:
+        "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?q=80&w=1920&auto=format&fit=crop",
+    },
     slots: [
       {
         slotName: { type: String, required: true },
@@ -32,7 +36,7 @@ const yardSchema = new Schema<IYard>(
     ],
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Yard = mongoose.model<IYard>("Yard", yardSchema, "yards");

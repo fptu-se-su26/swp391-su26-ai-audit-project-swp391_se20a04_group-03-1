@@ -53,7 +53,7 @@ interface Appointment {
  containerNo: string;
  scheduledDate: string;
  timeSlot: string;
- status:"Pending" |"Confirmed" |"CheckedIn" |"CheckedOut" |"Cancelled";
+ status:"Pending" |"Confirmed" |"CheckedIn" |"CheckedOut" |"Cancelled" |"Completed";
  createdAt: string;
 }
 
@@ -242,6 +242,7 @@ export default function TrashAppointmentsPage() {
  <option value="Confirmed">Đã duyệt</option>
  <option value="CheckedIn">Đã vào cảng</option>
  <option value="CheckedOut">Đã ra cảng</option>
+ <option value="Completed">Hoàn thành</option>
  <option value="Cancelled">Đã hủy</option>
  </select>
 
@@ -368,6 +369,8 @@ export default function TrashAppointmentsPage() {
  ?"bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
  : apt.status ==="CheckedOut"
  ?"bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+ : apt.status ==="Completed"
+ ?"bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400"
  : apt.status ==="Cancelled"
  ?"bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
  :"bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
@@ -379,6 +382,8 @@ export default function TrashAppointmentsPage() {
  ?"Đã vào"
  : apt.status ==="CheckedOut"
  ?"Đã ra"
+ : apt.status ==="Completed"
+ ?"Hoàn thành"
  : apt.status ==="Cancelled"
  ?"Đã hủy"
  :"Chờ duyệt"}

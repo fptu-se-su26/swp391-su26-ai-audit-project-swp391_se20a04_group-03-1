@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,6 +102,12 @@ export default function GatePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+
+  const statusFilterRef = useRef(statusFilter);
+  useEffect(() => {
+    statusFilterRef.current = statusFilter;
+  }, [statusFilter]);
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -128,9 +134,26 @@ export default function GatePage() {
     socket.on("gate_scan_update", (data) => {
       setActiveIn(data.activeCount);
       setActiveOut(data.completedCount);
-      setGateLogs((prev) =>
-        [{ ...data, id: Date.now() + Math.random() }, ...prev].slice(0, 50),
-      );
+      setGateLogs((prev) => {
+        const currentFilter = statusFilterRef.current;
+        const existsIndex = prev.findIndex((log) => log._id === data._id);
+        
+        if (existsIndex >= 0) {
+          if (currentFilter === "in" && data.status === "out") {
+            const newLogs = [...prev];
+            newLogs.splice(existsIndex, 1);
+            return newLogs;
+          }
+          const newLogs = [...prev];
+          newLogs[existsIndex] = { ...prev[existsIndex], ...data };
+          return newLogs;
+        }
+        
+        if (currentFilter === "ALL" || currentFilter === data.status) {
+          return [data, ...prev].slice(0, 50);
+        }
+        return prev;
+      });
     });
 
     socket.on("gate_scan_error", (data) => {
@@ -709,11 +732,11 @@ export default function GatePage() {
                       key={item._id}
                       className="bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900/50 transition-colors"
                     >
-                      <td className="px-4 py-3 font-bold">{item.truckPlate}</td>
+                      <td className="px-4 py-3 font-bold">{item.actualTruckPlate}</td>
                       <td className="px-4 py-3">
-                        {item.appointmentId?.driverName || "-"}
+                        {item.appointmentId?.driverId?.driverName || "-"}
                       </td>
-                      <td className="px-4 py-3">{item.containerNo || "-"}</td>
+                      <td className="px-4 py-3">{item.actualContainerNo || "-"}</td>
                       <td className="px-4 py-3 font-mono">
                         {new Date(
                           item.status === "in"
@@ -765,7 +788,7 @@ export default function GatePage() {
                                 Chuyển vào thùng rác?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Nhật ký của xe {item.truckPlate} sẽ được chuyển
+                                Nhật ký của xe {item.actualTruckPlate} sẽ được chuyển
                                 vào thùng rác.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
