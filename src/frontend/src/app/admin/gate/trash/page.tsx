@@ -12,10 +12,9 @@ import {
   Trash2,
   RefreshCcw,
   Loader2,
-  AlertCircle,
-  CheckCircle,
   ArrowLeft,
-  Video
+  Video,
+  Camera
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -30,6 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import toast from "react-hot-toast";
 
 interface Gate {
   _id: string;
@@ -43,12 +43,9 @@ interface Gate {
 export default function TrashGatesPage() {
   const [gates, setGates] = useState<Gate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const fetchGates = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gates/trash/list`, {
         credentials: "include",
@@ -61,7 +58,7 @@ export default function TrashGatesPage() {
 
       setGates(data.data || []);
     } catch (err: any) {
-      setError(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
     } finally {
       setLoading(false);
     }
@@ -72,9 +69,8 @@ export default function TrashGatesPage() {
   }, [fetchGates]);
 
   const handleRestoreGate = async (id: string) => {
+    const loadingToast = toast.loading("Đang khôi phục...");
     try {
-      setError(null);
-      setSuccessMsg(null);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gates/${id}/restore`, {
         method: "PATCH",
         credentials: "include",
@@ -85,17 +81,16 @@ export default function TrashGatesPage() {
         throw new Error(result.message || "Lỗi khi khôi phục cổng.");
       }
 
-      setSuccessMsg("Khôi phục cổng thành công.");
+      toast.success("Khôi phục cổng thành công.", { id: loadingToast });
       fetchGates();
     } catch (err: any) {
-      setError(err.message || "Không thể khôi phục cổng.");
+      toast.error(err.message, { id: loadingToast });
     }
   };
 
   const handleHardDeleteGate = async (id: string) => {
+    const loadingToast = toast.loading("Đang xóa vĩnh viễn...");
     try {
-      setError(null);
-      setSuccessMsg(null);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gates/${id}/force`, {
         method: "DELETE",
         credentials: "include",
@@ -106,111 +101,99 @@ export default function TrashGatesPage() {
         throw new Error(result.message || "Lỗi khi xóa vĩnh viễn.");
       }
 
-      setSuccessMsg("Đã xóa vĩnh viễn cổng.");
+      toast.success("Đã xóa vĩnh viễn cổng.", { id: loadingToast });
       fetchGates();
     } catch (err: any) {
-      setError(err.message || "Không thể xóa vĩnh viễn cổng.");
+      toast.error(err.message, { id: loadingToast });
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
-            Thùng rác Cổng
+          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+            Thùng rác - Camera Cổng
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
             Các camera cổng đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
           </p>
         </div>
-        <Link href="/admin/gate">
-          <Button variant="outline" className="gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            Quay lại danh sách
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/admin/gate">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Quay lại hệ thống
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 dark:bg-red-900/10 dark:text-red-400 rounded-lg border border-red-200/50 dark:border-red-900/50">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 dark:bg-green-900/10 dark:text-green-400 rounded-lg border border-green-200/50 dark:border-green-900/50">
-          <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-2" />
-          <p>Đang tải dữ liệu...</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-[#ffffff] dark:bg-[#181818] rounded-[16px] border border-[#e5e5e5] dark:border-[#272727]">
+          <Loader2 className="h-10 w-10 animate-spin text-[#f3727f] mb-4" />
+          <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">Đang tải dữ liệu...</p>
         </div>
       ) : gates.length === 0 ? (
-        <Card className="border-dashed border-2 shadow-none bg-slate-50/50 dark:bg-slate-900 dark:border-slate-800">
-          <CardContent className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
-            <Trash2 className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-2" />
-            <p>Thùng rác trống.</p>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-20 text-center bg-[#ffffff] dark:bg-[#181818] rounded-[16px] border border-[#e5e5e5] dark:border-[#272727]">
+          <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
+          <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px] mb-2">Thùng rác camera trống.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {gates.map((gate) => (
-            <Card key={gate._id} className="overflow-hidden border-slate-200 dark:border-slate-800 shadow-sm opacity-75">
-              <CardHeader className="pb-4 bg-slate-50 dark:bg-slate-900">
-                <div className="flex justify-between items-start">
+            <Card key={gate._id} className="overflow-hidden bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm hover:border-[#f3727f] transition-colors group opacity-80 hover:opacity-100 flex flex-col">
+              <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-5">
+                <div className="flex justify-between items-start gap-4">
                   <div>
-                    <CardTitle className="text-xl text-slate-700 dark:text-slate-200">{gate.name}</CardTitle>
-                    <CardDescription className="flex items-center gap-1.5 mt-1">
+                    <CardTitle className="text-[18px] font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider line-clamp-1">{gate.name}</CardTitle>
+                    <CardDescription className="flex items-center gap-1.5 mt-2 font-bold text-[#666666] dark:text-[#999999] text-[12px]">
                       <Video className="h-3.5 w-3.5" />
                       {gate.cameraIp}
                     </CardDescription>
                   </div>
                   <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
+                    className={`px-2 py-1 rounded-[4px] text-[10px] font-black uppercase tracking-wider border whitespace-nowrap ${
                       gate.type === "in"
-                        ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/50"
-                        : "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/50"
+                        ? "bg-[#1ed760]/10 text-[#1db954] border-[#1ed760]/20"
+                        : "bg-[#3b82f6]/10 text-[#3b82f6] border-[#3b82f6]/20"
                     }`}
                   >
                     {gate.type === "in" ? "Camera Vào" : "Camera Ra"}
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="p-4 flex gap-2 justify-end bg-white dark:bg-slate-950">
+              <CardContent className="p-5 flex gap-3 mt-auto bg-[#ffffff] dark:bg-[#181818]">
                 <Button
                   onClick={() => handleRestoreGate(gate._id)}
-                  variant="outline"
-                  className="gap-2 flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
+                  className="gap-2 flex-1 bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] font-bold uppercase tracking-wider text-[11px] border-none transition-colors"
                 >
-                  <RefreshCcw className="h-4 w-4" />
+                  <RefreshCcw className="h-3.5 w-3.5" />
                   Khôi phục
                 </Button>
                 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" className="gap-2 flex-1 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300">
-                      <Trash2 className="h-4 w-4" />
+                    <Button className="gap-2 flex-1 bg-[#f3727f]/10 hover:bg-[#f3727f] text-[#f3727f] hover:text-[#121212] rounded-[500px] font-bold uppercase tracking-wider text-[11px] border-none transition-colors">
+                      <Trash2 className="h-3.5 w-3.5" />
                       Xóa vĩnh viễn
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Bạn có chắc chắn muốn xóa vĩnh viễn?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Hành động này không thể hoàn tác. Dữ liệu của camera cổng "{gate.name}" sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                      <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">Bạn có chắc chắn muốn xóa vĩnh viễn?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
+                        Hành động này không thể hoàn tác. Dữ liệu của camera cổng <strong className="text-[#121212] dark:text-[#ffffff]">{gate.name}</strong> sẽ bị xóa vĩnh viễn.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Hủy</AlertDialogCancel>
+                      <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">Hủy</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleHardDeleteGate(gate._id)}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none"
                       >
                         Xóa vĩnh viễn
                       </AlertDialogAction>

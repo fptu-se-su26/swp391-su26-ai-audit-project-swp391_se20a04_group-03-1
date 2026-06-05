@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { Header } from "@/components/layout/header"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Footer } from "@/components/layout/footer"
+import { Toaster } from "react-hot-toast"
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -15,12 +16,64 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                      pathname?.includes("/admin/forgot-password") || 
                      pathname?.includes("/admin/reset-password")
 
+  // Sync toast theme variables based on document.documentElement class
+  useEffect(() => {
+    const updateToastTheme = () => {
+      const root = document.documentElement;
+      if (root.classList.contains('dark')) {
+        root.style.setProperty('--toast-bg', '#181818');
+        root.style.setProperty('--toast-color', '#ffffff');
+        root.style.setProperty('--toast-border', '#272727');
+      } else {
+        root.style.setProperty('--toast-bg', '#ffffff');
+        root.style.setProperty('--toast-color', '#121212');
+        root.style.setProperty('--toast-border', '#e5e5e5');
+      }
+    };
+    
+    updateToastTheme();
+    
+    // Create an observer to watch for class changes on html tag
+    const observer = new MutationObserver(updateToastTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
+
   if (isAuthPage) {
     return <>{children}</>
   }
 
   return (
-    <div className="flex h-screen flex-col bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="flex h-screen flex-col bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] transition-colors duration-300">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: 'var(--toast-bg, #181818)',
+            color: 'var(--toast-color, #ffffff)',
+            borderRadius: '500px',
+            border: '1px solid var(--toast-border, #272727)',
+            fontSize: '12px',
+            fontWeight: '900',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            padding: '12px 24px',
+          },
+          success: {
+            iconTheme: {
+              primary: '#1ed760',
+              secondary: 'var(--toast-bg, #181818)',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#f3727f',
+              secondary: 'var(--toast-bg, #181818)',
+            },
+          },
+        }}
+      />
       <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

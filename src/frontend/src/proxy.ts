@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("tokenAdmin")?.value;
 
@@ -14,15 +14,19 @@ export function middleware(request: NextRequest) {
 
   // 1. CHƯA CÓ TOKEN: Nếu cố truy cập vào các trang /admin khác (ngoại trừ login/register) -> Đuổi về login
   if (!token && !isAuthPage) {
-    const response = NextResponse.redirect(new URL("/admin/login", request.url));
-    response.headers.set('Cache-Control', 'no-store, max-age=0');
+    const response = NextResponse.redirect(
+      new URL("/admin/login", request.url),
+    );
+    response.headers.set("Cache-Control", "no-store, max-age=0");
     return response;
   }
 
   // 2. ĐÃ CÓ TOKEN: Nếu vô tình truy cập lại trang login/register -> Đẩy thẳng vào dashboard
   if (token && isAuthPage) {
-    const response = NextResponse.redirect(new URL("/admin/dashboard", request.url));
-    response.headers.set('Cache-Control', 'no-store, max-age=0');
+    const response = NextResponse.redirect(
+      new URL("/admin/dashboard", request.url),
+    );
+    response.headers.set("Cache-Control", "no-store, max-age=0");
     return response;
   }
 

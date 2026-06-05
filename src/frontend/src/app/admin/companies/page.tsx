@@ -1,652 +1,652 @@
 "use client";
 
-import { Button } from"@/components/ui/button";
-import { Input } from"@/components/ui/input";
-import { Label } from"@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
- Card,
- CardContent,
- CardDescription,
- CardHeader,
- CardTitle,
-} from"@/components/ui/card";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Plus, Trash2, Building2, Loader2, Pencil, Search } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import JustValidate from "just-validate";
+import Link from "next/link";
 import {
- Plus,
- Trash2,
- Building2,
- Loader2,
- AlertCircle,
- CheckCircle,
- Pencil,
- Search,
-} from"lucide-react";
-import { useState, useEffect, useRef, useCallback } from"react";
-import JustValidate from"just-validate";
-import Link from"next/link";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
- AlertDialog,
- AlertDialogAction,
- AlertDialogCancel,
- AlertDialogContent,
- AlertDialogDescription,
- AlertDialogFooter,
- AlertDialogHeader,
- AlertDialogTitle,
- AlertDialogTrigger,
-} from"@/components/ui/alert-dialog";
-import {
- Pagination,
- PaginationContent,
- PaginationItem,
- PaginationLink,
- PaginationNext,
- PaginationPrevious,
-} from"@/components/ui/pagination";
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { CustomSelect } from "@/components/CustomSelect";
+import toast from "react-hot-toast";
 
 interface Company {
- _id: string;
- companyCode: string;
- companyName: string;
- contactPerson: string;
- contactPhone: string;
- email: string;
- status:"Active" |"Inactive" |"Suspended";
- createdAt: string;
+  _id: string;
+  companyCode: string;
+  companyName: string;
+  contactPerson: string;
+  contactPhone: string;
+  email: string;
+  status: "Active" | "Inactive" | "Suspended";
+  createdAt: string;
 }
 
 export default function CompaniesPage() {
- const [companies, setCompanies] = useState<Company[]>([]);
- const [loading, setLoading] = useState(true);
- const [error, setError] = useState<string | null>(null);
- const [successMsg, setSuccessMsg] = useState<string | null>(null);
- const [showForm, setShowForm] = useState(false);
- const [searchQuery, setSearchQuery] = useState("");
- const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
- const [statusFilter, setStatusFilter] = useState("ALL");
- const [currentPage, setCurrentPage] = useState(1);
- const [totalPages, setTotalPages] = useState(1);
- const ITEMS_PER_PAGE = 10;
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
- const formRef = useRef<HTMLFormElement>(null);
- const validatorRef = useRef<JustValidate | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const validatorRef = useRef<JustValidate | null>(null);
 
- // Debounce logic cho ô tìm kiếm
- useEffect(() => {
- const timer = setTimeout(() => {
- setDebouncedSearchQuery(searchQuery);
- }, 500);
+  // Debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
- return () => clearTimeout(timer);
- }, [searchQuery]);
+  // Fetch
+  const fetchCompanies = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
+      if (statusFilter && statusFilter !== "ALL")
+        params.append("status", statusFilter);
+      params.append("page", currentPage.toString());
+      params.append("limit", ITEMS_PER_PAGE.toString());
 
- // Tải danh sách công ty từ backend
- const fetchCompanies = useCallback(async () => {
- setLoading(true);
- setError(null);
- try {
- const params = new URLSearchParams();
- if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
- if (statusFilter && statusFilter !=="ALL") params.append("status", statusFilter);
- params.append("page", currentPage.toString());
- params.append("limit", ITEMS_PER_PAGE.toString());
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/companies/?${params.toString()}`,
+        { credentials: "include" },
+      );
+      const data = await res.json();
 
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/?${params.toString()}`,
- { credentials:"include" },
- );
- const data = await res.json();
+      if (data && data.code === "error") {
+        throw new Error(data.message || "Lỗi từ máy chủ backend.");
+      }
 
- if (data && data.code ==="error") {
- throw new Error(data.message ||"Lỗi từ máy chủ backend.");
- }
+      const companyArray =
+        data && data.data ? data.data : Array.isArray(data) ? data : [];
+      setCompanies(companyArray);
 
- const companyArray =
- data && data.data ? data.data : Array.isArray(data) ? data : [];
- setCompanies(companyArray);
- 
- if (data && data.pagination) {
- setTotalPages(data.pagination.totalPages);
- } else {
- setTotalPages(1);
- }
- } catch (err: any) {
- setError(err.message ||"Đã xảy ra lỗi khi tải danh sách công ty.");
- } finally {
- setLoading(false);
- }
- }, [debouncedSearchQuery, statusFilter, currentPage]);
+      if (data && data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+      } else {
+        setTotalPages(1);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách công ty.");
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearchQuery, statusFilter, currentPage]);
 
- useEffect(() => {
- fetchCompanies();
- }, [fetchCompanies]);
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
- useEffect(() => {
- setCurrentPage(1);
- }, [debouncedSearchQuery, statusFilter]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery, statusFilter]);
 
- // Khởi tạo JustValidate khi Form được mở
- useEffect(() => {
- if (!showForm || !formRef.current) {
- if (validatorRef.current) {
- validatorRef.current.destroy();
- validatorRef.current = null;
- }
- return;
- }
+  // Validate
+  useEffect(() => {
+    if (!showForm || !formRef.current) {
+      if (validatorRef.current) {
+        validatorRef.current.destroy();
+        validatorRef.current = null;
+      }
+      return;
+    }
 
- const validator = new JustValidate(formRef.current, {
- errorFieldCssClass:"border-red-500 focus:ring-red-500 focus:border-red-500",
- errorLabelCssClass:"text-red-500 text-xs mt-1 block font-medium",
- });
+    const validator = new JustValidate(formRef.current, {
+      errorFieldCssClass:
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+    });
 
- validatorRef.current = validator;
+    validatorRef.current = validator;
 
- validator
- .addField("#companyCode", [
- {
- rule:"required",
- errorMessage:"Mã công ty là bắt buộc.",
- },
- {
- rule:"customRegexp",
- value: /^[A-Z0-9-]{3,20}$/,
- errorMessage:"Mã công ty chỉ gồm chữ in hoa, số và dấu gạch ngang (3-20 ký tự).",
- },
- ])
- .addField("#companyName", [
- {
- rule:"required",
- errorMessage:"Tên công ty là bắt buộc.",
- },
- {
- rule:"minLength",
- value: 3,
- errorMessage:"Tên công ty phải từ 3 ký tự trở lên.",
- },
- ])
- .addField("#contactPerson", [
- {
- rule:"required",
- errorMessage:"Tên người liên hệ là bắt buộc.",
- },
- ])
- .addField("#contactPhone", [
- {
- rule:"required",
- errorMessage:"Số điện thoại là bắt buộc.",
- },
- {
- rule:"customRegexp",
- value: /^(0[3|5|7|8|9])[0-9]{8}$/,
- errorMessage:"Số điện thoại không đúng định dạng Việt Nam.",
- },
- ])
- .addField("#email", [
- {
- rule:"required",
- errorMessage:"Email là bắt buộc.",
- },
- {
- rule:"email",
- errorMessage:"Email không hợp lệ.",
- },
- ])
- .onSuccess(async (event: any) => {
- event.preventDefault();
- const formData = new FormData(formRef.current!);
- const payload = {
- companyCode: formData
- .get("companyCode")
- ?.toString()
- .trim()
- .toUpperCase(),
- companyName: formData.get("companyName")?.toString().trim(),
- contactPerson: formData.get("contactPerson")?.toString().trim(),
- contactPhone: formData.get("contactPhone")?.toString().trim(),
- email: formData.get("email")?.toString().trim().toLowerCase(),
- };
+    validator
+      .addField("#companyCode", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        {
+          rule: "customRegexp",
+          value: /^[A-Z0-9-]{3,20}$/,
+          errorMessage: "Chỉ gồm chữ in hoa, số và gạch ngang (3-20 ký tự).",
+        },
+      ])
+      .addField("#companyName", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        {
+          rule: "minLength",
+          value: 3,
+          errorMessage: "Từ 3 ký tự trở lên.",
+        },
+      ])
+      .addField("#contactPerson", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+      ])
+      .addField("#contactPhone", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        {
+          rule: "customRegexp",
+          value: /^(0[3|5|7|8|9])[0-9]{8}$/,
+          errorMessage: "Số điện thoại không hợp lệ.",
+        },
+      ])
+      .addField("#email", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        { rule: "email", errorMessage: "Email không hợp lệ." },
+      ])
+      .onSuccess(async (event: any) => {
+        event.preventDefault();
+        const formData = new FormData(formRef.current!);
+        const payload = {
+          companyCode: formData
+            .get("companyCode")
+            ?.toString()
+            .trim()
+            .toUpperCase(),
+          companyName: formData.get("companyName")?.toString().trim(),
+          contactPerson: formData.get("contactPerson")?.toString().trim(),
+          contactPhone: formData.get("contactPhone")?.toString().trim(),
+          email: formData.get("email")?.toString().trim().toLowerCase(),
+        };
 
- try {
- setError(null);
- setSuccessMsg(null);
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/create`,
- {
- method:"POST",
- headers: {"Content-Type":"application/json",
- },
- body: JSON.stringify(payload),
- credentials:"include",
- },
- );
+        const loadingToast = toast.loading("Đang lưu công ty...");
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/companies/create`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              credentials: "include",
+            },
+          );
 
- const result = await res.json();
- if (!res.ok || result.code ==="error") {
- throw new Error(result.message ||"Lỗi khi thêm công ty.");
- }
+          const result = await res.json();
+          if (!res.ok || result.code === "error") {
+            throw new Error(result.message || "Lỗi khi thêm công ty.");
+          }
 
- setSuccessMsg("Thêm công ty thành công!");
- setShowForm(false);
- fetchCompanies();
- } catch (err: any) {
- setError(err.message ||"Không thể lưu thông tin công ty.");
- }
- });
+          toast.success("Thêm công ty thành công!", { id: loadingToast });
+          setShowForm(false);
+          fetchCompanies();
+        } catch (err: any) {
+          toast.error(err.message || "Không thể lưu thông tin công ty.", {
+            id: loadingToast,
+          });
+        }
+      });
 
- return () => {
- if (validatorRef.current) {
- validatorRef.current.destroy();
- validatorRef.current = null;
- }
- };
- }, [showForm]);
+    return () => {
+      if (validatorRef.current) {
+        validatorRef.current.destroy();
+        validatorRef.current = null;
+      }
+    };
+  }, [showForm, fetchCompanies]);
 
- // Cập nhật trạng thái
- const handleUpdateStatus = async (id: string, newStatus: string) => {
- try {
- setError(null);
- setSuccessMsg(null);
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/status/${id}`,
- {
- method:"PATCH",
- headers: {"Content-Type":"application/json",
- },
- body: JSON.stringify({ newStatus: newStatus }),
- credentials:"include",
- },
- );
+  // Update Status
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
+    const loadingToast = toast.loading("Đang cập nhật trạng thái...");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/companies/status/${id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newStatus: newStatus }),
+          credentials: "include",
+        },
+      );
 
- const result = await res.json();
- if (!res.ok || result.code ==="error") {
- throw new Error(result.message ||"Lỗi khi cập nhật trạng thái.");
- }
+      const result = await res.json();
+      if (!res.ok || result.code === "error") {
+        throw new Error(result.message || "Lỗi khi cập nhật trạng thái.");
+      }
 
- setSuccessMsg(
- `Đã cập nhật trạng thái công ty sang: ${newStatus ==="Active" ?"Đang hoạt động" :"Đình chỉ"}`,
- );
- fetchCompanies();
- } catch (err: any) {
- setError(err.message ||"Không thể cập nhật trạng thái.");
- }
- };
+      toast.success(
+        `Đã chuyển trạng thái sang: ${
+          newStatus === "Active" ? "Hoạt động" : "Đình chỉ"
+        }`,
+        { id: loadingToast },
+      );
+      fetchCompanies();
+    } catch (err: any) {
+      toast.error(err.message || "Không thể cập nhật trạng thái.", {
+        id: loadingToast,
+      });
+    }
+  };
 
- // Xóa (Soft Delete)
- const handleDeleteCompany = async (id: string) => {
- try {
- setError(null);
- setSuccessMsg(null);
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/delete/${id}`,
- {
- method:"PATCH",
- credentials:"include",
- },
- );
+  // Soft Delete
+  const handleDeleteCompany = async (id: string) => {
+    const loadingToast = toast.loading("Đang xóa công ty...");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/companies/delete/${id}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+        },
+      );
 
- const result = await res.json();
- if (!res.ok || result.code ==="error") {
- throw new Error(result.message ||"Lỗi khi đưa vào thùng rác.");
- }
+      const result = await res.json();
+      if (!res.ok || result.code === "error") {
+        throw new Error(result.message || "Lỗi khi đưa vào thùng rác.");
+      }
 
- setSuccessMsg("Đã chuyển công ty vào thùng rác.");
- fetchCompanies();
- } catch (err: any) {
- setError(err.message ||"Không thể xóa công ty.");
- }
- };
+      toast.success("Đã chuyển công ty vào thùng rác.", { id: loadingToast });
+      fetchCompanies();
+    } catch (err: any) {
+      toast.error(err.message || "Không thể xóa công ty.", {
+        id: loadingToast,
+      });
+    }
+  };
 
- return (
- <div className="space-y-6">
- <div className="flex items-center justify-between">
- <div>
- <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
- Quản lý công ty
- </h1>
- <p className="text-slate-600 dark:text-slate-400">
- Quản lý danh sách các công ty vận tải và đối tác
- </p>
- </div>
- <div className="flex items-center gap-3">
- <Link href="/admin/companies/trash">
- <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 dark:border-red-900/50 dark:text-red-500 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-colors">
- <Trash2 className="h-4 w-4" />
- Thùng rác
- </Button>
- </Link>
- <Button
- onClick={() => {
- setShowForm(!showForm);
- setError(null);
- setSuccessMsg(null);
- }}
- className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all duration-200 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"
- >
- <Plus className="h-4 w-4" />
- Thêm công ty
- </Button>
- </div>
- </div>
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
+            Quản lý công ty
+          </h1>
+          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+            Quản lý danh sách các công ty vận tải và đối tác
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/companies/trash">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#f3727f] dark:hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
+              <Trash2 className="h-4 w-4 text-[#f3727f]" />
+              Thùng rác
+            </Button>
+          </Link>
+          <Button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
+          >
+            <Plus className="h-5 w-5" />
+            Thêm công ty
+          </Button>
+        </div>
+      </div>
 
- {error && (
- <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg dark:bg-red-900/10 dark:text-red-400 border border-red-200/50 dark:border-red-900/30">
- <AlertCircle className="h-4 w-4 flex-shrink-0" />
- <span>{error}</span>
- </div>
- )}
+      {showForm && (
+        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm animate-in fade-in slide-in-from-top-4 duration-200 overflow-visible">
+          <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
+            <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+              Thêm công ty mới
+            </CardTitle>
+            <CardDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
+              Điền thông tin chi tiết của công ty đối tác.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-8">
+            <form ref={formRef} id="companyForm" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="companyCode"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mã công ty
+                  </Label>
+                  <Input
+                    id="companyCode"
+                    name="companyCode"
+                    placeholder="VD: TRANS-01"
+                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="companyName"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Tên công ty
+                  </Label>
+                  <Input
+                    id="companyName"
+                    name="companyName"
+                    placeholder="CÔNG TY TNHH ABC"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="contactPerson"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Người đại diện / Liên hệ
+                  </Label>
+                  <Input
+                    id="contactPerson"
+                    name="contactPerson"
+                    placeholder="Nguyễn Văn A"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label
+                    htmlFor="contactPhone"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Số điện thoại
+                  </Label>
+                  <Input
+                    id="contactPhone"
+                    name="contactPhone"
+                    placeholder="VD: 0987654321"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+                <div className="space-y-3 md:col-span-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Email liên hệ
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="contact@company.com"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4 justify-end pt-8">
+                <Button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  variant="outline"
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider px-8"
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
+                >
+                  Đăng ký
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
- {successMsg && (
- <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 rounded-lg dark:bg-green-900/10 dark:text-green-400 border border-green-200/50 dark:border-green-900/30">
- <CheckCircle className="h-4 w-4 flex-shrink-0" />
- <span>{successMsg}</span>
- </div>
- )}
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+            <div>
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+                Danh sách đối tác
+              </CardTitle>
+            </div>
 
- {showForm && (
- <Card className="border border-slate-200 dark:border-slate-800 shadow-lg animate-in fade-in slide-in-from-top-4 duration-200">
- <CardHeader className="bg-slate-50/50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/80">
- <CardTitle className="text-slate-900 dark:text-white">Thêm công ty mới</CardTitle>
- <CardDescription className="text-slate-500 dark:text-slate-400">
- Điền thông tin chi tiết của công ty đối tác.
- </CardDescription>
- </CardHeader>
- <CardContent className="pt-6">
- <form ref={formRef} id="companyForm" className="space-y-6">
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
- <div className="space-y-2">
- <Label htmlFor="companyCode" className="text-slate-900 dark:text-slate-300">Mã công ty</Label>
- <Input
- id="companyCode"
- name="companyCode"
- placeholder="VD: TRANS-01"
- className="uppercase bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="companyName" className="text-slate-900 dark:text-slate-300">Tên công ty</Label>
- <Input
- id="companyName"
- name="companyName"
- placeholder="CÔNG TY TNHH ABC"
- className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="contactPerson" className="text-slate-900 dark:text-slate-300">Người đại diện / Liên hệ</Label>
- <Input
- id="contactPerson"
- name="contactPerson"
- placeholder="Nguyễn Văn A"
- className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="contactPhone" className="text-slate-900 dark:text-slate-300">Số điện thoại</Label>
- <Input
- id="contactPhone"
- name="contactPhone"
- placeholder="VD: 0987654321"
- className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
- />
- </div>
- <div className="space-y-2 md:col-span-2">
- <Label htmlFor="email" className="text-slate-900 dark:text-slate-300">Email liên hệ</Label>
- <Input
- id="email"
- name="email"
- type="email"
- placeholder="contact@company.com"
- className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
- />
- </div>
- </div>
- <div className="flex gap-2 justify-end border-t border-slate-100 dark:border-slate-800/80 pt-4">
- <Button
- type="button"
- variant="outline"
- onClick={() => setShowForm(false)}
- className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
- >
- Hủy bỏ
- </Button>
- <Button
- type="submit"
- className="bg-blue-600 hover:bg-blue-700 text-white font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
- >
- Lưu công ty
- </Button>
- </div>
- </form>
- </CardContent>
- </Card>
- )}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999999]" />
+                <Input
+                  placeholder="Tìm mã, tên công ty, số điện thoại..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                />
+              </div>
 
- <Card className="border border-slate-200 dark:border-slate-800 shadow-md">
- <CardHeader className="bg-slate-50/50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/80">
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
- <div>
- <CardTitle className="text-slate-900 dark:text-white">Danh sách đối tác</CardTitle>
- <CardDescription className="text-slate-500 dark:text-slate-400">
- Tất cả các công ty vận tải đang hợp tác với cảng.
- </CardDescription>
- </div>
- </div>
+              <div className="relative z-10 w-[200px]">
+                <CustomSelect
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  options={[
+                    { value: "ALL", label: "Tất cả trạng thái" },
+                    { value: "Active", label: "Đang hoạt động" },
+                    { value: "Suspended", label: "Đình chỉ" },
+                    { value: "Inactive", label: "Ngừng hoạt động" },
+                  ]}
+                  placeholder="Mọi trạng thái"
+                />
+              </div>
 
- <div className="flex flex-col md:flex-row items-center gap-3">
- <div className="relative w-full md:w-96">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
- <Input
- placeholder="Tìm mã, tên công ty, số điện thoại..."
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- className="pl-9 bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600 w-full"
- />
- </div>
- <div className="flex w-full md:w-auto items-center gap-3">
- <select
- value={statusFilter}
- onChange={(e) => setStatusFilter(e.target.value)}
- className="flex h-10 w-full md:w-40 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus-visible:ring-slate-300"
- >
- <option value="ALL">Tất cả trạng thái</option>
- <option value="Active">Đang hoạt động</option>
- <option value="Suspended">Đình chỉ</option>
- <option value="Inactive">Ngừng hoạt động</option>
- </select>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  setDebouncedSearchQuery("");
+                  setStatusFilter("ALL");
+                }}
+                disabled={!searchQuery && statusFilter === "ALL"}
+                className="bg-[#eeeeee] hover:bg-[#e5e5e5] dark:bg-[#272727] dark:hover:bg-[#333333] text-[#121212] dark:text-[#ffffff] rounded-[500px] font-bold h-10 px-4 uppercase tracking-wider text-[12px] border-none"
+              >
+                Xóa lọc
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
 
- <Button
- variant="outline"
- size="sm"
- onClick={() => {
- setSearchQuery("");
- setDebouncedSearchQuery("");
- setStatusFilter("ALL");
- }}
- disabled={!searchQuery && statusFilter ==="ALL"}
- className="whitespace-nowrap dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
- >
- Xóa bộ lọc
- </Button>
- </div>
- </div>
- </CardHeader>
- <CardContent className="p-0">
- {loading ? (
- <div className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
- <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500 mb-2" />
- <p>Đang tải danh sách công ty...</p>
- </div>
- ) : companies.length === 0 ? (
- <div className="text-center py-12 text-slate-500 dark:text-slate-400">
- <Building2 className="h-12 w-12 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
- <p>
- {searchQuery || statusFilter !=="ALL"
- ?"Không tìm thấy công ty nào phù hợp."
- :"Chưa có công ty nào trong hệ thống."}
- </p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <table className="w-full text-sm text-left">
- <thead className="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900/50 dark:text-slate-400">
- <tr>
- <th className="px-4 py-3 font-medium text-left font-medium">Mã CT</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Tên công ty</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Người liên hệ</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Điện thoại</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Email</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Ngày tạo</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Trạng thái</th>
- <th className="px-4 py-3 font-medium text-right font-medium">Hành động</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
- {companies.map((comp) => (
- <tr
- key={comp._id}
- className="bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900/50 transition-colors"
- >
- <td className="px-4 py-3 font-mono font-medium text-slate-900 dark:text-slate-100">
- {comp.companyCode}
- </td>
- <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">
- {comp.companyName}
- </td>
- <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
- {comp.contactPerson}
- </td>
- <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-mono text-xs">
- {comp.contactPhone}
- </td>
- <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
- {comp.email}
- </td>
- <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
- {comp.createdAt
- ? new Date(comp.createdAt).toLocaleDateString("vi-VN")
- :"-"}
- </td>
- <td className="px-4 py-3">
- <span
- className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
- comp.status ==="Active"
- ?"bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
- : comp.status ==="Suspended"
- ?"bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
- :"bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
- }`}
- >
- {comp.status ==="Active"
- ?"Hoạt động"
- : comp.status ==="Suspended"
- ?"Đình chỉ"
- :"Ngừng HĐ"}
- </span>
- </td>
- <td className="px-4 py-3 text-right">
- <div className="flex items-center justify-end gap-2">
- {comp.status ==="Suspended" && (
- <Button
- onClick={() => handleUpdateStatus(comp._id,"Active")}
- variant="outline"
- size="sm"
- className="text-xs text-green-600 hover:bg-green-50 border-green-200/50 dark:border-green-900/50 dark:text-green-500 dark:hover:bg-green-950/50"
- >
- Kích hoạt
- </Button>
- )}
- {comp.status ==="Active" && (
- <Button
- onClick={() => handleUpdateStatus(comp._id,"Suspended")}
- variant="outline"
- size="sm"
- className="text-xs text-orange-600 hover:bg-orange-50 border-orange-200/50 dark:border-orange-900/50 dark:text-orange-500 dark:hover:bg-orange-950/50"
- >
- Đình chỉ
- </Button>
- )}
- <Link href={`/admin/companies/edit/${comp._id}`}>
- <Button
- variant="ghost"
- size="sm"
- className="text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-950/50"
- title="Chỉnh sửa"
- >
- <Pencil className="h-4 w-4" />
- </Button>
- </Link>
- <AlertDialog>
- <AlertDialogTrigger asChild>
- <Button
- variant="ghost"
- size="sm"
- className="text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400 dark:hover:bg-red-950/50"
- title="Xóa"
- >
- <Trash2 className="h-4 w-4" />
- </Button>
- </AlertDialogTrigger>
- <AlertDialogContent className="dark:bg-slate-900 dark:border-slate-800">
- <AlertDialogHeader>
- <AlertDialogTitle className="dark:text-slate-100">Xóa công ty này?</AlertDialogTitle>
- <AlertDialogDescription className="dark:text-slate-400">
- Công ty{""}
- <span className="font-semibold dark:text-slate-200">{comp.companyName}</span>{""}
- sẽ được đưa vào thùng rác.
- </AlertDialogDescription>
- </AlertDialogHeader>
- <AlertDialogFooter>
- <AlertDialogCancel className="dark:bg-slate-800 dark:text-slate-200 dark:border-slate-800 dark:hover:bg-slate-700">Hủy</AlertDialogCancel>
- <AlertDialogAction
- onClick={() => handleDeleteCompany(comp._id)}
- className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
- >
- Đồng ý
- </AlertDialogAction>
- </AlertDialogFooter>
- </AlertDialogContent>
- </AlertDialog>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- )}
- {totalPages > 1 && companies.length > 0 && (
- <div className="py-4 border-t border-slate-100 dark:border-slate-800/80">
- <Pagination>
- <PaginationContent>
- <PaginationItem>
- <PaginationPrevious
- onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
- className={currentPage === 1 ?"pointer-events-none opacity-50" :"cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800"}
- />
- </PaginationItem>
- {[...Array(totalPages)].map((_, i) => (
- <PaginationItem key={i + 1}>
- <PaginationLink
- onClick={() => setCurrentPage(i + 1)}
- isActive={currentPage === i + 1}
- className={currentPage === i + 1 ?"cursor-pointer dark:bg-slate-800 dark:text-slate-100" :"cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800"}
- >
- {i + 1}
- </PaginationLink>
- </PaginationItem>
- ))}
- <PaginationItem>
- <PaginationNext
- onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
- className={currentPage === totalPages ?"pointer-events-none opacity-50" :"cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800"}
- />
- </PaginationItem>
- </PaginationContent>
- </Pagination>
- </div>
- )}
- </CardContent>
- </Card>
- </div>
- );
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+                Đang tải dữ liệu...
+              </p>
+            </div>
+          ) : companies.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <Building2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
+                {searchQuery || statusFilter !== "ALL"
+                  ? "Không tìm thấy công ty nào phù hợp."
+                  : "Chưa có công ty nào trong hệ thống."}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
+                  <tr>
+                    <th className="px-6 py-4 font-black">Mã CT</th>
+                    <th className="px-6 py-4 font-black">Tên công ty</th>
+                    <th className="px-6 py-4 font-black">Người liên hệ</th>
+                    <th className="px-6 py-4 font-black">Điện thoại</th>
+                    <th className="px-6 py-4 font-black">Email</th>
+                    <th className="px-6 py-4 font-black">Ngày tạo</th>
+                    <th className="px-6 py-4 font-black">Trạng thái</th>
+                    <th className="px-6 py-4 font-black text-right">
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
+                  {companies.map((comp) => (
+                    <tr
+                      key={comp._id}
+                      className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
+                        {comp.companyCode}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
+                        {comp.companyName}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {comp.contactPerson}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {comp.contactPhone}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {comp.email}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {comp.createdAt
+                          ? new Date(comp.createdAt).toLocaleDateString("vi-VN")
+                          : "-"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border ${
+                            comp.status === "Active"
+                              ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
+                              : comp.status === "Suspended"
+                                ? "bg-[#f3727f]/10 text-[#f3727f] border-[#f3727f]/20"
+                                : "bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]"
+                          }`}
+                        >
+                          {comp.status === "Active"
+                            ? "Hoạt động"
+                            : comp.status === "Suspended"
+                              ? "Đình chỉ"
+                              : "Ngừng HĐ"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {comp.status === "Suspended" && (
+                            <Button
+                              onClick={() =>
+                                handleUpdateStatus(comp._id, "Active")
+                              }
+                              className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
+                            >
+                              Kích hoạt
+                            </Button>
+                          )}
+                          {comp.status === "Active" && (
+                            <Button
+                              onClick={() =>
+                                handleUpdateStatus(comp._id, "Suspended")
+                              }
+                              className="bg-[#f59e0b]/10 hover:bg-[#f59e0b] text-[#f59e0b] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
+                            >
+                              Đình chỉ
+                            </Button>
+                          )}
+                          <Link href={`/admin/companies/edit/${comp._id}`}>
+                            <Button
+                              className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                              title="Chỉnh sửa"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          </Link>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                                title="Xóa"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
+                                  Xóa công ty này?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
+                                  Công ty{" "}
+                                  <span className="text-[#121212] dark:text-[#ffffff]">
+                                    {comp.companyName}
+                                  </span>{" "}
+                                  sẽ được đưa vào thùng rác.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">
+                                  Hủy
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteCompany(comp._id)}
+                                  className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider"
+                                >
+                                  Đồng ý
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {totalPages > 1 && companies.length > 0 && (
+            <div className="p-4 border-t border-[#e5e5e5] dark:border-[#272727] flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className={`rounded-[500px] font-bold ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
+                  </PaginationItem>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <PaginationItem key={i + 1}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(i + 1)}
+                        isActive={currentPage === i + 1}
+                        className={`rounded-[500px] font-bold cursor-pointer ${currentPage === i + 1 ? "bg-[#1ed760] text-[#121212] border-none hover:bg-[#1db954]" : "text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

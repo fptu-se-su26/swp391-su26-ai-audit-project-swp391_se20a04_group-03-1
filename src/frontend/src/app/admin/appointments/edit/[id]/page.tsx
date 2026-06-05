@@ -3,19 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
 import { AsyncDriverSelect } from "@/components/AsyncDriverSelect";
+import { CustomSelect } from "@/components/CustomSelect";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const TIME_SLOTS = [
   "05:00-06:00",
@@ -47,17 +43,19 @@ export default function EditAppointmentPage({
   const resolvedParams = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [appointment, setAppointment] = useState<any>(null);
   const [selectedDriverId, setSelectedDriverId] = useState("");
-  const [selectedDriver, setSelectedDriver] = useState<{id: string, name: string} | null>(null);
+  const [selectedDriver, setSelectedDriver] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [selectedDriverCompany, setSelectedDriverCompany] = useState("");
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
 
-  // Fetch data
   useEffect(() => {
     const fetchAppointment = async () => {
       try {
@@ -69,27 +67,34 @@ export default function EditAppointmentPage({
         const result = await res.json();
         if (result.code === "error") throw new Error(result.message);
 
-        // Format date for input type="date"
         if (result.data.scheduledDate) {
           result.data.scheduledDate = new Date(result.data.scheduledDate)
             .toISOString()
             .split("T")[0];
         }
         setAppointment(result.data);
+        if (result.data.timeSlot) {
+          setSelectedTimeSlot(result.data.timeSlot);
+        }
+        if (result.data.status) {
+          setSelectedStatus(result.data.status);
+        }
         if (result.data.driverId) {
-            setSelectedDriverId(result.data.driverId._id || "");
-            setSelectedDriver({
-                id: result.data.driverId._id || "", 
-                name: `[${result.data.driverId.driverId}] ${result.data.driverId.driverName} - ${result.data.driverId.driverPhone || ''}`
-            });
-            if (result.data.driverId.companyId) {
-                setSelectedDriverCompany(result.data.driverId.companyId.companyName);
-            } else {
-                setSelectedDriverCompany("Không thuộc công ty nào");
-            }
+          setSelectedDriverId(result.data.driverId._id || "");
+          setSelectedDriver({
+            id: result.data.driverId._id || "",
+            name: `[${result.data.driverId.driverId}] ${result.data.driverId.driverName} - ${result.data.driverId.driverPhone || ""}`,
+          });
+          if (result.data.driverId.companyId) {
+            setSelectedDriverCompany(
+              result.data.driverId.companyId.companyName,
+            );
+          } else {
+            setSelectedDriverCompany("Không thuộc công ty nào");
+          }
         }
       } catch (err: any) {
-        setError(err.message);
+        toast.error(err.message || "Lỗi khi tải thông tin lịch hẹn.");
       } finally {
         setLoading(false);
       }
@@ -97,53 +102,47 @@ export default function EditAppointmentPage({
     fetchAppointment();
   }, [resolvedParams.id]);
 
-  // Setup validation
   useEffect(() => {
     if (loading || !formRef.current) return;
 
-    // Them truong status vao
     const validator = new JustValidate(formRef.current, {
       errorFieldCssClass:
-        "border-red-500 focus:ring-red-500 focus:border-red-500",
-      errorLabelCssClass: "text-red-500 text-xs mt-1 block font-medium",
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
 
     validator
       .addField("#truckPlate", [
-        { rule: "required", errorMessage: "Biển số xe là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
           value: /^([0-9]{2})([A-Z]{1})([0-9]{5})$/,
-          errorMessage: "Định dạng biển số không đúng (VD: 15C12345).",
+          errorMessage: "Định dạng sai (VD: 15C12345).",
         },
       ])
-      
       .addField("#containerNo", [
-        { rule: "required", errorMessage: "Mã container là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
           value: /^[A-Z]{4}[0-9]{7}$/i,
-          errorMessage: "Mã container không đúng chuẩn ISO 6346.",
+          errorMessage: "Sai chuẩn ISO (VD: MSCU1234567).",
         },
       ])
       .addField("#scheduledDate", [
-        { rule: "required", errorMessage: "Ngày hẹn là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
       ])
-      .addField("#timeSlot", [
-        { rule: "required", errorMessage: "Khung giờ là bắt buộc." },
-      ])
-      .addField("#status", [
-        { rule: "required", errorMessage: "Trạng thái là bắt buộc." },
-      ])
+      .addField("#timeSlot", [{ rule: "required", errorMessage: "Bắt buộc." }])
+      .addField("#status", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
         const driverIdStr = formData.get("driverId")?.toString().trim();
         if (!driverIdStr) {
-            setError("Vui lòng chọn tài xế.");
-            return;
+          toast.error("Vui lòng chọn tài xế.");
+          return;
         }
         const payload = {
           id: formData.get("id")?.toString(),
@@ -159,13 +158,12 @@ export default function EditAppointmentPage({
             .trim()
             .toUpperCase(),
           scheduledDate: formData.get("scheduledDate")?.toString(),
-          timeSlot: formData.get("timeSlot")?.toString(),
-          status: formData.get("status")?.toString(),
+          timeSlot: selectedTimeSlot,
+          status: selectedStatus,
         };
 
+        const loadingToast = toast.loading("Đang cập nhật lịch hẹn...");
         try {
-          setError(null);
-          setSuccessMsg(null);
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/appointments/edit`,
             {
@@ -181,10 +179,12 @@ export default function EditAppointmentPage({
             throw new Error(result.message || "Lỗi khi cập nhật lịch hẹn.");
           }
 
-          setSuccessMsg("Cập nhật lịch hẹn thành công!");
-          setTimeout(() => router.push("/admin/appointments"), 1500);
+          toast.success("Cập nhật lịch hẹn thành công!", { id: loadingToast });
+          setTimeout(() => router.push("/admin/appointments"), 1000);
         } catch (err: any) {
-          setError(err.message || "Không thể lưu lịch hẹn vào hệ thống.");
+          toast.error(err.message || "Không thể lưu lịch hẹn vào hệ thống.", {
+            id: loadingToast,
+          });
         }
       });
 
@@ -194,149 +194,194 @@ export default function EditAppointmentPage({
         validatorRef.current = null;
       }
     };
-  }, [loading, router]);
+  }, [loading, router, selectedTimeSlot, selectedStatus]);
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-slate-500">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-2" />
-        <p>Đang tải thông tin lịch hẹn...</p>
+      <div className="flex flex-col items-center justify-center py-20 text-[#666666] dark:text-[#b3b3b3]">
+        <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
+        <p className="font-bold uppercase tracking-wider text-[12px]">
+          Đang tải thông tin lịch hẹn...
+        </p>
       </div>
     );
   }
 
-  if (!appointment && error) {
-    return <div className="p-4 text-red-700 bg-red-50 rounded-lg">{error}</div>;
+  if (!appointment) {
+    return null; // Error handled by toast
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/admin/appointments">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
             Chỉnh sửa lịch hẹn
           </h1>
-          <p className="text-slate-600">
-            Cập nhật thông tin cho lịch hẹn biển số {appointment.truckPlate}
+          <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
+            Cập nhật thông tin cho xe{" "}
+            <span className="text-[#1ed760] font-bold">
+              {appointment.truckPlate}
+            </span>
           </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/appointments">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Quay lại danh sách
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200/50">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 rounded-lg border border-green-200/50">
-          <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
-      <Card className="border border-slate-200 shadow-lg">
-        <CardHeader className="bg-slate-50/50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <CardTitle>Thông tin chi tiết</CardTitle>
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
+          <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+            Thông tin chi tiết
+          </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-8">
           <form ref={formRef} id="appointmentEditForm" className="space-y-6">
             <input type="hidden" name="id" value={appointment._id} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="truckPlate">Biển số xe</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label
+                  htmlFor="truckPlate"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Biển số xe
+                </Label>
                 <Input
                   id="truckPlate"
                   name="truckPlate"
                   defaultValue={appointment.truckPlate}
-                  className="uppercase"
+                  placeholder="VD: 15C12345"
+                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="containerNo">Mã container</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="containerNo"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Mã container
+                </Label>
                 <Input
                   id="containerNo"
                   name="containerNo"
                   defaultValue={appointment.containerNo}
-                  className="uppercase"
+                  placeholder="VD: MSCU1234567"
+                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="driverId">Chọn tài xế</Label>
-                <AsyncDriverSelect 
-                  value={selectedDriverId}
-                  onChange={(id, name) => {
+              <div className="space-y-3">
+                <Label
+                  htmlFor="driverId"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Tài xế (Tìm kiếm)
+                </Label>
+                <div className="rounded-[4px]">
+                  <AsyncDriverSelect
+                    value={selectedDriverId}
+                    onChange={(id, name) => {
                       setSelectedDriverId(id);
-                      setSelectedDriver({id, name});
-                  }}
-                  onCompanyChange={setSelectedDriverCompany}
-                  selectedDriver={selectedDriver}
-                />
+                      setSelectedDriver({ id, name });
+                    }}
+                    onCompanyChange={setSelectedDriverCompany}
+                    selectedDriver={selectedDriver}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Công ty</Label>
+              <div className="space-y-3">
+                <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Công ty
+                </Label>
                 <Input
                   readOnly
                   value={selectedDriverCompany}
-                  placeholder="Sẽ tự động hiển thị khi chọn tài xế"
-                  className="bg-slate-50 dark:bg-slate-900/50 cursor-not-allowed"
+                  placeholder="Tự động điền theo tài xế"
+                  className="bg-[#eeeeee] dark:bg-[#1f1f1f] border border-[#d6dbde] dark:border-[#272727] text-[#666666] dark:text-[#999999] cursor-not-allowed font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="scheduledDate">Ngày hẹn vào</Label>
+              <div className="space-y-3">
+                <Label
+                  htmlFor="scheduledDate"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Ngày hẹn
+                </Label>
                 <Input
                   id="scheduledDate"
                   name="scheduledDate"
                   type="date"
                   defaultValue={appointment.scheduledDate}
+                  min={new Date().toISOString().split("T")[0]}
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] dark:[color-scheme:dark] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors cursor-pointer"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="timeSlot">Khung giờ đỗ</Label>
-                <select
-                  id="timeSlot"
-                  name="timeSlot"
-                  defaultValue={appointment.timeSlot}
-                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:focus-visible:ring-slate-300"
+              <div className="space-y-3 relative">
+                <Label
+                  htmlFor="timeSlot"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                 >
-                  <option value="">-- Chọn khung giờ --</option>
-                  {TIME_SLOTS.map((slot) => (
-                    <option key={slot} value={slot}>
-                      {slot}
-                    </option>
-                  ))}
-                </select>
+                  Khung giờ
+                </Label>
+                <div className="relative">
+                  <CustomSelect
+                    id="timeSlot"
+                    name="timeSlot"
+                    value={selectedTimeSlot}
+                    onChange={setSelectedTimeSlot}
+                    options={TIME_SLOTS.map((slot) => ({
+                      value: slot,
+                      label: slot,
+                    }))}
+                    placeholder="-- Chọn --"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Trạng thái</Label>
-                <select
-                  id="status"
-                  name="status"
-                  defaultValue={appointment.status}
-                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:focus-visible:ring-slate-300"
+              <div className="space-y-3 relative">
+                <Label
+                  htmlFor="status"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                 >
-                  <option value="">-- Chọn trạng thái --</option>
-                  <option value="Pending">Chờ xử lý</option>
-                  <option value="Confirmed">Đã xác nhận</option>
-                  <option value="Cancelled">Đã hủy</option>
-                </select>
+                  Trạng thái
+                </Label>
+                <div className="relative">
+                  <CustomSelect
+                    id="status"
+                    name="status"
+                    value={selectedStatus}
+                    onChange={setSelectedStatus}
+                    options={[
+                      { value: "Pending", label: "Chờ xử lý" },
+                      { value: "Confirmed", label: "Đã xác nhận" },
+                      { value: "Cancelled", label: "Đã Hủy" },
+                    ]}
+                    placeholder="-- Chọn trạng thái --"
+                  />
+                </div>
               </div>
             </div>
-            <div className="flex gap-2 justify-end border-t border-slate-100 pt-4">
+            <div className="flex gap-4 justify-end pt-8">
               <Link href="/admin/appointments">
-                <Button type="button" variant="outline">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider px-8"
+                >
                   Hủy bỏ
                 </Button>
               </Link>
               <Button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
               >
                 Lưu thay đổi
               </Button>

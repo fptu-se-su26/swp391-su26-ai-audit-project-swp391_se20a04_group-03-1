@@ -1,400 +1,388 @@
 "use client";
 
-import { Button } from"@/components/ui/button";
-import { Input } from"@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
- Card,
- CardContent,
- CardHeader,
- CardTitle,
-} from"@/components/ui/card";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
- Trash2,
- Building2,
- Loader2,
- AlertCircle,
- CheckCircle,
- Search,
- ArrowLeft,
- RefreshCcw,
-} from"lucide-react";
-import { useState, useEffect, useCallback } from"react";
-import Link from"next/link";
+  Trash2,
+  Building2,
+  Loader2,
+  Search,
+  ArrowLeft,
+  RefreshCcw,
+} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
- AlertDialog,
- AlertDialogAction,
- AlertDialogCancel,
- AlertDialogContent,
- AlertDialogDescription,
- AlertDialogFooter,
- AlertDialogHeader,
- AlertDialogTitle,
- AlertDialogTrigger,
-} from"@/components/ui/alert-dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
- Pagination,
- PaginationContent,
- PaginationItem,
- PaginationLink,
- PaginationNext,
- PaginationPrevious,
-} from"@/components/ui/pagination";
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { CustomSelect } from "@/components/CustomSelect";
+import toast from "react-hot-toast";
 
 interface Company {
- _id: string;
- companyCode: string;
- companyName: string;
- contactPerson: string;
- contactPhone: string;
- email: string;
- status:"Active" |"Inactive" |"Suspended";
- createdAt: string;
+  _id: string;
+  companyCode: string;
+  companyName: string;
+  contactPerson: string;
+  contactPhone: string;
+  email: string;
+  status: "Active" | "Inactive" | "Suspended";
+  createdAt: string;
 }
 
 export default function TrashCompaniesPage() {
- const [companies, setCompanies] = useState<Company[]>([]);
- const [loading, setLoading] = useState(true);
- const [error, setError] = useState<string | null>(null);
- const [successMsg, setSuccessMsg] = useState<string | null>(null);
- const [searchQuery, setSearchQuery] = useState("");
- const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
- const [statusFilter, setStatusFilter] = useState("ALL");
- const [currentPage, setCurrentPage] = useState(1);
- const [totalPages, setTotalPages] = useState(1);
- const ITEMS_PER_PAGE = 10;
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
- useEffect(() => {
- const timer = setTimeout(() => {
- setDebouncedSearchQuery(searchQuery);
- }, 500);
- return () => clearTimeout(timer);
- }, [searchQuery]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
- const fetchCompanies = useCallback(async () => {
- setLoading(true);
- setError(null);
- try {
- const params = new URLSearchParams();
- if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
- if (statusFilter && statusFilter !=="ALL") params.append("status", statusFilter);
- params.append("page", currentPage.toString());
- params.append("limit", ITEMS_PER_PAGE.toString());
+  const fetchCompanies = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
+      if (statusFilter && statusFilter !== "ALL")
+        params.append("status", statusFilter);
+      params.append("page", currentPage.toString());
+      params.append("limit", ITEMS_PER_PAGE.toString());
 
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/trash?${params.toString()}`,
- { credentials:"include" },
- );
- const data = await res.json();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/companies/trash?${params.toString()}`,
+        { credentials: "include" },
+      );
+      const data = await res.json();
 
- if (data && data.code ==="error") {
- throw new Error(data.message ||"Lỗi từ máy chủ backend.");
- }
+      if (data && data.code === "error") {
+        throw new Error(data.message || "Lỗi từ máy chủ backend.");
+      }
 
- const companyArray =
- data && data.data ? data.data : Array.isArray(data) ? data : [];
- setCompanies(companyArray);
- 
- if (data && data.pagination) {
- setTotalPages(data.pagination.totalPages);
- } else {
- setTotalPages(1);
- }
- } catch (err: any) {
- setError(err.message ||"Đã xảy ra lỗi khi tải danh sách thùng rác.");
- } finally {
- setLoading(false);
- }
- }, [debouncedSearchQuery, statusFilter, currentPage]);
+      const companyArray =
+        data && data.data ? data.data : Array.isArray(data) ? data : [];
+      setCompanies(companyArray);
 
- useEffect(() => {
- fetchCompanies();
- }, [fetchCompanies]);
+      if (data && data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+      } else {
+        setTotalPages(1);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearchQuery, statusFilter, currentPage]);
 
- useEffect(() => {
- setCurrentPage(1);
- }, [debouncedSearchQuery, statusFilter]);
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
- const handleRestoreCompany = async (id: string) => {
- try {
- setError(null);
- setSuccessMsg(null);
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/restore/${id}`,
- {
- method:"PATCH",
- credentials:"include",
- },
- );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery, statusFilter]);
 
- const result = await res.json();
- if (!res.ok || result.code ==="error") {
- throw new Error(result.message ||"Lỗi khi khôi phục công ty.");
- }
+  const handleRestoreCompany = async (id: string) => {
+    const loadingToast = toast.loading("Đang khôi phục...");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/companies/restore/${id}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+        },
+      );
 
- setSuccessMsg("Khôi phục công ty thành công.");
- fetchCompanies();
- } catch (err: any) {
- setError(err.message ||"Không thể khôi phục công ty.");
- }
- };
+      const result = await res.json();
 
- const handleHardDeleteCompany = async (id: string) => {
- try {
- setError(null);
- setSuccessMsg(null);
- const res = await fetch(
- `${process.env.NEXT_PUBLIC_API_URL}/companies/hard-delete/${id}`,
- {
- method:"DELETE",
- credentials:"include",
- },
- );
+      if (!res.ok || result.code === "error") {
+        throw new Error(result.message || "Lỗi khi khôi phục công ty.");
+      }
 
- const result = await res.json();
- if (!res.ok || result.code ==="error") {
- throw new Error(result.message ||"Lỗi khi xóa vĩnh viễn.");
- }
+      toast.success("Khôi phục công ty thành công.", { id: loadingToast });
+      fetchCompanies();
+    } catch (err: any) {
+      toast.error(err.message || "Không thể khôi phục công ty.", { id: loadingToast });
+    }
+  };
 
- setSuccessMsg("Đã xóa vĩnh viễn công ty.");
- fetchCompanies();
- } catch (err: any) {
- setError(err.message ||"Không thể xóa vĩnh viễn công ty.");
- }
- };
+  const handleHardDeleteCompany = async (id: string) => {
+    const loadingToast = toast.loading("Đang xóa vĩnh viễn...");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/companies/hard-delete/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
- return (
- <div className="space-y-6">
- <div className="flex items-center justify-between">
- <div>
- <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
- Thùng rác - Công ty
- </h1>
- <p className="text-slate-600 dark:text-slate-400">
- Các công ty đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
- </p>
- </div>
- <div className="flex items-center gap-3">
- <Link href="/admin/companies">
- <Button variant="outline" className="gap-2 text-slate-600 hover:text-slate-900 transition-colors dark:text-slate-300 dark:border-slate-800 dark:hover:bg-slate-800 dark:hover:text-white">
- <ArrowLeft className="h-4 w-4" />
- Quay lại danh sách
- </Button>
- </Link>
- </div>
- </div>
+      const result = await res.json();
 
- {error && (
- <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg dark:bg-red-900/10 dark:text-red-400 border border-red-200/50 dark:border-red-900/30">
- <AlertCircle className="h-4 w-4 flex-shrink-0" />
- <span>{error}</span>
- </div>
- )}
+      if (!res.ok || result.code === "error") {
+        throw new Error(result.message || "Lỗi khi xóa vĩnh viễn.");
+      }
 
- {successMsg && (
- <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 rounded-lg dark:bg-green-900/10 dark:text-green-400 border border-green-200/50 dark:border-green-900/30">
- <CheckCircle className="h-4 w-4 flex-shrink-0" />
- <span>{successMsg}</span>
- </div>
- )}
+      toast.success("Đã xóa vĩnh viễn công ty.", { id: loadingToast });
+      fetchCompanies();
+    } catch (err: any) {
+      toast.error(err.message || "Không thể xóa vĩnh viễn công ty.", { id: loadingToast });
+    }
+  };
 
- <Card className="border border-red-200 shadow-md dark:border-red-900/30">
- <CardHeader className="bg-red-50/50 border-b border-red-100 dark:bg-red-900/10 dark:border-red-900/20">
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
- <div>
- <CardTitle className="text-red-700 dark:text-red-400">Danh sách công ty đã xóa</CardTitle>
- </div>
- </div>
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+            Thùng rác - Công ty
+          </h1>
+          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+            Các công ty đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/companies">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Quay lại danh sách
+            </Button>
+          </Link>
+        </div>
+      </div>
 
- <div className="flex flex-col md:flex-row items-center gap-3">
- <div className="relative w-full md:w-96">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
- <Input
- placeholder="Tìm mã, tên công ty, số điện thoại..."
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- className="pl-9 bg-white w-full border-red-200 focus-visible:ring-red-500 dark:bg-slate-950 dark:border-red-900/50 dark:text-slate-100 dark:placeholder:text-slate-600"
- />
- </div>
- <div className="flex w-full md:w-auto items-center gap-3">
- <select
- value={statusFilter}
- onChange={(e) => setStatusFilter(e.target.value)}
- className="flex h-10 w-full md:w-40 rounded-md border border-red-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:bg-slate-950 dark:border-red-900/50 dark:text-slate-100 dark:focus-visible:ring-red-400"
- >
- <option value="ALL">Tất cả trạng thái</option>
- <option value="Active">Đang hoạt động</option>
- <option value="Suspended">Đình chỉ</option>
- <option value="Inactive">Ngừng hoạt động</option>
- </select>
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible border-t-4 border-t-[#f3727f]">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+            <div>
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+                Danh sách công ty đã xóa
+              </CardTitle>
+            </div>
 
- <Button
- variant="outline"
- size="sm"
- onClick={() => {
- setSearchQuery("");
- setDebouncedSearchQuery("");
- setStatusFilter("ALL");
- }}
- disabled={!searchQuery && statusFilter ==="ALL"}
- className="whitespace-nowrap border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/50"
- >
- Xóa bộ lọc
- </Button>
- </div>
- </div>
- </CardHeader>
- <CardContent className="p-0">
- {loading ? (
- <div className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
- <Loader2 className="h-8 w-8 animate-spin text-red-600 dark:text-red-500 mb-2" />
- <p>Đang tải danh sách thùng rác...</p>
- </div>
- ) : companies.length === 0 ? (
- <div className="text-center py-12 text-slate-500 dark:text-slate-400">
- <Trash2 className="h-12 w-12 mx-auto text-red-300 dark:text-red-900/50 mb-2" />
- <p>
- {searchQuery || statusFilter !=="ALL"
- ?"Không tìm thấy công ty nào phù hợp trong thùng rác."
- :"Thùng rác trống."}
- </p>
- </div>
- ) : (
- <div className="overflow-x-auto">
- <table className="w-full text-sm text-left">
- <thead className="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900/50 dark:text-slate-400">
- <tr>
- <th className="px-4 py-3 font-medium text-left font-medium">Mã CT</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Tên công ty</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Người liên hệ</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Điện thoại</th>
- <th className="px-4 py-3 font-medium text-left font-medium">Trạng thái</th>
- <th className="px-4 py-3 font-medium text-right font-medium">Hành động</th>
- </tr>
- </thead>
- <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
- {companies.map((comp) => (
- <tr
- key={comp._id}
- className="bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900/50 transition-colors"
- >
- <td className="px-4 py-3 font-medium font-mono text-slate-900 dark:text-slate-100">
- {comp.companyCode}
- </td>
- <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">
- {comp.companyName}
- </td>
- <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
- {comp.contactPerson}
- </td>
- <td className="px-4 py-3 text-slate-500 font-mono text-xs dark:text-slate-400">
- {comp.contactPhone}
- </td>
- <td className="px-4 py-3">
- <span
- className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
- comp.status ==="Active"
- ?"bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
- : comp.status ==="Suspended"
- ?"bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
- :"bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
- }`}
- >
- {comp.status ==="Active"
- ?"Hoạt động"
- : comp.status ==="Suspended"
- ?"Đình chỉ"
- :"Ngừng HĐ"}
- </span>
- </td>
- <td className="px-4 py-3 text-right">
- <div className="flex items-center justify-end gap-2">
- <Button
- onClick={() => handleRestoreCompany(comp._id)}
- variant="outline"
- size="sm"
- className="text-xs text-blue-600 hover:bg-blue-50 border-blue-200/50 dark:border-blue-900/50 dark:text-blue-500 dark:hover:bg-blue-950/50"
- title="Khôi phục"
- >
- <RefreshCcw className="h-4 w-4 mr-1" />
- Khôi phục
- </Button>
- 
- <AlertDialog>
- <AlertDialogTrigger asChild>
- <Button
- variant="outline"
- size="sm"
- className="text-xs text-red-600 hover:bg-red-50 border-red-200/50 dark:border-red-900/50 dark:text-red-500 dark:hover:bg-red-950/50"
- title="Xóa vĩnh viễn"
- >
- <Trash2 className="h-4 w-4" />
- </Button>
- </AlertDialogTrigger>
- <AlertDialogContent className="dark:bg-slate-900 dark:border-slate-800">
- <AlertDialogHeader>
- <AlertDialogTitle className="dark:text-slate-100">
- Xác nhận xóa vĩnh viễn?
- </AlertDialogTitle>
- <AlertDialogDescription className="dark:text-slate-400">
- Hành động này không thể hoàn tác. Công ty{""}
- <span className="font-semibold text-slate-900 dark:text-slate-200">
- {comp.companyName}
- </span>{""}
- sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
- </AlertDialogDescription>
- </AlertDialogHeader>
- <AlertDialogFooter>
- <AlertDialogCancel className="dark:bg-slate-800 dark:text-slate-200 dark:border-slate-800 dark:hover:bg-slate-700">Hủy</AlertDialogCancel>
- <AlertDialogAction
- onClick={() => handleHardDeleteCompany(comp._id)}
- className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
- >
- Xóa vĩnh viễn
- </AlertDialogAction>
- </AlertDialogFooter>
- </AlertDialogContent>
- </AlertDialog>
- </div>
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- )}
- {totalPages > 1 && companies.length > 0 && (
- <div className="py-4 border-t border-red-100 dark:border-red-900/20">
- <Pagination>
- <PaginationContent>
- <PaginationItem>
- <PaginationPrevious
- onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
- className={currentPage === 1 ?"pointer-events-none opacity-50" :"cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800"}
- />
- </PaginationItem>
- {[...Array(totalPages)].map((_, i) => (
- <PaginationItem key={i + 1}>
- <PaginationLink
- onClick={() => setCurrentPage(i + 1)}
- isActive={currentPage === i + 1}
- className={currentPage === i + 1 ?"cursor-pointer dark:bg-slate-800 dark:text-slate-100" :"cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800"}
- >
- {i + 1}
- </PaginationLink>
- </PaginationItem>
- ))}
- <PaginationItem>
- <PaginationNext
- onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
- className={currentPage === totalPages ?"pointer-events-none opacity-50" :"cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800"}
- />
- </PaginationItem>
- </PaginationContent>
- </Pagination>
- </div>
- )}
- </CardContent>
- </Card>
- </div>
- );
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999999]" />
+                <Input
+                  placeholder="Tìm mã, tên công ty, số điện thoại..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                />
+              </div>
+
+              <div className="relative z-10 w-[200px]">
+                <CustomSelect
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  options={[
+                    { value: "ALL", label: "Tất cả trạng thái" },
+                    { value: "Active", label: "Đang hoạt động" },
+                    { value: "Suspended", label: "Đình chỉ" },
+                    { value: "Inactive", label: "Ngừng hoạt động" },
+                  ]}
+                  placeholder="Mọi trạng thái"
+                />
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  setDebouncedSearchQuery("");
+                  setStatusFilter("ALL");
+                }}
+                disabled={!searchQuery && statusFilter === "ALL"}
+                className="bg-[#eeeeee] hover:bg-[#e5e5e5] dark:bg-[#272727] dark:hover:bg-[#333333] text-[#121212] dark:text-[#ffffff] rounded-[500px] font-bold h-10 px-4 uppercase tracking-wider text-[12px] border-none"
+              >
+                Xóa lọc
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-10 w-10 animate-spin text-[#f3727f] mb-4" />
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+                Đang tải dữ liệu...
+              </p>
+            </div>
+          ) : companies.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
+                {searchQuery || statusFilter !== "ALL"
+                  ? "Không tìm thấy công ty nào phù hợp trong thùng rác."
+                  : "Thùng rác trống."}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
+                  <tr>
+                    <th className="px-6 py-4 font-black">Mã CT</th>
+                    <th className="px-6 py-4 font-black">Tên công ty</th>
+                    <th className="px-6 py-4 font-black">Người liên hệ</th>
+                    <th className="px-6 py-4 font-black">Điện thoại</th>
+                    <th className="px-6 py-4 font-black">Trạng thái</th>
+                    <th className="px-6 py-4 font-black text-right">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
+                  {companies.map((comp) => (
+                    <tr
+                      key={comp._id}
+                      className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
+                        {comp.companyCode}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
+                        {comp.companyName}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {comp.contactPerson}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {comp.contactPhone}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border ${
+                            comp.status === "Active"
+                              ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
+                              : comp.status === "Suspended"
+                              ? "bg-[#f3727f]/10 text-[#f3727f] border-[#f3727f]/20"
+                              : "bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]"
+                          }`}
+                        >
+                          {comp.status === "Active"
+                            ? "Hoạt động"
+                            : comp.status === "Suspended"
+                            ? "Đình chỉ"
+                            : "Ngừng HĐ"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            onClick={() => handleRestoreCompany(comp._id)}
+                            className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
+                            title="Khôi phục"
+                          >
+                            <RefreshCcw className="h-3 w-3 mr-1" />
+                            Khôi phục
+                          </Button>
+
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                className="bg-[#f3727f]/10 hover:bg-[#f3727f] hover:text-[#121212] text-[#f3727f] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                                title="Xóa vĩnh viễn"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
+                                  Xác nhận xóa vĩnh viễn?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
+                                  Hành động này không thể hoàn tác. Công ty <span className="text-[#121212] dark:text-[#ffffff]">{comp.companyName}</span> sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">
+                                  Hủy
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleHardDeleteCompany(comp._id)}
+                                  className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider"
+                                >
+                                  Xóa vĩnh viễn
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {totalPages > 1 && companies.length > 0 && (
+            <div className="p-4 border-t border-[#e5e5e5] dark:border-[#272727] flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className={`rounded-[500px] font-bold ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
+                  </PaginationItem>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <PaginationItem key={i + 1}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(i + 1)}
+                        isActive={currentPage === i + 1}
+                        className={`rounded-[500px] font-bold cursor-pointer ${currentPage === i + 1 ? "bg-[#1ed760] text-[#121212] border-none hover:bg-[#1db954]" : "text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
