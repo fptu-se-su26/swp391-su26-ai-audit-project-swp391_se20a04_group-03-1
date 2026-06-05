@@ -1532,6 +1532,202 @@ Kinh nghiệm rút ra: Việc sử dụng Socket.IO giúp hệ thống phản h�
 ```
 
 ---
+### Prompt số 12
+
+| Nội dung            | Thông tin                           |
+| ------------------- | ----------------------------------- |
+| Ngày sử dụng        | ...                                 |
+| Công cụ AI          | Antigravity                         |
+| Mục đích            | Phát triển tính năng quản lí tài xế |
+| Phần việc liên quan | Coding                              |
+| Mức độ sử dụng      | Hỏi hướng dẫn                       |
+| Phần liên quan      | Driver Management                   |
+
+#### 12.1. Prompt nguyên văn
+
+```text
+Bây giờ, tôi muốn triển khai chi tiết dự án hơn bằng việc thêm vào model Tài xế:
+
+Model driver có các trường sau:
+- driverId
+- companyId
+- driverName
+- driverPhone
+- isDeleted
+- createdAt
+- updatedAt
+
+Tạo trang quản lí tài xế có đầy đủ các chức năng CRUD và các trang con như edit, trash,... tương tự như quản lí công ty và quản lí appointment.
+```
+
+#### 12.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các chức năng quản lí công ty và lịch hẹn, nhóm tiếp tục mở rộng hệ thống bằng việc xây dựng phân hệ quản lí tài xế.
+
+Mục tiêu là quản lí tập trung thông tin tài xế thuộc các công ty vận tải, đồng thời đảm bảo giao diện và nghiệp vụ thống nhất với các module đã triển khai trước đó.
+```
+
+#### 12.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng đầy đủ module Driver Management bao gồm Backend và Frontend.
+
+Các chức năng chính:
+- Tạo model Driver.
+- Xây dựng API CRUD tài xế.
+- Hỗ trợ tìm kiếm và phân trang.
+- Soft Delete và Hard Delete.
+- Khôi phục dữ liệu từ thùng rác.
+- Xây dựng giao diện danh sách tài xế.
+- Xây dựng giao diện thêm mới và chỉnh sửa tài xế.
+```
+
+#### 12.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế model Driver.
+- Xây dựng API CRUD cho tài xế.
+- Tạo giao diện danh sách tài xế.
+- Tạo giao diện thêm mới và chỉnh sửa tài xế.
+- Xây dựng chức năng thùng rác và khôi phục dữ liệu.
+- Tích hợp tìm kiếm và phân trang.
+```
+
+#### 12.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh giao diện để đồng bộ với module Company và Appointment.
+- Tối ưu các bộ lọc tìm kiếm và phân trang.
+- Kiểm thử lại toàn bộ luồng CRUD để đảm bảo dữ liệu hoạt động ổn định.
+- Chuẩn bị cấu trúc để liên kết Driver với các module khác trong tương lai.
+```
+
+#### 12.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+#### 12.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                                      |
+| File liên quan        | `src/backend/models/driver.model.ts`, `src/backend/controllers/drivers.controller.ts`, `src/frontend/src/app/admin/drivers/page.tsx` |
+| Screenshot            | Trang quản lí tài xế                                                                                                                 |
+| Kết quả chạy/test     | CRUD tài xế hoạt động ổn định                                                                                                        |
+| Link tài liệu/báo cáo |                                                                                                                                      |
+| Ghi chú khác          |                                                                                                                                      |
+
+#### 12.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi xây dựng các module CRUD mới, việc tái sử dụng cấu trúc từ các module đã hoàn thành giúp giảm đáng kể thời gian phát triển và đảm bảo tính nhất quán của hệ thống.
+```
+### Prompt số 13
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | ...                                                     |
+| Công cụ AI          | Antigravity                                             |
+| Mục đích            | Tối ưu chức năng lựa chọn công ty trong biểu mẫu tài xế |
+| Phần việc liên quan | Coding                                                  |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                           |
+| Phần liên quan      | Driver Management                                       |
+
+#### 13.1. Prompt nguyên văn
+
+```text
+Tôi có lưu ý trong form create hay edit cho driver thì ở trường company là một thẻ select chứa danh sách công ty.
+
+Tuy nhiên tôi nghĩ sẽ có khá nhiều công ty nên nếu fetch toàn bộ dữ liệu một lần sẽ gây lag.
+
+Tôi muốn xử lí theo hướng:
+- Cho phép người dùng nhập tên công ty.
+- Dùng debounce để tìm kiếm.
+- Chuyển từ khóa thành regex để tìm công ty phù hợp.
+- Hiển thị danh sách công ty cho người dùng lựa chọn.
+
+Hoặc thay vì select truyền thống thì chỉ tải khoảng 20 công ty mỗi lần. Nếu người dùng cuộn xuống cuối danh sách thì tiếp tục tải thêm dữ liệu từ database.
+
+Hãy xử lí các tính năng này một cách mượt mà và ít lỗi nhất.
+```
+
+#### 13.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện chức năng quản lí tài xế, nhóm nhận thấy việc lựa chọn công ty bằng select truyền thống không phù hợp khi số lượng công ty tăng lên.
+
+Nhóm muốn tối ưu trải nghiệm người dùng cũng như hiệu năng hệ thống bằng cách chỉ tải dữ liệu cần thiết và hỗ trợ tìm kiếm theo thời gian thực.
+```
+
+#### 13.3. Kết quả AI trả về
+
+```text
+AI đề xuất thay thế select truyền thống bằng Async Company Select.
+
+Các chức năng chính:
+- Tìm kiếm công ty theo từ khóa.
+- Debounce để giảm số lượng request.
+- Chỉ tải dữ liệu theo nhu cầu sử dụng.
+- Hiển thị danh sách công ty dạng dropdown động.
+- Hỗ trợ tải thêm dữ liệu khi người dùng cuộn xuống cuối danh sách.
+- Tự động đóng danh sách khi người dùng nhấn ra ngoài.
+```
+
+#### 13.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế Async Company Select.
+- Tích hợp debounce cho chức năng tìm kiếm công ty.
+- Tích hợp API tìm kiếm theo từ khóa.
+- Giới hạn số lượng dữ liệu tải về mỗi lần.
+- Hỗ trợ tải thêm dữ liệu khi cuộn danh sách.
+- Cải thiện trải nghiệm người dùng khi chọn công ty.
+```
+
+#### 13.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh thời gian debounce để phù hợp với tốc độ phản hồi của hệ thống.
+- Tối ưu API tìm kiếm công ty nhằm giảm tải cho cơ sở dữ liệu.
+- Cải thiện giao diện dropdown để hiển thị rõ ràng hơn trên các màn hình có kích thước khác nhau.
+- Kiểm thử với số lượng dữ liệu lớn để đánh giá hiệu năng thực tế.
+```
+
+#### 13.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 13.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                     |
+| File liên quan        | `src/frontend/src/components/AsyncCompanySelect.tsx`, `src/frontend/src/app/admin/drivers/create/page.tsx`, `src/frontend/src/app/admin/drivers/edit/[id]/page.tsx` |
+| Screenshot            | Chức năng tìm kiếm và lựa chọn công ty                                                                                                                              |
+| Kết quả chạy/test     | Tìm kiếm công ty hoạt động mượt mà với lượng dữ liệu lớn                                                                                                            |
+| Link tài liệu/báo cáo |                                                                                                                                                                     |
+| Ghi chú khác          |                                                                                                                                                                     |
+
+#### 13.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Không phải lúc nào select truyền thống cũng phù hợp. Khi dữ liệu tăng lên, việc áp dụng debounce, lazy loading và tìm kiếm theo thời gian thực giúp cải thiện đáng kể hiệu năng và trải nghiệm người dùng.
+```
+---
 
 ## 6. Prompt quan trọng nhất
 
