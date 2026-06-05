@@ -1122,7 +1122,7 @@ Tạo trang quản lí tài xế có đầy đủ các chức năng CRUD và cá
 ```text
 Sau khi hoàn thiện các chức năng quản lí công ty và lịch hẹn, nhóm tiếp tục mở rộng hệ thống bằng việc xây dựng phân hệ quản lí tài xế.
 
-Mục tiêu là quản lí tập trung thông tin tài xế thuộc các công ty vận tải, đồng thời đảm bảo giao diện và nghiệp vụ thống nhất với các module đã triển khai trước đó.
+Mục tiêu là quản lí tập trung thông tin tài xế thuộc các công ty vận tải, đồng thời đảm bảo giao diện và nghiệp vụ thống nhất với các module đã triển khai ở trước đó.
 ```
 
 #### 12.3. Kết quả AI trả về
