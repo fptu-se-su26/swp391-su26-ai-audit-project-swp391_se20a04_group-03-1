@@ -760,9 +760,7 @@ Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt h
 | Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3 |
 | File liên quan | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,  |
 | Screenshot | (Ảnh màn hình trang dashboard) |
-| Kết quả chạy/test |Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
-Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
-Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
+| Kết quả chạy/test |Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
 | Link video demo |  |
 | Ghi chú khác | Prompt này cho phep tai xe co the su dung truc tiep nhanh chong. |
 
