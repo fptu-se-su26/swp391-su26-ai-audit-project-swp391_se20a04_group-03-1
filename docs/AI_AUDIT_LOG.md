@@ -1598,6 +1598,351 @@ Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách 
 
 ---
 
+### Lần sử dụng AI số 12
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                           |
+| Công cụ AI          | GithubCopilot, Gemini                                        |
+| Mục đích sử dụng    |Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | QR Coder Scanner                                     |
+
+#### 12.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+MTừ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 12.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Mục tiêu chính: ưu tiên quét QR nhanh (QR-first) và hiển thị Driver Pass tức thì.
+UI/UX:
+Thêm/điều chỉnh màn quét QR lớn, khung QR tập trung ở trên cùng, kích thước và padding giảm để thao tác nhanh hơn.
+Hiển thị DriverPassModal ngay khi quét hợp lệ, kèm haptics/feedback.
+Thêm toast/snackbar vị trí top-right cho thông báo đăng nhập/scan (đã mở rộng Snackbar để hỗ trợ vị trí).
+Card và block nội dung được compact (giới hạn maxWidth, giảm padding) để tránh chiếm chỗ thừa trên màn nhỏ.
+Header của ScreenShell giảm kích thước để cân bằng không gian.
+Tích hợp hoạt động:
+Liên kết chặt với auth store (điều hướng về (tabs) sau login/guest, nhận authToast để show toast).
+Quét → xử lý luồng (validate → show modal → commit) đã được nối với state hiện tại.
+File chính thay đổi: DashboardScreen.tsx, Dashboard.style.ts, DriverPassModal (component), Snackbar.tsx (vị trí), và một vài chỉnh style chung (ScreenShell.tsx).
+
+```
+
+#### 12.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện & bố cục:
+Thêm khung quét QR lớn, đặt ở vị trí nổi bật trên đầu màn hình để quét nhanh.
+Giảm padding / thu nhỏ các card và giới hạn maxWidth để giao diện compact, phù hợp màn nhỏ.
+Giảm kích thước header trong ScreenShell để nhường không gian cho QR.
+Tương tác & phản hồi:
+Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
+Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
+Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest).
+Files (chỉnh sửa chính):
+DashboardScreen.tsx — UI/flow quét QR.
+Dashboard.style.ts — compact layout, kích thước QR/card.
+ScreenShell.tsx — giảm header/padding chung.
+Snackbar.tsx — hỗ trợ vị trí top-right.
+DriverPassModal (component) — hiển thị dữ liệu sau quét.
+```
+
+#### 12.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
+Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
+```
+
+#### 12.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
+Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
+```
+
+#### 12.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [x] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 12.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           |  https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3                                                                                                         |
+| File liên quan        | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`, |
+| Screenshot            | (Ảnh màn hình trang dashboard)                                                                         |
+| Kết quả chạy/test     | Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest).                                                              |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đ Prompt này cho phep tai xe co the su dung truc tiep nhanh chong.                                                     |
+
+#### 12.8. Ghi chú thêm
+
+```text id="p7c2mv"
+```
+
+---
+
+### Lần sử dụng AI số 13
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                           |
+| Công cụ AI          | Antigravity                                          |
+| Mục đích sử dụng    | Phát triển tính năng realtime cho trang quản lý cổng |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 13.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
+
+Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
+- Biển số xe
+- Tên tài xế
+- Mã container
+- Thời gian
+- Trạng thái IN hoặc OUT
+
+Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
+
+Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
+
+Ở section Active Vehicles hiển thị:
+- Số xe đã vào
+- Số xe đã ra
+- Số xe chờ
+
+Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
+
+Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
+```
+
+#### 13.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Sau khi hoàn thiện luồng OCR và xử lý giao dịch cổng ở phía Backend, nhóm tiếp tục triển khai cơ chế cập nhật dữ liệu theo thời gian thực cho hệ thống Gate Management.
+
+Trong quá trình vận hành thực tế, nhân viên giám sát cần theo dõi liên tục các phương tiện ra vào cảng mà không phải tải lại trang hoặc thực hiện thao tác làm mới dữ liệu thủ công. Vì vậy nhóm mong muốn xây dựng một cơ chế realtime giúp mọi thay đổi được phản ánh ngay lập tức trên giao diện.
+
+Bên cạnh đó, nhóm cũng muốn hiển thị các thống kê trực quan về số lượng xe đang hoạt động tại cổng và lịch sử giao dịch mới nhất để hỗ trợ công tác điều phối và giám sát.
+```
+
+#### 13.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Antigravity đề xuất sử dụng Socket.IO để xây dựng cơ chế giao tiếp thời gian thực giữa Backend và Frontend.
+
+Các đề xuất chính bao gồm:
+- Emit dữ liệu ngay sau khi giao dịch cổng được xác thực và lưu thành công vào cơ sở dữ liệu.
+- Chuẩn hóa dữ liệu truyền lên Frontend chỉ bao gồm các trường cần thiết như biển số xe, tài xế, mã container, thời gian và trạng thái.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Tự động cập nhật thống kê Active Vehicles khi có giao dịch mới phát sinh.
+- Giảm số lượng API polling nhằm tối ưu hiệu năng hệ thống.
+- Đề xuất xây dựng khu vực Appointment Completed để quản lý các lịch hẹn đã hoàn thành.
+- Chuẩn bị sẵn kiến trúc cho các sự kiện realtime khác trong tương lai.
+```
+
+#### 13.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Nhóm đã áp dụng các đề xuất từ AI để xây dựng cơ chế realtime cho hệ thống quản lý cổng.
+
+Các nội dung đã được triển khai gồm:
+- Thiết kế và tích hợp Socket.IO cho Backend.
+- Xây dựng cơ chế emit dữ liệu sau khi phát sinh giao dịch mới.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Cập nhật số liệu Active Vehicles mà không cần tải lại trang.
+- Kết nối Socket.IO Client trên Frontend.
+- Thiết kế giao diện hiển thị dữ liệu realtime cho nhân viên vận hành.
+- Xây dựng trang Appointment Completed phục vụ quản lý lịch hẹn đã hoàn tất.
+```
+
+#### 13.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Sau khi tham khảo kết quả từ Antigravity, nhóm tiếp tục điều chỉnh và tối ưu thêm một số thành phần để phù hợp với yêu cầu vận hành thực tế.
+
+Các cải tiến bao gồm:
+- Chỉ emit các trường dữ liệu thực sự cần thiết nhằm giảm tải băng thông truyền tải.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Điều chỉnh giao diện thống kê theo nhu cầu giám sát của nhân viên vận hành.
+- Bổ sung cơ chế giới hạn số lượng bản ghi hiển thị nhằm tránh ảnh hưởng hiệu năng khi dữ liệu tăng lên.
+- Chuẩn hóa cấu trúc dữ liệu realtime giữa Backend và Frontend.
+- Chuẩn bị kiến trúc để mở rộng thêm các sự kiện realtime cho Yard Management và Computer Vision trong tương lai.
+```
+
+#### 13.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [x] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 13.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
+| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
+| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực                                                      |
+
+#### 13.8. Ghi chú thêm
+
+```text id="p7c2mv"
+Kinh nghiệm rút ra là đối với các hệ thống giám sát và vận hành thời gian thực, việc cập nhật dữ liệu ngay khi phát sinh sự kiện mang lại trải nghiệm sử dụng tốt hơn rất nhiều so với cơ chế tải lại dữ liệu định kỳ.
+
+Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách xây dựng hệ thống realtime giữa Backend và Frontend, đồng thời giảm đáng kể độ trễ trong việc hiển thị thông tin vận hành. Đây là nền tảng quan trọng để phát triển các chức năng giám sát nâng cao và tích hợp AI trong các giai đoạn tiếp theo của dự án.
+```
+
+---
+
+### Lần sử dụng AI số 14
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 30/05/2026                                           |
+| Công cụ AI          | Antigravity                                          |
+| Mục đích sử dụng    | Phát triển tính năng realtime cho trang quản lý cổng |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 14.1. Prompt đã sử dụng
+
+```text id="g2k8wn"
+Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
+
+Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
+- Biển số xe
+- Tên tài xế
+- Mã container
+- Thời gian
+- Trạng thái IN hoặc OUT
+
+Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
+
+Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
+
+Ở section Active Vehicles hiển thị:
+- Số xe đã vào
+- Số xe đã ra
+- Số xe chờ
+
+Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
+
+Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
+```
+
+#### 14.2. Bối cảnh khi viết prompt
+
+```text id="6w3f8m"
+Sau khi hoàn thiện luồng OCR và xử lý giao dịch cổng ở phía Backend, nhóm tiếp tục triển khai cơ chế cập nhật dữ liệu theo thời gian thực cho hệ thống Gate Management.
+
+Trong quá trình vận hành thực tế, nhân viên giám sát cần theo dõi liên tục các phương tiện ra vào cảng mà không phải tải lại trang hoặc thực hiện thao tác làm mới dữ liệu thủ công. Vì vậy nhóm mong muốn xây dựng một cơ chế realtime giúp mọi thay đổi được phản ánh ngay lập tức trên giao diện.
+
+Bên cạnh đó, nhóm cũng muốn hiển thị các thống kê trực quan về số lượng xe đang hoạt động tại cổng và lịch sử giao dịch mới nhất để hỗ trợ công tác điều phối và giám sát.
+```
+
+#### 14.3. Kết quả AI gợi ý
+
+```text id="m3z1kf"
+Antigravity đề xuất sử dụng Socket.IO để xây dựng cơ chế giao tiếp thời gian thực giữa Backend và Frontend.
+
+Các đề xuất chính bao gồm:
+- Emit dữ liệu ngay sau khi giao dịch cổng được xác thực và lưu thành công vào cơ sở dữ liệu.
+- Chuẩn hóa dữ liệu truyền lên Frontend chỉ bao gồm các trường cần thiết như biển số xe, tài xế, mã container, thời gian và trạng thái.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Tự động cập nhật thống kê Active Vehicles khi có giao dịch mới phát sinh.
+- Giảm số lượng API polling nhằm tối ưu hiệu năng hệ thống.
+- Đề xuất xây dựng khu vực Appointment Completed để quản lý các lịch hẹn đã hoàn thành.
+- Chuẩn bị sẵn kiến trúc cho các sự kiện realtime khác trong tương lai.
+```
+
+#### 14.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text id="x0m98t"
+Nhóm đã áp dụng các đề xuất từ AI để xây dựng cơ chế realtime cho hệ thống quản lý cổng.
+
+Các nội dung đã được triển khai gồm:
+- Thiết kế và tích hợp Socket.IO cho Backend.
+- Xây dựng cơ chế emit dữ liệu sau khi phát sinh giao dịch mới.
+- Đồng bộ dữ liệu Gate Log theo thời gian thực.
+- Cập nhật số liệu Active Vehicles mà không cần tải lại trang.
+- Kết nối Socket.IO Client trên Frontend.
+- Thiết kế giao diện hiển thị dữ liệu realtime cho nhân viên vận hành.
+- Xây dựng trang Appointment Completed phục vụ quản lý lịch hẹn đã hoàn tất.
+```
+
+#### 14.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text id="4r6u5q"
+Sau khi tham khảo kết quả từ Antigravity, nhóm tiếp tục điều chỉnh và tối ưu thêm một số thành phần để phù hợp với yêu cầu vận hành thực tế.
+
+Các cải tiến bao gồm:
+- Chỉ emit các trường dữ liệu thực sự cần thiết nhằm giảm tải băng thông truyền tải.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Điều chỉnh giao diện thống kê theo nhu cầu giám sát của nhân viên vận hành.
+- Bổ sung cơ chế giới hạn số lượng bản ghi hiển thị nhằm tránh ảnh hưởng hiệu năng khi dữ liệu tăng lên.
+- Chuẩn hóa cấu trúc dữ liệu realtime giữa Backend và Frontend.
+- Chuẩn bị kiến trúc để mở rộng thêm các sự kiện realtime cho Yard Management và Computer Vision trong tương lai.
+```
+
+#### 14.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [x] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 14.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
+| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
+| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực                                                      |
+
+#### 14.8. Ghi chú thêm
+
+```text id="p7c2mv"
+Kinh nghiệm rút ra là đối với các hệ thống giám sát và vận hành thời gian thực, việc cập nhật dữ liệu ngay khi phát sinh sự kiện mang lại trải nghiệm sử dụng tốt hơn rất nhiều so với cơ chế tải lại dữ liệu định kỳ.
+
+Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách xây dựng hệ thống realtime giữa Backend và Frontend, đồng thời giảm đáng kể độ trễ trong việc hiển thị thông tin vận hành. Đây là nền tảng quan trọng để phát triển các chức năng giám sát nâng cao và tích hợp AI trong các giai đoạn tiếp theo của dự án.
+```
+
+---
+
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
