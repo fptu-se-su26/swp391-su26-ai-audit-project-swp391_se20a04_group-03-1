@@ -693,6 +693,209 @@ AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình �
 Viết tại đây...
 ```
 
+### Lần sử dụng AI số 6
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 25/05/2026 |
+| Công cụ AI | GithubCopilot, Gemini |
+| Mục đích sử dụng | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile  |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi hướng dẫn  |
+
+#### 6.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 6.2. Kết quả AI gợi ý
+
+```text
+Mục tiêu chính: ưu tiên quét QR nhanh (QR-first) và hiển thị Driver Pass tức thì.
+UI/UX:
+Thêm/điều chỉnh màn quét QR lớn, khung QR tập trung ở trên cùng, kích thước và padding giảm để thao tác nhanh hơn.
+Hiển thị DriverPassModal ngay khi quét hợp lệ, kèm haptics/feedback.
+Thêm toast/snackbar vị trí top-right cho thông báo đăng nhập/scan (đã mở rộng Snackbar để hỗ trợ vị trí).
+Card và block nội dung được compact (giới hạn maxWidth, giảm padding) để tránh chiếm chỗ thừa trên màn nhỏ.
+Header của ScreenShell giảm kích thước để cân bằng không gian.
+Tích hợp hoạt động:
+Liên kết chặt với auth store (điều hướng về (tabs) sau login/guest, nhận authToast để show toast).
+Quét → xử lý luồng (validate → show modal → commit) đã được nối với state hiện tại.
+File chính thay đổi: DashboardScreen.tsx, Dashboard.style.ts, DriverPassModal (component), Snackbar.tsx (vị trí), và một vài chỉnh style chung (ScreenShell.tsx).
+```
+
+#### 6.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện & bố cục:
+Thêm khung quét QR lớn, đặt ở vị trí nổi bật trên đầu màn hình để quét nhanh.
+Giảm padding / thu nhỏ các card và giới hạn maxWidth để giao diện compact, phù hợp màn nhỏ.
+Giảm kích thước header trong ScreenShell để nhường không gian cho QR.
+Tương tác & phản hồi:
+Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
+Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
+Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest).
+Files (chỉnh sửa chính):
+DashboardScreen.tsx — UI/flow quét QR.
+Dashboard.style.ts — compact layout, kích thước QR/card.
+ScreenShell.tsx — giảm header/padding chung.
+Snackbar.tsx — hỗ trợ vị trí top-right.
+DriverPassModal (component) — hiển thị dữ liệu sau quét.
+```
+
+#### 6.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
+Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
+Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
+```
+
+#### 6.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,  |
+| Screenshot | (Ảnh màn hình trang dashboard) |
+| Kết quả chạy/test |Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
+Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
+Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
+| Link video demo |  |
+| Ghi chú khác | Prompt này cho phep tai xe co the su dung truc tiep nhanh chong. |
+
+#### 6.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Lần sử dụng AI số 7
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 25/05/2026 |
+| Công cụ AI | GithubCopilot, Gemini |
+| Mục đích sử dụng | Xây dựng trang lịch hẹn   |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi hướng dẫn  |
+
+#### 7.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 7.2. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 7.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 7.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 7.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
+| Screenshot | (Ảnh màn hình danh sách lịch hẹn và Thùng rác) |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng. |
+| Link video demo |  |
+| Ghi chú khác | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code. |
+
+#### 7.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Lần sử dụng AI số 8
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 25/05/2026 |
+| Công cụ AI | GithubCopilot, Gemini |
+| Mục đích sử dụng | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile  |
+| Phần việc liên quan | coding|
+| Mức độ sử dụng | Hỏi hướng dẫn  |
+
+#### 8.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 8.2. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 8.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 8.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 8.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+|---|---|
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts` |
+| Screenshot | (Ảnh màn hình danh sách lịch hẹn và Thùng rác) |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng. |
+| Link video demo |  |
+| Ghi chú khác | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code. |
+
+#### 8.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
 ---
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
