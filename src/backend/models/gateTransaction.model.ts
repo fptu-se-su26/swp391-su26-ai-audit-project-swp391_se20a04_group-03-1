@@ -1,32 +1,34 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IGateTransaction {
-  truckPlate: string;
-  driverId?: string;
-  containerNo?: string;
-  appointmentId?: string;
-  gateType: "in" | "out";
+  appointmentId?: mongoose.Types.ObjectId;
   checkInTime?: Date;
   checkOutTime?: Date;
-  status: "in" | "out";
-  ocrConfidence?: number;
+  actualContainerNo?: string;
+  gateId?: mongoose.Types.ObjectId;
   imageUrl?: string;
   isDeleted: boolean;
+  ocrConfidence?: number;
+  status?: string;
+  actualTruckPlate?: string;
+  yardId?: mongoose.Types.ObjectId;
+  providerId?: mongoose.Types.ObjectId;
 }
 
 const gateTransactionSchema = new Schema<IGateTransaction>(
   {
-    truckPlate: { type: String, required: true },
-    driverId: { type: String }, // Bổ sung sau
-    containerNo: { type: String },
-    appointmentId: { type: String },
-    gateType: { type: String, enum: ["in", "out"], required: true },
+    appointmentId: { type: Schema.Types.ObjectId, ref: "Appointment" },
     checkInTime: { type: Date },
     checkOutTime: { type: Date },
-    status: { type: String, enum: ["in", "out"], required: true },
-    ocrConfidence: { type: Number },
+    actualContainerNo: { type: String },
+    gateId: { type: Schema.Types.ObjectId, ref: "Gate" },
     imageUrl: { type: String },
     isDeleted: { type: Boolean, default: false },
+    ocrConfidence: { type: Number },
+    status: { type: String },
+    actualTruckPlate: { type: String },
+    yardId: { type: Schema.Types.ObjectId, ref: "Yard" },
+    providerId: { type: Schema.Types.ObjectId, ref: "ContainerProvider" },
   },
   { timestamps: true },
 );

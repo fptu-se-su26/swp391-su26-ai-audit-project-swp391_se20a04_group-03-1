@@ -138,7 +138,10 @@ export const appointmentsGet = async (req: Request, res: Response) => {
 export const appointmentDetailGet = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const appointment = await Appointment.findById(id).populate({ path: "driverId", populate: { path: "companyId" } });
+    const appointment = await Appointment.findById(id).populate({
+      path: "driverId",
+      populate: { path: "companyId" },
+    });
     if (!appointment) {
       return res.json({
         code: "error",

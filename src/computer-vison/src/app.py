@@ -235,9 +235,9 @@ def favicon():
 
 @app.route('/video_feed')
 def video_feed():
-    token = request.cookies.get('tokenAdmin')
-    if not token or not verify_auth(token):
-        return jsonify({"code": "error", "message": "Unauthorized"}), 401
+    # token = request.cookies.get('tokenAdmin')
+    # if not token or not verify_auth(token):
+    #     return jsonify({"code": "error", "message": "Unauthorized"}), 401
 
     import urllib.parse
     raw_url = request.args.get('rtsp_url')
@@ -525,9 +525,16 @@ def sync_cameras_worker():
                     valid_gate_ips.add(cam_ip)
                     
                     if cam_ip not in active_gate_streams:
-                        active_gate_streams[cam_ip] = {"frame_data": None, "running": True}
+                        active_gate_streams[cam_ip] = {"frame_data": None, "running": True, "gate_type": gate_type}
                         t = threading.Thread(target=gate_capture_worker, args=(cam_ip, gate_type), daemon=True)
                         t.start()
+                    else:
+                        if active_gate_streams[cam_ip].get("gate_type") != gate_type:
+                            active_gate_streams[cam_ip]["running"] = False
+                            time.sleep(0.5)
+                            active_gate_streams[cam_ip] = {"frame_data": None, "running": True, "gate_type": gate_type}
+                            t = threading.Thread(target=gate_capture_worker, args=(cam_ip, gate_type), daemon=True)
+                            t.start()
                         
                 # Stop removed gates
                 for cam_ip in list(active_gate_streams.keys()):

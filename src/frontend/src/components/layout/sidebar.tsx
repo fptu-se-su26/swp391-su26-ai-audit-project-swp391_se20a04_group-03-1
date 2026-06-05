@@ -15,6 +15,7 @@ import {
   X,
   Building2,
   IdCard,
+  Ship,
 } from "lucide-react"
 
 interface SidebarProps {
@@ -37,6 +38,11 @@ const menuItems = [
     label: "Quản lý công ty",
     href: "/admin/companies",
     icon: Building2,
+  },
+  {
+    label: "Quản lý hãng tàu",
+    href: "/admin/container-providers",
+    icon: Ship,
   },
   {
     label: "Quản lý tài xế",
