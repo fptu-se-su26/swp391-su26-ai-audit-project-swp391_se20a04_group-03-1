@@ -9,11 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CustomSelect } from "@/components/CustomSelect";
+import toast from "react-hot-toast";
 
 export default function EditCompanyPage({
   params,
@@ -23,9 +25,8 @@ export default function EditCompanyPage({
   const resolvedParams = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [company, setCompany] = useState<any>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -43,8 +44,11 @@ export default function EditCompanyPage({
         if (result.code === "error") throw new Error(result.message);
 
         setCompany(result.data);
+        if (result.data?.status) {
+          setSelectedStatus(result.data.status);
+        }
       } catch (err: any) {
-        setError(err.message);
+        toast.error(err.message || "Không thể tải dữ liệu.");
       } finally {
         setLoading(false);
       }
@@ -57,47 +61,46 @@ export default function EditCompanyPage({
     if (loading || !formRef.current) return;
 
     const validator = new JustValidate(formRef.current, {
-      errorFieldCssClass:
-        "border-red-500 focus:ring-red-500 focus:border-red-500",
-      errorLabelCssClass: "text-red-500 text-xs mt-1 block font-medium",
+      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
 
     validator
       .addField("#companyCode", [
-        { rule: "required", errorMessage: "Mã công ty là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
           value: /^[A-Z0-9-]{3,20}$/,
-          errorMessage: "Mã công ty chỉ gồm chữ in hoa, số và dấu gạch ngang.",
+          errorMessage: "Chỉ gồm chữ in hoa, số và gạch ngang.",
         },
       ])
       .addField("#companyName", [
-        { rule: "required", errorMessage: "Tên công ty là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "minLength",
           value: 3,
-          errorMessage: "Tên công ty phải từ 3 ký tự trở lên.",
+          errorMessage: "Từ 3 ký tự trở lên.",
         },
       ])
       .addField("#contactPerson", [
-        { rule: "required", errorMessage: "Tên người liên hệ là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
       ])
       .addField("#contactPhone", [
-        { rule: "required", errorMessage: "Số điện thoại là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
           value: /^(0[3|5|7|8|9])[0-9]{8}$/,
-          errorMessage: "Số điện thoại không đúng định dạng Việt Nam.",
+          errorMessage: "Số điện thoại không hợp lệ.",
         },
       ])
       .addField("#email", [
-        { rule: "required", errorMessage: "Email là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         { rule: "email", errorMessage: "Email không hợp lệ." },
       ])
       .addField("#status", [
-        { rule: "required", errorMessage: "Trạng thái là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
       ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
@@ -112,9 +115,8 @@ export default function EditCompanyPage({
           status: formData.get("status")?.toString(),
         };
 
+        const loadingToast = toast.loading("Đang lưu thay đổi...");
         try {
-          setError(null);
-          setSuccessMsg(null);
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/companies/edit`,
             {
@@ -126,14 +128,15 @@ export default function EditCompanyPage({
           );
 
           const result = await res.json();
+
           if (!res.ok || result.code === "error") {
             throw new Error(result.message || "Lỗi khi cập nhật công ty.");
           }
 
-          setSuccessMsg("Cập nhật công ty thành công!");
+          toast.success("Cập nhật công ty thành công!", { id: loadingToast });
           setTimeout(() => router.push("/admin/companies"), 1500);
         } catch (err: any) {
-          setError(err.message || "Không thể lưu thông tin công ty.");
+          toast.error(err.message || "Không thể lưu thông tin công ty.", { id: loadingToast });
         }
       });
 
@@ -147,127 +150,142 @@ export default function EditCompanyPage({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500 mb-2" />
-        <p>Đang tải thông tin công ty...</p>
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
+        <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+          Đang tải thông tin...
+        </p>
       </div>
     );
   }
 
-  if (!company && error) {
-    return <div className="p-4 text-red-700 bg-red-50 rounded-lg dark:bg-red-900/10 dark:text-red-400">{error}</div>;
+  if (!company) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="font-bold text-[#f3727f] uppercase tracking-wider text-[12px]">
+          Không tìm thấy dữ liệu.
+        </p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/admin/companies">
-          <Button variant="outline" size="icon" className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800">
+          <Button variant="outline" size="icon" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-full">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
             Chỉnh sửa công ty
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
             Cập nhật thông tin cho công ty {company?.companyName}
           </p>
         </div>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200/50 dark:bg-red-900/10 dark:text-red-400 dark:border-red-900/30">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 rounded-lg border border-green-200/50 dark:bg-green-900/10 dark:text-green-400 dark:border-green-900/30">
-          <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
-      <Card className="border border-slate-200 shadow-lg dark:border-slate-800">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-900 dark:border-slate-800/80">
-          <CardTitle className="text-slate-900 dark:text-white">Thông tin chi tiết</CardTitle>
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
+          <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+            Thông tin chi tiết
+          </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-8">
           <form ref={formRef} id="companyEditForm" className="space-y-6">
             <input type="hidden" name="id" value={company?._id} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="companyCode" className="text-slate-900 dark:text-slate-300">Mã công ty</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label htmlFor="companyCode" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Mã công ty
+                </Label>
                 <Input
                   id="companyCode"
                   name="companyCode"
                   defaultValue={company?.companyCode}
-                  className="uppercase bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="companyName" className="text-slate-900 dark:text-slate-300">Tên công ty</Label>
+              <div className="space-y-3">
+                <Label htmlFor="companyName" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Tên công ty
+                </Label>
                 <Input
                   id="companyName"
                   name="companyName"
                   defaultValue={company?.companyName}
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contactPerson" className="text-slate-900 dark:text-slate-300">Người liên hệ</Label>
+              <div className="space-y-3">
+                <Label htmlFor="contactPerson" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Người liên hệ
+                </Label>
                 <Input
                   id="contactPerson"
                   name="contactPerson"
                   defaultValue={company?.contactPerson}
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contactPhone" className="text-slate-900 dark:text-slate-300">Số điện thoại</Label>
+              <div className="space-y-3">
+                <Label htmlFor="contactPhone" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Số điện thoại
+                </Label>
                 <Input
                   id="contactPhone"
                   name="contactPhone"
                   defaultValue={company?.contactPhone}
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-900 dark:text-slate-300">Email liên hệ</Label>
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Email liên hệ
+                </Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   defaultValue={company?.email}
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="status" className="text-slate-900 dark:text-slate-300">Trạng thái</Label>
-                <select
-                  id="status"
-                  name="status"
-                  defaultValue={company?.status}
-                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus-visible:ring-slate-300"
-                >
-                  <option value="">-- Chọn trạng thái --</option>
-                  <option value="Active">Đang hoạt động</option>
-                  <option value="Suspended">Đình chỉ</option>
-                  <option value="Inactive">Ngừng hoạt động</option>
-                </select>
+              <div className="space-y-3 relative">
+                <Label htmlFor="status" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Trạng thái
+                </Label>
+                <div className="relative">
+                  <CustomSelect
+                    id="status"
+                    name="status"
+                    value={selectedStatus}
+                    onChange={setSelectedStatus}
+                    options={[
+                      { value: "Active", label: "Đang hoạt động" },
+                      { value: "Suspended", label: "Đình chỉ" },
+                      { value: "Inactive", label: "Ngừng hoạt động" },
+                    ]}
+                    placeholder="-- Chọn trạng thái --"
+                  />
+                </div>
               </div>
             </div>
-            <div className="flex gap-2 justify-end border-t border-slate-100 dark:border-slate-800/80 pt-4">
+            <div className="flex gap-4 justify-end pt-8">
               <Link href="/admin/companies">
-                <Button type="button" variant="outline" className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8"
+                >
                   Hủy bỏ
                 </Button>
               </Link>
               <Button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
+                className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
               >
                 Lưu thay đổi
               </Button>
