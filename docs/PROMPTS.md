@@ -1612,6 +1612,91 @@ Kinh nghiệm rút ra: Việc sử dụng Socket.IO giúp hệ thống phản h�
 
 ---
 
+## Prompt số 12
+
+| Nội dung            | Thông tin                                            |
+| ------------------- | ---------------------------------------------------- |
+| Ngày sử dụng        | 25/05/2026                                           |
+| Công cụ AI          | Github Copilot/ Gemini                                       |
+| Mục đích            | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang cần thiết cho tài xế |
+| Phần việc liên quan | Coding                                               |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
+| Phần liên quan      | Gate Management                                      |
+
+#### 12.1. Prompt nguyên văn
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 12.2. Bối cảnh khi viết prompt
+
+```text
+--- Bắt đầu xây dựng một ứng dụng di động cho tài xế, tâi xế cần một ứng dụng để dễ dàng xác thực, dễ dàng quản lý từ phía nhà xe
+--- Tài xế phải được xác thực thông tin trước khi vào bãi đỗ xe, đàm bảo tính bảo mật và dễ quản lý xe ra vào
+--- Tài xế được cấp một mã QR nhằm để xác thực, mã QR được sinh ra từ phía quản lý nhà xe khi tạo lịch đỗ xe ứng với thông tin người tài xế
+--- Tài xế chỉ được show mã và không thực hiện bất kỳ một tác vụ nào chỉ được xem và show mã QR
+```
+
+#### 12.3. Kết quả AI trả về
+
+```text
+Kết luận chung: Đa phần AI trả về theo đúng kết quả kỳ vọng, tuy nhiên vẫn còn rất nhiều điểm chưa ưng ý, đủ đáp ứng yêu cầu toàn phần từ phía người dùng
+   1. Trang dashboard sau khi thiết kế, trả về kết quả như sau:
+      1.1 Giao diện:
+         Giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+      1.2 Về phần xử lý quét mã QR:
+         Hiểu được luồng hoạt động của trang. Khi tài xế mở app trang dashboard hiện lên, khung lớn của trang sẽ chứa phần để quét mã QR. Tài xế nhấn vào button thì sẽ hiển thị mã QR với các thông tin dành cho tài xế và lái xe
+   2. Phần điều hướng đến các trang còn lại
+      2.1 Kết quả: Giao diện có trả về phần footer mà một block gồm các href được style phù hợp đế điều hướng đến các trang cần thiết
+
+#### 12.4. Kết quả đã áp dụng vào bài
+
+```text
+	   Áp dụng giao diện được trả về đúng với thiết kế giao diện trong stitch, gam chủ đạo khớp với stitch các block nhìn chung được phân bố rõ ràng, phù hợp cho cả giao diện mobile và web
+		Áp dụng phần tính năng xử lý nghiệp vụ mã QR
+		Áp dụng phần điều hướng, phân trang để điều hướng tới các trang tiếp theo
+```
+
+#### 12.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh dữ liệu emit để chỉ gửi các trường cần thiết nhằm giảm tải cho hệ thống.
+- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
+- Thiết kế giao diện thống kê phù hợp với nhu cầu giám sát thực tế tại cổng.
+- Chuẩn bị sẵn cấu trúc để mở rộng thêm các sự kiện realtime khác trong tương lai.
+```
+
+#### 12.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 12.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                         |
+| File liên quan        |`src\frontend_mobile-expo\src\modules\dashboard\screens\DashboardScreen.tsx` |
+| Screenshot            | (Ảnh màn hình trang dashboard với tính năng hiển thị mã QR)                                                                          |
+| Kết quả chạy/test     |Form validate chính xác, phân bổ bố cục các block hợp lý, layouts các thư viện shadcin UI được sửu dụng để đẹp mắt                                                            |
+| Link tài liệu/báo cáo |                                                                                                                         |
+| Ghi chú khác          | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                     |
+
+#### 12.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi bắt đầu thiết kế 1 trang, việc yêu cầu AI thiết kế giao diện cần cung cấp đầy đủ thư viện phù hợp, không install quá nhiều thư viện không cần thiết
+```
+
+---
+
 ## 6. Prompt quan trọng nhất
 >>>>>>> main
 
