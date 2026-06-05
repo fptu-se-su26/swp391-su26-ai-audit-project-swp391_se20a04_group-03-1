@@ -314,7 +314,7 @@ export default function TrashAppointmentsPage() {
                   {appointments.map((apt) => (
                     <tr
                       key={apt._id}
-                      className="hover:bg-[#f8f8f8] dark:hover:bg-[#1f1f1f] transition-colors group opacity-75 hover:opacity-100"
+                      className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group opacity-75 hover:opacity-100"
                     >
                       <td className="px-6 py-4">
                         <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] line-through decoration-[#f3727f] decoration-2">

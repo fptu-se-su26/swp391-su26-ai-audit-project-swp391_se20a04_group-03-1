@@ -243,7 +243,7 @@ export default function CompletedAppointmentsPage() {
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                   {appointments.map((apt) => (
-                    <tr key={apt._id} className="hover:bg-[#f8f8f8] dark:hover:bg-[#1f1f1f] transition-colors group">
+                    <tr key={apt._id} className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group">
                       <td className="px-6 py-4">
                         <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] bg-[#eeeeee] dark:bg-[#272727] px-3 py-1 rounded-[4px]">{apt.truckPlate}</span>
                       </td>
