@@ -64,38 +64,38 @@ export function AsyncDriverSelect({
         <div ref={wrapperRef} className="relative w-full">
             <input type="hidden" id="driverId" name="driverId" value={value} />
             <div 
-                className={`flex items-center justify-between w-full h-10 px-3 py-2 border rounded-md cursor-pointer bg-white dark:bg-slate-950 ${error ? "border-red-500 ring-red-500" : "border-slate-200 dark:border-slate-800"}`}
+                className={`flex items-center justify-between w-full h-12 px-4 border rounded-[4px] cursor-pointer transition-colors ${error ? "border-[#c82014] ring-1 ring-[#c82014]" : "border-[#d6dbde] dark:border-[#272727] hover:border-[#00754A] dark:hover:border-[#00754A]"} bg-[#ffffff] dark:bg-[#121212]`}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <span className={selectedDriver ? "text-slate-900 dark:text-slate-100 text-sm" : "text-slate-500 text-sm"}>
+                <span className={`font-bold truncate ${selectedDriver ? "text-[#121212] dark:text-[#ffffff]" : "text-[rgba(0,0,0,0.58)] dark:text-[rgba(255,255,255,0.70)]"}`}>
                     {selectedDriver ? selectedDriver.name : "Tìm tên, SĐT, CCCD..."}
                 </span>
-                <Search className="w-4 h-4 text-slate-400" />
+                <Search className={`w-4 h-4 transition-colors ${isOpen ? "text-[#00754A]" : "text-[rgba(0,0,0,0.58)] dark:text-[rgba(255,255,255,0.70)]"}`} />
             </div>
             
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-lg max-h-60 flex flex-col">
-                    <div className="p-2 sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+                <div className="absolute z-50 w-full mt-2 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.5)] max-h-64 flex flex-col overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="p-3 bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                         <Input
                             type="text"
                             placeholder="Gõ tên, SĐT, hoặc CCCD..."
-                            className="w-full text-sm h-9"
+                            className="w-full text-[14px] font-bold h-10 bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[8px] focus-visible:ring-[#1ed760]"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onClick={(e) => e.stopPropagation()}
                         />
                     </div>
-                    <div className="overflow-y-auto flex-1 p-1">
+                    <div className="overflow-y-auto flex-1 p-2 custom-scrollbar">
                         {loading ? (
-                            <div className="flex items-center justify-center p-4 text-slate-500 text-sm">
-                                <Loader2 className="w-4 h-4 animate-spin mr-2" /> Đang tải...
+                            <div className="flex items-center justify-center py-8 text-[#666666] dark:text-[#b3b3b3] text-[12px] font-bold uppercase tracking-wider">
+                                <Loader2 className="w-5 h-5 animate-spin mr-3 text-[#1ed760]" /> Đang tải...
                             </div>
                         ) : drivers.length > 0 ? (
                             <ul className="space-y-1">
                                 {drivers.map((d) => (
                                     <li 
                                         key={d._id}
-                                        className={`p-2 text-sm rounded-md cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${value === d._id ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 font-medium" : "text-slate-700 dark:text-slate-300"}`}
+                                        className={`p-3 rounded-[8px] cursor-pointer transition-all duration-200 flex flex-col gap-1 group ${value === d._id ? "bg-[#1ed760]/10 border border-[#1ed760]/20" : "hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
                                         onClick={() => {
                                             onChange(d._id, `[${d.driverId}] ${d.driverName} - ${d.driverPhone || 'Không có SĐT'}`);
                                             if (onCompanyChange && d.companyId) {
@@ -107,15 +107,15 @@ export function AsyncDriverSelect({
                                             setSearch("");
                                         }}
                                     >
-                                        <div className="font-medium">{d.driverName}</div>
-                                        <div className="text-xs text-slate-500 mt-0.5">
-                                            CCCD: {d.driverId} | SĐT: {d.driverPhone || '-'}
+                                        <div className={`font-black text-[14px] transition-colors ${value === d._id ? "text-[#1db954]" : "text-[#121212] dark:text-[#ffffff] group-hover:text-[#1ed760]"}`}>{d.driverName}</div>
+                                        <div className="text-[12px] font-mono text-[#666666] dark:text-[#999999]">
+                                            <span className="font-bold text-[#121212] dark:text-[#ffffff]">CCCD:</span> {d.driverId} &nbsp;&bull;&nbsp; <span className="font-bold text-[#121212] dark:text-[#ffffff]">SĐT:</span> {d.driverPhone || '-'}
                                         </div>
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <div className="p-4 text-sm text-center text-slate-500">
+                            <div className="py-8 text-[12px] font-bold uppercase tracking-wider text-center text-[#666666] dark:text-[#999999]">
                                 Không tìm thấy tài xế nào
                             </div>
                         )}

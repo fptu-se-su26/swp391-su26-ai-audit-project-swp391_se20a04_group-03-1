@@ -176,22 +176,24 @@ export default function CompletedAppointmentsPage() {
                   placeholder="Tìm biển số, container..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px]"
+                  className="pl-11 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="flex items-center gap-2 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 px-4">
+              <div className="flex items-center gap-2 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 px-4 hover:border-[#00754A] dark:hover:border-[#00754A] transition-colors focus-within:border-[#00754A] dark:focus-within:border-[#00754A]">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none"
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none dark:[color-scheme:dark] cursor-pointer"
                 />
                 <span className="text-[#999999]">-</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none"
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none dark:[color-scheme:dark] cursor-pointer"
                 />
               </div>
 

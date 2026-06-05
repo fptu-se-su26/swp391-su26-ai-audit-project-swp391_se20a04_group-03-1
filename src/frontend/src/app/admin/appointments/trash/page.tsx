@@ -2,7 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Trash2,
   Calendar,
@@ -13,6 +19,7 @@ import {
   ArrowLeft,
   RefreshCcw,
 } from "lucide-react";
+import { CustomSelect } from "@/components/CustomSelect";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
@@ -49,7 +56,13 @@ interface Appointment {
   containerNo: string;
   scheduledDate: string;
   timeSlot: string;
-  status: "Pending" | "Confirmed" | "CheckedIn" | "CheckedOut" | "Cancelled" | "Completed";
+  status:
+    | "Pending"
+    | "Confirmed"
+    | "CheckedIn"
+    | "CheckedOut"
+    | "Cancelled"
+    | "Completed";
   createdAt: string;
 }
 
@@ -77,7 +90,8 @@ export default function TrashAppointmentsPage() {
     try {
       const params = new URLSearchParams();
       if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
-      if (statusFilter && statusFilter !== "ALL") params.append("status", statusFilter);
+      if (statusFilter && statusFilter !== "ALL")
+        params.append("status", statusFilter);
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
       params.append("page", currentPage.toString());
@@ -85,7 +99,7 @@ export default function TrashAppointmentsPage() {
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/appointments/trash?${params.toString()}`,
-        { credentials: "include" }
+        { credentials: "include" },
       );
       const data = await res.json();
 
@@ -93,7 +107,8 @@ export default function TrashAppointmentsPage() {
         throw new Error(data.message || "Lỗi từ máy chủ backend.");
       }
 
-      const appointmentArray = data && data.data ? data.data : Array.isArray(data) ? data : [];
+      const appointmentArray =
+        data && data.data ? data.data : Array.isArray(data) ? data : [];
       setAppointments(appointmentArray);
 
       if (data && data.pagination) {
@@ -124,7 +139,7 @@ export default function TrashAppointmentsPage() {
         {
           method: "PATCH",
           credentials: "include",
-        }
+        },
       );
 
       const result = await res.json();
@@ -135,7 +150,9 @@ export default function TrashAppointmentsPage() {
       toast.success("Khôi phục lịch hẹn thành công.", { id: loadingToast });
       fetchAppointments();
     } catch (err: any) {
-      toast.error(err.message || "Không thể khôi phục lịch hẹn.", { id: loadingToast });
+      toast.error(err.message || "Không thể khôi phục lịch hẹn.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -147,7 +164,7 @@ export default function TrashAppointmentsPage() {
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
 
       const result = await res.json();
@@ -158,7 +175,9 @@ export default function TrashAppointmentsPage() {
       toast.success("Đã xóa vĩnh viễn lịch hẹn.", { id: loadingToast });
       fetchAppointments();
     } catch (err: any) {
-      toast.error(err.message || "Không thể xóa vĩnh viễn lịch hẹn.", { id: loadingToast });
+      toast.error(err.message || "Không thể xóa vĩnh viễn lịch hẹn.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -175,7 +194,10 @@ export default function TrashAppointmentsPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/admin/appointments">
-            <Button variant="outline" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Quay lại danh sách
             </Button>
@@ -183,11 +205,13 @@ export default function TrashAppointmentsPage() {
         </div>
       </div>
 
-      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-hidden border-t-4 border-t-[#f3727f]">
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible border-t-4 border-t-[#f3727f]">
         <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div>
-              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">Lịch hẹn đã xóa</CardTitle>
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+                Lịch hẹn đã xóa
+              </CardTitle>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -197,36 +221,38 @@ export default function TrashAppointmentsPage() {
                   placeholder="Tìm biển số, container..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px]"
+                  className="pl-11 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-10 px-4 rounded-[500px] border border-[#e5e5e5] dark:border-[#272727] bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] font-bold text-[14px] appearance-none"
-              >
-                <option value="ALL">Mọi trạng thái</option>
-                <option value="Pending">Chờ duyệt</option>
-                <option value="Confirmed">Đã duyệt</option>
-                <option value="CheckedIn">Đã vào cảng</option>
-                <option value="CheckedOut">Đã ra cảng</option>
-                <option value="Completed">Hoàn thành</option>
-                <option value="Cancelled">Đã hủy</option>
-              </select>
+              <div className="relative z-10 w-[200px]">
+                <CustomSelect
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  options={[
+                    { value: "ALL", label: "Mọi trạng thái" },
+                    { value: "Pending", label: "Chờ duyệt" },
+                    { value: "Confirmed", label: "Đã duyệt" },
+                    { value: "Cancelled", label: "Đã hủy" },
+                  ]}
+                  placeholder="Mọi trạng thái"
+                />
+              </div>
 
-              <div className="flex items-center gap-2 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 px-4">
+              <div className="flex items-center gap-2 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 px-4 hover:border-[#00754A] dark:hover:border-[#00754A] transition-colors focus-within:border-[#00754A] dark:focus-within:border-[#00754A]">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none"
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none dark:[color-scheme:dark] cursor-pointer"
                 />
                 <span className="text-[#999999]">-</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none"
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none dark:[color-scheme:dark] cursor-pointer"
                 />
               </div>
 
@@ -238,7 +264,12 @@ export default function TrashAppointmentsPage() {
                   setStartDate("");
                   setEndDate("");
                 }}
-                disabled={!searchQuery && statusFilter === "ALL" && !startDate && !endDate}
+                disabled={
+                  !searchQuery &&
+                  statusFilter === "ALL" &&
+                  !startDate &&
+                  !endDate
+                }
                 className="bg-[#eeeeee] hover:bg-[#e5e5e5] dark:bg-[#272727] dark:hover:bg-[#333333] text-[#121212] dark:text-[#ffffff] rounded-[500px] font-bold h-10 px-4 uppercase tracking-wider text-[12px] border-none"
               >
                 Xóa lọc
@@ -251,7 +282,9 @@ export default function TrashAppointmentsPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-10 w-10 animate-spin text-[#f3727f] mb-4" />
-              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">Đang tải dữ liệu...</p>
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+                Đang tải dữ liệu...
+              </p>
             </div>
           ) : appointments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -272,27 +305,44 @@ export default function TrashAppointmentsPage() {
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn & Giờ</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
-                    <th className="px-6 py-4 font-black text-right">Thao tác</th>
+                    <th className="px-6 py-4 font-black text-right">
+                      Thao tác
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                   {appointments.map((apt) => (
-                    <tr key={apt._id} className="hover:bg-[#f8f8f8] dark:hover:bg-[#1f1f1f] transition-colors group opacity-75 hover:opacity-100">
+                    <tr
+                      key={apt._id}
+                      className="hover:bg-[#f8f8f8] dark:hover:bg-[#1f1f1f] transition-colors group opacity-75 hover:opacity-100"
+                    >
                       <td className="px-6 py-4">
-                        <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] line-through decoration-[#f3727f] decoration-2">{apt.truckPlate}</span>
+                        <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] line-through decoration-[#f3727f] decoration-2">
+                          {apt.truckPlate}
+                        </span>
                       </td>
                       <td className="px-6 py-4 font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
                         {apt.containerNo}
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-bold text-[#121212] dark:text-[#ffffff]">{apt.driverId?.driverName || "Chưa xác định"}</p>
-                        <p className="text-[#666666] dark:text-[#b3b3b3] font-mono text-[12px] mt-1">{apt.driverId?.driverPhone || "-"}</p>
+                        <p className="font-bold text-[#121212] dark:text-[#ffffff]">
+                          {apt.driverId?.driverName || "Chưa xác định"}
+                        </p>
+                        <p className="text-[#666666] dark:text-[#b3b3b3] font-mono text-[12px] mt-1">
+                          {apt.driverId?.driverPhone || "-"}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-bold text-[#121212] dark:text-[#ffffff]">
-                          {apt.scheduledDate ? new Date(apt.scheduledDate).toLocaleDateString("vi-VN") : "-"}
+                          {apt.scheduledDate
+                            ? new Date(apt.scheduledDate).toLocaleDateString(
+                                "vi-VN",
+                              )
+                            : "-"}
                         </p>
-                        <p className="text-[12px] font-black text-[#666666] dark:text-[#999999] mt-1 bg-[#eeeeee] dark:bg-[#272727] inline-block px-2 py-0.5 rounded-[4px] tracking-wider">{apt.timeSlot}</p>
+                        <p className="text-[12px] font-black text-[#666666] dark:text-[#999999] mt-1 bg-[#eeeeee] dark:bg-[#272727] inline-block px-2 py-0.5 rounded-[4px] tracking-wider">
+                          {apt.timeSlot}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider bg-[#b3b3b3]/10 text-[#666666] dark:text-[#b3b3b3]">
@@ -308,7 +358,7 @@ export default function TrashAppointmentsPage() {
                             <RefreshCcw className="h-3 w-3 mr-1" />
                             Khôi phục
                           </Button>
-                          
+
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button className="bg-[#f3727f]/10 hover:bg-[#f3727f] hover:text-[#121212] text-[#f3727f] rounded-[500px] h-8 w-8 p-0 border-none transition-colors">
@@ -317,15 +367,26 @@ export default function TrashAppointmentsPage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                               <AlertDialogHeader>
-                                <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">Xóa Vĩnh Viễn</AlertDialogTitle>
+                                <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">
+                                  Xóa Vĩnh Viễn
+                                </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
-                                  Bạn có chắc chắn muốn xóa vĩnh viễn lịch hẹn xe <span className="text-[#f3727f]">{apt.truckPlate}</span>? Hành động này không thể hoàn tác.
+                                  Bạn có chắc chắn muốn xóa vĩnh viễn lịch hẹn
+                                  xe{" "}
+                                  <span className="text-[#f3727f]">
+                                    {apt.truckPlate}
+                                  </span>
+                                  ? Hành động này không thể hoàn tác.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter className="mt-6 gap-3">
-                                <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">Hủy</AlertDialogCancel>
+                                <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">
+                                  Hủy
+                                </AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleHardDeleteAppointment(apt._id)}
+                                  onClick={() =>
+                                    handleHardDeleteAppointment(apt._id)
+                                  }
                                   className="bg-[#f3727f] hover:bg-[#e05b68] text-[#121212] rounded-[500px] font-black uppercase tracking-wider px-6 border-none"
                                 >
                                   Xóa vĩnh viễn
@@ -367,7 +428,9 @@ export default function TrashAppointmentsPage() {
 
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       className={`cursor-pointer rounded-[500px] font-bold ${currentPage === totalPages ? "opacity-50 pointer-events-none" : "hover:bg-[#e5e5e5] dark:hover:bg-[#272727]"}`}
                     />
                   </PaginationItem>

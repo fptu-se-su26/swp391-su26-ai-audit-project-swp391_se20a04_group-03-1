@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { AsyncDriverSelect } from "@/components/AsyncDriverSelect";
+import { CustomSelect } from "@/components/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -47,7 +48,26 @@ import {
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
 
-const TIME_SLOTS = ["05:00-06:00","06:00-07:00","07:00-08:00","08:00-09:00","09:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","15:00-16:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00","21:00-22:00","22:00-23:00","23:00-00:00",
+const TIME_SLOTS = [
+  "05:00-06:00",
+  "06:00-07:00",
+  "07:00-08:00",
+  "08:00-09:00",
+  "09:00-10:00",
+  "10:00-11:00",
+  "11:00-12:00",
+  "12:00-13:00",
+  "13:00-14:00",
+  "14:00-15:00",
+  "15:00-16:00",
+  "16:00-17:00",
+  "17:00-18:00",
+  "18:00-19:00",
+  "19:00-20:00",
+  "20:00-21:00",
+  "21:00-22:00",
+  "22:00-23:00",
+  "23:00-00:00",
 ];
 
 interface Appointment {
@@ -63,7 +83,13 @@ interface Appointment {
   containerNo: string;
   scheduledDate: string;
   timeSlot: string;
-  status: "Pending" | "Confirmed" | "CheckedIn" | "CheckedOut" | "Cancelled" | "Completed";
+  status:
+    | "Pending"
+    | "Confirmed"
+    | "CheckedIn"
+    | "CheckedOut"
+    | "Cancelled"
+    | "Completed";
   createdAt: string;
 }
 
@@ -72,7 +98,10 @@ export default function AppointmentsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState("");
-  const [selectedDriver, setSelectedDriver] = useState<{id: string, name: string} | null>(null);
+  const [selectedDriver, setSelectedDriver] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [selectedDriverCompany, setSelectedDriverCompany] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
@@ -81,6 +110,7 @@ export default function AppointmentsPage() {
   const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const ITEMS_PER_PAGE = 10;
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -100,7 +130,8 @@ export default function AppointmentsPage() {
     try {
       const params = new URLSearchParams();
       if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
-      if (statusFilter && statusFilter !== "ALL") params.append("status", statusFilter);
+      if (statusFilter && statusFilter !== "ALL")
+        params.append("status", statusFilter);
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
       params.append("page", currentPage.toString());
@@ -116,9 +147,10 @@ export default function AppointmentsPage() {
         throw new Error(data.message || "Lỗi từ máy chủ backend.");
       }
 
-      const appointmentArray = data && data.data ? data.data : Array.isArray(data) ? data : [];
+      const appointmentArray =
+        data && data.data ? data.data : Array.isArray(data) ? data : [];
       setAppointments(appointmentArray);
-      
+
       if (data && data.pagination) {
         setTotalPages(data.pagination.totalPages);
       } else {
@@ -153,8 +185,10 @@ export default function AppointmentsPage() {
     }
 
     const validator = new JustValidate(formRef.current, {
-      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
-      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+      errorFieldCssClass:
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
@@ -162,18 +196,24 @@ export default function AppointmentsPage() {
     validator
       .addField("#truckPlate", [
         { rule: "required", errorMessage: "Bắt buộc." },
-        { rule: "customRegexp", value: /^([0-9]{2})([A-Z]{1})([0-9]{5})$/, errorMessage: "Định dạng sai (VD: 15C12345)." },
+        {
+          rule: "customRegexp",
+          value: /^([0-9]{2})([A-Z]{1})([0-9]{5})$/,
+          errorMessage: "Định dạng sai (VD: 15C12345).",
+        },
       ])
       .addField("#containerNo", [
         { rule: "required", errorMessage: "Bắt buộc." },
-        { rule: "customRegexp", value: /^[A-Z]{4}[0-9]{7}$/i, errorMessage: "Sai chuẩn ISO (VD: MSCU1234567)." },
+        {
+          rule: "customRegexp",
+          value: /^[A-Z]{4}[0-9]{7}$/i,
+          errorMessage: "Sai chuẩn ISO (VD: MSCU1234567).",
+        },
       ])
       .addField("#scheduledDate", [
         { rule: "required", errorMessage: "Bắt buộc." },
       ])
-      .addField("#timeSlot", [
-        { rule: "required", errorMessage: "Bắt buộc." },
-      ])
+      .addField("#timeSlot", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
@@ -183,11 +223,19 @@ export default function AppointmentsPage() {
           return;
         }
         const payload = {
-          truckPlate: formData.get("truckPlate")?.toString().trim().toUpperCase(),
+          truckPlate: formData
+            .get("truckPlate")
+            ?.toString()
+            .trim()
+            .toUpperCase(),
           driverId: formData.get("driverId")?.toString().trim(),
-          containerNo: formData.get("containerNo")?.toString().trim().toUpperCase(),
+          containerNo: formData
+            .get("containerNo")
+            ?.toString()
+            .trim()
+            .toUpperCase(),
           scheduledDate: formData.get("scheduledDate")?.toString(),
-          timeSlot: formData.get("timeSlot")?.toString(),
+          timeSlot: selectedTimeSlot,
         };
 
         const loadingToast = toast.loading("Đang đăng ký lịch hẹn...");
@@ -211,7 +259,9 @@ export default function AppointmentsPage() {
           setShowForm(false);
           fetchAppointments();
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu lịch hẹn vào hệ thống.", { id: loadingToast });
+          toast.error(err.message || "Không thể lưu lịch hẹn vào hệ thống.", {
+            id: loadingToast,
+          });
         }
       });
 
@@ -221,7 +271,7 @@ export default function AppointmentsPage() {
         validatorRef.current = null;
       }
     };
-  }, [showForm, fetchAppointments]);
+  }, [showForm, fetchAppointments, selectedTimeSlot]);
 
   // Update Status
   const handleUpdateStatus = async (id: string, newStatus: string) => {
@@ -244,11 +294,13 @@ export default function AppointmentsPage() {
 
       toast.success(
         `Đã cập nhật trạng thái lịch hẹn sang: ${newStatus === "Confirmed" ? "Đã duyệt" : "Đã hủy"}`,
-        { id: loadingToast }
+        { id: loadingToast },
       );
       fetchAppointments();
     } catch (err: any) {
-      toast.error(err.message || "Không thể cập nhật trạng thái.", { id: loadingToast });
+      toast.error(err.message || "Không thể cập nhật trạng thái.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -272,7 +324,9 @@ export default function AppointmentsPage() {
       toast.success("Xóa lịch hẹn thành công.", { id: loadingToast });
       fetchAppointments();
     } catch (err: any) {
-      toast.error(err.message || "Không thể xóa lịch hẹn.", { id: loadingToast });
+      toast.error(err.message || "Không thể xóa lịch hẹn.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -289,13 +343,19 @@ export default function AppointmentsPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/admin/appointments/completed">
-            <Button variant="outline" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#1ed760] dark:hover:border-[#1ed760] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#1ed760] dark:hover:border-[#1ed760] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
               <CheckCircle className="h-4 w-4 text-[#1ed760]" />
               Hoàn thành
             </Button>
           </Link>
           <Link href="/admin/appointments/trash">
-            <Button variant="outline" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#f3727f] dark:hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#f3727f] dark:hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
               <Trash2 className="h-4 w-4 text-[#f3727f]" />
               Thùng rác
             </Button>
@@ -311,9 +371,11 @@ export default function AppointmentsPage() {
       </div>
 
       {showForm && (
-        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm animate-in fade-in slide-in-from-top-4 duration-200 overflow-hidden">
-          <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] pb-6">
-            <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">Đăng ký lịch hẹn mới</CardTitle>
+        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm animate-in fade-in slide-in-from-top-4 duration-200 overflow-visible">
+          <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
+            <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+              Đăng ký lịch hẹn mới
+            </CardTitle>
             <CardDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
               Vui lòng nhập thông tin chính xác. Mã container chuẩn ISO 6346.
             </CardDescription>
@@ -322,7 +384,12 @@ export default function AppointmentsPage() {
             <form ref={formRef} id="appointmentForm" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <Label htmlFor="truckPlate" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Biển số xe</Label>
+                  <Label
+                    htmlFor="truckPlate"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Biển số xe
+                  </Label>
                   <Input
                     id="truckPlate"
                     name="truckPlate"
@@ -331,7 +398,12 @@ export default function AppointmentsPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="containerNo" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Mã container</Label>
+                  <Label
+                    htmlFor="containerNo"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mã container
+                  </Label>
                   <Input
                     id="containerNo"
                     name="containerNo"
@@ -340,13 +412,18 @@ export default function AppointmentsPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="driverId" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Tài xế (Tìm kiếm)</Label>
+                  <Label
+                    htmlFor="driverId"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Tài xế (Tìm kiếm)
+                  </Label>
                   <div className="bg-[#f8f8f8] dark:bg-[#121212] rounded-[8px]">
-                    <AsyncDriverSelect 
+                    <AsyncDriverSelect
                       value={selectedDriverId}
                       onChange={(id, name) => {
-                          setSelectedDriverId(id);
-                          setSelectedDriver({id, name});
+                        setSelectedDriverId(id);
+                        setSelectedDriver({ id, name });
                       }}
                       onCompanyChange={setSelectedDriverCompany}
                       selectedDriver={selectedDriver}
@@ -354,7 +431,9 @@ export default function AppointmentsPage() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Công ty vận tải</Label>
+                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Công ty vận tải
+                  </Label>
                   <Input
                     readOnly
                     value={selectedDriverCompany}
@@ -363,27 +442,41 @@ export default function AppointmentsPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="scheduledDate" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Ngày hẹn</Label>
+                  <Label
+                    htmlFor="scheduledDate"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Ngày hẹn
+                  </Label>
                   <Input
                     id="scheduledDate"
                     name="scheduledDate"
                     type="date"
                     min={new Date().toISOString().split("T")[0]}
-                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                    onClick={(e) => (e.target as any).showPicker?.()}
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] dark:[color-scheme:dark] cursor-pointer"
                   />
                 </div>
-                <div className="space-y-3">
-                  <Label htmlFor="timeSlot" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Khung giờ</Label>
-                  <select
-                    id="timeSlot"
-                    name="timeSlot"
-                    className="w-full h-12 px-4 rounded-[8px] border border-[#e5e5e5] dark:border-[#272727] bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] font-bold focus:ring-[#1ed760] transition-colors appearance-none"
+                <div className="space-y-3 relative">
+                  <Label
+                    htmlFor="timeSlot"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                   >
-                    <option value="">-- Chọn --</option>
-                    {TIME_SLOTS.map((slot) => (
-                      <option key={slot} value={slot}>{slot}</option>
-                    ))}
-                  </select>
+                    Khung giờ
+                  </Label>
+                  <div className="relative">
+                    <CustomSelect
+                      id="timeSlot"
+                      name="timeSlot"
+                      value={selectedTimeSlot}
+                      onChange={setSelectedTimeSlot}
+                      options={TIME_SLOTS.map((slot) => ({
+                        value: slot,
+                        label: slot,
+                      }))}
+                      placeholder="-- Chọn --"
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex gap-4 justify-end pt-8">
@@ -407,11 +500,13 @@ export default function AppointmentsPage() {
         </Card>
       )}
 
-      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-hidden">
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible">
         <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div>
-              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">Danh sách đăng ký</CardTitle>
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+                Danh sách đăng ký
+              </CardTitle>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -424,33 +519,35 @@ export default function AppointmentsPage() {
                   className="pl-11 bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px]"
                 />
               </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-10 px-4 rounded-[500px] border border-[#e5e5e5] dark:border-[#272727] bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] font-bold text-[14px] appearance-none"
-              >
-                <option value="ALL">Mọi trạng thái</option>
-                <option value="Pending">Chờ duyệt</option>
-                <option value="Confirmed">Đã duyệt</option>
-                <option value="CheckedIn">Đã vào cảng</option>
-                <option value="CheckedOut">Đã ra cảng</option>
-                <option value="Completed">Hoàn thành</option>
-                <option value="Cancelled">Đã hủy</option>
-              </select>
+              <div className="relative z-10 w-[200px]">
+                <CustomSelect
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  options={[
+                    { value: "ALL", label: "Mọi trạng thái" },
+                    { value: "Pending", label: "Chờ duyệt" },
+                    { value: "Confirmed", label: "Đã duyệt" },
+                    { value: "Cancelled", label: "Đã hủy" }
+                  ]}
+                  placeholder="Mọi trạng thái"
+                />
+              </div>
 
-              <div className="flex items-center gap-2 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 px-4">
+              <div className="flex items-center gap-2 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 px-4 hover:border-[#1ed760] dark:hover:border-[#1ed760] transition-colors focus-within:border-[#1ed760] focus-within:ring-1 focus-within:ring-[#1ed760]">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none"
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none dark:[color-scheme:dark] cursor-pointer"
                 />
                 <span className="text-[#999999]">-</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none"
+                  onClick={(e) => (e.target as any).showPicker?.()}
+                  className="bg-transparent text-[14px] font-bold text-[#121212] dark:text-[#ffffff] focus:outline-none dark:[color-scheme:dark] cursor-pointer"
                 />
               </div>
 
@@ -462,7 +559,12 @@ export default function AppointmentsPage() {
                   setStartDate("");
                   setEndDate("");
                 }}
-                disabled={!searchQuery && statusFilter === "ALL" && !startDate && !endDate}
+                disabled={
+                  !searchQuery &&
+                  statusFilter === "ALL" &&
+                  !startDate &&
+                  !endDate
+                }
                 className="bg-[#eeeeee] hover:bg-[#e5e5e5] dark:bg-[#272727] dark:hover:bg-[#333333] text-[#121212] dark:text-[#ffffff] rounded-[500px] font-bold h-10 px-4 uppercase tracking-wider text-[12px] border-none"
               >
                 Xóa lọc
@@ -475,13 +577,17 @@ export default function AppointmentsPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
-              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">Đang tải dữ liệu...</p>
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+                Đang tải dữ liệu...
+              </p>
             </div>
           ) : appointments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Calendar className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
               <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
-                {searchQuery ? "Không có lịch hẹn khớp bộ lọc." : "Hệ thống chưa có lịch hẹn nào."}
+                {searchQuery
+                  ? "Không có lịch hẹn khớp bộ lọc."
+                  : "Hệ thống chưa có lịch hẹn nào."}
               </p>
             </div>
           ) : (
@@ -494,68 +600,104 @@ export default function AppointmentsPage() {
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn & Giờ</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
-                    <th className="px-6 py-4 font-black text-right">Thao tác</th>
+                    <th className="px-6 py-4 font-black text-right">
+                      Thao tác
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                   {appointments.map((apt) => (
-                    <tr key={apt._id} className="hover:bg-[#f8f8f8] dark:hover:bg-[#1f1f1f] transition-colors group">
+                    <tr
+                      key={apt._id}
+                      className="hover:bg-[#f8f8f8] dark:hover:bg-[#1f1f1f] transition-colors group"
+                    >
                       <td className="px-6 py-4">
-                        <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] bg-[#eeeeee] dark:bg-[#272727] px-3 py-1 rounded-[4px]">{apt.truckPlate}</span>
+                        <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] bg-[#eeeeee] dark:bg-[#272727] px-3 py-1 rounded-[4px]">
+                          {apt.truckPlate}
+                        </span>
                       </td>
                       <td className="px-6 py-4 font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
                         {apt.containerNo}
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-bold text-[#121212] dark:text-[#ffffff]">{apt.driverId?.driverName || "Chưa xác định"}</p>
-                        <p className="text-[#666666] dark:text-[#b3b3b3] font-mono text-[12px] mt-1">{apt.driverId?.driverPhone || "-"}</p>
+                        <p className="font-bold text-[#121212] dark:text-[#ffffff]">
+                          {apt.driverId?.driverName || "Chưa xác định"}
+                        </p>
+                        <p className="text-[#666666] dark:text-[#b3b3b3] font-mono text-[12px] mt-1">
+                          {apt.driverId?.driverPhone || "-"}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-bold text-[#121212] dark:text-[#ffffff]">
-                          {apt.scheduledDate ? new Date(apt.scheduledDate).toLocaleDateString("vi-VN") : "-"}
+                          {apt.scheduledDate
+                            ? new Date(apt.scheduledDate).toLocaleDateString(
+                                "vi-VN",
+                              )
+                            : "-"}
                         </p>
-                        <p className="text-[12px] font-black text-[#1ed760] mt-1 bg-[#1ed760]/10 inline-block px-2 py-0.5 rounded-[4px] tracking-wider">{apt.timeSlot}</p>
+                        <p className="text-[12px] font-black text-[#1ed760] mt-1 bg-[#1ed760]/10 inline-block px-2 py-0.5 rounded-[4px] tracking-wider">
+                          {apt.timeSlot}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider ${
-                          apt.status === "Confirmed" ? "bg-[#1ed760]/10 text-[#1db954]" :
-                          apt.status === "CheckedIn" ? "bg-[#00D4FF]/10 text-[#00D4FF]" :
-                          apt.status === "CheckedOut" ? "bg-[#f59e0b]/10 text-[#f59e0b]" :
-                          apt.status === "Completed" ? "bg-[#b3b3b3]/10 text-[#ffffff]" :
-                          apt.status === "Cancelled" ? "bg-[#f3727f]/10 text-[#f3727f]" :
-                          "bg-[#ffa42b]/10 text-[#ffa42b]"
-                        }`}>
-                          {apt.status === "Confirmed" ? "Đã Duyệt" :
-                           apt.status === "CheckedIn" ? "Vào Cảng" :
-                           apt.status === "CheckedOut" ? "Ra Cảng" :
-                           apt.status === "Completed" ? "Hoàn Thành" :
-                           apt.status === "Cancelled" ? "Đã Hủy" : "Chờ Duyệt"}
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider ${
+                            apt.status === "Confirmed"
+                              ? "bg-[#1ed760]/10 text-[#1db954]"
+                              : apt.status === "CheckedIn"
+                                ? "bg-[#00D4FF]/10 text-[#00D4FF]"
+                                : apt.status === "CheckedOut"
+                                  ? "bg-[#f59e0b]/10 text-[#f59e0b]"
+                                  : apt.status === "Completed"
+                                    ? "bg-[#b3b3b3]/10 text-[#ffffff]"
+                                    : apt.status === "Cancelled"
+                                      ? "bg-[#f3727f]/10 text-[#f3727f]"
+                                      : "bg-[#ffa42b]/10 text-[#ffa42b]"
+                          }`}
+                        >
+                          {apt.status === "Confirmed"
+                            ? "Đã Duyệt"
+                            : apt.status === "CheckedIn"
+                              ? "Vào Cảng"
+                              : apt.status === "CheckedOut"
+                                ? "Ra Cảng"
+                                : apt.status === "Completed"
+                                  ? "Hoàn Thành"
+                                  : apt.status === "Cancelled"
+                                    ? "Đã Hủy"
+                                    : "Chờ Duyệt"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           {apt.status === "Pending" && (
                             <Button
-                              onClick={() => handleUpdateStatus(apt._id, "Confirmed")}
+                              onClick={() =>
+                                handleUpdateStatus(apt._id, "Confirmed")
+                              }
                               className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
                             >
                               Duyệt
                             </Button>
                           )}
-                          {apt.status !== "Cancelled" && apt.status !== "CheckedOut" && apt.status !== "Completed" && (
-                            <Button
-                              onClick={() => handleUpdateStatus(apt._id, "Cancelled")}
-                              className="bg-[#f3727f]/10 hover:bg-[#f3727f] text-[#f3727f] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
-                            >
-                              Hủy
-                            </Button>
-                          )}
+                          {apt.status !== "Cancelled" &&
+                            apt.status !== "CheckedOut" &&
+                            apt.status !== "Completed" && (
+                              <Button
+                                onClick={() =>
+                                  handleUpdateStatus(apt._id, "Cancelled")
+                                }
+                                className="bg-[#f3727f]/10 hover:bg-[#f3727f] text-[#f3727f] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
+                              >
+                                Hủy
+                              </Button>
+                            )}
                           <Link href={`/admin/appointments/edit/${apt._id}`}>
                             <Button className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors">
                               <Pencil className="h-3 w-3" />
                             </Button>
                           </Link>
-                          
+
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors">
@@ -564,15 +706,26 @@ export default function AppointmentsPage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                               <AlertDialogHeader>
-                                <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">Xóa Lịch Hẹn</AlertDialogTitle>
+                                <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">
+                                  Xóa Lịch Hẹn
+                                </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
-                                  Xe <span className="text-[#1ed760]">{apt.truckPlate}</span> sẽ bị đưa vào thùng rác. Hành động này không thể hoàn tác trực tiếp ở đây.
+                                  Xe{" "}
+                                  <span className="text-[#1ed760]">
+                                    {apt.truckPlate}
+                                  </span>{" "}
+                                  sẽ bị đưa vào thùng rác. Hành động này không
+                                  thể hoàn tác trực tiếp ở đây.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter className="mt-6 gap-3">
-                                <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">Hủy</AlertDialogCancel>
+                                <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">
+                                  Hủy
+                                </AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleDeleteAppointment(apt._id)}
+                                  onClick={() =>
+                                    handleDeleteAppointment(apt._id)
+                                  }
                                   className="bg-[#f3727f] hover:bg-[#e05b68] text-[#121212] rounded-[500px] font-black uppercase tracking-wider px-6 border-none"
                                 >
                                   Xác nhận Xóa
@@ -614,7 +767,9 @@ export default function AppointmentsPage() {
 
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       className={`cursor-pointer rounded-[500px] font-bold ${currentPage === totalPages ? "opacity-50 pointer-events-none" : "hover:bg-[#e5e5e5] dark:hover:bg-[#272727]"}`}
                     />
                   </PaginationItem>
