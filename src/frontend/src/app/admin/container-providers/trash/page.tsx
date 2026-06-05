@@ -45,9 +45,8 @@ interface ContainerProvider {
  code: string;
  name: string;
  bic_codes: string;
- bic_codes: string;
  contact_email: string;
- status:"Active" |"Inactive" |"Suspended";
+ status:"ACTIVE" |"INACTIVE" |"SUSPENDED";
  createdAt: string;
 }
 
