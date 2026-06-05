@@ -757,7 +757,7 @@ Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt h
 
 | Loại minh chứng | Nội dung |
 |---|---|
-| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| Link commit | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3 |
 | File liên quan | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,  |
 | Screenshot | (Ảnh màn hình trang dashboard) |
 | Kết quả chạy/test |Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
