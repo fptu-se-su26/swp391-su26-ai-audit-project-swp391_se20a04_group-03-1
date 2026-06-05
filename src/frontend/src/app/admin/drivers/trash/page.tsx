@@ -2,15 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Trash2,
   Loader2,
-  AlertCircle,
-  CheckCircle,
   Search,
   ArrowLeft,
-  RotateCcw,
+  RefreshCcw,
+  IdCard,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -33,6 +37,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import toast from "react-hot-toast";
 
 interface Driver {
   _id: string;
@@ -50,8 +55,6 @@ interface Driver {
 export default function DriversTrashPage() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,7 +70,6 @@ export default function DriversTrashPage() {
 
   const fetchDrivers = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const params = new URLSearchParams();
       if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
@@ -87,7 +89,7 @@ export default function DriversTrashPage() {
       setDrivers(data.data || []);
       if (data.pagination) setTotalPages(data.pagination.totalPages);
     } catch (err: any) {
-      setError(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
     } finally {
       setLoading(false);
     }
@@ -102,6 +104,7 @@ export default function DriversTrashPage() {
   }, [debouncedSearchQuery]);
 
   const handleRestore = async (id: string) => {
+    const loadingToast = toast.loading("Đang khôi phục...");
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/drivers/${id}/restore`,
@@ -112,17 +115,18 @@ export default function DriversTrashPage() {
       );
       const data = await res.json();
       if (data.code === "success") {
-        setSuccessMsg("Khôi phục tài xế thành công.");
+        toast.success("Khôi phục tài xế thành công.", { id: loadingToast });
         fetchDrivers();
       } else {
-        setError(data.message || "Không thể khôi phục tài xế.");
+        throw new Error(data.message || "Không thể khôi phục tài xế.");
       }
     } catch (err: any) {
-      setError("Lỗi kết nối khi khôi phục tài xế.");
+      toast.error(err.message || "Lỗi kết nối khi khôi phục tài xế.", { id: loadingToast });
     }
   };
 
   const handleForceDelete = async (id: string) => {
+    const loadingToast = toast.loading("Đang xóa vĩnh viễn...");
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/drivers/${id}/force`,
@@ -133,261 +137,212 @@ export default function DriversTrashPage() {
       );
       const data = await res.json();
       if (data.code === "success") {
-        setSuccessMsg("Đã xóa vĩnh viễn tài xế.");
+        toast.success("Đã xóa vĩnh viễn tài xế.", { id: loadingToast });
         fetchDrivers();
       } else {
-        setError(data.message || "Không thể xóa vĩnh viễn tài xế.");
+        throw new Error(data.message || "Không thể xóa vĩnh viễn tài xế.");
       }
     } catch (err: any) {
-      setError("Lỗi kết nối khi xóa vĩnh viễn tài xế.");
+      toast.error(err.message || "Lỗi kết nối khi xóa vĩnh viễn tài xế.", { id: loadingToast });
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+            Thùng rác - Tài xế
+          </h1>
+          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+            Các hồ sơ tài xế đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
           <Link href="/admin/drivers">
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
+              Quay lại danh sách
             </Button>
           </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Trash2 className="h-8 w-8 text-red-500" /> Thùng rác Tài Xế
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Quản lý các hồ sơ tài xế đã bị xóa tạm thời
-            </p>
-          </div>
         </div>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900/30 dark:text-red-400">
-          <AlertCircle className="w-5 h-5" />
-          <p>{error}</p>
-        </div>
-      )}
-      {successMsg && (
-        <div className="flex items-center gap-2 p-4 text-emerald-700 bg-emerald-100 rounded-lg dark:bg-emerald-900/30 dark:text-emerald-400">
-          <CheckCircle className="w-5 h-5" />
-          <p>{successMsg}</p>
-        </div>
-      )}
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible border-t-4 border-t-[#f3727f]">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+            <div>
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+                Danh sách tài xế đã xóa
+              </CardTitle>
+            </div>
 
-      <Card className="border-red-200 shadow-sm dark:border-red-900/30">
-        <CardHeader className="pb-3 border-b border-red-100 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/10">
-          <CardTitle className="text-lg flex items-center gap-2 text-red-700 dark:text-red-400">
-            Danh sách đã xóa
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="flex gap-4 mb-6">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Tìm tên, mã CCCD..."
-                className="pl-9 border-slate-200 dark:border-slate-800"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999999]" />
+                <Input
+                  placeholder="Tìm tên, mã CCCD..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                />
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  setDebouncedSearchQuery("");
+                }}
+                disabled={!searchQuery}
+                className="bg-[#eeeeee] hover:bg-[#e5e5e5] dark:bg-[#272727] dark:hover:bg-[#333333] text-[#121212] dark:text-[#ffffff] rounded-[500px] font-bold h-10 px-4 uppercase tracking-wider text-[12px] border-none"
+              >
+                Xóa lọc
+              </Button>
             </div>
           </div>
+        </CardHeader>
 
-          <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-10 w-10 animate-spin text-[#f3727f] mb-4" />
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+                Đang tải dữ liệu...
+              </p>
+            </div>
+          ) : drivers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
+              <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
+                {searchQuery
+                  ? "Không tìm thấy tài xế nào phù hợp trong thùng rác."
+                  : "Thùng rác trống."}
+              </p>
+            </div>
+          ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900/50 dark:text-slate-400">
+                <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
-                    <th className="px-4 py-3 font-medium">Mã CC/GPLX</th>
-                    <th className="px-4 py-3 font-medium">Họ Tên</th>
-                    <th className="px-4 py-3 font-medium">Công Ty</th>
-                    <th className="px-4 py-3 font-medium">Ngày Xóa</th>
-                    <th className="px-4 py-3 font-medium text-right">
-                      Thao Tác
-                    </th>
+                    <th className="px-6 py-4 font-black">Mã CC/GPLX</th>
+                    <th className="px-6 py-4 font-black">Họ Tên</th>
+                    <th className="px-6 py-4 font-black">Công Ty</th>
+                    <th className="px-6 py-4 font-black">Ngày Xóa</th>
+                    <th className="px-6 py-4 font-black text-right">Hành động</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {loading ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-4 py-8 text-center text-slate-500"
-                      >
-                        <div className="flex items-center justify-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin text-red-500" />
-                          <span>Đang tải dữ liệu...</span>
+                <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
+                  {drivers.map((driver) => (
+                    <tr
+                      key={driver._id}
+                      className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
+                        {driver.driverId}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
+                        {driver.driverName}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {driver.companyId ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-[4px] text-[12px] font-black uppercase tracking-wider bg-[#1ed760]/10 text-[#1db954] border border-[#1ed760]/20">
+                            {driver.companyId.companyName}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
+                        {driver.updatedAt
+                          ? new Date(driver.updatedAt).toLocaleDateString("vi-VN")
+                          : "-"}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            onClick={() => handleRestore(driver._id)}
+                            className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
+                            title="Khôi phục"
+                          >
+                            <RefreshCcw className="h-3 w-3 mr-1" />
+                            Khôi phục
+                          </Button>
+
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                className="bg-[#f3727f]/10 hover:bg-[#f3727f] hover:text-[#121212] text-[#f3727f] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                                title="Xóa vĩnh viễn"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
+                                  Xác nhận xóa vĩnh viễn?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
+                                  Hành động này không thể hoàn tác. Tài xế <span className="text-[#121212] dark:text-[#ffffff]">{driver.driverName}</span> sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">
+                                  Hủy
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleForceDelete(driver._id)}
+                                  className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none"
+                                >
+                                  Xóa vĩnh viễn
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </td>
                     </tr>
-                  ) : drivers.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-4 py-8 text-center text-slate-500"
-                      >
-                        Thùng rác trống
-                      </td>
-                    </tr>
-                  ) : (
-                    drivers.map((driver) => (
-                      <tr
-                        key={driver._id}
-                        className="bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900/50 transition-colors"
-                      >
-                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
-                          {driver.driverId}
-                        </td>
-                        <td className="px-4 py-3">{driver.driverName}</td>
-                        <td className="px-4 py-3">
-                          {driver.companyId ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                              {driver.companyId.companyName}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-slate-500">
-                          {new Date(driver.updatedAt).toLocaleDateString(
-                            "vi-VN",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex justify-end gap-2">
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                                >
-                                  <RotateCcw className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Khôi phục tài xế?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Tài xế <b>{driver.driverName}</b> sẽ được
-                                    đưa trở lại danh sách hoạt động bình thường.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Hủy</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleRestore(driver._id)}
-                                    className="bg-emerald-600 hover:bg-emerald-700"
-                                  >
-                                    Khôi phục
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Xóa vĩnh viễn?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Bạn có chắc chắn muốn xóa vĩnh viễn tài xế{" "}
-                                    <b>{driver.driverName}</b>? Hành động này
-                                    không thể hoàn tác.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Hủy</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() =>
-                                      handleForceDelete(driver._id)
-                                    }
-                                    className="bg-red-600 hover:bg-red-700"
-                                  >
-                                    Xóa vĩnh viễn
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
-
-            {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage > 1) setCurrentPage((p) => p - 1);
-                        }}
-                        className={
-                          currentPage <= 1
-                            ? "pointer-events-none opacity-50"
-                            : ""
-                        }
-                      />
+          )}
+          {totalPages > 1 && drivers.length > 0 && (
+            <div className="p-4 border-t border-[#e5e5e5] dark:border-[#272727] flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className={`rounded-[500px] font-bold ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
+                  </PaginationItem>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <PaginationItem key={i + 1}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(i + 1)}
+                        isActive={currentPage === i + 1}
+                        className={`rounded-[500px] font-bold cursor-pointer ${currentPage === i + 1 ? "bg-[#1ed760] text-[#121212] border-none hover:bg-[#1db954]" : "text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                      >
+                        {i + 1}
+                      </PaginationLink>
                     </PaginationItem>
-                    {Array.from({ length: totalPages }).map((_, i) => (
-                      <PaginationItem key={i}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(i + 1);
-                          }}
-                          isActive={currentPage === i + 1}
-                        >
-                          {i + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage < totalPages)
-                            setCurrentPage((p) => p + 1);
-                        }}
-                        className={
-                          currentPage >= totalPages
-                            ? "pointer-events-none opacity-50"
-                            : ""
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </div>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

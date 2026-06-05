@@ -3,12 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CustomSelect } from "@/components/CustomSelect";
+import toast from "react-hot-toast";
 
 export default function EditContainerProviderPage({
   params,
@@ -18,9 +25,8 @@ export default function EditContainerProviderPage({
   const resolvedParams = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [provider, setContainerProvider] = useState<any>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -38,8 +44,11 @@ export default function EditContainerProviderPage({
         if (result.code === "error") throw new Error(result.message);
 
         setContainerProvider(result.data);
+        if (result.data?.status) {
+          setSelectedStatus(result.data.status);
+        }
       } catch (err: any) {
-        setError(err.message);
+        toast.error(err.message || "Không thể tải dữ liệu.");
       } finally {
         setLoading(false);
       }
@@ -52,45 +61,42 @@ export default function EditContainerProviderPage({
     if (loading || !formRef.current) return;
 
     const validator = new JustValidate(formRef.current, {
-      errorFieldCssClass:
-        "border-red-500 focus:ring-red-500 focus:border-red-500",
-      errorLabelCssClass: "text-red-500 text-xs mt-1 block font-medium",
+      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
 
     validator
       .addField("#code", [
-        { rule: "required", errorMessage: "Mã nhà cung cấp là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
           value: /^[A-Z]{4}$/,
-          errorMessage:
-            "Mã nhà cung cấp phải gồm đúng 4 chữ cái in hoa (VD: HLXU).",
+          errorMessage: "Mã phải gồm đúng 4 chữ cái in hoa (VD: HLXU).",
         },
       ])
       .addField("#name", [
-        { rule: "required", errorMessage: "Tên nhà cung cấp là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "minLength",
           value: 3,
-          errorMessage: "Tên nhà cung cấp phải từ 3 ký tự trở lên.",
+          errorMessage: "Từ 3 ký tự trở lên.",
         },
+      ])
+      .addField("#contact_email", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        { rule: "email", errorMessage: "Email không hợp lệ." },
       ])
       .addField("#bic_codes", [
         {
           rule: "customRegexp",
           value: /^([A-Z]{3}(,\s*[A-Z]{3})*)?$/,
-          errorMessage:
-            "Mã BIC phải gồm 3 chữ cái in hoa, cách nhau bởi dấu phẩy (VD: HLX, HLY).",
+          errorMessage: "Mã BIC phải gồm 3 chữ in hoa, cách nhau bởi dấu phẩy.",
         },
       ])
-      .addField("#contact_email", [
-        { rule: "required", errorMessage: "Email liên hệ là bắt buộc." },
-        { rule: "email", errorMessage: "Email không hợp lệ." },
-      ])
       .addField("#status", [
-        { rule: "required", errorMessage: "Trạng thái là bắt buộc." },
+        { rule: "required", errorMessage: "Bắt buộc." },
       ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
@@ -99,6 +105,7 @@ export default function EditContainerProviderPage({
           id: formData.get("id")?.toString(),
           code: formData.get("code")?.toString().trim().toUpperCase(),
           name: formData.get("name")?.toString().trim(),
+          contact_email: formData.get("contact_email")?.toString().trim(),
           bic_codes: formData.get("bic_codes")?.toString().trim()
             ? formData
                 .get("bic_codes")
@@ -107,13 +114,11 @@ export default function EditContainerProviderPage({
                 .split(",")
                 .map((s) => s.trim())
             : [],
-          contact_email: formData.get("contact_email")?.toString().trim(),
           status: formData.get("status")?.toString(),
         };
 
+        const loadingToast = toast.loading("Đang lưu thay đổi...");
         try {
-          setError(null);
-          setSuccessMsg(null);
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/container-providers/edit`,
             {
@@ -125,14 +130,15 @@ export default function EditContainerProviderPage({
           );
 
           const result = await res.json();
+
           if (!res.ok || result.code === "error") {
             throw new Error(result.message || "Lỗi khi cập nhật nhà cung cấp.");
           }
 
-          setSuccessMsg("Cập nhật nhà cung cấp thành công!");
+          toast.success("Cập nhật hãng tàu thành công!", { id: loadingToast });
           setTimeout(() => router.push("/admin/container-providers"), 1500);
         } catch (err: any) {
-          setError(err.message || "Không thể lưu thông tin nhà cung cấp.");
+          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", { id: loadingToast });
         }
       });
 
@@ -146,17 +152,21 @@ export default function EditContainerProviderPage({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500 mb-2" />
-        <p>Đang tải thông tin nhà cung cấp...</p>
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
+        <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+          Đang tải thông tin...
+        </p>
       </div>
     );
   }
 
-  if (!provider && error) {
+  if (!provider) {
     return (
-      <div className="p-4 text-red-700 bg-red-50 rounded-lg dark:bg-red-900/10 dark:text-red-400">
-        {error}
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="font-bold text-[#f3727f] uppercase tracking-wider text-[12px]">
+          Không tìm thấy dữ liệu.
+        </p>
       </div>
     );
   }
@@ -165,81 +175,54 @@ export default function EditContainerProviderPage({
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/admin/container-providers">
-          <Button
-            variant="outline"
-            size="icon"
-            className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
-          >
+          <Button variant="outline" size="icon" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-full">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Chỉnh sửa nhà cung cấp
+          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+            Chỉnh sửa hãng tàu
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Cập nhật thông tin cho nhà cung cấp {provider?.name}
+          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+            Cập nhật thông tin cho hãng tàu {provider?.name}
           </p>
         </div>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200/50 dark:bg-red-900/10 dark:text-red-400 dark:border-red-900/30">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 rounded-lg border border-green-200/50 dark:bg-green-900/10 dark:text-green-400 dark:border-green-900/30">
-          <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
-      <Card className="border border-slate-200 shadow-lg dark:border-slate-800">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-900 dark:border-slate-800/80">
-          <CardTitle className="text-slate-900 dark:text-white">
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
+          <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
             Thông tin chi tiết
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-8">
           <form ref={formRef} id="providerEditForm" className="space-y-6">
             <input type="hidden" name="id" value={provider?._id} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="code"
-                  className="text-slate-900 dark:text-slate-300"
-                >
-                  Mã nhà cung cấp
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label htmlFor="code" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Mã hãng tàu
                 </Label>
                 <Input
                   id="code"
                   name="code"
                   defaultValue={provider?.code}
-                  className="uppercase bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="name"
-                  className="text-slate-900 dark:text-slate-300"
-                >
-                  Tên nhà cung cấp
+              <div className="space-y-3">
+                <Label htmlFor="name" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Tên hãng tàu
                 </Label>
                 <Input
                   id="name"
                   name="name"
                   defaultValue={provider?.name}
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="bic_codes"
-                  className="text-slate-900 dark:text-slate-300"
-                >
+              <div className="space-y-3">
+                <Label htmlFor="bic_codes" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
                   Các mã BIC quốc tế
                 </Label>
                 <Input
@@ -248,16 +231,13 @@ export default function EditContainerProviderPage({
                   defaultValue={
                     Array.isArray(provider?.bic_codes)
                       ? provider?.bic_codes.join(", ")
-                      : provider?.bic_codes
+                      : provider?.bic_codes || ""
                   }
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="contact_email"
-                  className="text-slate-900 dark:text-slate-300"
-                >
+              <div className="space-y-3">
+                <Label htmlFor="contact_email" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
                   Email liên hệ
                 </Label>
                 <Input
@@ -265,41 +245,41 @@ export default function EditContainerProviderPage({
                   name="contact_email"
                   type="email"
                   defaultValue={provider?.contact_email}
-                  className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-600"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="status"
-                  className="text-slate-900 dark:text-slate-300"
-                >
+              <div className="space-y-3 relative md:col-span-2">
+                <Label htmlFor="status" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
                   Trạng thái
                 </Label>
-                <select
-                  id="status"
-                  name="status"
-                  defaultValue={provider?.status}
-                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus-visible:ring-slate-300"
-                >
-                  <option value="">-- Chọn trạng thái --</option>
-                  <option value="ACTIVE">Đang hoạt động</option>
-                  <option value="SUSPENDED">Đình chỉ</option>
-                </select>
+                <div className="relative">
+                  <CustomSelect
+                    id="status"
+                    name="status"
+                    value={selectedStatus}
+                    onChange={setSelectedStatus}
+                    options={[
+                      { value: "ACTIVE", label: "Đang hoạt động" },
+                      { value: "SUSPENDED", label: "Đình chỉ" },
+                    ]}
+                    placeholder="-- Chọn trạng thái --"
+                  />
+                </div>
               </div>
             </div>
-            <div className="flex gap-2 justify-end border-t border-slate-100 dark:border-slate-800/80 pt-4">
+            <div className="flex gap-4 justify-end pt-8">
               <Link href="/admin/container-providers">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8"
                 >
                   Hủy bỏ
                 </Button>
               </Link>
               <Button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
+                className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
               >
                 Lưu thay đổi
               </Button>
