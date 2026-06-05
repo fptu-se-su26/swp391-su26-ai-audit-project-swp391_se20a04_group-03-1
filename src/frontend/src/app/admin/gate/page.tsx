@@ -68,7 +68,7 @@ export default function GatePage() {
   const [gates, setGates] = useState<Gate[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingGate, setEditingGate] = useState<string | null>(null);
-  
+
   const [editForm, setEditForm] = useState({
     name: "",
     cameraIp: "",
@@ -78,13 +78,13 @@ export default function GatePage() {
   const [activeIn, setActiveIn] = useState(0);
   const [activeOut, setActiveOut] = useState(0);
   const [gateLogs, setGateLogs] = useState<any[]>([]);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -117,7 +117,7 @@ export default function GatePage() {
       setGateLogs((prev) => {
         const currentFilter = statusFilterRef.current;
         const existsIndex = prev.findIndex((log) => log._id === data._id);
-        
+
         if (existsIndex >= 0) {
           if (currentFilter === "in" && data.status === "out") {
             const newLogs = [...prev];
@@ -128,7 +128,7 @@ export default function GatePage() {
           newLogs[existsIndex] = { ...prev[existsIndex], ...data };
           return newLogs;
         }
-        
+
         if (currentFilter === "ALL" || currentFilter === data.status) {
           return [data, ...prev].slice(0, 50);
         }
@@ -137,7 +137,9 @@ export default function GatePage() {
     });
 
     socket.on("gate_scan_error", (data) => {
-      toast.error(`Lỗi quét biển số [${data.plate}]: ${data.message}`, { id: "scan-error" });
+      toast.error(`Lỗi quét biển số [${data.plate}]: ${data.message}`, {
+        id: "scan-error",
+      });
     });
 
     socket.on("gate_scan_success", (data) => {
@@ -237,7 +239,9 @@ export default function GatePage() {
       );
       const data = await res.json();
       if (data.code === "success") {
-        toast.success("Đã check-out thủ công thành công.", { id: loadingToast });
+        toast.success("Đã check-out thủ công thành công.", {
+          id: loadingToast,
+        });
         fetchLogs();
       } else {
         throw new Error(data.message || "Lỗi check-out thủ công");
@@ -317,8 +321,10 @@ export default function GatePage() {
     }
 
     const validator = new JustValidate(createFormRef.current, {
-      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
-      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+      errorFieldCssClass:
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
@@ -338,12 +344,15 @@ export default function GatePage() {
 
         const loadingToast = toast.loading("Đang lưu camera cổng...");
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gates/create`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-            credentials: "include",
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/gates/create`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              credentials: "include",
+            },
+          );
           const result = await res.json();
           if (result.code !== "success") {
             throw new Error(result.message || "Lỗi khi tạo camera cổng.");
@@ -368,7 +377,7 @@ export default function GatePage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
             Quản lý Hệ Thống Cổng
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
@@ -415,25 +424,57 @@ export default function GatePage() {
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Biển số xe</Label>
-                  <Input placeholder="VN-001" className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Biển số xe
+                  </Label>
+                  <Input
+                    placeholder="VN-001"
+                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                  />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Tên tài xế</Label>
-                  <Input placeholder="Nguyễn A" className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Tên tài xế
+                  </Label>
+                  <Input
+                    placeholder="Nguyễn A"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                  />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Số booking</Label>
-                  <Input placeholder="BK-001" className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Số booking
+                  </Label>
+                  <Input
+                    placeholder="BK-001"
+                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                  />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Mã container</Label>
-                  <Input placeholder="CNT-001" className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Mã container
+                  </Label>
+                  <Input
+                    placeholder="CNT-001"
+                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                  />
                 </div>
               </div>
               <div className="flex gap-4 justify-end pt-4">
-                <Button type="button" onClick={() => setShowCheckIn(false)} variant="outline" className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8">Hủy</Button>
-                <Button type="button" className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]">Xác nhận</Button>
+                <Button
+                  type="button"
+                  onClick={() => setShowCheckIn(false)}
+                  variant="outline"
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8"
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="button"
+                  className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
+                >
+                  Xác nhận
+                </Button>
               </div>
             </form>
           </CardContent>
@@ -452,15 +493,40 @@ export default function GatePage() {
             <form ref={createFormRef} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-3">
-                  <Label htmlFor="name" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Tên camera cổng</Label>
-                  <Input id="name" name="name" placeholder="Camera Cổng A - Vào" className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                  <Label
+                    htmlFor="name"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Tên camera cổng
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Camera Cổng A - Vào"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                  />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="cameraIp" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">RTSP / IP Camera</Label>
-                  <Input id="cameraIp" name="cameraIp" placeholder="rtsp://192.168.1.100/stream" className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                  <Label
+                    htmlFor="cameraIp"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    RTSP / IP Camera
+                  </Label>
+                  <Input
+                    id="cameraIp"
+                    name="cameraIp"
+                    placeholder="rtsp://192.168.1.100/stream"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                  />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="type" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">Loại cổng</Label>
+                  <Label
+                    htmlFor="type"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Loại cổng
+                  </Label>
                   <CustomSelect
                     id="type"
                     name="type"
@@ -474,8 +540,20 @@ export default function GatePage() {
                 </div>
               </div>
               <div className="flex gap-4 justify-end pt-4">
-                <Button type="button" onClick={() => setShowCreateGate(false)} variant="outline" className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8">Hủy</Button>
-                <Button type="submit" className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]">Lưu hệ thống</Button>
+                <Button
+                  type="button"
+                  onClick={() => setShowCreateGate(false)}
+                  variant="outline"
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8"
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
+                >
+                  Lưu hệ thống
+                </Button>
               </div>
             </form>
           </CardContent>
@@ -484,40 +562,75 @@ export default function GatePage() {
 
       {/* Video Streaming Section */}
       <div>
-        <h2 className="text-xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider mb-6">Camera Giám Sát</h2>
+        <h2 className="text-xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider mb-6">
+          Camera Giám Sát
+        </h2>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 bg-[#ffffff] dark:bg-[#181818] rounded-[16px] border border-[#e5e5e5] dark:border-[#272727]">
             <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
-            <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">Đang kết nối camera...</p>
+            <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
+              Đang kết nối camera...
+            </p>
           </div>
         ) : gates.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center bg-[#ffffff] dark:bg-[#181818] rounded-[16px] border border-[#e5e5e5] dark:border-[#272727]">
             <Camera className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
-            <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px] mb-6">Hệ thống chưa có camera nào.</p>
-            <Button onClick={() => setShowCreateGate(true)} className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 border-none">
+            <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px] mb-6">
+              Hệ thống chưa có camera nào.
+            </p>
+            <Button
+              onClick={() => setShowCreateGate(true)}
+              className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 border-none"
+            >
               Thiết lập Camera
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {gates.map((gate) => (
-              <Card key={gate._id} className="overflow-hidden bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm hover:border-[#00754A] transition-colors group">
+              <Card
+                key={gate._id}
+                className="overflow-hidden bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm hover:border-[#00754A] transition-colors group"
+              >
                 {editingGate === gate._id ? (
                   <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
                     <div className="space-y-4">
                       <div>
-                        <label className="text-[12px] font-bold uppercase tracking-wider text-[#121212] dark:text-[#ffffff] mb-2 block">Tên Cổng</label>
-                        <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                        <label className="text-[12px] font-bold uppercase tracking-wider text-[#121212] dark:text-[#ffffff] mb-2 block">
+                          Tên Cổng
+                        </label>
+                        <Input
+                          value={editForm.name}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, name: e.target.value })
+                          }
+                          className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                        />
                       </div>
                       <div>
-                        <label className="text-[12px] font-bold uppercase tracking-wider text-[#121212] dark:text-[#ffffff] mb-2 block">RTSP / IP Camera</label>
-                        <Input value={editForm.cameraIp} onChange={(e) => setEditForm({ ...editForm, cameraIp: e.target.value })} className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors" />
+                        <label className="text-[12px] font-bold uppercase tracking-wider text-[#121212] dark:text-[#ffffff] mb-2 block">
+                          RTSP / IP Camera
+                        </label>
+                        <Input
+                          value={editForm.cameraIp}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              cameraIp: e.target.value,
+                            })
+                          }
+                          className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
+                        />
                       </div>
                       <div>
-                        <label className="text-[12px] font-bold uppercase tracking-wider text-[#121212] dark:text-[#ffffff] mb-2 block">Loại Cổng</label>
+                        <label className="text-[12px] font-bold uppercase tracking-wider text-[#121212] dark:text-[#ffffff] mb-2 block">
+                          Loại Cổng
+                        </label>
                         <CustomSelect
                           value={editForm.type}
-                          onChange={(val) => setEditForm({ ...editForm, type: val })}
+                          onChange={(val) =>
+                            setEditForm({ ...editForm, type: val })
+                          }
                           options={[
                             { value: "in", label: "Cổng Vào (IN)" },
                             { value: "out", label: "Cổng Ra (OUT)" },
@@ -525,10 +638,19 @@ export default function GatePage() {
                         />
                       </div>
                       <div className="flex gap-2 pt-2">
-                        <Button size="sm" onClick={() => handleUpdateGate(gate._id)} className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-bold uppercase tracking-wider px-6 h-9">
+                        <Button
+                          size="sm"
+                          onClick={() => handleUpdateGate(gate._id)}
+                          className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-bold uppercase tracking-wider px-6 h-9"
+                        >
                           Lưu
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => setEditingGate(null)} className="rounded-[500px] font-bold uppercase tracking-wider px-6 h-9 bg-transparent border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingGate(null)}
+                          className="rounded-[500px] font-bold uppercase tracking-wider px-6 h-9 bg-transparent border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"
+                        >
                           Hủy
                         </Button>
                       </div>
@@ -538,35 +660,65 @@ export default function GatePage() {
                   <CardHeader className="bg-[#ffffff] dark:bg-[#181818] border-b border-[#e5e5e5] dark:border-[#272727] p-4 flex flex-row items-center justify-between">
                     <div>
                       <div className="flex items-center gap-3">
-                        <CardTitle className="text-lg font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">{gate.name}</CardTitle>
+                        <CardTitle className="text-lg font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+                          {gate.name}
+                        </CardTitle>
                         {gate.type === "in" ? (
-                          <span className="px-2 py-1 rounded-[4px] text-[10px] font-black bg-[#1ed760]/10 text-[#1db954] uppercase tracking-wider border border-[#1ed760]/20">Cổng Vào</span>
+                          <span className="px-2 py-1 rounded-[4px] text-[10px] font-black bg-[#1ed760]/10 text-[#1db954] uppercase tracking-wider border border-[#1ed760]/20">
+                            Cổng Vào
+                          </span>
                         ) : gate.type === "out" ? (
-                          <span className="px-2 py-1 rounded-[4px] text-[10px] font-black bg-[#3b82f6]/10 text-[#3b82f6] uppercase tracking-wider border border-[#3b82f6]/20">Cổng Ra</span>
+                          <span className="px-2 py-1 rounded-[4px] text-[10px] font-black bg-[#3b82f6]/10 text-[#3b82f6] uppercase tracking-wider border border-[#3b82f6]/20">
+                            Cổng Ra
+                          </span>
                         ) : null}
                       </div>
-                      <CardDescription className="font-bold text-[12px] mt-1 text-[#666666] dark:text-[#999999]">{gate.cameraIp}</CardDescription>
+                      <CardDescription className="font-bold text-[12px] mt-1 text-[#666666] dark:text-[#999999]">
+                        {gate.cameraIp}
+                      </CardDescription>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditClick(gate)} className="h-8 w-8 p-0 text-[#121212] dark:text-[#ffffff] hover:bg-[#eeeeee] dark:hover:bg-[#272727] rounded-[500px]">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditClick(gate)}
+                        className="h-8 w-8 p-0 text-[#121212] dark:text-[#ffffff] hover:bg-[#eeeeee] dark:hover:bg-[#272727] rounded-[500px]"
+                      >
                         <Edit2 className="h-3.5 w-3.5" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#f3727f] hover:bg-[#f3727f]/10 rounded-[500px]">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-[#f3727f] hover:bg-[#f3727f]/10 rounded-[500px]"
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                           <AlertDialogHeader>
-                            <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">Xóa camera cổng?</AlertDialogTitle>
+                            <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
+                              Xóa camera cổng?
+                            </AlertDialogTitle>
                             <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                              Bạn có chắc chắn muốn xóa camera <strong className="text-[#121212] dark:text-[#ffffff]">{gate.name}</strong>? Hành động này không thể hoàn tác.
+                              Bạn có chắc chắn muốn xóa camera{" "}
+                              <strong className="text-[#121212] dark:text-[#ffffff]">
+                                {gate.name}
+                              </strong>
+                              ? Hành động này không thể hoàn tác.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">Hủy</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteGate(gate._id)} className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none">Xóa</AlertDialogAction>
+                            <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">
+                              Hủy
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteGate(gate._id)}
+                              className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none"
+                            >
+                              Xóa
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
@@ -590,34 +742,52 @@ export default function GatePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
         <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm border-l-[6px] border-l-[#1ed760]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">Xe đã vào</CardTitle>
+            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">
+              Xe đã vào
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-3">
-              <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">{activeIn}</p>
-              <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">hiện tại</p>
+              <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">
+                {activeIn}
+              </p>
+              <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">
+                hiện tại
+              </p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm border-l-[6px] border-l-[#3b82f6]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">Xe đã ra</CardTitle>
+            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">
+              Xe đã ra
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-3">
-              <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">{activeOut}</p>
-              <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">hôm nay</p>
+              <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">
+                {activeOut}
+              </p>
+              <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">
+                hôm nay
+              </p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm border-l-[6px] border-l-[#f59e0b]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">Xe đang chờ</CardTitle>
+            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">
+              Xe đang chờ
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-3">
-              <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">0</p>
-              <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">tại cổng</p>
+              <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">
+                0
+              </p>
+              <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">
+                tại cổng
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -644,7 +814,7 @@ export default function GatePage() {
                 className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
               />
             </div>
-            
+
             <div className="relative z-10 w-[200px]">
               <CustomSelect
                 value={statusFilter}
@@ -676,13 +846,16 @@ export default function GatePage() {
             </div>
 
             <Link href="/admin/gate/logs/trash">
-              <Button variant="outline" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider h-10 px-4 gap-2">
+              <Button
+                variant="outline"
+                className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider h-10 px-4 gap-2"
+              >
                 <Trash2 className="h-4 w-4 text-[#f3727f]" />
               </Button>
             </Link>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -699,14 +872,22 @@ export default function GatePage() {
               <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                 {gateLogs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-20 text-[#666666] dark:text-[#999999] font-bold text-[14px]">
+                    <td
+                      colSpan={6}
+                      className="text-center py-20 text-[#666666] dark:text-[#999999] font-bold text-[14px]"
+                    >
                       Không có dữ liệu nhật ký
                     </td>
                   </tr>
                 ) : (
                   gateLogs.map((item) => (
-                    <tr key={item._id} className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group">
-                      <td className="px-6 py-4 font-black text-[#121212] dark:text-[#ffffff]">{item.actualTruckPlate}</td>
+                    <tr
+                      key={item._id}
+                      className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-black text-[#121212] dark:text-[#ffffff]">
+                        {item.actualTruckPlate}
+                      </td>
                       <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
                         {item.appointmentId?.driverId?.driverName || "-"}
                       </td>
@@ -715,11 +896,15 @@ export default function GatePage() {
                       </td>
                       <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
                         {new Date(
-                          item.status === "in" ? item.checkInTime : item.checkOutTime
+                          item.status === "in"
+                            ? item.checkInTime
+                            : item.checkOutTime,
                         ).toLocaleString("vi-VN")}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-[10px] font-black uppercase tracking-wider border ${item.status === "in" ? "bg-[#1ed760]/10 text-[#1db954] border-[#1ed760]/20" : "bg-[#3b82f6]/10 text-[#3b82f6] border-[#3b82f6]/20"}`}>
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-[10px] font-black uppercase tracking-wider border ${item.status === "in" ? "bg-[#1ed760]/10 text-[#1db954] border-[#1ed760]/20" : "bg-[#3b82f6]/10 text-[#3b82f6] border-[#3b82f6]/20"}`}
+                        >
                           <CheckCircle className="h-3 w-3" />
                           {item.status === "in" ? "Đã vào" : "Đã ra"}
                         </span>
@@ -727,31 +912,55 @@ export default function GatePage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link href={`/admin/gate/logs/${item._id}`}>
-                            <Button variant="ghost" className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors" title="Chi tiết">
+                            <Button
+                              variant="ghost"
+                              className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                              title="Chi tiết"
+                            >
                               <Eye className="h-3.5 w-3.5" />
                             </Button>
                           </Link>
                           {item.status === "in" && (
-                            <Button onClick={() => handleManualCheckout(item._id)} className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f59e0b] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors" title="Checkout">
+                            <Button
+                              onClick={() => handleManualCheckout(item._id)}
+                              className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f59e0b] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                              title="Checkout"
+                            >
                               <LogOut className="h-3.5 w-3.5" />
                             </Button>
                           )}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors" title="Xóa">
+                              <Button
+                                className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                                title="Xóa"
+                              >
                                 <Trash2 className="h-3 w-3" />
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                               <AlertDialogHeader>
-                                <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">Xóa nhật ký?</AlertDialogTitle>
+                                <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
+                                  Xóa nhật ký?
+                                </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Nhật ký của xe <strong className="text-[#121212] dark:text-[#ffffff]">{item.actualTruckPlate}</strong> sẽ bị đưa vào thùng rác.
+                                  Nhật ký của xe{" "}
+                                  <strong className="text-[#121212] dark:text-[#ffffff]">
+                                    {item.actualTruckPlate}
+                                  </strong>{" "}
+                                  sẽ bị đưa vào thùng rác.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">Hủy</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleSoftDeleteLog(item._id)} className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none">Đồng ý</AlertDialogAction>
+                                <AlertDialogCancel className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider">
+                                  Hủy
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleSoftDeleteLog(item._id)}
+                                  className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none"
+                                >
+                                  Đồng ý
+                                </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
@@ -763,23 +972,35 @@ export default function GatePage() {
               </tbody>
             </table>
           </div>
-          
+
           {totalPages > 1 && (
             <div className="p-4 border-t border-[#e5e5e5] dark:border-[#272727] flex justify-center">
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} className={`rounded-[500px] font-bold ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`} />
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className={`rounded-[500px] font-bold ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
                   </PaginationItem>
                   {[...Array(totalPages)].map((_, i) => (
                     <PaginationItem key={i + 1}>
-                      <PaginationLink onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1} className={`rounded-[500px] font-bold cursor-pointer ${currentPage === i + 1 ? "bg-[#1ed760] text-[#121212] border-none hover:bg-[#1db954]" : "text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(i + 1)}
+                        isActive={currentPage === i + 1}
+                        className={`rounded-[500px] font-bold cursor-pointer ${currentPage === i + 1 ? "bg-[#1ed760] text-[#121212] border-none hover:bg-[#1db954]" : "text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                      >
                         {i + 1}
                       </PaginationLink>
                     </PaginationItem>
                   ))}
                   <PaginationItem>
-                    <PaginationNext onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`} />
+                    <PaginationNext
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
+                    />
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>

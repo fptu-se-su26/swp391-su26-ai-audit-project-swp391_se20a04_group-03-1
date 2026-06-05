@@ -10,14 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Plus,
-  Trash2,
-  Loader2,
-  Pencil,
-  Search,
-  IdCard,
-} from "lucide-react";
+import { Plus, Trash2, Loader2, Pencil, Search, IdCard } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
@@ -147,7 +140,8 @@ function AsyncCompanySelect({
           <div className="overflow-y-auto flex-1 p-2">
             {loading ? (
               <div className="flex items-center justify-center p-4 text-[#666666] font-bold text-[12px] uppercase tracking-wider">
-                <Loader2 className="w-4 h-4 animate-spin mr-2 text-[#1ed760]" /> Đang tải...
+                <Loader2 className="w-4 h-4 animate-spin mr-2 text-[#1ed760]" />{" "}
+                Đang tải...
               </div>
             ) : companies.length > 0 ? (
               <ul className="space-y-1">
@@ -163,10 +157,12 @@ function AsyncCompanySelect({
                       onChange(c._id, `${c.companyCode} - ${c.companyName}`);
                       setIsOpen(false);
                       setSearch("");
-                      
+
                       // Trigger JustValidate manually on hidden field by dispatching an event
-                      const event = new Event('change', { bubbles: true });
-                      document.getElementById("companyId")?.dispatchEvent(event);
+                      const event = new Event("change", { bubbles: true });
+                      document
+                        .getElementById("companyId")
+                        ?.dispatchEvent(event);
                     }}
                   >
                     {c.companyCode} - {c.companyName}
@@ -195,7 +191,10 @@ export default function DriversPage() {
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  const [selectedCompany, setSelectedCompany] = useState<{ id: string; name: string } | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [companyIdValue, setCompanyIdValue] = useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -254,16 +253,22 @@ export default function DriversPage() {
     }
 
     const validator = new JustValidate(formRef.current, {
-      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
-      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+      errorFieldCssClass:
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
 
     validator
       .addField("#driverId", [{ rule: "required", errorMessage: "Bắt buộc." }])
-      .addField("#driverName", [{ rule: "required", errorMessage: "Bắt buộc." }])
-      .addField("#companyId", [{ rule: "required", errorMessage: "Bắt buộc chọn công ty." }])
+      .addField("#driverName", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+      ])
+      .addField("#companyId", [
+        { rule: "required", errorMessage: "Bắt buộc chọn công ty." },
+      ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
@@ -276,12 +281,15 @@ export default function DriversPage() {
 
         const loadingToast = toast.loading("Đang lưu tài xế...");
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/drivers`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-            credentials: "include",
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/drivers`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              credentials: "include",
+            },
+          );
           const data = await res.json();
 
           if (data.code !== "success") {
@@ -294,7 +302,9 @@ export default function DriversPage() {
           setSelectedCompany(null);
           fetchDrivers();
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin tài xế.", { id: loadingToast });
+          toast.error(err.message || "Không thể lưu thông tin tài xế.", {
+            id: loadingToast,
+          });
         }
       });
 
@@ -305,7 +315,6 @@ export default function DriversPage() {
       }
     };
   }, [showForm, fetchDrivers, companyIdValue]);
-
 
   const handleDelete = async (id: string) => {
     const loadingToast = toast.loading("Đang xóa tài xế...");
@@ -319,13 +328,17 @@ export default function DriversPage() {
       );
       const data = await res.json();
       if (data.code === "success") {
-        toast.success("Chuyển tài xế vào thùng rác thành công.", { id: loadingToast });
+        toast.success("Chuyển tài xế vào thùng rác thành công.", {
+          id: loadingToast,
+        });
         fetchDrivers();
       } else {
         throw new Error(data.message || "Không thể xóa tài xế.");
       }
     } catch (err: any) {
-      toast.error(err.message || "Lỗi kết nối khi xóa tài xế.", { id: loadingToast });
+      toast.error(err.message || "Lỗi kết nối khi xóa tài xế.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -333,7 +346,7 @@ export default function DriversPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
             Quản lý Tài Xế
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
@@ -374,7 +387,10 @@ export default function DriversPage() {
             <form ref={formRef} id="driverForm" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <Label htmlFor="driverId" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="driverId"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Số CCCD / GPLX (*)
                   </Label>
                   <Input
@@ -385,7 +401,10 @@ export default function DriversPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="driverName" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="driverName"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Họ và tên (*)
                   </Label>
                   <Input
@@ -396,7 +415,10 @@ export default function DriversPage() {
                   />
                 </div>
                 <div className="space-y-3 relative z-50">
-                  <Label htmlFor="companyId" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="companyId"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Công ty trực thuộc (*)
                   </Label>
                   <AsyncCompanySelect
@@ -409,7 +431,10 @@ export default function DriversPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="driverPhone" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="driverPhone"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Số điện thoại
                   </Label>
                   <Input
@@ -501,7 +526,9 @@ export default function DriversPage() {
                     <th className="px-6 py-4 font-black">Họ Tên</th>
                     <th className="px-6 py-4 font-black">Điện Thoại</th>
                     <th className="px-6 py-4 font-black">Công Ty</th>
-                    <th className="px-6 py-4 font-black text-right">Hành động</th>
+                    <th className="px-6 py-4 font-black text-right">
+                      Hành động
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
@@ -553,7 +580,11 @@ export default function DriversPage() {
                                   Xóa tài xế này?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Tài xế <span className="text-[#121212] dark:text-[#ffffff]">{driver.driverName}</span> sẽ được đưa vào thùng rác.
+                                  Tài xế{" "}
+                                  <span className="text-[#121212] dark:text-[#ffffff]">
+                                    {driver.driverName}
+                                  </span>{" "}
+                                  sẽ được đưa vào thùng rác.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -600,7 +631,9 @@ export default function DriversPage() {
                   ))}
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
                     />
                   </PaginationItem>

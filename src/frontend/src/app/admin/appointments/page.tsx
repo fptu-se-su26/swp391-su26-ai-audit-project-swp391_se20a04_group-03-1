@@ -527,7 +527,7 @@ export default function AppointmentsPage() {
                     { value: "ALL", label: "Mọi trạng thái" },
                     { value: "Pending", label: "Chờ duyệt" },
                     { value: "Confirmed", label: "Đã duyệt" },
-                    { value: "Cancelled", label: "Đã hủy" }
+                    { value: "Cancelled", label: "Đã hủy" },
                   ]}
                   placeholder="Mọi trạng thái"
                 />

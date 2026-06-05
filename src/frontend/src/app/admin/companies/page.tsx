@@ -10,14 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Plus,
-  Trash2,
-  Building2,
-  Loader2,
-  Pencil,
-  Search,
-} from "lucide-react";
+import { Plus, Trash2, Building2, Loader2, Pencil, Search } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
@@ -132,8 +125,10 @@ export default function CompaniesPage() {
     }
 
     const validator = new JustValidate(formRef.current, {
-      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
-      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+      errorFieldCssClass:
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
@@ -206,7 +201,9 @@ export default function CompaniesPage() {
           setShowForm(false);
           fetchCompanies();
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin công ty.", { id: loadingToast });
+          toast.error(err.message || "Không thể lưu thông tin công ty.", {
+            id: loadingToast,
+          });
         }
       });
 
@@ -241,11 +238,13 @@ export default function CompaniesPage() {
         `Đã chuyển trạng thái sang: ${
           newStatus === "Active" ? "Hoạt động" : "Đình chỉ"
         }`,
-        { id: loadingToast }
+        { id: loadingToast },
       );
       fetchCompanies();
     } catch (err: any) {
-      toast.error(err.message || "Không thể cập nhật trạng thái.", { id: loadingToast });
+      toast.error(err.message || "Không thể cập nhật trạng thái.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -269,7 +268,9 @@ export default function CompaniesPage() {
       toast.success("Đã chuyển công ty vào thùng rác.", { id: loadingToast });
       fetchCompanies();
     } catch (err: any) {
-      toast.error(err.message || "Không thể xóa công ty.", { id: loadingToast });
+      toast.error(err.message || "Không thể xóa công ty.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -277,7 +278,7 @@ export default function CompaniesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
             Quản lý công ty
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
@@ -318,7 +319,10 @@ export default function CompaniesPage() {
             <form ref={formRef} id="companyForm" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <Label htmlFor="companyCode" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="companyCode"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Mã công ty
                   </Label>
                   <Input
@@ -329,7 +333,10 @@ export default function CompaniesPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="companyName" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="companyName"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Tên công ty
                   </Label>
                   <Input
@@ -340,7 +347,10 @@ export default function CompaniesPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="contactPerson" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="contactPerson"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Người đại diện / Liên hệ
                   </Label>
                   <Input
@@ -351,7 +361,10 @@ export default function CompaniesPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="contactPhone" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="contactPhone"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Số điện thoại
                   </Label>
                   <Input
@@ -362,7 +375,10 @@ export default function CompaniesPage() {
                   />
                 </div>
                 <div className="space-y-3 md:col-span-2">
-                  <Label htmlFor="email" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="email"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Email liên hệ
                   </Label>
                   <Input
@@ -414,7 +430,7 @@ export default function CompaniesPage() {
                   className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              
+
               <div className="relative z-10 w-[200px]">
                 <CustomSelect
                   value={statusFilter}
@@ -475,7 +491,9 @@ export default function CompaniesPage() {
                     <th className="px-6 py-4 font-black">Email</th>
                     <th className="px-6 py-4 font-black">Ngày tạo</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
-                    <th className="px-6 py-4 font-black text-right">Hành động</th>
+                    <th className="px-6 py-4 font-black text-right">
+                      Hành động
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
@@ -510,22 +528,24 @@ export default function CompaniesPage() {
                             comp.status === "Active"
                               ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
                               : comp.status === "Suspended"
-                              ? "bg-[#f3727f]/10 text-[#f3727f] border-[#f3727f]/20"
-                              : "bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]"
+                                ? "bg-[#f3727f]/10 text-[#f3727f] border-[#f3727f]/20"
+                                : "bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]"
                           }`}
                         >
                           {comp.status === "Active"
                             ? "Hoạt động"
                             : comp.status === "Suspended"
-                            ? "Đình chỉ"
-                            : "Ngừng HĐ"}
+                              ? "Đình chỉ"
+                              : "Ngừng HĐ"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           {comp.status === "Suspended" && (
                             <Button
-                              onClick={() => handleUpdateStatus(comp._id, "Active")}
+                              onClick={() =>
+                                handleUpdateStatus(comp._id, "Active")
+                              }
                               className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
                             >
                               Kích hoạt
@@ -533,7 +553,9 @@ export default function CompaniesPage() {
                           )}
                           {comp.status === "Active" && (
                             <Button
-                              onClick={() => handleUpdateStatus(comp._id, "Suspended")}
+                              onClick={() =>
+                                handleUpdateStatus(comp._id, "Suspended")
+                              }
                               className="bg-[#f59e0b]/10 hover:bg-[#f59e0b] text-[#f59e0b] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
                             >
                               Đình chỉ
@@ -562,7 +584,11 @@ export default function CompaniesPage() {
                                   Xóa công ty này?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Công ty <span className="text-[#121212] dark:text-[#ffffff]">{comp.companyName}</span> sẽ được đưa vào thùng rác.
+                                  Công ty{" "}
+                                  <span className="text-[#121212] dark:text-[#ffffff]">
+                                    {comp.companyName}
+                                  </span>{" "}
+                                  sẽ được đưa vào thùng rác.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -609,7 +635,9 @@ export default function CompaniesPage() {
                   ))}
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
                     />
                   </PaginationItem>

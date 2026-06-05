@@ -10,14 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Plus,
-  Trash2,
-  Building2,
-  Loader2,
-  Pencil,
-  Search,
-} from "lucide-react";
+import { Plus, Trash2, Building2, Loader2, Pencil, Search } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
@@ -131,8 +124,10 @@ export default function ProvidersPage() {
     }
 
     const validator = new JustValidate(formRef.current, {
-      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
-      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+      errorFieldCssClass:
+        "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass:
+        "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
     });
 
     validatorRef.current = validator;
@@ -162,7 +157,8 @@ export default function ProvidersPage() {
         {
           rule: "customRegexp",
           value: /^([A-Z]{3}(,\s*[A-Z]{3})*)?$/,
-          errorMessage: "Mã BIC phải gồm 3 chữ in hoa, cách nhau bởi dấu phẩy (VD: HLX, HLY).",
+          errorMessage:
+            "Mã BIC phải gồm 3 chữ in hoa, cách nhau bởi dấu phẩy (VD: HLX, HLY).",
         },
       ])
       .onSuccess(async (event: any) => {
@@ -204,7 +200,9 @@ export default function ProvidersPage() {
           setShowForm(false);
           fetchProviders();
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", { id: loadingToast });
+          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", {
+            id: loadingToast,
+          });
         }
       });
 
@@ -240,11 +238,13 @@ export default function ProvidersPage() {
         `Đã chuyển trạng thái sang: ${
           newStatus === "ACTIVE" ? "Hoạt động" : "Đình chỉ"
         }`,
-        { id: loadingToast }
+        { id: loadingToast },
       );
       fetchProviders();
     } catch (err: any) {
-      toast.error(err.message || "Không thể cập nhật trạng thái.", { id: loadingToast });
+      toast.error(err.message || "Không thể cập nhật trạng thái.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -269,7 +269,9 @@ export default function ProvidersPage() {
       toast.success("Đã chuyển hãng tàu vào thùng rác.", { id: loadingToast });
       fetchProviders();
     } catch (err: any) {
-      toast.error(err.message || "Không thể xóa hãng tàu.", { id: loadingToast });
+      toast.error(err.message || "Không thể xóa hãng tàu.", {
+        id: loadingToast,
+      });
     }
   };
 
@@ -277,7 +279,7 @@ export default function ProvidersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
             Quản lý hãng tàu
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
@@ -318,7 +320,10 @@ export default function ProvidersPage() {
             <form ref={formRef} id="providerForm" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <Label htmlFor="code" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="code"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Mã hãng tàu
                   </Label>
                   <Input
@@ -329,7 +334,10 @@ export default function ProvidersPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="name" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="name"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Tên hãng tàu
                   </Label>
                   <Input
@@ -340,7 +348,10 @@ export default function ProvidersPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="contact_email" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="contact_email"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Email liên hệ
                   </Label>
                   <Input
@@ -352,7 +363,10 @@ export default function ProvidersPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="bic_codes" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  <Label
+                    htmlFor="bic_codes"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
                     Mã BIC (Tùy chọn)
                   </Label>
                   <Input
@@ -403,7 +417,7 @@ export default function ProvidersPage() {
                   className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
-              
+
               <div className="relative z-10 w-[200px]">
                 <CustomSelect
                   value={statusFilter}
@@ -462,7 +476,9 @@ export default function ProvidersPage() {
                     <th className="px-6 py-4 font-black">Email</th>
                     <th className="px-6 py-4 font-black">Ngày tạo</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
-                    <th className="px-6 py-4 font-black text-right">Hành động</th>
+                    <th className="px-6 py-4 font-black text-right">
+                      Hành động
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
@@ -505,7 +521,9 @@ export default function ProvidersPage() {
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           {comp.status === "SUSPENDED" && (
                             <Button
-                              onClick={() => handleUpdateStatus(comp._id, "ACTIVE")}
+                              onClick={() =>
+                                handleUpdateStatus(comp._id, "ACTIVE")
+                              }
                               className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
                             >
                               Kích hoạt
@@ -513,13 +531,17 @@ export default function ProvidersPage() {
                           )}
                           {comp.status === "ACTIVE" && (
                             <Button
-                              onClick={() => handleUpdateStatus(comp._id, "SUSPENDED")}
+                              onClick={() =>
+                                handleUpdateStatus(comp._id, "SUSPENDED")
+                              }
                               className="bg-[#f59e0b]/10 hover:bg-[#f59e0b] text-[#f59e0b] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
                             >
                               Đình chỉ
                             </Button>
                           )}
-                          <Link href={`/admin/container-providers/edit/${comp._id}`}>
+                          <Link
+                            href={`/admin/container-providers/edit/${comp._id}`}
+                          >
                             <Button
                               className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
                               title="Chỉnh sửa"
@@ -542,7 +564,11 @@ export default function ProvidersPage() {
                                   Xóa hãng tàu này?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Hãng tàu <span className="text-[#121212] dark:text-[#ffffff]">{comp.name}</span> sẽ được đưa vào thùng rác.
+                                  Hãng tàu{" "}
+                                  <span className="text-[#121212] dark:text-[#ffffff]">
+                                    {comp.name}
+                                  </span>{" "}
+                                  sẽ được đưa vào thùng rác.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -589,7 +615,9 @@ export default function ProvidersPage() {
                   ))}
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       className={`rounded-[500px] font-bold ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727]"}`}
                     />
                   </PaginationItem>

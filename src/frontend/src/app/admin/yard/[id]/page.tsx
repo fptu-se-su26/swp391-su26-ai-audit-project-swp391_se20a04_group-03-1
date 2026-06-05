@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -11,6 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ArrowLeft,
   Loader2,
@@ -24,15 +25,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-
-interface SlotRect {
-  _id: string;
-  slotName: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import toast from "react-hot-toast";
 
 interface MockActivity {
   id: string;
@@ -77,7 +70,7 @@ export default function YardDetailPage() {
       setEditName(yardData.name);
       setEditCameraIp(yardData.cameraIp);
     } catch (err: any) {
-      console.error(err);
+      toast.error(err.message || "Không tải được dữ liệu bãi đỗ");
     } finally {
       setLoading(false);
     }
@@ -85,6 +78,7 @@ export default function YardDetailPage() {
 
   const handleSaveInfo = async () => {
     setIsSaving(true);
+    const loadingToast = toast.loading("Đang lưu thông tin...");
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yards/${id}/info`, {
         method: "PATCH",
@@ -96,47 +90,41 @@ export default function YardDetailPage() {
       if (data.code === "success") {
         setYard(data.data);
         setIsEditingInfo(false);
+        toast.success("Đã lưu thông tin bãi đỗ", { id: loadingToast });
       } else {
-        alert(data.message);
+        toast.error(data.message || "Lỗi lưu thông tin", { id: loadingToast });
       }
-    } catch (err) {
-      console.error(err);
-      alert("Lỗi lưu thông tin");
+    } catch (err: any) {
+      toast.error("Lỗi lưu thông tin", { id: loadingToast });
     } finally {
       setIsSaving(false);
     }
   };
 
   useEffect(() => {
-    // 1. Kết nối tới gốc của server Backend (không có đuôi /api)
     const backendUrl =
       process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
       "http://localhost:4000";
     const socket: Socket = io(backendUrl);
 
-    // 2. Báo cho Backend biết để join vào đúng room của bãi đỗ này
     socket.on("connect", () => {
-      console.log("Đã kết nối Socket tới hệ thống giám sát AI!");
       socket.emit("join_yard", id);
     });
 
-    // 3. Lắng nghe dữ liệu AI đẩy về
     socket.on("yard_status_updated", (data: any) => {
       const newOccupiedSlots: string[] = data.occupied_slots;
       const timestamp: string = data.timestamp;
 
-      // Cập nhật State và sinh ra Activity Logs
       setOccupiedSlotNames((prevOccupied) => {
         const newActivities: MockActivity[] = [];
 
-        // A. Tìm xe mới đi vào (Có trong mảng mới, KHÔNG có trong mảng cũ)
         const enteredSlots = newOccupiedSlots.filter(
           (slot) => !prevOccupied.includes(slot),
         );
         enteredSlots.forEach((slot) => {
           newActivities.push({
             id: `act-in-${Date.now()}-${slot}`,
-            truckPlate: "Xe vô danh", // Tương lai nếu YOLO OCR đọc được biển số, bạn truyền biển số từ AI sang đây
+            truckPlate: "Xe vô danh",
             containerNo: "-",
             slotName: slot,
             timeIn: new Date(timestamp).toLocaleTimeString("vi-VN", {
@@ -147,7 +135,6 @@ export default function YardDetailPage() {
           });
         });
 
-        // B. Tìm xe vừa rời đi (Có trong mảng cũ, KHÔNG có trong mảng mới)
         const leftSlots = prevOccupied.filter(
           (slot) => !newOccupiedSlots.includes(slot),
         );
@@ -165,19 +152,16 @@ export default function YardDetailPage() {
           });
         });
 
-        // C. Nhét thêm log mới lên đầu mảng Activity (Chỉ giữ tối đa 50 logs gần nhất cho nhẹ mượt)
         if (newActivities.length > 0) {
           setActivities((prevActivities) => {
             return [...newActivities, ...prevActivities].slice(0, 50);
           });
         }
 
-        // D. Trả về mảng danh sách ô đang có xe đỗ để React tự động đếm "Đã chiếm", "Còn trống"
         return newOccupiedSlots;
       });
     });
 
-    // 4. Dọn dẹp kết nối khi người dùng rời khỏi trang
     return () => {
       socket.disconnect();
     };
@@ -185,9 +169,9 @@ export default function YardDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-        <Loader2 className="h-8 w-8 animate-spin mb-2" />
-        <p>Đang tải dữ liệu bãi đỗ...</p>
+      <div className="flex flex-col items-center justify-center py-20 bg-[#ffffff] dark:bg-[#181818] rounded-[16px] border border-[#e5e5e5] dark:border-[#272727]">
+        <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
+        <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">Đang tải dữ liệu bãi đỗ...</p>
       </div>
     );
   }
@@ -201,39 +185,41 @@ export default function YardDetailPage() {
   const emptySlotsCount = totalSlots - occupiedSlotsCount;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4 w-full max-w-2xl">
+        <div className="flex items-center gap-4 w-full max-w-3xl">
           <Link href="/admin/yard">
-            <Button variant="outline" size="icon" className="h-9 w-9 shrink-0">
+            <Button
+              variant="outline"
+              size="icon"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-full shrink-0"
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           {isEditingInfo ? (
-            <div className="space-y-2 flex-1">
-              <input
-                type="text"
+            <div className="space-y-3 flex-1">
+              <Input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="block w-full px-3 py-1 text-xl font-bold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Tên bãi đỗ..."
+                className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
               />
-              <input
-                type="text"
+              <Input
                 value={editCameraIp}
                 onChange={(e) => setEditCameraIp(e.target.value)}
-                className="block w-full px-3 py-1 text-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="RTSP Camera URL..."
+                className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
               />
             </div>
           ) : (
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Giám sát bãi đỗ: {yard.name}
+              <h1 className="text-[24px] md:text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
+                {yard.name}
               </h1>
-              <p className="text-sm text-slate-500 flex items-center gap-1 mt-1 break-all">
-                <Video className="h-3 w-3 shrink-0" />
-                Live Stream: {yard.cameraIp}
+              <p className="text-[#666666] dark:text-[#999999] font-bold mt-1 flex items-center gap-1.5 break-all text-[12px] uppercase tracking-wider">
+                <Video className="h-3.5 w-3.5 shrink-0 text-[#1ed760]" />
+                Live: {yard.cameraIp}
               </p>
             </div>
           )}
@@ -241,22 +227,34 @@ export default function YardDetailPage() {
 
         <div>
           {isEditingInfo ? (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" onClick={() => {
-                setIsEditingInfo(false);
-                setEditName(yard.name);
-                setEditCameraIp(yard.cameraIp);
-              }}>
-                <X className="h-4 w-4 mr-1" /> Hủy
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditingInfo(false);
+                  setEditName(yard.name);
+                  setEditCameraIp(yard.cameraIp);
+                }}
+                className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6"
+              >
+                Hủy
               </Button>
-              <Button onClick={handleSaveInfo} disabled={isSaving}>
-                {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Save className="h-4 w-4 mr-1" />}
+              <Button
+                onClick={handleSaveInfo}
+                disabled={isSaving}
+                className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-wider px-6 rounded-[500px]"
+              >
+                {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Lưu
               </Button>
             </div>
           ) : (
-            <Button variant="outline" onClick={() => setIsEditingInfo(true)}>
-              <Settings className="h-4 w-4 mr-2" />
+            <Button
+              variant="outline"
+              onClick={() => setIsEditingInfo(true)}
+              className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6 gap-2"
+            >
+              <Settings className="h-4 w-4" />
               Cấu hình
             </Button>
           )}
@@ -265,73 +263,67 @@ export default function YardDetailPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 border-blue-100 dark:border-blue-900/30 shadow-sm">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
-              <LayoutGrid className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                Tổng số ô đỗ
-              </p>
-              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                {totalSlots}
-              </h3>
-            </div>
-          </CardContent>
+        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm flex items-center p-6 gap-4 border-l-4 border-l-[#00754A]">
+          <div className="h-12 w-12 bg-[#f8f8f8] dark:bg-[#121212] rounded-full flex items-center justify-center border border-[#e5e5e5] dark:border-[#272727]">
+            <LayoutGrid className="h-5 w-5 text-[#00754A]" />
+          </div>
+          <div>
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666666] dark:text-[#999999]">
+              Tổng số ô đỗ
+            </p>
+            <h3 className="text-2xl font-black text-[#121212] dark:text-[#ffffff]">
+              {totalSlots}
+            </h3>
+          </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/10 dark:to-orange-900/10 border-red-100 dark:border-red-900/30 shadow-sm">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg">
-              <Car className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                Đã chiếm
-              </p>
-              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                {occupiedSlotsCount}
-              </h3>
-            </div>
-          </CardContent>
+        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm flex items-center p-6 gap-4 border-l-4 border-l-[#f3727f]">
+          <div className="h-12 w-12 bg-[#f8f8f8] dark:bg-[#121212] rounded-full flex items-center justify-center border border-[#e5e5e5] dark:border-[#272727]">
+            <Car className="h-5 w-5 text-[#f3727f]" />
+          </div>
+          <div>
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666666] dark:text-[#999999]">
+              Đã chiếm
+            </p>
+            <h3 className="text-2xl font-black text-[#121212] dark:text-[#ffffff]">
+              {occupiedSlotsCount}
+            </h3>
+          </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 border-green-100 dark:border-green-900/30 shadow-sm">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
-              <Box className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                Còn trống
-              </p>
-              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                {emptySlotsCount}
-              </h3>
-            </div>
-          </CardContent>
+        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm flex items-center p-6 gap-4 border-l-4 border-l-[#1ed760]">
+          <div className="h-12 w-12 bg-[#f8f8f8] dark:bg-[#121212] rounded-full flex items-center justify-center border border-[#e5e5e5] dark:border-[#272727]">
+            <Box className="h-5 w-5 text-[#1ed760]" />
+          </div>
+          <div>
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666666] dark:text-[#999999]">
+              Còn trống
+            </p>
+            <h3 className="text-2xl font-black text-[#121212] dark:text-[#ffffff]">
+              {emptySlotsCount}
+            </h3>
+          </div>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Video / Snapshot View */}
         <div className="lg:col-span-2">
-          <Card className="h-full border-slate-200 dark:border-slate-800 overflow-hidden shadow-md">
-            <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b dark:border-slate-800 py-3 px-4 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+          <Card className="h-full bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-hidden">
+            <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] py-4 px-6 flex flex-row items-center justify-between">
+              <CardTitle className="text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 text-[#121212] dark:text-[#ffffff]">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f3727f] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f3727f]"></span>
                 </span>
                 Live Camera (AI Detection)
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 bg-slate-900 relative aspect-video">
+            <CardContent className="p-0 bg-[#000000] relative aspect-video">
               <img
                 src={`${process.env.NEXT_PUBLIC_CV_URL || "http://localhost:5001"}/yard_feed?yard_id=${id}`}
                 alt="Live AI Stream"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </CardContent>
           </Card>
@@ -339,49 +331,51 @@ export default function YardDetailPage() {
 
         {/* Recent Activities List */}
         <div className="lg:col-span-1">
-          <Card className="h-full border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
-            <CardHeader className="py-4 border-b dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Clock className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                Hoạt động gần đây
+          <Card className="h-full bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm flex flex-col overflow-hidden">
+            <CardHeader className="py-6 px-6 border-b border-[#e5e5e5] dark:border-[#272727] bg-[#f8f8f8] dark:bg-[#121212]">
+              <CardTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider flex items-center gap-2">
+                <Clock className="h-5 w-5 text-[#1ed760]" />
+                Hoạt động
               </CardTitle>
-              <CardDescription>Các lượt xe ra vào bãi đỗ</CardDescription>
+              <CardDescription className="text-[12px] font-bold text-[#666666] dark:text-[#999999] uppercase tracking-wider mt-1">
+                Các lượt xe ra vào bãi đỗ
+              </CardDescription>
             </CardHeader>
             <CardContent className="p-0 flex-1 overflow-y-auto max-h-[400px]">
               {activities.length === 0 ? (
-                <div className="p-6 text-center text-slate-500 dark:text-slate-400 text-sm">
+                <div className="p-8 text-center text-[#999999] font-bold text-[14px]">
                   Chưa có hoạt động nào.
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                <div className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                   {activities.map((act) => (
                     <div
                       key={act.id}
-                      className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                      className="p-4 hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors"
                     >
-                      <div className="flex items-start justify-between mb-1">
-                        <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="font-bold text-[#121212] dark:text-[#ffffff] text-[14px] uppercase tracking-wider">
                           {act.truckPlate}
                         </span>
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-bold text-[#121212] dark:text-[#ffffff] bg-[#e5e5e5] dark:bg-[#272727] px-2 py-1 rounded-[4px] uppercase tracking-wider">
                           {act.timeIn}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center gap-4 text-[12px] font-bold">
                         <span
-                          className={`flex items-center gap-1 font-medium ${
+                          className={`flex items-center gap-1.5 uppercase tracking-wider ${
                             act.status === "In"
-                              ? "text-red-600 dark:text-red-400"
-                              : "text-green-600 dark:text-green-400"
+                              ? "text-[#f3727f]"
+                              : "text-[#1ed760]"
                           }`}
                         >
-                          <Car className="h-3 w-3" />
+                          <Car className="h-3.5 w-3.5" />
                           {act.status === "In"
                             ? `Vào ô ${act.slotName}`
                             : `Rời ô ${act.slotName}`}
                         </span>
-                        <span className="flex items-center gap-1 font-mono">
-                          <Box className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+                        <span className="flex items-center gap-1.5 text-[#666666] dark:text-[#999999] uppercase tracking-wider">
+                          <Box className="h-3.5 w-3.5" />
                           {act.containerNo}
                         </span>
                       </div>

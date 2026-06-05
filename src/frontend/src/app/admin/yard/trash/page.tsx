@@ -12,13 +12,9 @@ import {
   Trash2,
   RefreshCcw,
   Loader2,
-  AlertCircle,
-  CheckCircle,
   ArrowLeft,
   Video
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +26,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface Yard {
   _id: string;
@@ -43,12 +42,9 @@ interface Yard {
 export default function TrashYardsPage() {
   const [yards, setYards] = useState<Yard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const fetchYards = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yards/trash/list`, {
         credentials: "include",
@@ -61,7 +57,7 @@ export default function TrashYardsPage() {
 
       setYards(data.data || []);
     } catch (err: any) {
-      setError(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách thùng rác.");
     } finally {
       setLoading(false);
     }
@@ -72,9 +68,8 @@ export default function TrashYardsPage() {
   }, [fetchYards]);
 
   const handleRestoreYard = async (id: string) => {
+    const loadingToast = toast.loading("Đang khôi phục...");
     try {
-      setError(null);
-      setSuccessMsg(null);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yards/${id}/restore`, {
         method: "PATCH",
         credentials: "include",
@@ -85,17 +80,16 @@ export default function TrashYardsPage() {
         throw new Error(result.message || "Lỗi khi khôi phục bãi đỗ.");
       }
 
-      setSuccessMsg("Khôi phục bãi đỗ thành công.");
+      toast.success("Khôi phục bãi đỗ thành công.", { id: loadingToast });
       fetchYards();
     } catch (err: any) {
-      setError(err.message || "Không thể khôi phục bãi đỗ.");
+      toast.error(err.message || "Không thể khôi phục bãi đỗ.", { id: loadingToast });
     }
   };
 
   const handleHardDeleteYard = async (id: string) => {
+    const loadingToast = toast.loading("Đang xóa vĩnh viễn...");
     try {
-      setError(null);
-      setSuccessMsg(null);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/yards/${id}/force`, {
         method: "DELETE",
         credentials: "include",
@@ -106,63 +100,54 @@ export default function TrashYardsPage() {
         throw new Error(result.message || "Lỗi khi xóa vĩnh viễn.");
       }
 
-      setSuccessMsg("Đã xóa vĩnh viễn bãi đỗ.");
+      toast.success("Đã xóa vĩnh viễn bãi đỗ.", { id: loadingToast });
       fetchYards();
     } catch (err: any) {
-      setError(err.message || "Không thể xóa vĩnh viễn bãi đỗ.");
+      toast.error(err.message || "Không thể xóa vĩnh viễn bãi đỗ.", { id: loadingToast });
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
-            Thùng rác Bãi đỗ
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Các camera bãi đỗ đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
-          </p>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/yard">
+            <Button
+              variant="outline"
+              size="icon"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+              Thùng rác Bãi đỗ
+            </h1>
+            <p className="text-[#f3727f] font-bold mt-1 uppercase tracking-wider text-[12px]">
+              Các bãi đỗ đã bị xóa
+            </p>
+          </div>
         </div>
-        <Link href="/admin/yard">
-          <Button variant="outline" className="gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            Quay lại danh sách
-          </Button>
-        </Link>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 dark:bg-red-900/10 dark:text-red-400 rounded-lg border border-red-200/50 dark:border-red-900/50">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 dark:bg-green-900/10 dark:text-green-400 rounded-lg border border-green-200/50 dark:border-green-900/50">
-          <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-2" />
-          <p>Đang tải dữ liệu...</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-[#ffffff] dark:bg-[#181818] rounded-[16px] border border-[#e5e5e5] dark:border-[#272727]">
+          <Loader2 className="h-10 w-10 animate-spin text-[#1ed760] mb-4" />
+          <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">Đang tải dữ liệu...</p>
         </div>
       ) : yards.length === 0 ? (
-        <Card className="border-dashed border-2 shadow-none bg-slate-50/50 dark:bg-slate-900 dark:border-slate-800">
-          <CardContent className="flex flex-col items-center justify-center py-12 text-slate-500 dark:text-slate-400">
-            <Trash2 className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-2" />
-            <p>Thùng rác trống.</p>
+        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm border-dashed border-2">
+          <CardContent className="flex flex-col items-center justify-center py-20 text-[#666666] dark:text-[#b3b3b3]">
+            <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
+            <p className="font-bold text-[14px]">Thùng rác trống.</p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {yards.map((yard) => (
-            <Card key={yard._id} className="overflow-hidden border-slate-200 dark:border-slate-800 shadow-sm opacity-75">
-              <div className="relative h-40 bg-slate-100 dark:bg-slate-800 grayscale">
+            <Card key={yard._id} className="overflow-hidden bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm opacity-75 grayscale hover:grayscale-0 transition-all duration-200">
+              <div className="relative h-40 bg-[#f8f8f8] dark:bg-[#121212]">
                 <img
                   src={yard.snapshotUrl || 'https://placehold.co/600x400/png?text=No+Camera'}
                   onError={(e) => {
@@ -171,46 +156,54 @@ export default function TrashYardsPage() {
                   alt={yard.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                <div className="absolute top-3 right-3 bg-[#121212]/80 text-[#ffffff] font-bold text-[10px] px-3 py-1.5 rounded-[4px] uppercase tracking-wider backdrop-blur-sm">
                   {yard.slots?.length || 0} ô đỗ
                 </div>
               </div>
-              <CardHeader className="pb-4 bg-slate-50 dark:bg-slate-900">
-                <CardTitle className="text-xl text-slate-700 dark:text-slate-200">{yard.name}</CardTitle>
-                <CardDescription className="flex items-center gap-1.5 mt-1">
-                  <Video className="h-3.5 w-3.5" />
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider truncate">
+                  {yard.name}
+                </CardTitle>
+                <CardDescription className="flex items-center gap-1.5 mt-2 font-bold text-[#666666] dark:text-[#999999] truncate text-[12px]">
+                  <Video className="h-4 w-4 shrink-0" />
                   {yard.cameraIp}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-4 flex gap-2 justify-end bg-white dark:bg-slate-950">
+              <CardContent className="p-4 flex gap-2 justify-end bg-[#f8f8f8] dark:bg-[#121212] border-t border-[#e5e5e5] dark:border-[#272727]">
                 <Button
                   onClick={() => handleRestoreYard(yard._id)}
                   variant="outline"
-                  className="gap-2 flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
+                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#1ed760] hover:border-[#1ed760] hover:text-[#121212] rounded-[500px] font-bold text-[12px] uppercase tracking-wider h-9 px-4 transition-all duration-200 flex-1"
                 >
-                  <RefreshCcw className="h-4 w-4" />
+                  <RefreshCcw className="h-4 w-4 mr-2" />
                   Khôi phục
                 </Button>
-                
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" className="gap-2 flex-1 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300">
-                      <Trash2 className="h-4 w-4" />
+                    <Button
+                      variant="outline"
+                      className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f3727f] hover:border-[#f3727f] hover:text-[#ffffff] rounded-[500px] font-bold text-[12px] uppercase tracking-wider h-9 px-4 transition-all duration-200 flex-1"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
                       Xóa vĩnh viễn
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Bạn có chắc chắn muốn xóa vĩnh viễn?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Hành động này không thể hoàn tác. Dữ liệu của bãi đỗ "{yard.name}" sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                      <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">
+                        Xác nhận xóa vĩnh viễn
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
+                        Bạn có chắc chắn muốn xóa vĩnh viễn bãi đỗ <span className="text-[#121212] dark:text-[#ffffff]">{yard.name}</span>? Dữ liệu sẽ không thể khôi phục.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Hủy</AlertDialogCancel>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                      <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">
+                        Hủy
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleHardDeleteYard(yard._id)}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-[#f3727f] hover:bg-[#d95b66] text-[#ffffff] font-black uppercase tracking-wider px-6 rounded-[500px] border-none"
                       >
                         Xóa vĩnh viễn
                       </AlertDialogAction>
