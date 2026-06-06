@@ -13,8 +13,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Container Port Management",
-  description: "Hệ thống quản lý cảng container thông minh",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://datnotes.click"),
+  title: {
+    template: "%s | Logiport",
+    default: "Logiport | Hệ thống quản lý cảng container thông minh",
+  },
+  description: "Logiport là nền tảng quản lý bãi đỗ, lịch hẹn và điều phối xe ra vào cảng container thông minh, giúp tối ưu hóa luồng vận hành logistics.",
+  keywords: ["logistics", "quản lý cảng", "container", "bến bãi", "đặt lịch xe", "port management", "logiport"],
+  authors: [{ name: "Logiport Team" }],
+  creator: "Logiport",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+    other: {
+      rel: "apple-touch-icon-precomposed",
+      url: "/icon.svg",
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: "/",
+    title: "Logiport | Hệ thống quản lý cảng container thông minh",
+    description: "Nền tảng quản lý bãi đỗ, lịch hẹn và điều phối xe ra vào cảng container thông minh, giúp tối ưu hóa luồng vận hành logistics.",
+    siteName: "Logiport",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Logiport | Hệ thống quản lý cảng",
+    description: "Nền tảng quản lý bãi đỗ và điều phối container thông minh.",
+  },
   viewport: {
     width: "device-width",
     initialScale: 1,
