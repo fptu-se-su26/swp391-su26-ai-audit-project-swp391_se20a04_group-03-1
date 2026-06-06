@@ -2,8 +2,14 @@ import { AdminLayout } from "@/components/layout/admin-layout"
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
-  title: "Container Port Management - Admin",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | Logiport",
+    default: "Hệ thống Quản lý Cảng | Logiport",
+  },
+  description: "Hệ thống quản lý cảng container hiện đại.",
 }
 
 export default function RootLayout({
