@@ -12,25 +12,27 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import {
   Eye,
   EyeOff,
   Ship,
-  User,
   Lock,
-  Mail,
-  Shield,
-  CheckCircle2,
+  ArrowLeft,
+  KeyRound,
+  ShieldCheck
 } from "lucide-react";
 import JustValidate from "just-validate";
 import toast from "react-hot-toast";
-import { CustomSelect } from "@/components/CustomSelect";
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
+  const params = useParams();
+  const email = decodeURIComponent((params?.email as string) || "");
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState("operator");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -51,21 +53,19 @@ export default function RegisterPage() {
     });
 
     validator
-      .addField("#fullName", [
-        { rule: "required", errorMessage: "Vui lòng nhập họ tên." },
-      ])
-      .addField("#email", [
-        { rule: "required", errorMessage: "Vui lòng nhập email." },
-        { rule: "email", errorMessage: "Email không hợp lệ." },
+      .addField("#otp", [
+        { rule: "required", errorMessage: "Vui lòng nhập mã OTP." },
+        { rule: "minLength", value: 6, errorMessage: "OTP gồm 6 số." },
+        { rule: "maxLength", value: 6, errorMessage: "OTP gồm 6 số." },
       ])
       .addField("#password", [
-        { rule: "required", errorMessage: "Vui lòng nhập mật khẩu." },
+        { rule: "required", errorMessage: "Vui lòng nhập mật khẩu mới." },
         { rule: "minLength", value: 6, errorMessage: "Mật khẩu tối thiểu 6 ký tự." },
       ])
       .addField("#confirmPassword", [
-        { rule: "required", errorMessage: "Vui lòng xác nhận mật khẩu." },
+        { rule: "required", errorMessage: "Vui lòng xác nhận mật khẩu mới." },
         {
-          validator: (value: string, fields: any) => {
+          validator: (value: any, fields: any) => {
             if (fields["#password"] && fields["#password"].elem) {
               const repeatPasswordValue = (fields["#password"].elem as HTMLInputElement).value;
               return value === repeatPasswordValue;
@@ -74,28 +74,24 @@ export default function RegisterPage() {
           },
           errorMessage: "Mật khẩu không khớp.",
         },
-      ])
-      .addField("#agreeTerms", [
-        { rule: "required", errorMessage: "Bạn cần đồng ý với điều khoản." },
       ]);
 
     validator.onSuccess(async (event?: Event) => {
       if (event) event.preventDefault();
 
       setIsLoading(true);
-      const loadingToast = toast.loading("Đang xử lý đăng ký...");
+      const loadingToast = toast.loading("Đang xác thực và cập nhật mật khẩu...");
 
       try {
         const formData = new FormData(formRef.current!);
         const payload = {
-          fullName: formData.get("fullName") as string,
-          email: formData.get("email") as string,
-          role: formData.get("role") as string,
+          email: email,
+          otp: formData.get("otp") as string,
           password: formData.get("password") as string,
         };
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -106,13 +102,13 @@ export default function RegisterPage() {
         const data = await response.json();
 
         if (data.code === "error") {
-          throw new Error(data.message || "Đăng ký thất bại. Vui lòng thử lại.");
+          throw new Error(data.message || "Xác thực thất bại. Vui lòng thử lại.");
         }
 
-        toast.success("Tạo tài khoản thành công!", { id: loadingToast });
+        toast.success("Đặt lại mật khẩu thành công!", { id: loadingToast });
         setTimeout(() => {
-          window.location.href = "/admin/login";
-        }, 2000);
+          router.push("/client/company/login");
+        }, 1800);
       } catch (err: any) {
         toast.error(err.message, { 
           id: loadingToast,
@@ -131,7 +127,7 @@ export default function RegisterPage() {
         validatorRef.current.destroy();
       }
     };
-  }, []);
+  }, [email, router]);
 
   return (
     <div className="min-h-screen w-full flex bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] font-sans transition-colors duration-300">
@@ -145,23 +141,23 @@ export default function RegisterPage() {
             LogiPort
           </Link>
           <h1 className="text-5xl font-black leading-[1.1] mt-16 tracking-tight">
-            Kiến tạo tương lai <br />
-            <span className="text-[#1ed760]">Logistics Tự Động</span>
+            Khôi Phục <br />
+            <span className="text-[#1ed760]">Bảo Mật</span>
           </h1>
           <p className="mt-6 text-[#666666] dark:text-[#b3b3b3] max-w-md text-[16px] font-normal leading-[1.6]">
-            Đăng ký ngay tài khoản công vụ để tham gia điều phối thông minh, tối ưu hóa quá trình xuất nhập tại cảng lớn nhất.
+            Mã OTP xác thực 6 số đã được chuyển tới email doanh nghiệp của bạn. Vui lòng kiểm tra và điền vào để thiết lập lại mật khẩu an toàn.
           </p>
         </div>
 
         <div className="relative z-10 bg-[#f8f8f8] dark:bg-[#1f1f1f] border border-[#e5e5e5] dark:border-[#272727] rounded-[8px] p-6 max-w-md shadow-sm dark:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-colors duration-300">
           <div className="flex gap-4 items-start">
             <div className="w-12 h-12 rounded-[500px] bg-[#1ed760]/10 flex items-center justify-center shrink-0">
-              <Shield className="text-[#1ed760] h-6 w-6" />
+              <ShieldCheck className="text-[#1ed760] h-6 w-6" />
             </div>
             <div>
-              <h4 className="font-bold text-[18px]">Bảo Mật Hệ Thống</h4>
+              <h4 className="font-bold text-[18px]">Xác Thực Hai Yếu Tố</h4>
               <p className="text-[14px] text-[#666666] dark:text-[#b3b3b3] mt-2 leading-[1.6]">
-                Dữ liệu tài khoản của cán bộ điều hành được mã hóa nhiều lớp, tuân thủ nghiêm ngặt quy chuẩn bảo mật quốc tế.
+                Việc cung cấp mã OTP giúp đảm bảo tài khoản quản trị viên hoàn toàn nằm trong quyền kiểm soát của bạn.
               </p>
             </div>
           </div>
@@ -170,7 +166,7 @@ export default function RegisterPage() {
 
       {/* Right Side - Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 overflow-y-auto">
-        <div className="w-full max-w-[420px] py-12">
+        <div className="w-full max-w-[420px]">
           <div className="lg:hidden text-center mb-10">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-[500px] bg-[#1ed760]/10 mb-4">
               <Ship className="h-8 w-8 text-[#1ed760]" />
@@ -183,75 +179,37 @@ export default function RegisterPage() {
           <Card className="bg-[#ffffff] dark:bg-[#181818] border-none shadow-[0_8px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.5)] text-[#121212] dark:text-[#ffffff] rounded-[8px] overflow-hidden transition-colors duration-300">
             <CardHeader className="space-y-2 pb-6 pt-10">
               <CardTitle className="text-3xl font-black text-center tracking-tight">
-                Đăng Ký Mới
+                Thiết Lập Mật Khẩu
               </CardTitle>
               <CardDescription className="text-center text-[#666666] dark:text-[#b3b3b3] text-[14px]">
-                Thiết lập tài khoản công vụ cho cán bộ
+                Nhập mã xác thực từ <span className="text-[#1ed760] font-bold">{email}</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="px-10 pb-10">
-              <form ref={formRef} className="space-y-5">
+              <form ref={formRef} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Họ và tên
+                  <Label htmlFor="otp" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
+                    Mã Xác Thực OTP
                   </Label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
-                      <User className="h-5 w-5" />
+                      <KeyRound className="h-5 w-5" />
                     </span>
                     <Input
-                      id="fullName"
-                      name="fullName"
+                      id="otp"
+                      name="otp"
                       type="text"
-                      placeholder="Nguyễn Văn A"
+                      maxLength={6}
+                      placeholder="Nhập 6 số"
                       disabled={isLoading}
-                      className="pl-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Email công vụ
-                  </Label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
-                      <Mail className="h-5 w-5" />
-                    </span>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="admin@port.com"
-                      disabled={isLoading}
-                      className="pl-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="role" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Bộ phận vận hành
-                  </Label>
-                  <div className="relative">
-                    <CustomSelect
-                      id="role"
-                      name="role"
-                      value={role}
-                      onChange={setRole}
-                      options={[
-                        { value: "operator", label: "Cán bộ Bãi (Yard Operator)" },
-                        { value: "gatekeeper", label: "Kiểm soát Cổng (Gatekeeper)" },
-                        { value: "admin", label: "Quản trị Hệ thống (System Admin)" },
-                        { value: "technician", label: "Kỹ thuật viên (Crane Tech)" }
-                      ]}
+                      className="pl-12 py-6 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#1ed760] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-mono font-black text-[20px] tracking-widest"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Mật khẩu
+                    Mật khẩu mới
                   </Label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
@@ -263,7 +221,7 @@ export default function RegisterPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Tối thiểu 6 ký tự"
                       disabled={isLoading}
-                      className="pl-12 pr-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
+                      className="pl-12 pr-12 py-6 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
                     />
                     <button
                       type="button"
@@ -278,7 +236,7 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Xác nhận mật khẩu
+                    Xác nhận lại
                   </Label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
@@ -290,7 +248,7 @@ export default function RegisterPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Nhập lại mật khẩu"
                       disabled={isLoading}
-                      className="pl-12 pr-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
+                      className="pl-12 pr-12 py-6 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
                     />
                     <button
                       type="button"
@@ -303,35 +261,19 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 pt-2">
-                  <input
-                    id="agreeTerms"
-                    name="agreeTerms"
-                    type="checkbox"
-                    disabled={isLoading}
-                    className="mt-1 h-5 w-5 rounded-[4px] border-[#e5e5e5] dark:border-[#272727] bg-[#f8f8f8] dark:bg-[#121212] accent-[#1ed760] cursor-pointer"
-                  />
-                  <Label htmlFor="agreeTerms" className="text-[12px] text-[#666666] dark:text-[#b3b3b3] font-normal leading-relaxed cursor-pointer select-none">
-                    Tôi đồng ý tuân thủ các quy định bảo mật nội bộ và hệ thống quản trị LogiPort.
-                  </Label>
-                </div>
-
                 <Button
                   type="submit"
-                  className="w-full bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[2px] py-7 rounded-[500px] transition-all duration-200 mt-6 border-none text-[14px]"
+                  className="w-full bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[2px] py-7 rounded-[500px] transition-all duration-200 mt-4 border-none text-[14px]"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Đang xử lý..." : "Đăng ký tài khoản"}
+                  {isLoading ? "Đang xử lý..." : "Cập nhật mật khẩu"}
                 </Button>
               </form>
 
-              <div className="mt-8 pt-6 border-t border-[#e5e5e5] dark:border-[#272727] text-[14px] text-center text-[#666666] dark:text-[#b3b3b3] font-bold">
-                <p>
-                  Đã có tài khoản?{" "}
-                  <Link href="/admin/login" className="text-[#121212] dark:text-[#ffffff] hover:text-[#1ed760] transition-colors ml-1 uppercase tracking-wider text-[12px]">
-                    Đăng nhập
-                  </Link>
-                </p>
+              <div className="mt-8 pt-6 border-t border-[#e5e5e5] dark:border-[#272727] text-[14px] text-center">
+                <Link href="/client/company/login" className="inline-flex items-center gap-2 text-[#666666] dark:text-[#b3b3b3] hover:text-[#121212] dark:hover:text-[#ffffff] uppercase tracking-wider transition-colors font-bold text-[12px]">
+                  <ArrowLeft className="h-4 w-4" /> Về Đăng Nhập
+                </Link>
               </div>
             </CardContent>
           </Card>
