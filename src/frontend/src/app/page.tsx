@@ -147,9 +147,14 @@ export default function HomePage() {
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
             <div className="hidden sm:flex gap-3">
+              <Link href="/client/company/login">
+                <Button variant="ghost" className="rounded-[500px] font-bold uppercase tracking-[1.5px] px-6 text-[#121212] dark:text-[#ffffff]">
+                  Doanh nghiệp
+                </Button>
+              </Link>
               <Link href="/admin/login">
                 <Button variant="ghost" className="rounded-[500px] font-bold uppercase tracking-[1.5px] px-6 text-[#121212] dark:text-[#ffffff]">
-                  Đăng nhập
+                  Admin
                 </Button>
               </Link>
               <Link href="/admin/dashboard">

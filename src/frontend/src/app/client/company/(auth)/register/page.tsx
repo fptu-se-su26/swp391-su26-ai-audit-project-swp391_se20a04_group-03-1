@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState("operator");
+  const [role, setRole] = useState("transport");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -111,7 +111,7 @@ export default function RegisterPage() {
 
         toast.success("Tạo tài khoản thành công!", { id: loadingToast });
         setTimeout(() => {
-          window.location.href = "/admin/login";
+          window.location.href = "/client/company/login";
         }, 2000);
       } catch (err: any) {
         toast.error(err.message, { 
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             <span className="text-[#1ed760]">Logistics Tự Động</span>
           </h1>
           <p className="mt-6 text-[#666666] dark:text-[#b3b3b3] max-w-md text-[16px] font-normal leading-[1.6]">
-            Đăng ký ngay tài khoản công vụ để tham gia điều phối thông minh, tối ưu hóa quá trình xuất nhập tại cảng lớn nhất.
+            Đăng ký ngay tài khoản doanh nghiệp để tham gia điều phối thông minh, tối ưu hóa quá trình xuất nhập tại cảng lớn nhất.
           </p>
         </div>
 
@@ -186,7 +186,7 @@ export default function RegisterPage() {
                 Đăng Ký Mới
               </CardTitle>
               <CardDescription className="text-center text-[#666666] dark:text-[#b3b3b3] text-[14px]">
-                Thiết lập tài khoản công vụ cho cán bộ
+                Thiết lập tài khoản doanh nghiệp
               </CardDescription>
             </CardHeader>
             <CardContent className="px-10 pb-10">
@@ -212,7 +212,7 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Email công vụ
+                    Email doanh nghiệp
                   </Label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
@@ -222,7 +222,7 @@ export default function RegisterPage() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="admin@port.com"
+                      placeholder="company@domain.com"
                       disabled={isLoading}
                       className="pl-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
                     />
@@ -231,7 +231,7 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="role" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Bộ phận vận hành
+                    Loại hình doanh nghiệp
                   </Label>
                   <div className="relative">
                     <CustomSelect
@@ -240,10 +240,10 @@ export default function RegisterPage() {
                       value={role}
                       onChange={setRole}
                       options={[
-                        { value: "operator", label: "Cán bộ Bãi (Yard Operator)" },
-                        { value: "gatekeeper", label: "Kiểm soát Cổng (Gatekeeper)" },
-                        { value: "admin", label: "Quản trị Hệ thống (System Admin)" },
-                        { value: "technician", label: "Kỹ thuật viên (Crane Tech)" }
+                        { value: "transport", label: "Đơn vị Vận Tải" },
+                        { value: "forwarder", label: "Công ty Forwarder" },
+                        { value: "shipping_line", label: "Hãng Tàu" },
+                        { value: "importer_exporter", label: "Chủ hàng XNK" }
                       ]}
                     />
                   </div>
@@ -328,7 +328,7 @@ export default function RegisterPage() {
               <div className="mt-8 pt-6 border-t border-[#e5e5e5] dark:border-[#272727] text-[14px] text-center text-[#666666] dark:text-[#b3b3b3] font-bold">
                 <p>
                   Đã có tài khoản?{" "}
-                  <Link href="/admin/login" className="text-[#121212] dark:text-[#ffffff] hover:text-[#1ed760] transition-colors ml-1 uppercase tracking-wider text-[12px]">
+                  <Link href="/client/company/login" className="text-[#121212] dark:text-[#ffffff] hover:text-[#1ed760] transition-colors ml-1 uppercase tracking-wider text-[12px]">
                     Đăng nhập
                   </Link>
                 </p>
