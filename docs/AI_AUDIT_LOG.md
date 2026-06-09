@@ -1953,6 +1953,116 @@ Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách 
 
 ---
 
+### Lần sử dụng AI số 15
+
+| Nội dung            | Thông tin                                    |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng        | 07/06/2026                                   |
+| Công cụ AI          | Antigravity                                  |
+| Mục đích sử dụng    | Xây dựng giao diện xác thực cho doanh nghiệp |
+| Phần việc liên quan | Coding                                       |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                |
+| Phần liên quan      | Company Portal                               |
+
+#### 15.1. Prompt đã sử dụng
+
+```text
+Phân tích src/frontend/DESIGN.md và src/frontend.
+
+Bạn là 1 senior Next.js và có kinh nghiệm nhiều năm tạo giao diện.
+
+Tôi đã có sẵn các trang thuộc phần src/frontend/src/app/admin, trong này chứa giao diện dành cho các tính năng của bên quản trị viên và của hệ thống.
+
+Bây giờ tôi cần bạn triển khai các trang cho bên company sẽ nằm trong src/frontend/src/app/client/company.
+
+Cần thực hiện các bước như sau:
+1. Ở trang landing page, sẽ có phần liên kết tới trang giao diện đăng nhập cho công ty.
+2. Các trang xác thực của công ty sẽ nằm trong src/frontend/src/app/client/company/(auth), bao gồm tất cả các trang giống như bên admin.
+
+Trước tiên tôi cần bạn hoàn thành các nhiệm vụ này.
+
+Lưu ý:
+- Chưa cần fetch API.
+- Phải theo file DESIGN.md.
+- Đồng bộ giao diện với các trang admin thành một thể thống nhất.
+- Không để CSS ở trang này một kiểu, trang kia một kiểu.
+```
+
+#### 15.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các trang quản trị dành cho Admin, nhóm bắt đầu triển khai giao diện dành cho doanh nghiệp sử dụng hệ thống.
+
+Mục tiêu là tạo ra khu vực xác thực riêng cho Company Portal nhưng vẫn giữ phong cách thiết kế thống nhất với hệ thống Admin hiện có.
+
+Ở giai đoạn này nhóm chỉ tập trung vào giao diện và cấu trúc route, chưa cần kết nối API.
+```
+
+#### 15.3. Kết quả AI gợi ý
+
+```text
+AI đề xuất triển khai giao diện xác thực cho doanh nghiệp dựa trên cấu trúc sẵn có của Admin.
+
+Các công việc chính gồm:
+- Cập nhật Landing Page và thêm nút điều hướng đến trang đăng nhập doanh nghiệp.
+- Tạo thư mục client/company/(auth).
+- Tạo các trang Login, Register, Forgot Password và Reset Password.
+- Tái sử dụng bố cục và phong cách giao diện từ Admin Auth.
+- Điều chỉnh nội dung text, ví dụ email và đường dẫn cho phù hợp với tài khoản doanh nghiệp.
+- Chỉnh sửa danh sách loại hình doanh nghiệp ở trang đăng ký.
+```
+
+#### 15.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Thêm nút “Doanh nghiệp” tại Landing Page để điều hướng tới trang đăng nhập công ty.
+- Tạo nhóm trang xác thực cho Company tại client/company/(auth).
+- Xây dựng các trang Login, Register, Forgot Password và Reset Password.
+- Đồng bộ giao diện Company Auth với Admin Auth.
+- Điều chỉnh nội dung hiển thị từ ngữ cảnh Admin sang ngữ cảnh doanh nghiệp.
+```
+
+#### 15.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Kiểm tra lại giao diện để đảm bảo đồng bộ với file DESIGN.md.
+- Chỉnh sửa text hiển thị cho phù hợp với đối tượng người dùng là doanh nghiệp.
+- Thay đổi ví dụ email từ admin sang email doanh nghiệp.
+- Cập nhật các đường dẫn điều hướng từ /admin sang /client/company.
+- Điều chỉnh danh sách loại hình doanh nghiệp như Đơn vị vận tải, Forwarder, Hãng tàu, Chủ hàng XNK.
+```
+
+#### 15.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 15.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                                                                                                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                                                                                                                                                                   |
+| File liên quan        | `src/frontend/src/app/page.tsx`, `src/frontend/src/app/client/company/(auth)/login/page.tsx`, `src/frontend/src/app/client/company/(auth)/register/page.tsx`, `src/frontend/src/app/client/company/(auth)/forgot-password/page.tsx`, `src/frontend/src/app/client/company/(auth)/reset-password/[email]/page.tsx` |
+| Screenshot            | Landing Page có nút Doanh nghiệp và các trang xác thực Company                                                                                                                                                                                                                                                    |
+| Kết quả chạy/test     | Điều hướng đúng sang Company Auth, giao diện hiển thị đồng bộ với Admin                                                                                                                                                                                                                                           |
+| Link tài liệu/báo cáo |                                                                                                                                                                                                                                                                                                                   |
+| Ghi chú khác          |                                                                                                                                                                                                                                                                                                                   |
+
+#### 15.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi phát triển nhiều nhóm người dùng trong cùng một hệ thống, việc tái sử dụng cấu trúc giao diện sẵn có giúp tiết kiệm thời gian, đồng thời đảm bảo trải nghiệm người dùng nhất quán và dễ bảo trì.
+```
+
+---
+
+
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
 Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.

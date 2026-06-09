@@ -2202,6 +2202,124 @@ Ops / Improvements: Đề xuất thêm shim cho CSS types, điều chỉnh icon 
 
 ---
 
+### Prompt số 15
+
+| Nội dung            | Thông tin                                         |
+| ------------------- | ------------------------------------------------- |
+| Ngày sử dụng        | 07/06/2026                                        |
+| Công cụ AI          | Antigravity                                       |
+| Mục đích            | Xây dựng giao diện xác thực dành cho doanh nghiệp |
+| Phần việc liên quan | Coding                                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                     |
+| Phần liên quan      | Company Portal                                    |
+
+#### 15.1. Prompt nguyên văn
+
+```text
+Phân tích src/frontend/DESIGN.md và src/frontend.
+
+Bạn là một senior Next.js và có nhiều năm kinh nghiệm thiết kế giao diện.
+
+Tôi đã có sẵn các trang thuộc src/frontend/src/app/admin dành cho quản trị viên.
+
+Bây giờ tôi cần triển khai các trang cho doanh nghiệp tại:
+
+src/frontend/src/app/client/company
+
+Cần thực hiện các bước sau:
+
+1. Ở trang landing page sẽ có phần liên kết tới giao diện đăng nhập dành cho doanh nghiệp.
+2. Các trang xác thực của doanh nghiệp sẽ nằm trong:
+   src/frontend/src/app/client/company/(auth)
+
+Bao gồm tất cả các trang giống như bên admin.
+
+Trước tiên hãy hoàn thành các nhiệm vụ này.
+
+Lưu ý:
+- Chưa cần fetch API.
+- Phải tuân thủ theo DESIGN.md.
+- Giao diện phải đồng bộ với hệ thống admin.
+- Không được để mỗi khu vực một kiểu giao diện khác nhau.
+```
+
+#### 15.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các chức năng dành cho quản trị viên, nhóm bắt đầu triển khai cổng thông tin dành cho doanh nghiệp.
+
+Mục tiêu là xây dựng hệ thống xác thực riêng cho doanh nghiệp nhưng vẫn giữ được sự đồng nhất về giao diện và trải nghiệm người dùng trên toàn hệ thống.
+
+Trong giai đoạn này nhóm chỉ tập trung xây dựng giao diện và cấu trúc trang, chưa kết nối với Backend API.
+```
+
+#### 15.3. Kết quả AI trả về
+
+```text
+AI đề xuất tái sử dụng cấu trúc giao diện và kiến trúc từ module xác thực của Admin để đảm bảo tính nhất quán.
+
+Các chức năng được triển khai gồm:
+- Bổ sung liên kết đăng nhập doanh nghiệp trên Landing Page.
+- Tạo nhóm route xác thực dành cho doanh nghiệp.
+- Xây dựng các trang:
+  + Login
+  + Register
+  + Forgot Password
+  + Reset Password
+- Tạo layout riêng cho Company Auth.
+- Điều chỉnh nội dung hiển thị phù hợp với ngữ cảnh doanh nghiệp.
+- Đồng bộ thiết kế theo chuẩn trong DESIGN.md.
+```
+
+#### 15.4. Kết quả đã áp dụng vào bài
+
+```text
+- Bổ sung nút truy cập dành cho doanh nghiệp trên Landing Page.
+- Tạo cấu trúc thư mục client/company/(auth).
+- Xây dựng các giao diện Login, Register, Forgot Password và Reset Password.
+- Đồng bộ giao diện với hệ thống Admin.
+- Điều chỉnh nội dung hiển thị phù hợp với doanh nghiệp vận tải và logistics.
+```
+
+#### 15.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh các nội dung hiển thị để phù hợp với đối tượng sử dụng là doanh nghiệp.
+- Thay đổi các ví dụ email và thông tin mô tả cho phù hợp với môi trường thực tế.
+- Điều chỉnh danh sách loại hình doanh nghiệp trong màn hình đăng ký.
+- Kiểm tra lại tính thống nhất giữa Company Portal và Admin Portal.
+```
+
+#### 15.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 15.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                                                              |
+| File liên quan        | `src/frontend/src/app/page.tsx`, `src/frontend/src/app/client/company/(auth)/login/page.tsx`, `src/frontend/src/app/client/company/(auth)/register/page.tsx` |
+| Screenshot            | Landing Page và các trang xác thực doanh nghiệp                                                                                                              |
+| Kết quả chạy/test     | Điều hướng và giao diện hoạt động đúng theo thiết kế                                                                                                         |
+| Link tài liệu/báo cáo |                                                                                                                                                              |
+| Ghi chú khác          | Đây là bước đầu tiên để xây dựng cổng thông tin dành cho doanh nghiệp.                                                                                       |
+
+#### 15.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi phát triển nhiều nhóm người dùng khác nhau trong cùng một hệ thống, việc tái sử dụng cấu trúc giao diện và các component sẵn có giúp giảm thời gian phát triển, đồng thời đảm bảo tính nhất quán và dễ bảo trì về lâu dài.
+```
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 > > > > > > > main
