@@ -103,7 +103,7 @@ export default function YardDetailPage() {
 
   useEffect(() => {
     const backendUrl =
-      process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
+      process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") ||
       "http://localhost:4000";
     const socket: Socket = io(backendUrl);
 
