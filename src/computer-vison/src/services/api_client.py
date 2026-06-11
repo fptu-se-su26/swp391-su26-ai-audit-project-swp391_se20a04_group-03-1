@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 # Ensure the project root (computer-vison/) is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -62,7 +62,7 @@ def send_scan_event(text: str, scan_type: str, confidence: float, gate_type: str
         "confidence": round(confidence, 4),
         "status": gate_type, # sent to backend as status indicating gate type
         "cameraIp": camera_ip,
-        "timestamp": datetime.utcnow().isoformat() + "Z"
+        "timestamp": datetime.now(timezone(timedelta(hours=7))).isoformat()
     }
     
     print(f"[API Client] Sending event: {payload}")
