@@ -1,3 +1,6 @@
+// Force local timezone to Asia/Ho_Chi_Minh to fix all setHours() issues on cloud servers
+process.env.TZ = "Asia/Ho_Chi_Minh";
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
