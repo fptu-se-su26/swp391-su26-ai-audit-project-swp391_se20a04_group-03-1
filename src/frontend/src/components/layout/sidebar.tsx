@@ -14,6 +14,7 @@ import {
   Building2,
   IdCard,
   Ship,
+  Settings
 } from "lucide-react"
 
 interface SidebarProps {
@@ -119,6 +120,26 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </Link>
             )
           })}
+
+          <div className="pt-4 pb-2">
+            <div className="h-px w-full bg-[#e5e5e5] dark:bg-[#272727]" />
+          </div>
+
+          <Link
+            href="/admin/settings"
+            className={cn(
+              "flex items-center gap-4 px-5 py-3.5 rounded-[500px] text-[14px] font-bold transition-all duration-200",
+              pathname.startsWith("/admin/settings")
+                ? "bg-[#1ed760] text-[#121212] shadow-sm transform scale-[1.02]"
+                : "text-[#666666] dark:text-[#b3b3b3] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff]"
+            )}
+          >
+            <Settings className={cn(
+              "h-5 w-5 transition-transform duration-200",
+              pathname.startsWith("/admin/settings") ? "text-[#121212]" : "text-[#999999] dark:text-[#666666] group-hover:text-[#121212] dark:group-hover:text-[#ffffff]"
+            )} />
+            <span className={cn(pathname.startsWith("/admin/settings") && "uppercase tracking-wider text-[13px]")}>Cài đặt chung</span>
+          </Link>
         </nav>
       </aside>
     </>
