@@ -2124,6 +2124,114 @@ Kinh nghiệm rút ra: Khi phát triển nhiều nhóm người dùng khác nhau
 
 ---
 
+### Prompt số 16
+
+| Nội dung            | Thông tin                                         |
+| ------------------- | ------------------------------------------------- |
+| Ngày sử dụng        | 03/06/2026                                        |
+| Công cụ AI          | Antigravity                                       |
+| Mục đích            | Xây dựng chức năng quản lí nhà cung cấp container |
+| Phần việc liên quan | Coding                                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                     |
+| Phần liên quan      | Container Provider Management                     |
+
+#### 16.1. Prompt nguyên văn
+
+```text
+Phân tích src/frontend/src/app/admin/.
+
+Tôi muốn tạo và hoàn thiện trang quản lí nhà cung cấp container:
+
+1. Tạo trang nhà cung cấp container bao gồm trang chính, trang trash, trang create, trang edit,... tương tự như src/frontend/src/app/admin/companies.
+
+2. Tạo model container-provider:
+- code (4 kí tự đầu của mã container)
+- name
+- bic_codes (Danh sách mã Prefix 3 chữ cái được đăng ký quốc tế)
+- contact_email (Để hệ thống tự động gửi cảnh báo rỉ sét)
+- status: ENUM('ACTIVE', 'SUSPENDED')
+- timestamp
+
+Theo dạng mẫu các model có sẵn trong dự án.
+
+3. Triển khai các tính năng như tìm kiếm, bộ lọc, phân trang ở trang chính và cả trang thùng rác.
+
+Lưu ý: code backend phải theo thói quen viết backend hiện tại của tôi.
+```
+
+#### 16.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các chức năng quản lí công ty, tài xế và lịch hẹn, nhóm tiếp tục mở rộng hệ thống bằng việc bổ sung module quản lí nhà cung cấp container.
+
+Mục tiêu là quản lí thông tin các hãng sở hữu container, phục vụ việc theo dõi, kiểm tra và cảnh báo tình trạng container trong quá trình vận hành tại cảng.
+```
+
+#### 16.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng module Container Provider theo kiến trúc tương tự Company Management để đảm bảo tính nhất quán.
+
+Các chức năng chính gồm:
+- Tạo model ContainerProvider.
+- Xây dựng API CRUD.
+- Hỗ trợ Soft Delete và Trash Management.
+- Xây dựng các trang List, Create, Edit và Trash.
+- Tích hợp tìm kiếm theo mã hoặc tên nhà cung cấp.
+- Hỗ trợ bộ lọc trạng thái ACTIVE và SUSPENDED.
+- Hỗ trợ phân trang cho danh sách chính và thùng rác.
+- Đề xuất chuẩn hóa dữ liệu BIC Code và Container Code để thuận tiện cho việc kiểm tra container trong tương lai.
+```
+
+#### 16.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế cấu trúc dữ liệu ContainerProvider.
+- Xây dựng các trang quản lí nhà cung cấp container.
+- Áp dụng mô hình CRUD tương tự Company Management.
+- Tích hợp chức năng tìm kiếm, bộ lọc và phân trang.
+- Bổ sung cơ chế quản lí dữ liệu đã xóa thông qua Trash Page.
+```
+
+#### 16.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Điều chỉnh cấu trúc dữ liệu để phù hợp với nghiệp vụ quản lí container thực tế.
+- Chuẩn hóa định dạng mã code và BIC Code.
+- Kiểm tra và tối ưu giao diện để đồng bộ với các module quản trị khác.
+- Chuẩn bị nền tảng để tích hợp các chức năng cảnh báo tình trạng container trong tương lai.
+```
+
+#### 16.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 16.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                                                              |
+| File liên quan        | `src/backend/models/container-provider.model.ts`, `src/backend/controllers/container-providers.controller.ts`, `src/frontend/src/app/admin/container-providers/page.tsx` |
+| Screenshot            | Trang quản lí nhà cung cấp container                                                                                                               |
+| Kết quả chạy/test     | CRUD, tìm kiếm, lọc và phân trang hoạt động đúng kế                                                                                                         |
+| Link tài liệu/báo cáo |                                                                                                                                                              |
+| Ghi chú khác          | Đây là bước đầu tiên để xây dựng cổng thông tin dành cho doanh nghiệp.                                                                                       |
+
+#### 16.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Việc tái sử dụng kiến trúc và giao diện từ các module quản lí đã có giúp giảm thời gian phát triển đáng kể, đồng thời đảm bảo tính nhất quán và khả năng bảo trì của hệ thống khi số lượng module ngày càng tăng.
+```
+
+---
+
 ## 6. Prompt quan trọng nhất
 
 > > > > > > > main
