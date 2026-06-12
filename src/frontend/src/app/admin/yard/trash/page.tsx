@@ -121,7 +121,7 @@ export default function TrashYardsPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+            <h1 className="text-4xl font-black text-[#f3727f] tracking-tight uppercase">
               Thùng rác Bãi đỗ
             </h1>
             <p className="text-[#f3727f] font-bold mt-1 uppercase tracking-wider text-[12px]">

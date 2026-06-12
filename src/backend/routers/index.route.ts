@@ -8,6 +8,7 @@ import driversRouter from "./drivers.route";
 import { requireAuth } from "../middlewares/auth.middleware";
 import scanRouter from "./scan.route";
 import containerProvidersRouter from "./container-providers.route";
+import settingsRouter from "./settings.route";
 
 const rootRouter = Router();
 
@@ -20,5 +21,6 @@ rootRouter.use("/gates", requireAuth, gateRouter);
 rootRouter.use("/drivers", requireAuth, driversRouter);
 rootRouter.use("/container-providers", requireAuth, containerProvidersRouter);
 rootRouter.use("/scan", scanRouter);
+rootRouter.use("/settings", requireAuth, settingsRouter);
 
 export default rootRouter;

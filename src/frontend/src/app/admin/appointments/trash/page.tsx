@@ -221,7 +221,7 @@ export default function TrashAppointmentsPage() {
                   placeholder="Tìm biển số, container..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                  className="pl-11 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#f3727f] dark:focus-visible:border-[#f3727f] hover:border-[#f3727f] transition-colors"
                 />
               </div>
               <div className="relative z-10 w-[200px]">
@@ -328,7 +328,7 @@ export default function TrashAppointmentsPage() {
                         <p className="font-bold text-[#121212] dark:text-[#ffffff]">
                           {apt.driverId?.driverName || "Chưa xác định"}
                         </p>
-                        <p className="text-[#666666] dark:text-[#b3b3b3] font-mono text-[12px] mt-1">
+                        <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
                           {apt.driverId?.driverPhone || "-"}
                         </p>
                       </td>
