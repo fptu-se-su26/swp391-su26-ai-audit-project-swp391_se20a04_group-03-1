@@ -1,15 +1,15 @@
+#include <Arduino.h>
 #include <WiFi.h>
 #include "AudioFileSourceHTTPStream.h"
 #include "AudioGeneratorWAV.h"
 #include "AudioOutputI2S.h"
 
 // Khai báo thông tin Wi-Fi
-const char* ssid = "LAB";
-const char* password = "FPUu@0925";
+const char* ssid = "TranViet";
+const char* password = "123456789";
 
 // Địa chỉ IP của máy tính đang chạy Server FastAPI
-// Hãy thay IP bên dưới bằng IPv4 thật của máy tính bạn (giữ nguyên /get-audio/)
-const char* audioURL = "http://10.13.0.71:8000/get-audio/";
+const char* audioURL = "http://10.62.167.57:8000/get-audio/";
 
 AudioGeneratorWAV *wav;
 AudioFileSourceHTTPStream *file;
