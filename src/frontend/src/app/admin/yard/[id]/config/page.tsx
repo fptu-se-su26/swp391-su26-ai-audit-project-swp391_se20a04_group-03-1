@@ -25,10 +25,11 @@ import toast from "react-hot-toast";
 interface SlotRect {
   id: string; // temp id for UI
   slotName: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  points?: { x: number; y: number }[];
 }
 
 export default function YardConfigPage() {
@@ -45,10 +46,11 @@ export default function YardConfigPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [isDrawing, setIsDrawing] = useState(false);
-  const [draggingSlot, setDraggingSlot] = useState<{
+  const [draggingNode, setDraggingNode] = useState<{
     id: string;
-    offsetX: number;
-    offsetY: number;
+    pointIndex?: number;
+    lastMouseX?: number;
+    lastMouseY?: number;
   } | null>(null);
 
   useEffect(() => {
@@ -71,6 +73,12 @@ export default function YardConfigPage() {
       const existingSlots =
         data.data.slots?.map((s: any) => ({
           ...s,
+          points: s.points && s.points.length === 4 ? s.points : [
+             {x: s.x || 10, y: s.y || 10},
+             {x: (s.x || 10) + (s.width || 20), y: s.y || 10},
+             {x: (s.x || 10) + (s.width || 20), y: (s.y || 10) + (s.height || 20)},
+             {x: s.x || 10, y: (s.y || 10) + (s.height || 20)}
+          ],
           id: Math.random().toString(36).substr(2, 9),
         })) || [];
       setSlots(existingSlots);
@@ -98,28 +106,12 @@ export default function YardConfigPage() {
     });
   };
 
-  const handleSlotMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>,
-    slot: SlotRect,
-  ) => {
-    e.stopPropagation(); // Prevent triggering drawing
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
 
-    const clickX = ((e.clientX - rect.left) / rect.width) * 100;
-    const clickY = ((e.clientY - rect.top) / rect.height) * 100;
-
-    setDraggingSlot({
-      id: slot.id,
-      offsetX: clickX - slot.x,
-      offsetY: clickY - slot.y,
-    });
-  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
 
-    if (!isDrawing && !draggingSlot) return;
+    if (!isDrawing && !draggingNode) return;
 
     const rect = containerRef.current.getBoundingClientRect();
 
@@ -130,21 +122,25 @@ export default function YardConfigPage() {
     currentX = Math.max(0, Math.min(100, currentX));
     currentY = Math.max(0, Math.min(100, currentY));
 
-    if (draggingSlot) {
+    if (draggingNode) {
       setSlots(
         slots.map((s) => {
-          if (s.id === draggingSlot.id) {
-            let newX = currentX - draggingSlot.offsetX;
-            let newY = currentY - draggingSlot.offsetY;
-
-            newX = Math.max(0, Math.min(100 - s.width, newX));
-            newY = Math.max(0, Math.min(100 - s.height, newY));
-
-            return { ...s, x: newX, y: newY };
+          if (s.id === draggingNode.id) {
+             if (draggingNode.pointIndex !== undefined) {
+                 const newPoints = [...s.points!];
+                 newPoints[draggingNode.pointIndex] = { x: currentX, y: currentY };
+                 return { ...s, points: newPoints };
+             } else {
+                 const dx = currentX - draggingNode.lastMouseX!;
+                 const dy = currentY - draggingNode.lastMouseY!;
+                 const newPoints = s.points!.map(p => ({ x: p.x + dx, y: p.y + dy }));
+                 return { ...s, points: newPoints };
+             }
           }
           return s;
-        }),
+        })
       );
+      setDraggingNode({...draggingNode, lastMouseX: currentX, lastMouseY: currentY});
       return;
     }
 
@@ -158,8 +154,8 @@ export default function YardConfigPage() {
   };
 
   const handleMouseUp = () => {
-    if (draggingSlot) {
-      setDraggingSlot(null);
+    if (draggingNode) {
+      setDraggingNode(null);
       return;
     }
 
@@ -175,10 +171,13 @@ export default function YardConfigPage() {
       const newSlot: SlotRect = {
         id: Math.random().toString(36).substr(2, 9),
         slotName: `Slot ${slots.length + 1}`,
-        x,
-        y,
-        width,
-        height,
+        x, y, width, height,
+        points: [
+           {x, y},
+           {x: x+width, y},
+           {x: x+width, y: y+height},
+           {x, y: y+height}
+        ]
       };
       setSlots([...slots, newSlot]);
     }
@@ -335,24 +334,65 @@ export default function YardConfigPage() {
                   draggable={false}
                 />
 
-                {/* Render Existing Slots */}
-                {slots.map((slot) => (
+                {/* Render Existing Slots - Polygons */}
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+                  {slots.map(slot => {
+                     if (!slot.points || slot.points.length < 4) return null;
+                     const pts = slot.points.map(p => `${p.x},${p.y}`).join(' ');
+                     return (
+                        <polygon 
+                           key={slot.id}
+                           points={pts} 
+                           fill="rgba(30, 215, 96, 0.2)" 
+                           stroke="#1ed760" 
+                           strokeWidth="2" 
+                           vectorEffect="non-scaling-stroke"
+                           className="cursor-move pointer-events-auto"
+                           onMouseDown={(e) => {
+                              e.stopPropagation();
+                              if (!containerRef.current) return;
+                              const rect = containerRef.current.getBoundingClientRect();
+                              setDraggingNode({
+                                id: slot.id,
+                                lastMouseX: ((e.clientX - rect.left) / rect.width) * 100,
+                                lastMouseY: ((e.clientY - rect.top) / rect.height) * 100,
+                              });
+                           }}
+                        />
+                     )
+                  })}
+                </svg>
+
+                {/* Render Handles */}
+                {slots.map(slot => slot.points?.map((p, i) => (
                   <div
-                    key={slot.id}
-                    className="absolute border-2 border-[#1ed760] bg-[#1ed760]/20 flex flex-col items-center justify-center cursor-move"
-                    onMouseDown={(e) => handleSlotMouseDown(e, slot)}
-                    style={{
-                      left: `${slot.x}%`,
-                      top: `${slot.y}%`,
-                      width: `${slot.width}%`,
-                      height: `${slot.height}%`,
+                    key={`${slot.id}-${i}`}
+                    className="absolute w-3 h-3 bg-white border-2 border-[#1ed760] rounded-full cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${p.x}%`, top: `${p.y}%`, zIndex: 20 }}
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      setDraggingNode({ id: slot.id, pointIndex: i });
                     }}
-                  >
-                    <span className="bg-[#121212]/80 text-[#ffffff] font-bold text-[10px] px-2 py-1 rounded-[4px] shadow-sm whitespace-nowrap uppercase tracking-wider backdrop-blur-sm">
-                      {slot.slotName}
-                    </span>
-                  </div>
-                ))}
+                  />
+                )))}
+
+                {/* Render Texts */}
+                {slots.map(slot => {
+                  if (!slot.points) return null;
+                  const tx = Math.min(...slot.points.map(p => p.x));
+                  const ty = Math.min(...slot.points.map(p => p.y));
+                  return (
+                    <div
+                      key={`text-${slot.id}`}
+                      className="absolute pointer-events-none"
+                      style={{ left: `${tx}%`, top: `${ty}%`, transform: 'translateY(-100%)', zIndex: 10 }}
+                    >
+                      <span className="bg-[#121212]/80 text-[#ffffff] font-bold text-[10px] px-2 py-1 rounded-[4px] shadow-sm whitespace-nowrap uppercase tracking-wider backdrop-blur-sm">
+                        {slot.slotName}
+                      </span>
+                    </div>
+                  )
+                })}
 
                 {/* Render Drawing Rectangle */}
                 {drawingRect && (

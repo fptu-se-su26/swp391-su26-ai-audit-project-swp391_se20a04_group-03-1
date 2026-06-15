@@ -51,6 +51,7 @@ export default function EditAppointmentPage({
   } | null>(null);
   const [selectedDriverCompany, setSelectedDriverCompany] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [selectedPurpose, setSelectedPurpose] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -75,6 +76,9 @@ export default function EditAppointmentPage({
         setAppointment(result.data);
         if (result.data.timeSlot) {
           setSelectedTimeSlot(result.data.timeSlot);
+        }
+        if (result.data.purpose) {
+          setSelectedPurpose(result.data.purpose);
         }
         if (result.data.status) {
           setSelectedStatus(result.data.status);
@@ -119,8 +123,8 @@ export default function EditAppointmentPage({
         { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
-          value: /^([0-9]{2})([A-Z]{1})([0-9]{5})$/,
-          errorMessage: "Định dạng sai (VD: 15C12345).",
+          value: /^[0-9]{2}[A-Z][A-Z0-9]?[0-9]{4,5}$/,
+          errorMessage: "Định dạng sai (VD: 15C12345, 29H112345).",
         },
       ])
       .addField("#containerNo", [
@@ -135,6 +139,7 @@ export default function EditAppointmentPage({
         { rule: "required", errorMessage: "Bắt buộc." },
       ])
       .addField("#timeSlot", [{ rule: "required", errorMessage: "Bắt buộc." }])
+      .addField("#purpose", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .addField("#status", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .onSuccess(async (event: any) => {
         event.preventDefault();
@@ -157,6 +162,7 @@ export default function EditAppointmentPage({
             ?.toString()
             .trim()
             .toUpperCase(),
+          purpose: selectedPurpose,
           scheduledDate: formData.get("scheduledDate")?.toString(),
           timeSlot: selectedTimeSlot,
           status: selectedStatus,
@@ -194,7 +200,7 @@ export default function EditAppointmentPage({
         validatorRef.current = null;
       }
     };
-  }, [loading, router, selectedTimeSlot, selectedStatus]);
+  }, [loading, router, selectedTimeSlot, selectedStatus, selectedPurpose]);
 
   if (loading) {
     return (
@@ -346,6 +352,27 @@ export default function EditAppointmentPage({
                   />
                 </div>
               </div>
+                <div className="space-y-3 relative">
+                  <Label
+                    htmlFor="purpose"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mục đích
+                  </Label>
+                  <div className="relative">
+                    <CustomSelect
+                      id="purpose"
+                      name="purpose"
+                      value={selectedPurpose}
+                      onChange={setSelectedPurpose}
+                      options={[
+                        { value: "Lấy container", label: "Lấy container" },
+                        { value: "Trả container", label: "Trả container" },
+                      ]}
+                      placeholder="-- Chọn mục đích --"
+                    />
+                  </div>
+                </div>
               <div className="space-y-3 relative">
                 <Label
                   htmlFor="status"

@@ -19,12 +19,18 @@ export const yardsGet = async (req: Request, res: Response) => {
 export const createYardPost = async (req: Request, res: Response) => {
   try {
     const { name, cameraIp } = req.body;
-    const existYard = await Yard.findOne({ cameraIp: cameraIp });
+    const existYard = await Yard.findOne({
+      cameraIp: cameraIp,
+      isDeleted: false,
+    });
     if (existYard) {
       return res.json({ code: "error", message: "Camera IP đã tồn tại" });
       return;
     }
-    const otherExistCamera = await Gate.findOne({ cameraIp: cameraIp });
+    const otherExistCamera = await Gate.findOne({
+      cameraIp: cameraIp,
+      isDeleted: false,
+    });
     if (otherExistCamera) {
       return res.json({
         code: "error",

@@ -81,6 +81,7 @@ interface Appointment {
     companyId?: { companyName: string };
   };
   containerNo: string;
+  purpose: "Lấy container" | "Trả container";
   scheduledDate: string;
   timeSlot: string;
   status:
@@ -111,6 +112,7 @@ export default function AppointmentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [selectedPurpose, setSelectedPurpose] = useState("");
   const ITEMS_PER_PAGE = 10;
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -198,8 +200,8 @@ export default function AppointmentsPage() {
         { rule: "required", errorMessage: "Bắt buộc." },
         {
           rule: "customRegexp",
-          value: /^([0-9]{2})([A-Z]{1})([0-9]{5})$/,
-          errorMessage: "Định dạng sai (VD: 15C12345).",
+          value: /^[0-9]{2}[A-Z][A-Z0-9]?[0-9]{4,5}$/,
+          errorMessage: "Định dạng sai (VD: 15C12345, 29H112345).",
         },
       ])
       .addField("#containerNo", [
@@ -214,6 +216,7 @@ export default function AppointmentsPage() {
         { rule: "required", errorMessage: "Bắt buộc." },
       ])
       .addField("#timeSlot", [{ rule: "required", errorMessage: "Bắt buộc." }])
+      .addField("#purpose", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
@@ -234,6 +237,7 @@ export default function AppointmentsPage() {
             ?.toString()
             .trim()
             .toUpperCase(),
+          purpose: selectedPurpose,
           scheduledDate: formData.get("scheduledDate")?.toString(),
           timeSlot: selectedTimeSlot,
         };
@@ -271,7 +275,7 @@ export default function AppointmentsPage() {
         validatorRef.current = null;
       }
     };
-  }, [showForm, fetchAppointments, selectedTimeSlot]);
+  }, [showForm, fetchAppointments, selectedTimeSlot, selectedPurpose]);
 
   // Update Status
   const handleUpdateStatus = async (id: string, newStatus: string) => {
@@ -478,6 +482,27 @@ export default function AppointmentsPage() {
                     />
                   </div>
                 </div>
+                <div className="space-y-3 relative md:col-span-2">
+                  <Label
+                    htmlFor="purpose"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mục đích
+                  </Label>
+                  <div className="relative w-1/2">
+                    <CustomSelect
+                      id="purpose"
+                      name="purpose"
+                      value={selectedPurpose}
+                      onChange={setSelectedPurpose}
+                      options={[
+                        { value: "Lấy container", label: "Lấy container" },
+                        { value: "Trả container", label: "Trả container" },
+                      ]}
+                      placeholder="-- Chọn mục đích --"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="flex gap-4 justify-end pt-8">
                 <Button
@@ -596,7 +621,7 @@ export default function AppointmentsPage() {
                 <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
                     <th className="px-6 py-4 font-black">Biển số</th>
-                    <th className="px-6 py-4 font-black">Container</th>
+                    <th className="px-6 py-4 font-black">Container / Mục đích</th>
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn & Giờ</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
@@ -616,8 +641,17 @@ export default function AppointmentsPage() {
                           {apt.truckPlate}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
-                        {apt.containerNo}
+                      <td className="px-6 py-4">
+                        <p className="font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
+                          {apt.containerNo}
+                        </p>
+                        <p className={`text-[11px] font-black uppercase tracking-wider inline-block px-2 py-0.5 rounded-[4px] mt-1 ${
+                          apt.purpose === "Lấy container"
+                            ? "bg-[#00D4FF]/10 text-[#00D4FF]"
+                            : "bg-[#f59e0b]/10 text-[#f59e0b]"
+                        }`}>
+                          {apt.purpose}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-bold text-[#121212] dark:text-[#ffffff]">

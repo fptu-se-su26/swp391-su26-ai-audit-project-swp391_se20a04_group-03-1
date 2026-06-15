@@ -234,7 +234,7 @@ export default function CompletedAppointmentsPage() {
                 <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
                     <th className="px-6 py-4 font-black">Biển số</th>
-                    <th className="px-6 py-4 font-black">Container</th>
+                    <th className="px-6 py-4 font-black">Container / Mục đích</th>
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
@@ -247,8 +247,17 @@ export default function CompletedAppointmentsPage() {
                       <td className="px-6 py-4">
                         <span className="font-black text-[16px] text-[#121212] dark:text-[#ffffff] bg-[#eeeeee] dark:bg-[#272727] px-3 py-1 rounded-[4px]">{apt.truckPlate}</span>
                       </td>
-                      <td className="px-6 py-4 font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
-                        {apt.containerNo}
+                      <td className="px-6 py-4">
+                        <p className="font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
+                          {apt.containerNo}
+                        </p>
+                        <p className={`text-[11px] font-black uppercase tracking-wider inline-block px-2 py-0.5 rounded-[4px] mt-1 ${
+                          apt.purpose === "Lấy container"
+                            ? "bg-[#00D4FF]/10 text-[#00D4FF]"
+                            : "bg-[#f59e0b]/10 text-[#f59e0b]"
+                        }`}>
+                          {apt.purpose}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-bold text-[#121212] dark:text-[#ffffff]">{apt.driverId?.driverName || "Chưa xác định"}</p>
