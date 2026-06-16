@@ -331,23 +331,22 @@ export default function AdminsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
-            Quản lý Tài khoản Admin
-          </h1>
-          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
-            Quản lý, xét duyệt và phân quyền cho người dùng quản trị
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/admin/settings" passHref>
-            <Button
-              variant="outline"
-              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" /> Cài đặt
+        <div className="flex items-center gap-4">
+          <Link href="/admin/settings">
+            <Button variant="outline" size="icon" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-full transition-colors">
+              <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
+          <div>
+            <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
+              Quản lý Tài khoản Admin
+            </h1>
+            <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+              Quản lý, xét duyệt và phân quyền cho người dùng quản trị
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
           <Link href="/admin/settings/admins/trash" passHref>
             <Button
               variant="outline"

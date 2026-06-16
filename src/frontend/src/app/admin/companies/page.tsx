@@ -165,6 +165,10 @@ export default function CompaniesPage() {
         { rule: "required", errorMessage: "Bắt buộc." },
         { rule: "email", errorMessage: "Email không hợp lệ." },
       ])
+      .addField("#password", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        { rule: "minLength", value: 7, errorMessage: "Từ 7 ký tự trở lên." },
+      ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
@@ -178,6 +182,7 @@ export default function CompaniesPage() {
           contactPerson: formData.get("contactPerson")?.toString().trim(),
           contactPhone: formData.get("contactPhone")?.toString().trim(),
           email: formData.get("email")?.toString().trim().toLowerCase(),
+          password: formData.get("password")?.toString().trim(),
         };
 
         const loadingToast = toast.loading("Đang lưu công ty...");
@@ -374,7 +379,7 @@ export default function CompaniesPage() {
                     className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
                   />
                 </div>
-                <div className="space-y-3 md:col-span-2">
+                <div className="space-y-3 md:col-span-1">
                   <Label
                     htmlFor="email"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
@@ -386,6 +391,21 @@ export default function CompaniesPage() {
                     name="email"
                     type="email"
                     placeholder="contact@company.com"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+                <div className="space-y-3 md:col-span-1">
+                  <Label
+                    htmlFor="password"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mật khẩu đăng nhập
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Tối thiểu 7 ký tự"
                     className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
                   />
                 </div>

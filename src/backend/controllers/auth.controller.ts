@@ -4,6 +4,7 @@ import { AccountAdmin } from "../models/account-admin.model";
 import jwt from "jsonwebtoken";
 import { redisClient } from "../config/redis.config";
 import { sendMail } from "../helpers/mail.helper";
+import { CompanyRole } from "../models/companyRole.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
@@ -262,6 +263,25 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
     return res.json({
       code: "error",
       message: "Đã xảy ra lỗi máy chủ trong quá trình đặt lại mật khẩu.",
+    });
+  }
+};
+
+export const getClientRoles = async (req: Request, res: Response) => {
+  try {
+    const roles = await CompanyRole.find({
+      status: "Active",
+      isDeleted: false,
+    }).select("roleCode roleName");
+
+    return res.json({
+      code: "success",
+      data: roles,
+    });
+  } catch (error) {
+    return res.json({
+      code: "error",
+      message: "Không thể tải danh sách loại hình doanh nghiệp",
     });
   }
 };

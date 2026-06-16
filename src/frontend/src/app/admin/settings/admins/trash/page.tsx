@@ -140,23 +140,20 @@ export default function AdminsTrashPage() {
     <div className="space-y-6 p-4 sm:p-6 bg-[#f8f8f8] dark:bg-[#121212] min-h-screen transition-colors duration-300">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-black text-[#f3727f] tracking-tight uppercase">
-            Thùng rác Admin
-          </h1>
-          <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
-            Khôi phục hoặc xóa vĩnh viễn tài khoản quản trị
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link href="/admin/settings/admins" passHref>
-            <Button
-              variant="outline"
-              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" /> Quay lại danh sách
+            <Button variant="outline" size="icon" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-full transition-colors">
+              <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
+          <div>
+            <h1 className="text-4xl font-black text-[#f3727f] tracking-tight uppercase">
+              Thùng rác Admin
+            </h1>
+            <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
+              Khôi phục hoặc xóa vĩnh viễn tài khoản quản trị
+            </p>
+          </div>
         </div>
       </div>
 

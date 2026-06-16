@@ -102,6 +102,9 @@ export default function EditCompanyPage({
       .addField("#status", [
         { rule: "required", errorMessage: "Bắt buộc." },
       ])
+      .addField("#password", [
+        { rule: "minLength", value: 7, errorMessage: "Tối thiểu 7 ký tự." },
+      ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
@@ -112,6 +115,7 @@ export default function EditCompanyPage({
           contactPerson: formData.get("contactPerson")?.toString().trim(),
           contactPhone: formData.get("contactPhone")?.toString().trim(),
           email: formData.get("email")?.toString().trim().toLowerCase(),
+          password: formData.get("password")?.toString().trim() || undefined,
           status: formData.get("status")?.toString(),
         };
 
@@ -250,6 +254,18 @@ export default function EditCompanyPage({
                   name="email"
                   type="email"
                   defaultValue={company?.email}
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                />
+              </div>
+              <div className="space-y-3">
+                <Label htmlFor="password" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Mật khẩu đăng nhập
+                </Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Để trống nếu không muốn đổi"
                   className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>

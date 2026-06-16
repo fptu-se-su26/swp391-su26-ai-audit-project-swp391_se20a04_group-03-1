@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { Company } from "../models/company.model";
+import { Driver } from "../models/driver.model";
+import bcrypt from "bcryptjs";
 
 export const companiesGet = async (req: Request, res: Response) => {
   try {
@@ -81,10 +83,15 @@ export const createCompanyPost = async (req: Request, res: Response) => {
     const { companyCode, email } = req.body;
     const existCompany = await Company.findOne({
       $or: [{ companyCode: companyCode }, { email: email }],
-      isDeleted: false,
     });
 
     if (existCompany) {
+      if (existCompany.isDeleted) {
+        return res.json({
+          code: "error",
+          message: "Mã công ty hoặc email này đang nằm trong thùng rác. Hãy khôi phục hoặc xóa vĩnh viễn trước.",
+        });
+      }
       return res.json({
         code: "error",
         message: "Mã công ty hoặc email đã tồn tại",
@@ -92,6 +99,12 @@ export const createCompanyPost = async (req: Request, res: Response) => {
     }
 
     const newCompany = new Company(req.body);
+
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      newCompany.password = await bcrypt.hash(req.body.password, salt);
+    }
+
     await newCompany.save();
 
     res.json({
@@ -113,17 +126,30 @@ export const updateCompanyPatch = async (req: Request, res: Response) => {
     const existCompany = await Company.findOne({
       _id: { $ne: id },
       $or: [{ companyCode: companyCode }, { email: email }],
-      isDeleted: false,
     });
 
     if (existCompany) {
+      if (existCompany.isDeleted) {
+        return res.json({
+          code: "error",
+          message: "Mã công ty hoặc email này đang được sử dụng bởi một công ty trong thùng rác.",
+        });
+      }
       return res.json({
         code: "error",
         message: "Mã công ty hoặc email đã tồn tại",
       });
     }
 
-    await Company.updateOne({ _id: id }, req.body);
+    const updateData = { ...req.body };
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    } else {
+      delete updateData.password;
+    }
+
+    await Company.updateOne({ _id: id }, updateData);
 
     res.json({
       code: "success",
@@ -151,8 +177,7 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
       });
     }
 
-    existCompany.status = newStatus;
-    await existCompany.save();
+    await Company.updateOne({ _id: id }, { status: newStatus });
 
     res.json({
       code: "success",
@@ -179,9 +204,10 @@ export const softDeleteCompanyPatch = async (req: Request, res: Response) => {
       });
     }
 
-    existCompany.isDeleted = true;
-    existCompany.deletedAt = new Date();
-    await existCompany.save();
+    await Company.updateOne({ _id: id }, { isDeleted: true, deletedAt: new Date() });
+
+    // Cascade soft delete all drivers belonging to this company
+    await Driver.updateMany({ companyId: id }, { isDeleted: true });
 
     res.json({
       code: "success",
@@ -259,9 +285,13 @@ export const restoreCompanyPatch = async (req: Request, res: Response) => {
       });
     }
 
-    existCompany.isDeleted = false;
-    existCompany.deletedAt = undefined;
-    await existCompany.save();
+    await Company.updateOne(
+      { _id: id },
+      { $set: { isDeleted: false }, $unset: { deletedAt: "" } }
+    );
+
+    // Cascade restore all drivers belonging to this company
+    await Driver.updateMany({ companyId: id }, { isDeleted: false });
 
     res.json({
       code: "success",
@@ -286,6 +316,10 @@ export const hardDeleteCompanyDelete = async (req: Request, res: Response) => {
         message: "Không tìm thấy thông tin công ty",
       });
     }
+    
+    // Cascade hard delete all drivers belonging to this company
+    await Driver.deleteMany({ companyId: id });
+    
     await Company.deleteOne({ _id: id });
     res.json({
       code: "success",

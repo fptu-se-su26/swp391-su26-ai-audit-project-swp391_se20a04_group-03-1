@@ -9,10 +9,12 @@ import { requireAuth } from "../middlewares/auth.middleware";
 import scanRouter from "./scan.route";
 import containerProvidersRouter from "./container-providers.route";
 import settingsRouter from "./settings.route";
+import clientRouter from "./client/index.route";
 
 const rootRouter = Router();
 
 // Combine all routers
+rootRouter.use("/client", clientRouter);
 rootRouter.use("/auth", authRouter);
 rootRouter.use("/appointments", requireAuth, appointmentRouter);
 rootRouter.use("/yards", requireAuth, yardRouter);

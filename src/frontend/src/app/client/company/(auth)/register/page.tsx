@@ -30,10 +30,31 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState("transport");
+  const [role, setRole] = useState("");
+  const [roleOptions, setRoleOptions] = useState<{value: string, label: string}[]>([]);
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/client-roles`);
+        const data = await res.json();
+        if (data.code === "success") {
+          const options = data.data.map((r: any) => ({
+            value: r.roleCode,
+            label: r.roleName,
+          }));
+          setRoleOptions(options);
+          if (options.length > 0) setRole(options[0].value);
+        }
+      } catch (error) {
+        console.error("Failed to fetch roles", error);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   useEffect(() => {
     if (!formRef.current) return;
@@ -95,7 +116,7 @@ export default function RegisterPage() {
         };
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+          `${process.env.NEXT_PUBLIC_API_URL}/client/auth/register`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -239,12 +260,7 @@ export default function RegisterPage() {
                       name="role"
                       value={role}
                       onChange={setRole}
-                      options={[
-                        { value: "transport", label: "Đơn vị Vận Tải" },
-                        { value: "forwarder", label: "Công ty Forwarder" },
-                        { value: "shipping_line", label: "Hãng Tàu" },
-                        { value: "importer_exporter", label: "Chủ hàng XNK" }
-                      ]}
+                      options={roleOptions.length > 0 ? roleOptions : [{ value: "", label: "Đang tải..." }]}
                     />
                   </div>
                 </div>

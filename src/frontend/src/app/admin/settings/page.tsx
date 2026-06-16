@@ -1,11 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Users, ShieldCheck, Settings as SettingsIcon, Bell, Database } from "lucide-react";
+import { Users, ShieldCheck, Settings as SettingsIcon, Bell, Database, Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function SettingsPage() {
   const settingOptions = [
+    {
+      title: "Loại hình Doanh nghiệp",
+      description: "Cấu hình các vai trò (roles) để client lựa chọn phân loại khi đăng ký tài khoản.",
+      icon: <Building2 className="h-6 w-6" />,
+      href: "/admin/settings/client-roles",
+    },
     {
       title: "Quản lý Tài khoản",
       description: "Thêm mới, xét duyệt và phân quyền cho các tài khoản quản trị hệ thống.",
