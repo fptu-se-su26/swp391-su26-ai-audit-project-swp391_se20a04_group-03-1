@@ -68,3 +68,53 @@ export const requireAuth = async (
     });
   }
 };
+
+export const requireAuthCompany = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.cookies.tokenCompany;
+    if (!token) {
+      return res.json({ code: "error", message: "Vui lòng đăng nhập" });
+    }
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+    const activeVersion = await redisClient.get(`auth:company:session:${decoded.id}`);
+    
+    if (!activeVersion || decoded.tokenVersion !== activeVersion) {
+      res.clearCookie("tokenCompany", {
+        httpOnly: true,
+        sameSite: "lax",
+        domain:
+          process.env.NODE_ENV === "production"
+            ? (process.env.COOKIE_DOMAIN ? process.env.COOKIE_DOMAIN.replace(/['"]/g, '').trim() : undefined)
+            : "localhost",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      });
+      return res.json({
+        code: "error",
+        message: "Tài khoản của bạn đã được đăng nhập ở một thiết bị khác.",
+      });
+    }
+    
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.clearCookie("tokenCompany", {
+      httpOnly: true,
+      sameSite: "lax",
+      domain:
+        process.env.NODE_ENV === "production"
+          ? (process.env.COOKIE_DOMAIN ? process.env.COOKIE_DOMAIN.replace(/['"]/g, '').trim() : undefined)
+          : "localhost",
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    });
+    return res.json({
+      code: "error",
+      message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+    });
+  }
+};

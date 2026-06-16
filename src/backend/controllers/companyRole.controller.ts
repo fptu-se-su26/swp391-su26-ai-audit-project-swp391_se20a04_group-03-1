@@ -112,6 +112,15 @@ export const updateRolePatch = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { roleCode } = req.body;
 
+    const currentRole = await CompanyRole.findById(id);
+    if (!currentRole) {
+      return res.json({ code: "error", message: "Không tìm thấy thông tin loại hình" });
+    }
+    const protectedRoles = ["transport", "provider"];
+    if (protectedRoles.includes(currentRole.roleCode.toLowerCase())) {
+      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể chỉnh sửa!" });
+    }
+
     const existRole = await CompanyRole.findOne({
       _id: { $ne: id },
       roleCode: roleCode,
@@ -158,6 +167,11 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
       });
     }
 
+    const protectedRoles = ["transport", "provider"];
+    if (protectedRoles.includes(existRole.roleCode.toLowerCase())) {
+      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể khóa trạng thái!" });
+    }
+
     await CompanyRole.updateOne({ _id: id }, { status: newStatus });
 
     res.json({
@@ -183,6 +197,11 @@ export const softDeleteRolePatch = async (req: Request, res: Response) => {
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
+    }
+
+    const protectedRoles = ["transport", "provider"];
+    if (protectedRoles.includes(existRole.roleCode.toLowerCase())) {
+      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể xóa!" });
     }
 
     await CompanyRole.updateOne({ _id: id }, { isDeleted: true, deletedAt: new Date() });
@@ -287,6 +306,11 @@ export const hardDeleteRoleDelete = async (req: Request, res: Response) => {
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
+    }
+
+    const protectedRoles = ["transport", "provider"];
+    if (protectedRoles.includes(existRole.roleCode.toLowerCase())) {
+      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể xóa vĩnh viễn!" });
     }
 
     await CompanyRole.findByIdAndDelete(id);

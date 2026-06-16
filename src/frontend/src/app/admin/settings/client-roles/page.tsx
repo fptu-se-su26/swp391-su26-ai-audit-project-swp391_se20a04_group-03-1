@@ -346,57 +346,63 @@ export default function ClientRolesPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            onClick={() => handleToggleStatus(role._id, role.status)}
-                            className={`rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors ${
-                              role.status === "Active" 
-                              ? "bg-[#f59e0b]/10 hover:bg-[#f59e0b] text-[#f59e0b] hover:text-[#121212]"
-                              : "bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212]"
-                            }`}
-                          >
-                            {role.status === "Active" ? "Ẩn" : "Hiện"}
-                          </Button>
-                          <Button
-                            onClick={() => handleEdit(role)}
-                            className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
-                            title="Chỉnh sửa"
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
-                                title="Đưa vào thùng rác"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">
-                                  Xác nhận xóa
-                                </AlertDialogTitle>
-                                <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
-                                  Bạn có chắc chắn muốn đưa loại hình doanh nghiệp{" "}
-                                  <span className="text-[#f3727f]">{role.roleName}</span> vào thùng rác?
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter className="mt-6 gap-3">
-                                <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">
-                                  Hủy
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(role._id)}
-                                  className="bg-[#f3727f] hover:bg-[#e05b68] text-[#121212] rounded-[500px] font-black uppercase tracking-wider px-6 border-none"
+                        {["transport", "provider"].includes(role.roleCode.toLowerCase()) ? (
+                          <span className="inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20">
+                            Hệ Thống
+                          </span>
+                        ) : (
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              onClick={() => handleToggleStatus(role._id, role.status)}
+                              className={`rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors ${
+                                role.status === "Active" 
+                                ? "bg-[#f59e0b]/10 hover:bg-[#f59e0b] text-[#f59e0b] hover:text-[#121212]"
+                                : "bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212]"
+                              }`}
+                            >
+                              {role.status === "Active" ? "Ẩn" : "Hiện"}
+                            </Button>
+                            <Button
+                              onClick={() => handleEdit(role)}
+                              className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                              title="Chỉnh sửa"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                                  title="Đưa vào thùng rác"
                                 >
-                                  Xóa ngay
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase">
+                                    Xác nhận xóa
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
+                                    Bạn có chắc chắn muốn đưa loại hình doanh nghiệp{" "}
+                                    <span className="text-[#f3727f]">{role.roleName}</span> vào thùng rác?
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter className="mt-6 gap-3">
+                                  <AlertDialogCancel className="bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] border-[#e5e5e5] dark:border-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-6">
+                                    Hủy
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(role._id)}
+                                    className="bg-[#f3727f] hover:bg-[#e05b68] text-[#121212] rounded-[500px] font-black uppercase tracking-wider px-6 border-none"
+                                  >
+                                    Xóa ngay
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))

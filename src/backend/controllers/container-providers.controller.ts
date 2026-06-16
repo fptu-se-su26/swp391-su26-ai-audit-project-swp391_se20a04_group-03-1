@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ContainerProvider } from "../models/container-provider.model";
+import bcrypt from "bcryptjs";
 
 export const providersGet = async (req: Request, res: Response) => {
   try {
@@ -79,18 +80,27 @@ export const createProviderPost = async (req: Request, res: Response) => {
   try {
     const { code, contact_email } = req.body;
     const existProvider = await ContainerProvider.findOne({
-      $or: [{ code: code }, { contact_email: contact_email }],
-      isDeleted: false,
+      $or: [{ code: code }, { contact_email: contact_email }]
     });
 
     if (existProvider) {
+      if (existProvider.isDeleted) {
+        return res.json({
+          code: "error",
+          message: "Mã nhà cung cấp hoặc email này đang nằm trong Thùng rác. Vui lòng vào Thùng rác để khôi phục hoặc xóa vĩnh viễn trước khi tạo lại!",
+        });
+      }
       return res.json({
         code: "error",
         message: "Mã nhà cung cấp hoặc email đã tồn tại",
       });
     }
 
-    const newProvider = new ContainerProvider(req.body);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    const providerData = { ...req.body, password: hashedPassword };
+    const newProvider = new ContainerProvider(providerData);
     await newProvider.save();
 
     res.json({
@@ -101,7 +111,7 @@ export const createProviderPost = async (req: Request, res: Response) => {
     console.log(error);
     res.json({
       code: "error",
-      message: "Không thể tạo nhà cung cấp",
+      message: "Không thể tạo nhà cung cấp: " + (error as Error).message,
     });
   }
 };
@@ -111,18 +121,31 @@ export const updateProviderPatch = async (req: Request, res: Response) => {
     const { id, code, contact_email } = req.body;
     const existProvider = await ContainerProvider.findOne({
       _id: { $ne: id },
-      $or: [{ code: code }, { contact_email: contact_email }],
-      isDeleted: false,
+      $or: [{ code: code }, { contact_email: contact_email }]
     });
 
     if (existProvider) {
+      if (existProvider.isDeleted) {
+        return res.json({
+          code: "error",
+          message: "Mã nhà cung cấp hoặc email này đang nằm trong Thùng rác, không thể sử dụng để cập nhật!",
+        });
+      }
       return res.json({
         code: "error",
         message: "Mã nhà cung cấp hoặc email đã tồn tại",
       });
     }
 
-    await ContainerProvider.updateOne({ _id: id }, req.body);
+    const updateData = { ...req.body };
+    if (updateData.password && updateData.password.trim() !== "") {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    } else {
+      delete updateData.password;
+    }
+
+    await ContainerProvider.updateOne({ _id: id }, updateData);
 
     res.json({
       code: "success",

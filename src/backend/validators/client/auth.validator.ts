@@ -7,9 +7,21 @@ export const registerPost = (
   next: NextFunction,
 ) => {
   const schema = Joi.object({
-    fullName: Joi.string().required().messages({
-      "string.empty": "Họ và tên không được để trống",
-      "any.required": "Họ và tên là bắt buộc",
+    companyCode: Joi.string().required().messages({
+      "string.empty": "Mã số thuế/Mã doanh nghiệp không được để trống",
+      "any.required": "Mã số thuế/Mã doanh nghiệp là bắt buộc",
+    }),
+    companyName: Joi.string().required().messages({
+      "string.empty": "Tên doanh nghiệp không được để trống",
+      "any.required": "Tên doanh nghiệp là bắt buộc",
+    }),
+    contactPerson: Joi.string().required().messages({
+      "string.empty": "Người đại diện không được để trống",
+      "any.required": "Người đại diện là bắt buộc",
+    }),
+    contactPhone: Joi.string().required().messages({
+      "string.empty": "Số điện thoại không được để trống",
+      "any.required": "Số điện thoại là bắt buộc",
     }),
     email: Joi.string().email().required().messages({
       "string.email": "Email không đúng định dạng",

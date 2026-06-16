@@ -23,10 +23,15 @@ const containerProviderSchema = new Schema(
       required: true,
     },
 
+    password: {
+      type: String,
+      required: true,
+    },
+
     status: {
       type: String,
-      enum: ["ACTIVE", "SUSPENDED"],
-      default: "ACTIVE",
+      enum: ["ACTIVE", "INACTIVE", "SUSPENDED"],
+      default: "INACTIVE",
     },
 
     isDeleted: {

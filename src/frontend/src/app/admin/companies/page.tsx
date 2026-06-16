@@ -183,6 +183,7 @@ export default function CompaniesPage() {
           contactPhone: formData.get("contactPhone")?.toString().trim(),
           email: formData.get("email")?.toString().trim().toLowerCase(),
           password: formData.get("password")?.toString().trim(),
+          roleCode: "transport",
         };
 
         const loadingToast = toast.loading("Đang lưu công ty...");
@@ -549,19 +550,19 @@ export default function CompaniesPage() {
                               ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
                               : comp.status === "Suspended"
                                 ? "bg-[#f3727f]/10 text-[#f3727f] border-[#f3727f]/20"
-                                : "bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]"
+                                : "bg-[#f59e0b]/10 text-[#f59e0b] border-[#f59e0b]/20"
                           }`}
                         >
                           {comp.status === "Active"
                             ? "Hoạt động"
                             : comp.status === "Suspended"
                               ? "Đình chỉ"
-                              : "Ngừng HĐ"}
+                              : "Chờ duyệt"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {comp.status === "Suspended" && (
+                          {(comp.status === "Suspended" || comp.status === "Inactive") && (
                             <Button
                               onClick={() =>
                                 handleUpdateStatus(comp._id, "Active")

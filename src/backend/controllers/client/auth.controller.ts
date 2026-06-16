@@ -4,10 +4,11 @@ import { Company } from "../../models/company.model";
 import { CompanyRole } from "../../models/companyRole.model";
 import jwt from "jsonwebtoken";
 import { redisClient } from "../../config/redis.config";
+import { sendMail } from "../../helpers/mail.helper";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, role, password } = req.body;
+    const { companyCode, companyName, contactPerson, contactPhone, email, role, password } = req.body;
 
     const existEmail = await Company.findOne({ email });
     if (existEmail) {
@@ -17,10 +18,18 @@ export const registerPost = async (req: Request, res: Response) => {
       });
     }
 
+    const existCode = await Company.findOne({ companyCode });
+    if (existCode) {
+      return res.json({
+        code: "error",
+        message: "Mã số thuế/Mã doanh nghiệp đã tồn tại",
+      });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const companyRole = await CompanyRole.findOne({ roleCode: role });
+    const companyRole = await CompanyRole.findOne({ roleCode: { $regex: new RegExp(`^${role}$`, 'i') } });
     if (!companyRole) {
       return res.json({
         code: "error",
@@ -28,21 +37,78 @@ export const registerPost = async (req: Request, res: Response) => {
       });
     }
 
-    const count = await Company.countDocuments();
-    const companyCode = `COMP${(count + 1).toString().padStart(4, "0")}`;
-
     const newCompany = new Company({
       companyCode,
-      companyName: fullName,
-      contactPerson: fullName,
-      contactPhone: "Chưa cập nhật",
+      companyName,
+      contactPerson,
+      contactPhone,
       email,
       password: hashedPassword,
       companyRole: companyRole._id,
-      status: "Active",
+      status: "Inactive", // Mặc định inactive khi vừa tạo
     });
 
     await newCompany.save();
+
+    // Gửi email thông báo
+    const mailTitle = "Đăng ký tài khoản LogiPort thành công";
+    const mailContent = `
+      <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f8f8; padding: 40px 20px; color: #121212;">
+        <div style="background-color: #ffffff; border-radius: 8px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.05); border-top: 4px solid #1ed760;">
+          <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: #121212;">
+            Logi<span style="color: #1ed760;">Port</span>
+          </h1>
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Đăng ký tài khoản thành công!</h2>
+          <p style="font-size: 16px; line-height: 1.6; color: #666666; margin-bottom: 24px;">
+            Xin chào <b style="color: #121212;">${contactPerson}</b>,<br/><br/>
+            Cảm ơn bạn đã tin tưởng và đăng ký tài khoản doanh nghiệp trên hệ thống điều phối logistics thông minh <strong>LogiPort</strong>.
+          </p>
+          
+          <div style="background-color: #e8fbf0; border-left: 4px solid #1ed760; padding: 16px 20px; margin-bottom: 24px; border-radius: 0 4px 4px 0;">
+            <p style="margin: 0; font-size: 15px; color: #1db954; font-weight: 700;">
+              Tài khoản của bạn hiện đang ở trạng thái Chờ duyệt (Inactive).
+            </p>
+            <p style="margin: 8px 0 0 0; font-size: 14px; color: #666666; line-height: 1.5;">
+              Ban quản trị sẽ tiến hành xác thực thông tin và kích hoạt tài khoản của bạn trong thời gian sớm nhất.
+            </p>
+          </div>
+
+          <div style="background-color: #f8f8f8; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+            <h3 style="margin: 0 0 16px 0; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #121212;">Thông tin đăng ký</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666; width: 40%;">Mã doanh nghiệp</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${companyCode}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666;">Tên doanh nghiệp</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${companyName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-size: 14px; color: #666666;">Email liên hệ</td>
+                <td style="padding: 8px 0; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${email}</td>
+              </tr>
+            </table>
+          </div>
+
+          <p style="font-size: 15px; line-height: 1.6; color: #666666; margin-bottom: 32px;">
+            Vui lòng theo dõi hộp thư, chúng tôi sẽ gửi email thông báo tiếp theo ngay khi tài khoản được kích hoạt thành công.
+          </p>
+
+          <div style="border-top: 1px solid #e5e5e5; padding-top: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #999999; font-weight: 700;">Trân trọng,</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; color: #121212; font-weight: 900;">Đội ngũ LogiPort</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+          <p style="font-size: 12px; color: #999999; line-height: 1.5;">
+            Đây là email tự động từ hệ thống LogiPort. Vui lòng không trả lời email này.<br/>
+            © ${new Date().getFullYear()} LogiPort. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `;
+    sendMail(email, mailTitle, mailContent);
 
     return res.json({
       code: "success",

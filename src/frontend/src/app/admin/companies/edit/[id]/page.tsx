@@ -117,6 +117,7 @@ export default function EditCompanyPage({
           email: formData.get("email")?.toString().trim().toLowerCase(),
           password: formData.get("password")?.toString().trim() || undefined,
           status: formData.get("status")?.toString(),
+          roleCode: "transport",
         };
 
         const loadingToast = toast.loading("Đang lưu thay đổi...");
@@ -282,7 +283,7 @@ export default function EditCompanyPage({
                     options={[
                       { value: "Active", label: "Đang hoạt động" },
                       { value: "Suspended", label: "Đình chỉ" },
-                      { value: "Inactive", label: "Ngừng hoạt động" },
+                      { value: "Inactive", label: "Chờ duyệt" },
                     ]}
                     placeholder="-- Chọn trạng thái --"
                   />

@@ -34,12 +34,16 @@ export function CompanyHeader({ onMenuClick }: CompanyHeaderProps) {
 
   const router = useRouter();
   const handleLogout = async (url: string) => {
-    // Wait for auth logout API when it's available for company
-    // await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
-    //   method: "GET",
-    //   credentials: "include",
-    // });
-    router.push(url);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/auth/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+      window.location.href = url;
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+      window.location.href = url;
+    }
   };
 
   return (

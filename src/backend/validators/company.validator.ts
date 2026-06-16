@@ -42,6 +42,7 @@ export const companyPost = (
       "any.required": "Mật khẩu là bắt buộc.",
       "string.min": "Mật khẩu phải từ 7 ký tự trở lên.",
     }),
+    roleCode: Joi.string().optional(),
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -99,11 +100,12 @@ export const companyEdit = (
       .valid("Active", "Inactive", "Suspended")
       .required()
       .messages({
+        "any.only": "Trạng thái không hợp lệ.",
         "string.empty": "Trạng thái là bắt buộc.",
         "any.required": "Trạng thái là bắt buộc.",
-        "any.only": "Trạng thái không hợp lệ.",
       }),
-    password: Joi.string().allow("").min(7).messages({
+    roleCode: Joi.string().optional(),
+    password: Joi.string().allow("").min(7).optional().messages({
       "string.min": "Mật khẩu phải từ 7 ký tự trở lên.",
     }),
   });

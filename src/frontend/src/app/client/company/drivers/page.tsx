@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Trash2, Building2, Loader2, Pencil, Search } from "lucide-react";
+import { Plus, Trash2, Loader2, Pencil, Search, IdCard } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
@@ -33,34 +33,37 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { CustomSelect } from "@/components/CustomSelect";
 import toast from "react-hot-toast";
 
-interface Provider {
+interface Driver {
   _id: string;
-  code: string;
-  name: string;
-  bic_codes: string[];
-  contact_email: string;
-  status: "ACTIVE" | "SUSPENDED";
+  driverId: string;
+  driverName: string;
+  driverPhone: string;
+  companyId: {
+    _id: string;
+    companyCode: string;
+    companyName: string;
+  };
   createdAt: string;
 }
 
-export default function ProvidersPage() {
-  const [providers, setProviders] = useState<Provider[]>([]);
+
+export default function DriversPage() {
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
+  
+
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
 
-  // Debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
@@ -68,52 +71,42 @@ export default function ProvidersPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Fetch
-  const fetchProviders = useCallback(async () => {
+  const fetchDrivers = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (debouncedSearchQuery) params.append("search", debouncedSearchQuery);
-      if (statusFilter && statusFilter !== "ALL")
-        params.append("status", statusFilter);
       params.append("page", currentPage.toString());
       params.append("limit", ITEMS_PER_PAGE.toString());
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/container-providers/?${params.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/client/drivers/?${params.toString()}`,
         { credentials: "include" },
       );
       const data = await res.json();
 
-      if (data && data.code === "error") {
+      if (data.code === "error") {
         throw new Error(data.message || "Lỗi từ máy chủ backend.");
       }
 
-      const providerArray =
-        data && data.data ? data.data : Array.isArray(data) ? data : [];
-      setProviders(providerArray);
-
-      if (data && data.pagination) {
-        setTotalPages(data.pagination.totalPages);
-      } else {
-        setTotalPages(1);
-      }
+      setDrivers(data.data || []);
+      if (data.pagination) setTotalPages(data.pagination.totalPages);
     } catch (err: any) {
-      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách hãng tàu.");
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách tài xế.");
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearchQuery, statusFilter, currentPage]);
+  }, [debouncedSearchQuery, currentPage]);
 
   useEffect(() => {
-    fetchProviders();
-  }, [fetchProviders]);
+    fetchDrivers();
+  }, [fetchDrivers]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchQuery, statusFilter]);
+  }, [debouncedSearchQuery]);
 
-  // Validate
+  // Form Validate
   useEffect(() => {
     if (!showForm || !formRef.current) {
       if (validatorRef.current) {
@@ -133,60 +126,25 @@ export default function ProvidersPage() {
     validatorRef.current = validator;
 
     validator
-      .addField("#code", [
+      .addField("#driverId", [{ rule: "required", errorMessage: "Bắt buộc." }])
+      .addField("#driverName", [
         { rule: "required", errorMessage: "Bắt buộc." },
-        {
-          rule: "customRegexp",
-          value: /^[A-Z]{4}$/,
-          errorMessage: "Mã phải gồm đúng 4 chữ cái in hoa (VD: HLXU).",
-        },
       ])
-      .addField("#name", [
-        { rule: "required", errorMessage: "Bắt buộc." },
-        {
-          rule: "minLength",
-          value: 3,
-          errorMessage: "Từ 3 ký tự trở lên.",
-        },
-      ])
-      .addField("#contact_email", [
-        { rule: "required", errorMessage: "Bắt buộc." },
-        { rule: "email", errorMessage: "Email không hợp lệ." },
-      ])
-      .addField("#password", [
-        { rule: "required", errorMessage: "Bắt buộc." },
-        { rule: "minLength", value: 6, errorMessage: "Tối thiểu 6 ký tự." },
-      ])
-      .addField("#bic_codes", [
-        {
-          rule: "customRegexp",
-          value: /^([A-Z]{3}(,\s*[A-Z]{3})*)?$/,
-          errorMessage:
-            "Mã BIC phải gồm 3 chữ in hoa, cách nhau bởi dấu phẩy (VD: HLX, HLY).",
-        },
-      ])
+      
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
         const payload = {
-          code: formData.get("code")?.toString().trim().toUpperCase(),
-          name: formData.get("name")?.toString().trim(),
-          contact_email: formData.get("contact_email")?.toString().trim(),
-          password: formData.get("password")?.toString(),
-          bic_codes: formData.get("bic_codes")?.toString().trim()
-            ? formData
-                .get("bic_codes")
-                ?.toString()
-                .trim()
-                .split(",")
-                .map((s) => s.trim())
-            : [],
+          driverId: formData.get("driverId")?.toString().trim(),
+          driverName: formData.get("driverName")?.toString().trim(),
+          driverPhone: formData.get("driverPhone")?.toString().trim(),
+          
         };
 
-        const loadingToast = toast.loading("Đang lưu hãng tàu...");
+        const loadingToast = toast.loading("Đang lưu tài xế...");
         try {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/container-providers/create`,
+            `${process.env.NEXT_PUBLIC_API_URL}/client/drivers`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -194,18 +152,18 @@ export default function ProvidersPage() {
               credentials: "include",
             },
           );
+          const data = await res.json();
 
-          const result = await res.json();
-
-          if (!res.ok || result.code === "error") {
-            throw new Error(result.message || "Lỗi khi thêm hãng tàu.");
+          if (data.code !== "success") {
+            throw new Error(data.message || "Lỗi khi thêm tài xế.");
           }
 
-          toast.success("Thêm hãng tàu thành công!", { id: loadingToast });
+          toast.success("Thêm tài xế thành công!", { id: loadingToast });
           setShowForm(false);
-          fetchProviders();
+          
+          fetchDrivers();
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", {
+          toast.error(err.message || "Không thể lưu thông tin tài xế.", {
             id: loadingToast,
           });
         }
@@ -217,64 +175,29 @@ export default function ProvidersPage() {
         validatorRef.current = null;
       }
     };
-  }, [showForm, fetchProviders]);
+  }, [showForm, fetchDrivers]);
 
-  // Update Status
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
-    const loadingToast = toast.loading("Đang cập nhật trạng thái...");
+  const handleDelete = async (id: string) => {
+    const loadingToast = toast.loading("Đang xóa tài xế...");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/container-providers/status/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/client/drivers/${id}`,
         {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ newStatus: newStatus }),
+          method: "DELETE",
           credentials: "include",
         },
       );
-
-      const result = await res.json();
-
-      if (!res.ok || result.code === "error") {
-        throw new Error(result.message || "Lỗi khi cập nhật trạng thái.");
+      const data = await res.json();
+      if (data.code === "success") {
+        toast.success("Chuyển tài xế vào thùng rác thành công.", {
+          id: loadingToast,
+        });
+        fetchDrivers();
+      } else {
+        throw new Error(data.message || "Không thể xóa tài xế.");
       }
-
-      toast.success(
-        `Đã chuyển trạng thái sang: ${
-          newStatus === "ACTIVE" ? "Hoạt động" : "Đình chỉ"
-        }`,
-        { id: loadingToast },
-      );
-      fetchProviders();
     } catch (err: any) {
-      toast.error(err.message || "Không thể cập nhật trạng thái.", {
-        id: loadingToast,
-      });
-    }
-  };
-
-  // Soft Delete
-  const handleDeleteProvider = async (id: string) => {
-    const loadingToast = toast.loading("Đang xóa hãng tàu...");
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/container-providers/delete/${id}`,
-        {
-          method: "PATCH",
-          credentials: "include",
-        },
-      );
-
-      const result = await res.json();
-
-      if (!res.ok || result.code === "error") {
-        throw new Error(result.message || "Lỗi khi đưa vào thùng rác.");
-      }
-
-      toast.success("Đã chuyển hãng tàu vào thùng rác.", { id: loadingToast });
-      fetchProviders();
-    } catch (err: any) {
-      toast.error(err.message || "Không thể xóa hãng tàu.", {
+      toast.error(err.message || "Lỗi kết nối khi xóa tài xế.", {
         id: loadingToast,
       });
     }
@@ -285,14 +208,14 @@ export default function ProvidersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
-            Quản lý hãng tàu
+            Quản lý Tài Xế
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
-            Quản lý danh sách các hãng tàu (Container Providers)
+            Danh sách tất cả tài xế và công ty trực thuộc
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin/container-providers/trash">
+          <Link href="/client/company/drivers/trash">
             <Button
               variant="outline"
               className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#f3727f] dark:hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
@@ -306,7 +229,7 @@ export default function ProvidersPage() {
             className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
           >
             <Plus className="h-5 w-5" />
-            Thêm hãng tàu
+            Thêm tài xế
           </Button>
         </div>
       </div>
@@ -315,85 +238,56 @@ export default function ProvidersPage() {
         <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm animate-in fade-in slide-in-from-top-4 duration-200 overflow-visible">
           <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
             <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
-              Thêm hãng tàu mới
+              Thêm tài xế mới
             </CardTitle>
             <CardDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
-              Điền thông tin chi tiết của hãng tàu cung cấp container.
+              Điền thông tin để tạo hồ sơ tài xế mới trong hệ thống.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-8">
-            <form ref={formRef} id="providerForm" className="space-y-6">
+            <form ref={formRef} id="driverForm" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <Label
-                    htmlFor="code"
+                    htmlFor="driverId"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                   >
-                    Mã hãng tàu
+                    Số CCCD / GPLX (*)
                   </Label>
                   <Input
-                    id="code"
-                    name="code"
-                    placeholder="VD: HLXU"
-                    className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label
-                    htmlFor="name"
-                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
-                  >
-                    Tên hãng tàu
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    placeholder="VD: Hapag-Lloyd"
+                    id="driverId"
+                    name="driverId"
+                    placeholder="VD: 0792..."
                     className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                   />
                 </div>
                 <div className="space-y-3">
                   <Label
-                    htmlFor="contact_email"
+                    htmlFor="driverName"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                   >
-                    Email liên hệ
+                    Họ và tên (*)
                   </Label>
                   <Input
-                    id="contact_email"
-                    name="contact_email"
-                    type="email"
-                    placeholder="contact@hapag-lloyd.com"
+                    id="driverName"
+                    name="driverName"
+                    placeholder="VD: Nguyễn Văn A"
                     className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                   />
                 </div>
+                
                 <div className="space-y-3">
                   <Label
-                    htmlFor="password"
+                    htmlFor="driverPhone"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                   >
-                    Mật khẩu đăng nhập
+                    Số điện thoại
                   </Label>
                   <Input
-                    id="password"
-                    name="password"
-                    type="text"
-                    placeholder="Nhập mật khẩu cho hãng tàu"
+                    id="driverPhone"
+                    name="driverPhone"
+                    placeholder="VD: 0909123456"
                     className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
-                  />
-                </div>
-                <div className="space-y-3 md:col-span-2">
-                  <Label
-                    htmlFor="bic_codes"
-                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
-                  >
-                    Mã BIC (Tùy chọn)
-                  </Label>
-                  <Input
-                    id="bic_codes"
-                    name="bic_codes"
-                    placeholder="VD: HLX, HLY (cách nhau bởi dấu phẩy)"
-                    className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                   />
                 </div>
               </div>
@@ -422,8 +316,8 @@ export default function ProvidersPage() {
         <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div>
-              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
-                Danh sách hãng tàu
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider flex items-center gap-2">
+                <IdCard className="w-6 h-6 text-[#1ed760]" /> Danh sách Tài Xế
               </CardTitle>
             </div>
 
@@ -431,24 +325,10 @@ export default function ProvidersPage() {
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999999]" />
                 <Input
-                  placeholder="Tìm mã, tên, email..."
+                  placeholder="Tìm tên, mã CCCD..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
-                />
-              </div>
-
-              <div className="relative z-10 w-[200px]">
-                <CustomSelect
-                  value={statusFilter}
-                  onChange={setStatusFilter}
-                  options={[
-                    { value: "ALL", label: "Tất cả trạng thái" },
-                    { value: "ACTIVE", label: "Đang hoạt động" },
-                    { value: "INACTIVE", label: "Chưa kích hoạt" },
-                    { value: "SUSPENDED", label: "Đình chỉ" },
-                  ]}
-                  placeholder="Mọi trạng thái"
                 />
               </div>
 
@@ -458,9 +338,8 @@ export default function ProvidersPage() {
                 onClick={() => {
                   setSearchQuery("");
                   setDebouncedSearchQuery("");
-                  setStatusFilter("ALL");
                 }}
-                disabled={!searchQuery && statusFilter === "ALL"}
+                disabled={!searchQuery}
                 className="bg-[#eeeeee] hover:bg-[#e5e5e5] dark:bg-[#272727] dark:hover:bg-[#333333] text-[#121212] dark:text-[#ffffff] rounded-[500px] font-bold h-10 px-4 uppercase tracking-wider text-[12px] border-none"
               >
                 Xóa lọc
@@ -477,13 +356,11 @@ export default function ProvidersPage() {
                 Đang tải dữ liệu...
               </p>
             </div>
-          ) : providers.length === 0 ? (
+          ) : drivers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <Building2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
+              <IdCard className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
               <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
-                {searchQuery || statusFilter !== "ALL"
-                  ? "Không tìm thấy hãng tàu nào phù hợp."
-                  : "Chưa có hãng tàu nào trong hệ thống."}
+                Không tìm thấy tài xế nào.
               </p>
             </div>
           ) : (
@@ -491,80 +368,34 @@ export default function ProvidersPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
-                    <th className="px-6 py-4 font-black">Mã HT</th>
-                    <th className="px-6 py-4 font-black">Tên hãng tàu</th>
-                    <th className="px-6 py-4 font-black">Mã BIC</th>
-                    <th className="px-6 py-4 font-black">Email</th>
-                    <th className="px-6 py-4 font-black">Ngày tạo</th>
-                    <th className="px-6 py-4 font-black">Trạng thái</th>
+                    <th className="px-6 py-4 font-black">Mã CC/GPLX</th>
+                    <th className="px-6 py-4 font-black">Họ Tên</th>
+                    <th className="px-6 py-4 font-black">Điện Thoại</th>
+                    
                     <th className="px-6 py-4 font-black text-right">
                       Hành động
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
-                  {providers.map((comp) => (
+                  {drivers.map((driver) => (
                     <tr
-                      key={comp._id}
+                      key={driver._id}
                       className="bg-[#ffffff] dark:bg-[#181818] hover:bg-[#f8f8f8] dark:hover:bg-[#121212] transition-colors group"
                     >
                       <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
-                        {comp.code}
+                        {driver.driverId}
                       </td>
                       <td className="px-6 py-4 font-bold text-[#121212] dark:text-[#ffffff]">
-                        {comp.name}
+                        {driver.driverName}
                       </td>
                       <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
-                        {comp.bic_codes && comp.bic_codes.length > 0
-                          ? comp.bic_codes.join(", ")
-                          : "-"}
+                        {driver.driverPhone || "-"}
                       </td>
-                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
-                        {comp.contact_email}
-                      </td>
-                      <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
-                        {comp.createdAt
-                          ? new Date(comp.createdAt).toLocaleDateString("vi-VN")
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border ${
-                            comp.status === "ACTIVE"
-                              ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
-                              : comp.status === "INACTIVE"
-                                ? "bg-[#999999]/10 text-[#999999] border-[#999999]/20"
-                                : "bg-[#f59e0b]/10 text-[#f59e0b] border-[#f59e0b]/20"
-                          }`}
-                        >
-                          {comp.status === "ACTIVE" ? "Hoạt động" : comp.status === "INACTIVE" ? "Chưa kích hoạt" : "Đình chỉ"}
-                        </span>
-                      </td>
+                      
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {comp.status !== "ACTIVE" && (
-                            <Button
-                              onClick={() =>
-                                handleUpdateStatus(comp._id, "ACTIVE")
-                              }
-                              className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
-                            >
-                              Kích hoạt
-                            </Button>
-                          )}
-                          {comp.status === "ACTIVE" && (
-                            <Button
-                              onClick={() =>
-                                handleUpdateStatus(comp._id, "SUSPENDED")
-                              }
-                              className="bg-[#f59e0b]/10 hover:bg-[#f59e0b] text-[#f59e0b] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
-                            >
-                              Đình chỉ
-                            </Button>
-                          )}
-                          <Link
-                            href={`/admin/container-providers/edit/${comp._id}`}
-                          >
+                          <Link href={`/client/company/drivers/edit/${driver._id}`}>
                             <Button
                               className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
                               title="Chỉnh sửa"
@@ -584,12 +415,12 @@ export default function ProvidersPage() {
                             <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                               <AlertDialogHeader>
                                 <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
-                                  Xóa hãng tàu này?
+                                  Xóa tài xế này?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Hãng tàu{" "}
+                                  Tài xế{" "}
                                   <span className="text-[#121212] dark:text-[#ffffff]">
-                                    {comp.name}
+                                    {driver.driverName}
                                   </span>{" "}
                                   sẽ được đưa vào thùng rác.
                                 </AlertDialogDescription>
@@ -599,7 +430,7 @@ export default function ProvidersPage() {
                                   Hủy
                                 </AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleDeleteProvider(comp._id)}
+                                  onClick={() => handleDelete(driver._id)}
                                   className="bg-[#f3727f] hover:bg-[#d85663] text-white rounded-[500px] font-black uppercase tracking-wider border-none"
                                 >
                                   Đồng ý
@@ -615,7 +446,7 @@ export default function ProvidersPage() {
               </table>
             </div>
           )}
-          {totalPages > 1 && providers.length > 0 && (
+          {totalPages > 1 && drivers.length > 0 && (
             <div className="p-4 border-t border-[#e5e5e5] dark:border-[#272727] flex justify-center">
               <Pagination>
                 <PaginationContent>

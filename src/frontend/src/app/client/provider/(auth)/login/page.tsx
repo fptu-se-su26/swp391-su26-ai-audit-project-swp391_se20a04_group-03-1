@@ -23,7 +23,7 @@ import {
 import JustValidate from "just-validate";
 import toast from "react-hot-toast";
 
-export default function LoginPage() {
+export default function ProviderLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,7 +47,7 @@ export default function LoginPage() {
 
     validator
       .addField("#email", [
-        { rule: "required", errorMessage: "Vui lòng nhập email doanh nghiệp." },
+        { rule: "required", errorMessage: "Vui lòng nhập email hãng tàu." },
         { rule: "email", errorMessage: "Định dạng email không hợp lệ." },
       ])
       .addField("#password", [
@@ -69,7 +69,7 @@ export default function LoginPage() {
         };
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/client/auth/login`,
+          `${process.env.NEXT_PUBLIC_API_URL}/provider/auth/login`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -86,7 +86,7 @@ export default function LoginPage() {
 
         toast.success("Đăng nhập thành công!", { id: loadingToast });
         setTimeout(() => {
-          window.location.href = "/client/company/dashboard";
+          window.location.href = "/client/provider/dashboard";
         }, 1200);
       } catch (err: any) {
         toast.error(err.message, { 
@@ -116,18 +116,18 @@ export default function LoginPage() {
       {/* Left Side - Visual/Brand Panel */}
       <div className="hidden lg:flex flex-col relative w-1/2 justify-between p-16 border-r border-[#e5e5e5] dark:border-[#272727] bg-[#ffffff] dark:bg-[#181818] transition-colors duration-300">
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-3 font-black text-2xl tracking-tight mb-4 hover:opacity-80 transition-opacity">
+          <Link href="/client" className="inline-flex items-center gap-3 font-black text-2xl tracking-tight mb-4 hover:opacity-80 transition-opacity">
             <div className="w-12 h-12 rounded-[500px] bg-[#1ed760]/10 flex items-center justify-center">
               <Ship className="h-6 w-6 text-[#1ed760]" />
             </div>
-            LogiPort
+            LogiPort Provider
           </Link>
           <h1 className="text-5xl font-black leading-[1.1] mt-16 tracking-tight">
-            Vận hành cảng <br />
-            <span className="text-[#1ed760]">Quyền Năng & Tốc Độ</span>
+            Quản lý Container <br />
+            <span className="text-[#1ed760]">Dễ Dàng & Chính Xác</span>
           </h1>
           <p className="mt-6 text-[#666666] dark:text-[#b3b3b3] max-w-md text-[16px] font-normal leading-[1.6]">
-            Hệ thống giám sát, điều phối và tự động hóa quy trình xuất nhập container hiện đại nhất dành cho doanh nghiệp logistics.
+            Hệ thống tra cứu, quản lý danh sách vỏ container và thiết lập thông tin trực tuyến dành riêng cho Hãng tàu (Container Providers).
           </p>
         </div>
 
@@ -137,9 +137,9 @@ export default function LoginPage() {
               <CheckCircle2 className="text-[#1ed760] h-6 w-6" />
             </div>
             <div>
-              <h4 className="font-bold text-[18px]">AI Camera Tích Hợp</h4>
+              <h4 className="font-bold text-[18px]">Bảo mật Thông Tin</h4>
               <p className="text-[14px] text-[#666666] dark:text-[#b3b3b3] mt-2 leading-[1.6]">
-                Nhận diện tự động biển số xe và mã container trực tiếp tại cổng với độ chính xác đạt trên 99%.
+                Dữ liệu về mã BIC và thông tin vỏ container được bảo vệ nghiêm ngặt, chỉ những thành viên được cấp quyền mới có thể truy cập.
               </p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export default function LoginPage() {
               <Ship className="h-8 w-8 text-[#1ed760]" />
             </div>
             <h1 className="text-3xl font-black tracking-tight">
-              LogiPort
+              LogiPort Provider
             </h1>
           </div>
 
@@ -164,14 +164,14 @@ export default function LoginPage() {
                 Đăng Nhập
               </CardTitle>
               <CardDescription className="text-center text-[#666666] dark:text-[#b3b3b3] text-[14px]">
-                Sử dụng email doanh nghiệp để tiếp tục
+                Dành cho Hãng Tàu (Container Provider)
               </CardDescription>
             </CardHeader>
             <CardContent className="px-10 pb-10">
               <form ref={formRef} className="space-y-6">
                 <div className="space-y-3">
                   <Label htmlFor="email" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Email doanh nghiệp
+                    Email liên hệ
                   </Label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
@@ -181,7 +181,7 @@ export default function LoginPage() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="company@domain.com"
+                      placeholder="provider@domain.com"
                       disabled={isLoading}
                       className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
                     />
@@ -215,11 +215,6 @@ export default function LoginPage() {
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
-                  <div className="text-right mt-2">
-                    <Link href="/client/company/forgot-password" className="text-[12px] font-bold text-[#666666] dark:text-[#b3b3b3] hover:text-[#121212] dark:hover:text-[#ffffff] uppercase tracking-wider transition-colors">
-                      Quên mật khẩu?
-                    </Link>
-                  </div>
                 </div>
 
                 <Button
@@ -230,15 +225,6 @@ export default function LoginPage() {
                   {isLoading ? "Đang xác thực..." : "Đăng nhập ngay"}
                 </Button>
               </form>
-
-              <div className="mt-8 pt-6 border-t border-[#e5e5e5] dark:border-[#272727] text-[14px] text-center text-[#666666] dark:text-[#b3b3b3] font-bold">
-                <p>
-                  Chưa có tài khoản?{" "}
-                  <Link href="/client/company/register" className="text-[#121212] dark:text-[#ffffff] hover:text-[#1ed760] transition-colors ml-1 uppercase tracking-wider text-[12px]">
-                    Đăng ký
-                  </Link>
-                </p>
-              </div>
             </CardContent>
           </Card>
         </div>
