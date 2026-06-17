@@ -89,14 +89,7 @@ export default function LoginPage() {
           window.location.href = "/admin/dashboard";
         }, 1200);
       } catch (err: any) {
-        toast.error(err.message, { 
-          id: loadingToast,
-          className: "bg-white dark:bg-[#f3727f] text-[#121212] dark:text-[#121212] border-[#e5e5e5] dark:border-transparent",
-          iconTheme: {
-            primary: '#f3727f',
-            secondary: '#ffffff',
-          }
-        });
+        toast.error(err.message, { id: loadingToast });
       } finally {
         setIsLoading(false);
       }

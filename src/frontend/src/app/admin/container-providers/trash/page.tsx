@@ -164,10 +164,10 @@ export default function TrashContainerProvidersPage() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black text-[#f3727f] tracking-tight uppercase">
-            Thùng rác - Hãng tàu
+            Thùng rác - Nhà cung cấp
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
-            Các hãng tàu đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
+            Các nhà cung cấp đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export default function TrashContainerProvidersPage() {
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div>
               <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
-                Danh sách hãng tàu đã xóa
+                Danh sách nhà cung cấp đã xóa
               </CardTitle>
             </div>
 
@@ -244,7 +244,7 @@ export default function TrashContainerProvidersPage() {
               <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
               <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
                 {searchQuery || statusFilter !== "ALL"
-                  ? "Không tìm thấy hãng tàu nào phù hợp trong thùng rác."
+                  ? "Không tìm thấy nhà cung cấp nào phù hợp trong thùng rác."
                   : "Thùng rác trống."}
               </p>
             </div>
@@ -254,7 +254,7 @@ export default function TrashContainerProvidersPage() {
                 <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
                     <th className="px-6 py-4 font-black">Mã HT</th>
-                    <th className="px-6 py-4 font-black">Tên hãng tàu</th>
+                    <th className="px-6 py-4 font-black">Tên nhà cung cấp</th>
                     <th className="px-6 py-4 font-black">Mã BIC</th>
                     <th className="px-6 py-4 font-black">Email</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
@@ -318,7 +318,7 @@ export default function TrashContainerProvidersPage() {
                                   Xác nhận xóa vĩnh viễn?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Hành động này không thể hoàn tác. Hãng tàu <span className="text-[#121212] dark:text-[#ffffff]">{comp.name}</span> sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
+                                  Hành động này không thể hoàn tác. Nhà cung cấp <span className="text-[#121212] dark:text-[#ffffff]">{comp.name}</span> sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>

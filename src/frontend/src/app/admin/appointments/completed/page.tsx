@@ -164,9 +164,9 @@ export default function CompletedAppointmentsPage() {
 
       <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-hidden border-t-4 border-t-[#1ed760]">
         <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+          <div className="flex flex-col gap-4">
             <div>
-              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">Danh sách hoàn tất</CardTitle>
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider flex items-center gap-3">Danh sách hoàn tất</CardTitle>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">

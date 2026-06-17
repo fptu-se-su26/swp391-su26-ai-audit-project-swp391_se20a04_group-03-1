@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
         setEmail(payload.email);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
+          `${process.env.NEXT_PUBLIC_API_URL}/client/auth/password/forgot`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -84,11 +84,7 @@ export default function ForgotPasswordPage() {
         router.push(`/client/company/reset-password/${payload.email}`);
         setIsSent(true);
       } catch (err: any) {
-        toast.error(err.message, { 
-          id: loadingToast,
-          className: "bg-white dark:bg-[#f3727f] text-[#121212] dark:text-[#121212] border-[#e5e5e5] dark:border-transparent",
-          iconTheme: { primary: '#f3727f', secondary: '#ffffff' }
-        });
+        toast.error(err.message, { id: loadingToast });
       } finally {
         setIsLoading(false);
       }

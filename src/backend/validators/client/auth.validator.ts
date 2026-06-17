@@ -73,3 +73,56 @@ export const loginPost = (req: Request, res: Response, next: NextFunction) => {
   }
   next();
 };
+
+export const forgotPasswordPost = (req: Request, res: Response, next: NextFunction) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required().messages({
+      "string.email": "Email không hợp lệ!",
+      "string.empty": "Vui lòng nhập email!",
+      "any.required": "Vui lòng nhập email!",
+    }),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) {
+    res.json({ code: "error", message: error.details[0].message });
+    return;
+  }
+  next();
+};
+
+export const otpPasswordPost = (req: Request, res: Response, next: NextFunction) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    otp: Joi.string().required().messages({
+      "string.empty": "Vui lòng nhập mã OTP!",
+      "any.required": "Vui lòng nhập mã OTP!",
+    }),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) {
+    res.json({ code: "error", message: error.details[0].message });
+    return;
+  }
+  next();
+};
+
+export const resetPasswordPost = (req: Request, res: Response, next: NextFunction) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    otp: Joi.string().required().messages({
+      "string.empty": "Vui lòng nhập mã OTP!",
+      "any.required": "Vui lòng nhập mã OTP!",
+    }),
+    password: Joi.string().min(6).required().messages({
+      "string.min": "Mật khẩu phải từ 6 ký tự!",
+      "string.empty": "Vui lòng nhập mật khẩu mới!",
+      "any.required": "Vui lòng nhập mật khẩu mới!",
+    }),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) {
+    res.json({ code: "error", message: error.details[0].message });
+    return;
+  }
+  next();
+};

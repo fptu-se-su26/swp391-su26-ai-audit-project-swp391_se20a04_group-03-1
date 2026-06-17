@@ -198,15 +198,39 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
     // 3. Chuẩn bị nội dung và gửi email
     const subject = "Mã xác nhận khôi phục mật khẩu - LogiPort System";
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h3>Xin chào ${existAccount.fullName},</h3>
-        <p>Hệ thống nhận được yêu cầu khôi phục mật khẩu cho tài khoản công vụ của bạn.</p>
-        <p>Mã xác nhận (OTP) của bạn là:</p>
-        <h2 style="color: #00D4FF; background-color: #1c2541; padding: 10px 20px; display: inline-block; border-radius: 5px;">${otp}</h2>
-        <p style="color: red;"><strong>Lưu ý:</strong> Mã này chỉ có hiệu lực trong vòng <strong>3 phút</strong>.</p>
-        <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này và bảo mật tài khoản của mình.</p>
-        <hr />
-        <p>Trân trọng,<br />LogiPort System</p>
+      <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f8f8; padding: 40px 20px; color: #121212;">
+        <div style="background-color: #ffffff; border-radius: 8px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.05); border-top: 4px solid #1ed760;">
+          <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: #121212;">
+            Logi<span style="color: #1ed760;">Port</span>
+          </h1>
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Khôi phục mật khẩu!</h2>
+          <p style="font-size: 16px; line-height: 1.6; color: #666666; margin-bottom: 24px;">
+            Xin chào <b style="color: #121212;">\${existAccount.fullName}</b>,<br/><br/>
+            Hệ thống nhận được yêu cầu khôi phục mật khẩu cho tài khoản công vụ của bạn trên <strong>LogiPort</strong>.
+          </p>
+          
+          <div style="background-color: #e8fbf0; border-left: 4px solid #1ed760; padding: 16px 20px; margin-bottom: 24px; border-radius: 0 4px 4px 0; text-align: center;">
+            <p style="margin: 0; font-size: 15px; color: #1db954; font-weight: 700;">
+              Mã xác nhận (OTP) của bạn là:
+            </p>
+            <h2 style="margin: 8px 0 0 0; font-size: 32px; color: #121212; letter-spacing: 5px;">\${otp}</h2>
+          </div>
+
+          <p style="font-size: 15px; line-height: 1.6; color: #666666; margin-bottom: 32px;">
+            <span style="color: #f3727f; font-weight: bold;">Lưu ý:</span> Mã OTP này chỉ có hiệu lực trong vòng <strong>3 phút</strong>. Vui lòng không chia sẻ mã này cho bất kỳ ai. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email và bảo mật tài khoản của mình.
+          </p>
+
+          <div style="border-top: 1px solid #e5e5e5; padding-top: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #999999; font-weight: 700;">Trân trọng,</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; color: #121212; font-weight: 900;">Đội ngũ LogiPort</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+          <p style="font-size: 12px; color: #999999; line-height: 1.5;">
+            Đây là email tự động từ hệ thống LogiPort. Vui lòng không trả lời email này.<br/>
+            © \${new Date().getFullYear()} LogiPort. All rights reserved.
+          </p>
+        </div>
       </div>
     `;
 

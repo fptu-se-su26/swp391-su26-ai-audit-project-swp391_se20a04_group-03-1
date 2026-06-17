@@ -142,10 +142,10 @@ export default function EditContainerProviderPage({
             throw new Error(result.message || "Lỗi khi cập nhật nhà cung cấp.");
           }
 
-          toast.success("Cập nhật hãng tàu thành công!", { id: loadingToast });
+          toast.success("Cập nhật nhà cung cấp thành công!", { id: loadingToast });
           setTimeout(() => router.push("/admin/container-providers"), 1500);
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", { id: loadingToast });
+          toast.error(err.message || "Không thể lưu thông tin nhà cung cấp.", { id: loadingToast });
         }
       });
 
@@ -188,10 +188,10 @@ export default function EditContainerProviderPage({
         </Link>
         <div>
           <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
-            Chỉnh sửa hãng tàu
+            Chỉnh sửa nhà cung cấp
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
-            Cập nhật thông tin cho hãng tàu {provider?.name}
+            Cập nhật thông tin cho nhà cung cấp {provider?.name}
           </p>
         </div>
       </div>
@@ -208,7 +208,7 @@ export default function EditContainerProviderPage({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <Label htmlFor="code" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                  Mã hãng tàu
+                  Mã nhà cung cấp
                 </Label>
                 <Input
                   id="code"
@@ -219,7 +219,7 @@ export default function EditContainerProviderPage({
               </div>
               <div className="space-y-3">
                 <Label htmlFor="name" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                  Tên hãng tàu
+                  Tên nhà cung cấp
                 </Label>
                 <Input
                   id="name"

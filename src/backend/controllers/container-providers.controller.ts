@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ContainerProvider } from "../models/container-provider.model";
 import bcrypt from "bcryptjs";
+import { sendMail } from "../helpers/mail.helper";
 
 export const providersGet = async (req: Request, res: Response) => {
   try {
@@ -175,6 +176,72 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
 
     existProvider.status = newStatus;
     await existProvider.save();
+
+    if (existProvider.contact_email) {
+      const statusText = newStatus === "ACTIVE" ? "Đã Kích Hoạt" : "Đã Tạm Khóa";
+      const statusColor = newStatus === "ACTIVE" ? "#1ed760" : "#f3727f";
+      const statusBg = newStatus === "ACTIVE" ? "#e8fbf0" : "#fef1f2";
+      const statusMessage = newStatus === "ACTIVE" 
+        ? "Tuyệt vời! Tài khoản của bạn đã được Ban quản trị xác duyệt và kích hoạt thành công. Bây giờ bạn có thể đăng nhập vào hệ thống để bắt đầu điều phối."
+        : "Tài khoản của bạn hiện đang bị tạm khóa hoặc chờ duyệt. Vui lòng liên hệ với Ban quản trị LogiPort để biết thêm chi tiết và được hỗ trợ.";
+
+      const mailTitle = `Thông báo cập nhật trạng thái tài khoản: ${statusText}`;
+      const mailContent = `
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f8f8; padding: 40px 20px; color: #121212;">
+          <div style="background-color: #ffffff; border-radius: 8px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.05); border-top: 4px solid ${statusColor};">
+            <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: #121212;">
+              Logi<span style="color: #1ed760;">Port</span>
+            </h1>
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Cập nhật trạng thái tài khoản</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #666666; margin-bottom: 24px;">
+              Xin chào <b style="color: #121212;">${existProvider.name}</b>,<br/><br/>
+              Hệ thống điều phối logistics thông minh <strong>LogiPort</strong> xin thông báo về việc thay đổi trạng thái tài khoản nhà cung cấp của bạn.
+            </p>
+            
+            <div style="background-color: ${statusBg}; border-left: 4px solid ${statusColor}; padding: 16px 20px; margin-bottom: 24px; border-radius: 0 4px 4px 0;">
+              <p style="margin: 0; font-size: 15px; color: ${statusColor}; font-weight: 700;">
+                Trạng thái hiện tại: ${statusText}
+              </p>
+              <p style="margin: 8px 0 0 0; font-size: 14px; color: #666666; line-height: 1.5;">
+                ${statusMessage}
+              </p>
+            </div>
+
+            <div style="background-color: #f8f8f8; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+              <h3 style="margin: 0 0 16px 0; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #121212;">Thông tin tài khoản</h3>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666; width: 40%;">Mã nhà cung cấp</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${existProvider.code}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666;">Tên nhà cung cấp</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${existProvider.name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-size: 14px; color: #666666;">Email liên hệ</td>
+                  <td style="padding: 8px 0; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${existProvider.contact_email}</td>
+                </tr>
+              </table>
+            </div>
+
+            ${newStatus === "ACTIVE" ? `<a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/client/provider/login" style="display: inline-block; background-color: #1ed760; color: #121212; font-weight: 900; text-decoration: none; padding: 14px 28px; border-radius: 500px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14px; margin-bottom: 32px;">Đăng nhập ngay</a>` : ''}
+
+            <div style="border-top: 1px solid #e5e5e5; padding-top: 24px;">
+              <p style="margin: 0; font-size: 14px; color: #999999; font-weight: 700;">Trân trọng,</p>
+              <p style="margin: 4px 0 0 0; font-size: 16px; color: #121212; font-weight: 900;">Đội ngũ LogiPort</p>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 24px;">
+            <p style="font-size: 12px; color: #999999; line-height: 1.5;">
+              Đây là email tự động từ hệ thống LogiPort. Vui lòng không trả lời email này.<br/>
+              © ${new Date().getFullYear()} LogiPort. All rights reserved.
+            </p>
+          </div>
+        </div>
+      `;
+      sendMail(existProvider.contact_email, mailTitle, mailContent);
+    }
 
     res.json({
       code: "success",

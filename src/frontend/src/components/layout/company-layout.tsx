@@ -12,7 +12,9 @@ export function CompanyLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   const isAuthPage = pathname?.includes("/client/company/login") || 
-                     pathname?.includes("/client/company/register")
+                     pathname?.includes("/client/company/register") ||
+                     pathname?.includes("/client/company/forgot-password") ||
+                     pathname?.includes("/client/company/reset-password")
 
   // Sync toast theme variables based on document.documentElement class
   useEffect(() => {

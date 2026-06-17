@@ -11,6 +11,8 @@ import containerProvidersRouter from "./container-providers.route";
 import settingsRouter from "./settings.route";
 import clientRouter from "./client/index.route";
 
+import { containersRoutes } from "./containers.route";
+
 const rootRouter = Router();
 
 // Combine all routers
@@ -22,6 +24,7 @@ rootRouter.use("/companies", requireAuth, companyRouter);
 rootRouter.use("/gates", requireAuth, gateRouter);
 rootRouter.use("/drivers", requireAuth, driversRouter);
 rootRouter.use("/container-providers", requireAuth, containerProvidersRouter);
+rootRouter.use("/containers", requireAuth, containersRoutes);
 rootRouter.use("/scan", scanRouter);
 rootRouter.use("/settings", requireAuth, settingsRouter);
 
