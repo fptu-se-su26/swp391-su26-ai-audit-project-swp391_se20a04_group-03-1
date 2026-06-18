@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { AsyncDriverSelect } from "@/components/AsyncDriverSelect";
-import { AsyncTruckSelect } from "@/components/AsyncTruckSelect";
-import { AsyncContainerSelect } from "@/components/AsyncContainerSelect";
+import { AsyncCompanyDriverSelect } from "@/components/AsyncCompanyDriverSelect";
+import { AsyncCompanyTruckSelect } from "@/components/AsyncCompanyTruckSelect";
+import { AsyncCompanyContainerSelect } from "@/components/AsyncCompanyContainerSelect";
 import { CustomSelect } from "@/components/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -144,7 +144,7 @@ export default function AppointmentsPage() {
       params.append("limit", ITEMS_PER_PAGE.toString());
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/appointments/?${params.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/client/appointments/?${params.toString()}`,
         { credentials: "include" },
       );
       const data = await res.json();
@@ -237,7 +237,7 @@ export default function AppointmentsPage() {
         const loadingToast = toast.loading("Đang đăng ký lịch hẹn...");
         try {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/appointments/create`,
+            `${process.env.NEXT_PUBLIC_API_URL}/client/appointments/create`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -274,7 +274,7 @@ export default function AppointmentsPage() {
     const loadingToast = toast.loading("Đang cập nhật trạng thái...");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/appointments/status/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/client/appointments/status/${id}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -305,7 +305,7 @@ export default function AppointmentsPage() {
     const loadingToast = toast.loading("Đang xóa lịch hẹn...");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/appointments/delete/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/client/appointments/delete/${id}`,
         {
           method: "PATCH",
           credentials: "include",
@@ -338,7 +338,7 @@ export default function AppointmentsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin/appointments/completed">
+          <Link href="/client/company/appointments/completed">
             <Button
               variant="outline"
               className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#1ed760] dark:hover:border-[#1ed760] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
@@ -347,7 +347,7 @@ export default function AppointmentsPage() {
               Hoàn thành
             </Button>
           </Link>
-          <Link href="/admin/appointments/trash">
+          <Link href="/client/company/appointments/trash">
             <Button
               variant="outline"
               className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#f3727f] dark:hover:border-[#f3727f] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
@@ -387,7 +387,7 @@ export default function AppointmentsPage() {
                     Biển số xe (Tìm kiếm)
                   </Label>
                   <div className="bg-[#f8f8f8] dark:bg-[#121212] rounded-[8px]">
-                    <AsyncTruckSelect
+                    <AsyncCompanyTruckSelect
                       value={selectedTruckPlate}
                       onChange={setSelectedTruckPlate}
                     />
@@ -401,7 +401,7 @@ export default function AppointmentsPage() {
                     Mã container (Tìm kiếm)
                   </Label>
                   <div className="bg-[#f8f8f8] dark:bg-[#121212] rounded-[8px]">
-                    <AsyncContainerSelect
+                    <AsyncCompanyContainerSelect
                       value={selectedContainerNo}
                       onChange={setSelectedContainerNo}
                     />
@@ -415,7 +415,7 @@ export default function AppointmentsPage() {
                     Tài xế (Tìm kiếm)
                   </Label>
                   <div className="bg-[#f8f8f8] dark:bg-[#121212] rounded-[8px]">
-                    <AsyncDriverSelect
+                    <AsyncCompanyDriverSelect
                       value={selectedDriverId}
                       onChange={(id, name) => {
                         setSelectedDriverId(id);
@@ -696,16 +696,7 @@ export default function AppointmentsPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {apt.status === "Pending" && (
-                            <Button
-                              onClick={() =>
-                                handleUpdateStatus(apt._id, "Confirmed")
-                              }
-                              className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
-                            >
-                              Duyệt
-                            </Button>
-                          )}
+
                           {apt.status !== "Cancelled" &&
                             apt.status !== "CheckedOut" &&
                             apt.status !== "Completed" && (
@@ -718,7 +709,7 @@ export default function AppointmentsPage() {
                                 Hủy
                               </Button>
                             )}
-                          <Link href={`/admin/appointments/edit/${apt._id}`}>
+                          <Link href={`/client/company/appointments/edit/${apt._id}`}>
                             <Button className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors">
                               <Pencil className="h-3 w-3" />
                             </Button>

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { Appointment } from "../models/appointment.model";
-import { Driver } from "../models/driver.model";
-import { Container } from "../models/container.model";
+import { Appointment } from "../../models/appointment.model";
+import { Driver } from "../../models/driver.model";
+import { Container } from "../../models/container.model";
 
 export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
@@ -93,8 +93,12 @@ export const appointmentsGet = async (req: Request, res: Response) => {
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
+    
+    const companyId = req.user.id;
+    const companyDrivers = await Driver.find({ companyId }).select("_id");
+    const driverIds = companyDrivers.map((d) => d._id);
 
-    let query: any = { isDeleted: false, status: { $ne: "Completed" } };
+    let query: any = { isDeleted: false, status: { $ne: "Completed" }, driverId: { $in: driverIds } };
 
     if (status && status !== "ALL") {
       query.status = status;
@@ -116,18 +120,19 @@ export const appointmentsGet = async (req: Request, res: Response) => {
     if (search) {
       const searchRegex = new RegExp(search as string, "i");
       const matchedDrivers = await Driver.find({
+        companyId,
         $or: [
           { driverName: searchRegex },
           { driverPhone: searchRegex },
           { driverId: searchRegex },
         ],
       }).select("_id");
-      const driverIds = matchedDrivers.map((d) => d._id);
+      const matchedDriverIds = matchedDrivers.map((d) => d._id);
 
       query.$or = [
         { truckPlate: searchRegex },
         { containerNo: searchRegex },
-        { driverId: { $in: driverIds } },
+        { driverId: { $in: matchedDriverIds } },
       ];
     }
 
@@ -162,7 +167,11 @@ export const appointmentsGet = async (req: Request, res: Response) => {
 export const appointmentDetailGet = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const appointment = await Appointment.findById(id).populate({
+    const companyId = req.user.id;
+    const companyDrivers = await Driver.find({ companyId }).select("_id");
+    const driverIds = companyDrivers.map((d) => d._id);
+    
+    const appointment = await Appointment.findOne({ _id: id, driverId: { $in: driverIds } }).populate({
       path: "driverId",
       populate: { path: "companyId" },
     });
@@ -227,6 +236,21 @@ export const appointmentEditPatch = async (req: Request, res: Response) => {
       });
     }
 
+    const currentAppointment = await Appointment.findById(id);
+    if (!currentAppointment) {
+      return res.json({
+        code: "error",
+        message: "Không tìm thấy lịch hẹn",
+      });
+    }
+
+    if (req.body.status === "Confirmed" && currentAppointment.status !== "Confirmed") {
+      return res.json({
+        code: "error",
+        message: "Doanh nghiệp không có quyền duyệt lịch hẹn. Vui lòng chờ Ban Quản Lý phê duyệt.",
+      });
+    }
+
     await Appointment.updateOne({ _id: id }, req.body);
 
     res.json({
@@ -258,20 +282,10 @@ export const appointmentStatusPatch = async (req: Request, res: Response) => {
 
     // 2. Xử lý logic đặc biệt cho từng trạng thái
     if (status === "Confirmed") {
-      // Khi xác nhận, kiểm tra có lịch hẹn khác của xe trong ngày không
-      const existAppointmentInDay = await Appointment.findOne({
-        _id: { $ne: id },
-        truckPlate: appointment.truckPlate,
-        scheduledDate: appointment.scheduledDate,
-        status: { $nin: ["Cancelled", "Completed"] },
+      return res.json({
+        code: "error",
+        message: "Doanh nghiệp không có quyền duyệt lịch hẹn. Vui lòng chờ Ban Quản Lý phê duyệt.",
       });
-
-      if (existAppointmentInDay) {
-        return res.json({
-          code: "error",
-          message: "Xe đã có lịch hẹn khác trong ngày.",
-        });
-      }
     }
 
     // 3. Cập nhật trạng thái
@@ -335,7 +349,11 @@ export const appointmentsTrashGet = async (req: Request, res: Response) => {
     const limitNum = parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    let query: any = { isDeleted: true };
+    const companyId = req.user.id;
+    const companyDrivers = await Driver.find({ companyId }).select("_id");
+    const driverIds = companyDrivers.map((d) => d._id);
+
+    let query: any = { isDeleted: true, driverId: { $in: driverIds } };
 
     if (status && status !== "ALL") {
       query.status = status;
@@ -357,18 +375,19 @@ export const appointmentsTrashGet = async (req: Request, res: Response) => {
     if (search) {
       const searchRegex = new RegExp(search as string, "i");
       const matchedDrivers = await Driver.find({
+        companyId,
         $or: [
           { driverName: searchRegex },
           { driverPhone: searchRegex },
           { driverId: searchRegex },
         ],
       }).select("_id");
-      const driverIds = matchedDrivers.map((d) => d._id);
+      const matchedDriverIds = matchedDrivers.map((d) => d._id);
 
       query.$or = [
         { truckPlate: searchRegex },
         { containerNo: searchRegex },
-        { driverId: { $in: driverIds } },
+        { driverId: { $in: matchedDriverIds } },
       ];
     }
 

@@ -8,9 +8,9 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
-import { AsyncDriverSelect } from "@/components/AsyncDriverSelect";
-import { AsyncTruckSelect } from "@/components/AsyncTruckSelect";
-import { AsyncContainerSelect } from "@/components/AsyncContainerSelect";
+import { AsyncCompanyDriverSelect } from "@/components/AsyncCompanyDriverSelect";
+import { AsyncCompanyTruckSelect } from "@/components/AsyncCompanyTruckSelect";
+import { AsyncCompanyContainerSelect } from "@/components/AsyncCompanyContainerSelect";
 import { CustomSelect } from "@/components/CustomSelect";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -65,7 +65,7 @@ export default function EditAppointmentPage({
     const fetchAppointment = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/appointments/detail/${resolvedParams.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/client/appointments/detail/${resolvedParams.id}`,
           { credentials: "include" },
         );
         if (!res.ok) throw new Error("Không thể tải thông tin lịch hẹn");
@@ -169,7 +169,7 @@ export default function EditAppointmentPage({
         const loadingToast = toast.loading("Đang cập nhật lịch hẹn...");
         try {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/appointments/edit`,
+            `${process.env.NEXT_PUBLIC_API_URL}/client/appointments/edit`,
             {
               method: "PATCH",
               headers: { "Content-Type": "application/json" },
@@ -184,7 +184,7 @@ export default function EditAppointmentPage({
           }
 
           toast.success("Cập nhật lịch hẹn thành công!", { id: loadingToast });
-          setTimeout(() => router.push("/admin/appointments"), 1000);
+          setTimeout(() => router.push("/admin/client/appointments"), 1000);
         } catch (err: any) {
           toast.error(err.message || "Không thể lưu lịch hẹn vào hệ thống.", {
             id: loadingToast,
@@ -230,7 +230,7 @@ export default function EditAppointmentPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin/appointments">
+          <Link href="/admin/client/appointments">
             <Button
               variant="outline"
               className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
@@ -260,7 +260,7 @@ export default function EditAppointmentPage({
                   Biển số xe (Tìm kiếm)
                 </Label>
                 <div className="rounded-[4px]">
-                  <AsyncTruckSelect
+                  <AsyncCompanyTruckSelect
                     value={selectedTruckPlate}
                     onChange={setSelectedTruckPlate}
                   />
@@ -274,7 +274,7 @@ export default function EditAppointmentPage({
                   Mã container (Tìm kiếm)
                 </Label>
                 <div className="rounded-[4px]">
-                  <AsyncContainerSelect
+                  <AsyncCompanyContainerSelect
                     value={selectedContainerNo}
                     onChange={setSelectedContainerNo}
                   />
@@ -288,7 +288,7 @@ export default function EditAppointmentPage({
                   Tài xế (Tìm kiếm)
                 </Label>
                 <div className="rounded-[4px]">
-                  <AsyncDriverSelect
+                  <AsyncCompanyDriverSelect
                     value={selectedDriverId}
                     onChange={(id, name) => {
                       setSelectedDriverId(id);
@@ -384,7 +384,7 @@ export default function EditAppointmentPage({
                     onChange={setSelectedStatus}
                     options={[
                       { value: "Pending", label: "Chờ xử lý" },
-                      { value: "Confirmed", label: "Đã xác nhận" },
+                      ...(appointment.status === "Confirmed" ? [{ value: "Confirmed", label: "Đã xác nhận" }] : []),
                       { value: "Cancelled", label: "Đã Hủy" },
                     ]}
                     placeholder="-- Chọn trạng thái --"
@@ -393,7 +393,7 @@ export default function EditAppointmentPage({
               </div>
             </div>
             <div className="flex gap-4 justify-end pt-8">
-              <Link href="/admin/appointments">
+              <Link href="/admin/client/appointments">
                 <Button
                   type="button"
                   variant="outline"

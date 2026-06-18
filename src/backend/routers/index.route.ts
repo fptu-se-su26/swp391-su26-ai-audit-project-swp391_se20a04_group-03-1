@@ -12,6 +12,7 @@ import settingsRouter from "./settings.route";
 import clientRouter from "./client/index.route";
 
 import { containersRoutes } from "./containers.route";
+import { trucksRoutes } from "./trucks.route";
 
 const rootRouter = Router();
 
@@ -25,6 +26,7 @@ rootRouter.use("/gates", requireAuth, gateRouter);
 rootRouter.use("/drivers", requireAuth, driversRouter);
 rootRouter.use("/container-providers", requireAuth, containerProvidersRouter);
 rootRouter.use("/containers", requireAuth, containersRoutes);
+rootRouter.use("/trucks", requireAuth, trucksRoutes);
 rootRouter.use("/scan", scanRouter);
 rootRouter.use("/settings", requireAuth, settingsRouter);
 

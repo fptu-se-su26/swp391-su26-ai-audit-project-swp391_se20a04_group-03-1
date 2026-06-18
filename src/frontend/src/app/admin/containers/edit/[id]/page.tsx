@@ -25,6 +25,7 @@ export default function EditContainerPage() {
   const [formType, setFormType] = useState("20ft");
   const [formStatus, setFormStatus] = useState("Hàng");
   const [formPortStatus, setFormPortStatus] = useState("Chưa nhập cảng");
+  const [formNumberDigits, setFormNumberDigits] = useState("");
   
   const [providers, setProviders] = useState<any[]>([]);
   const [selectedProvider, setSelectedProvider] = useState("");
@@ -70,18 +71,12 @@ export default function EditContainerPage() {
           setFormPortStatus(c.portStatus || "Chưa nhập cảng");
           setSelectedProvider(c.providerId ? c.providerId._id : "");
 
-          if (formRef.current) {
-            // Find matched BIC in the first 4 characters
-            const number = c.number as string;
-            const bicStr = number.substring(0, 4);
-            const digits = number.substring(4);
-            
-            // Set value for the digits part
-            const input = formRef.current.querySelector("#number") as HTMLInputElement;
-            if (input) input.value = digits;
-            
-            setSelectedBic(bicStr);
-          }
+          const number = c.number as string;
+          const bicStr = number.substring(0, 4);
+          const digits = number.substring(4);
+          
+          setFormNumberDigits(digits);
+          setSelectedBic(bicStr);
         } else {
           toast.error("Không tìm thấy container.");
           router.push("/admin/containers");
@@ -265,6 +260,8 @@ export default function EditContainerPage() {
                     name="number"
                     placeholder="VD: 1234567"
                     maxLength={7}
+                    value={formNumberDigits}
+                    onChange={(e) => setFormNumberDigits(e.target.value)}
                     className="flex-1 uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:ring-[#1ed760] transition-colors"
                   />
                 </div>

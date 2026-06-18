@@ -29,7 +29,7 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    label: "Đặt lịch xe",
+    label: "Quản lý lịch hẹn",
     href: "/admin/appointments",
     icon: Calendar,
   },
