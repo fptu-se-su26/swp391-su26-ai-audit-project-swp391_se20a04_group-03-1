@@ -2,10 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 export interface IYardSlot {
   slotName: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  points?: { x: number; y: number }[];
 }
 
 export interface IYard {
@@ -28,10 +29,16 @@ const yardSchema = new Schema<IYard>(
     slots: [
       {
         slotName: { type: String, required: true },
-        x: { type: Number, required: true },
-        y: { type: Number, required: true },
-        width: { type: Number, required: true },
-        height: { type: Number, required: true },
+        x: { type: Number, required: false },
+        y: { type: Number, required: false },
+        width: { type: Number, required: false },
+        height: { type: Number, required: false },
+        points: [
+          {
+            x: { type: Number, required: true },
+            y: { type: Number, required: true },
+          },
+        ],
       },
     ],
     isDeleted: { type: Boolean, default: false },

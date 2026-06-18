@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const accountAdminSchema = new Schema(
   {
+
     fullName: {
       type: String,
       required: true,
@@ -24,6 +25,14 @@ const accountAdminSchema = new Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

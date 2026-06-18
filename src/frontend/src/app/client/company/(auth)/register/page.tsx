@@ -21,16 +21,16 @@ import {
   Mail,
   Shield,
   CheckCircle2,
+  Building2,
+  Phone,
 } from "lucide-react";
 import JustValidate from "just-validate";
 import toast from "react-hot-toast";
-import { CustomSelect } from "@/components/CustomSelect";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState("transport");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -51,8 +51,17 @@ export default function RegisterPage() {
     });
 
     validator
-      .addField("#fullName", [
-        { rule: "required", errorMessage: "Vui lòng nhập họ tên." },
+      .addField("#companyCode", [
+        { rule: "required", errorMessage: "Vui lòng nhập mã số thuế/doanh nghiệp." },
+      ])
+      .addField("#companyName", [
+        { rule: "required", errorMessage: "Vui lòng nhập tên doanh nghiệp." },
+      ])
+      .addField("#contactPerson", [
+        { rule: "required", errorMessage: "Vui lòng nhập tên người đại diện." },
+      ])
+      .addField("#contactPhone", [
+        { rule: "required", errorMessage: "Vui lòng nhập số điện thoại." },
       ])
       .addField("#email", [
         { rule: "required", errorMessage: "Vui lòng nhập email." },
@@ -63,14 +72,23 @@ export default function RegisterPage() {
         { rule: "minLength", value: 6, errorMessage: "Mật khẩu tối thiểu 6 ký tự." },
       ])
       .addField("#confirmPassword", [
-        { rule: "required", errorMessage: "Vui lòng xác nhận mật khẩu." },
         {
-          validator: (value: string, fields: any) => {
-            if (fields["#password"] && fields["#password"].elem) {
-              const repeatPasswordValue = (fields["#password"].elem as HTMLInputElement).value;
-              return value === repeatPasswordValue;
+          validator: () => {
+            if (!formRef.current) return false;
+            const confirmPassElem = formRef.current.elements.namedItem("confirmPassword") as HTMLInputElement;
+            return !!confirmPassElem && confirmPassElem.value.trim() !== "";
+          },
+          errorMessage: "Vui lòng xác nhận mật khẩu.",
+        },
+        {
+          validator: () => {
+            if (!formRef.current) return false;
+            const passElem = formRef.current.elements.namedItem("password") as HTMLInputElement;
+            const confirmPassElem = formRef.current.elements.namedItem("confirmPassword") as HTMLInputElement;
+            if (passElem && confirmPassElem) {
+              return passElem.value === confirmPassElem.value;
             }
-            return true;
+            return false;
           },
           errorMessage: "Mật khẩu không khớp.",
         },
@@ -88,14 +106,17 @@ export default function RegisterPage() {
       try {
         const formData = new FormData(formRef.current!);
         const payload = {
-          fullName: formData.get("fullName") as string,
+          companyCode: formData.get("companyCode") as string,
+          companyName: formData.get("companyName") as string,
+          contactPerson: formData.get("contactPerson") as string,
+          contactPhone: formData.get("contactPhone") as string,
           email: formData.get("email") as string,
-          role: formData.get("role") as string,
+          role: "transport",
           password: formData.get("password") as string,
         };
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+          `${process.env.NEXT_PUBLIC_API_URL}/client/auth/register`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -114,11 +135,7 @@ export default function RegisterPage() {
           window.location.href = "/client/company/login";
         }, 2000);
       } catch (err: any) {
-        toast.error(err.message, { 
-          id: loadingToast,
-          className: "bg-white dark:bg-[#f3727f] text-[#121212] dark:text-[#121212] border-[#e5e5e5] dark:border-transparent",
-          iconTheme: { primary: '#f3727f', secondary: '#ffffff' }
-        });
+        toast.error(err.message, { id: loadingToast });
       } finally {
         setIsLoading(false);
       }
@@ -131,7 +148,7 @@ export default function RegisterPage() {
         validatorRef.current.destroy();
       }
     };
-  }, []);
+  }, [showPassword, showConfirmPassword]);
 
   return (
     <div className="min-h-screen w-full flex bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] font-sans transition-colors duration-300">
@@ -191,22 +208,83 @@ export default function RegisterPage() {
             </CardHeader>
             <CardContent className="px-10 pb-10">
               <form ref={formRef} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Họ và tên
-                  </Label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
-                      <User className="h-5 w-5" />
-                    </span>
-                    <Input
-                      id="fullName"
-                      name="fullName"
-                      type="text"
-                      placeholder="Nguyễn Văn A"
-                      disabled={isLoading}
-                      className="pl-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyCode" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
+                      Mã số thuế / Mã CTY
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
+                        <Shield className="h-5 w-5" />
+                      </span>
+                      <Input
+                        id="companyCode"
+                        name="companyCode"
+                        type="text"
+                        placeholder="VD: 0312345678"
+                        disabled={isLoading}
+                        className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
+                      Tên doanh nghiệp
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
+                        <Building2 className="h-5 w-5" />
+                      </span>
+                      <Input
+                        id="companyName"
+                        name="companyName"
+                        type="text"
+                        placeholder="Công ty TNHH MTV..."
+                        disabled={isLoading}
+                        className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPerson" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
+                      Người đại diện
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
+                        <User className="h-5 w-5" />
+                      </span>
+                      <Input
+                        id="contactPerson"
+                        name="contactPerson"
+                        type="text"
+                        placeholder="Nguyễn Văn A"
+                        disabled={isLoading}
+                        className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPhone" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
+                      Số điện thoại
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
+                        <Phone className="h-5 w-5" />
+                      </span>
+                      <Input
+                        id="contactPhone"
+                        name="contactPhone"
+                        type="text"
+                        placeholder="0987654321"
+                        disabled={isLoading}
+                        className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -224,30 +302,11 @@ export default function RegisterPage() {
                       type="email"
                       placeholder="company@domain.com"
                       disabled={isLoading}
-                      className="pl-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
+                      className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="role" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
-                    Loại hình doanh nghiệp
-                  </Label>
-                  <div className="relative">
-                    <CustomSelect
-                      id="role"
-                      name="role"
-                      value={role}
-                      onChange={setRole}
-                      options={[
-                        { value: "transport", label: "Đơn vị Vận Tải" },
-                        { value: "forwarder", label: "Công ty Forwarder" },
-                        { value: "shipping_line", label: "Hãng Tàu" },
-                        { value: "importer_exporter", label: "Chủ hàng XNK" }
-                      ]}
-                    />
-                  </div>
-                </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-[#121212] dark:text-[#ffffff] text-[12px] font-bold uppercase tracking-[1.5px]">
@@ -263,7 +322,7 @@ export default function RegisterPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Tối thiểu 6 ký tự"
                       disabled={isLoading}
-                      className="pl-12 pr-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
+                      className="pl-12 pr-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
                     />
                     <button
                       type="button"
@@ -290,7 +349,7 @@ export default function RegisterPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Nhập lại mật khẩu"
                       disabled={isLoading}
-                      className="pl-12 pr-12 py-5 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] font-bold"
+                      className="pl-12 pr-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
                     />
                     <button
                       type="button"

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Driver } from "../models/driver.model";
+import { Company } from "../models/company.model";
 
 export const driversGet = async (req: Request, res: Response) => {
   try {
@@ -174,7 +175,22 @@ export const driversTrashGet = async (req: Request, res: Response) => {
 
 export const restoreDriverPatch = async (req: Request, res: Response) => {
   try {
-    await Driver.findByIdAndUpdate(req.params.id, { isDeleted: false });
+    const driver = await Driver.findById(req.params.id);
+    if (!driver) {
+      return res.json({ code: "error", message: "Không tìm thấy tài xế" });
+    }
+
+    const company = await Company.findById(driver.companyId);
+    if (company && company.isDeleted) {
+      return res.json({
+        code: "error",
+        message: "Không thể khôi phục tài xế vì công ty quản lý đang nằm trong thùng rác"
+      });
+    }
+
+    driver.isDeleted = false;
+    await driver.save();
+
     res.json({ code: "success", message: "Khôi phục tài xế thành công" });
     return;
   } catch (error) {

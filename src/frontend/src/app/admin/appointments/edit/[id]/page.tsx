@@ -9,6 +9,8 @@ import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
 import { AsyncDriverSelect } from "@/components/AsyncDriverSelect";
+import { AsyncTruckSelect } from "@/components/AsyncTruckSelect";
+import { AsyncContainerSelect } from "@/components/AsyncContainerSelect";
 import { CustomSelect } from "@/components/CustomSelect";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -50,7 +52,10 @@ export default function EditAppointmentPage({
     name: string;
   } | null>(null);
   const [selectedDriverCompany, setSelectedDriverCompany] = useState("");
+  const [selectedTruckPlate, setSelectedTruckPlate] = useState("");
+  const [selectedContainerNo, setSelectedContainerNo] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [selectedPurpose, setSelectedPurpose] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -76,8 +81,17 @@ export default function EditAppointmentPage({
         if (result.data.timeSlot) {
           setSelectedTimeSlot(result.data.timeSlot);
         }
+        if (result.data.purpose) {
+          setSelectedPurpose(result.data.purpose);
+        }
         if (result.data.status) {
           setSelectedStatus(result.data.status);
+        }
+        if (result.data.truckPlate) {
+          setSelectedTruckPlate(result.data.truckPlate);
+        }
+        if (result.data.containerNo) {
+          setSelectedContainerNo(result.data.containerNo);
         }
         if (result.data.driverId) {
           setSelectedDriverId(result.data.driverId._id || "");
@@ -115,26 +129,11 @@ export default function EditAppointmentPage({
     validatorRef.current = validator;
 
     validator
-      .addField("#truckPlate", [
-        { rule: "required", errorMessage: "Bắt buộc." },
-        {
-          rule: "customRegexp",
-          value: /^([0-9]{2})([A-Z]{1})([0-9]{5})$/,
-          errorMessage: "Định dạng sai (VD: 15C12345).",
-        },
-      ])
-      .addField("#containerNo", [
-        { rule: "required", errorMessage: "Bắt buộc." },
-        {
-          rule: "customRegexp",
-          value: /^[A-Z]{4}[0-9]{7}$/i,
-          errorMessage: "Sai chuẩn ISO (VD: MSCU1234567).",
-        },
-      ])
       .addField("#scheduledDate", [
         { rule: "required", errorMessage: "Bắt buộc." },
       ])
       .addField("#timeSlot", [{ rule: "required", errorMessage: "Bắt buộc." }])
+      .addField("#purpose", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .addField("#status", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .onSuccess(async (event: any) => {
         event.preventDefault();
@@ -144,19 +143,24 @@ export default function EditAppointmentPage({
           toast.error("Vui lòng chọn tài xế.");
           return;
         }
+        const truckPlateStr = formData.get("truckPlate")?.toString().trim();
+        if (!truckPlateStr) {
+          toast.error("Vui lòng chọn biển số xe.");
+          return;
+        }
+
+        const containerNoStr = formData.get("containerNo")?.toString().trim();
+        if (!containerNoStr) {
+          toast.error("Vui lòng chọn mã container.");
+          return;
+        }
+
         const payload = {
           id: formData.get("id")?.toString(),
-          truckPlate: formData
-            .get("truckPlate")
-            ?.toString()
-            .trim()
-            .toUpperCase(),
-          driverId: formData.get("driverId")?.toString().trim(),
-          containerNo: formData
-            .get("containerNo")
-            ?.toString()
-            .trim()
-            .toUpperCase(),
+          truckPlate: truckPlateStr.toUpperCase(),
+          driverId: driverIdStr,
+          containerNo: containerNoStr.toUpperCase(),
+          purpose: selectedPurpose,
           scheduledDate: formData.get("scheduledDate")?.toString(),
           timeSlot: selectedTimeSlot,
           status: selectedStatus,
@@ -194,7 +198,7 @@ export default function EditAppointmentPage({
         validatorRef.current = null;
       }
     };
-  }, [loading, router, selectedTimeSlot, selectedStatus]);
+  }, [loading, router, selectedTimeSlot, selectedStatus, selectedPurpose]);
 
   if (loading) {
     return (
@@ -253,30 +257,28 @@ export default function EditAppointmentPage({
                   htmlFor="truckPlate"
                   className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                 >
-                  Biển số xe
+                  Biển số xe (Tìm kiếm)
                 </Label>
-                <Input
-                  id="truckPlate"
-                  name="truckPlate"
-                  defaultValue={appointment.truckPlate}
-                  placeholder="VD: 15C12345"
-                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
-                />
+                <div className="rounded-[4px]">
+                  <AsyncTruckSelect
+                    value={selectedTruckPlate}
+                    onChange={setSelectedTruckPlate}
+                  />
+                </div>
               </div>
               <div className="space-y-3">
                 <Label
                   htmlFor="containerNo"
                   className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                 >
-                  Mã container
+                  Mã container (Tìm kiếm)
                 </Label>
-                <Input
-                  id="containerNo"
-                  name="containerNo"
-                  defaultValue={appointment.containerNo}
-                  placeholder="VD: MSCU1234567"
-                  className="uppercase bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
-                />
+                <div className="rounded-[4px]">
+                  <AsyncContainerSelect
+                    value={selectedContainerNo}
+                    onChange={setSelectedContainerNo}
+                  />
+                </div>
               </div>
               <div className="space-y-3">
                 <Label
@@ -346,6 +348,27 @@ export default function EditAppointmentPage({
                   />
                 </div>
               </div>
+                <div className="space-y-3 relative">
+                  <Label
+                    htmlFor="purpose"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mục đích
+                  </Label>
+                  <div className="relative">
+                    <CustomSelect
+                      id="purpose"
+                      name="purpose"
+                      value={selectedPurpose}
+                      onChange={setSelectedPurpose}
+                      options={[
+                        { value: "Lấy container", label: "Lấy container" },
+                        { value: "Trả container", label: "Trả container" },
+                      ]}
+                      placeholder="-- Chọn mục đích --"
+                    />
+                  </div>
+                </div>
               <div className="space-y-3 relative">
                 <Label
                   htmlFor="status"

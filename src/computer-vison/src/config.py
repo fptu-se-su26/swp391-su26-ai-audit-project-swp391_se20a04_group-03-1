@@ -21,7 +21,7 @@ YOLO_PLATE_MODEL_PATH = os.getenv(
 )
 YOLO_CONTAINER_MODEL_PATH = os.getenv(
     "YOLO_CONTAINER_MODEL_PATH", 
-    os.path.join(MODELS_DIR, "container_model.pt")
+    os.path.join(MODELS_DIR, "container-code.pt")
 )
 
 # AI Processing Parameters

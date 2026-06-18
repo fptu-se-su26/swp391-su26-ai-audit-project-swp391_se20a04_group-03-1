@@ -69,7 +69,7 @@ export default function LoginPage() {
         };
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+          `${process.env.NEXT_PUBLIC_API_URL}/client/auth/login`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -89,14 +89,7 @@ export default function LoginPage() {
           window.location.href = "/client/company/dashboard";
         }, 1200);
       } catch (err: any) {
-        toast.error(err.message, { 
-          id: loadingToast,
-          className: "bg-white dark:bg-[#f3727f] text-[#121212] dark:text-[#121212] border-[#e5e5e5] dark:border-transparent",
-          iconTheme: {
-            primary: '#f3727f',
-            secondary: '#ffffff',
-          }
-        });
+        toast.error(err.message, { id: loadingToast });
       } finally {
         setIsLoading(false);
       }
@@ -183,7 +176,7 @@ export default function LoginPage() {
                       type="email"
                       placeholder="company@domain.com"
                       disabled={isLoading}
-                      className="pl-12 py-6 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] text-[16px] font-bold"
+                      className="pl-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
                     />
                   </div>
                 </div>
@@ -204,7 +197,7 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       disabled={isLoading}
-                      className="pl-12 pr-12 py-6 bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-[#1ed760] focus-visible:border-transparent transition-all rounded-[8px] text-[16px] font-bold"
+                      className="pl-12 pr-12 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] placeholder:text-[#999999] dark:placeholder:text-[#666666] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors rounded-[4px] h-12 text-[14px] font-bold"
                     />
                     <button
                       type="button"
