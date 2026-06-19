@@ -28,11 +28,16 @@ export const providerPost = (
       "any.required": "Email liên hệ là bắt buộc.",
       "string.email": "Email không hợp lệ.",
     }),
+    password: Joi.string().min(6).required().messages({
+      "string.min": "Mật khẩu phải chứa ít nhất 6 ký tự.",
+      "string.empty": "Mật khẩu là bắt buộc.",
+      "any.required": "Mật khẩu là bắt buộc.",
+    }),
     bic_codes: Joi.array().items(Joi.string().length(3).regex(/^[A-Z]{3}$/)).optional().messages({
         "string.length": "Mã BIC phải gồm 3 chữ cái in hoa.",
         "string.pattern.base": "Mã BIC phải gồm 3 chữ cái in hoa."
     }),
-    status: Joi.string().valid("ACTIVE", "SUSPENDED").optional()
+    status: Joi.string().valid("ACTIVE", "INACTIVE", "SUSPENDED").optional()
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -76,12 +81,15 @@ export const providerEdit = (
       "any.required": "Email liên hệ là bắt buộc.",
       "string.email": "Email không hợp lệ.",
     }),
+    password: Joi.string().min(6).allow("").optional().messages({
+      "string.min": "Mật khẩu phải chứa ít nhất 6 ký tự.",
+    }),
     bic_codes: Joi.array().items(Joi.string().length(3).regex(/^[A-Z]{3}$/)).optional().messages({
         "string.length": "Mã BIC phải gồm 3 chữ cái in hoa.",
         "string.pattern.base": "Mã BIC phải gồm 3 chữ cái in hoa."
     }),
     status: Joi.string()
-      .valid("ACTIVE", "SUSPENDED")
+      .valid("ACTIVE", "INACTIVE", "SUSPENDED")
       .required()
       .messages({
         "string.empty": "Trạng thái là bắt buộc.",

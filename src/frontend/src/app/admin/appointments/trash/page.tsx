@@ -56,6 +56,7 @@ interface Appointment {
   containerNo: string;
   scheduledDate: string;
   timeSlot: string;
+  purpose: string;
   status:
     | "Pending"
     | "Confirmed"
@@ -207,9 +208,9 @@ export default function TrashAppointmentsPage() {
 
       <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible border-t-4 border-t-[#f3727f]">
         <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+          <div className="flex flex-col gap-4">
             <div>
-              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+              <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider flex items-center gap-3">
                 Lịch hẹn đã xóa
               </CardTitle>
             </div>
@@ -221,7 +222,7 @@ export default function TrashAppointmentsPage() {
                   placeholder="Tìm biển số, container..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                  className="pl-11 bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#f3727f] dark:focus-visible:border-[#f3727f] hover:border-[#f3727f] transition-colors"
                 />
               </div>
               <div className="relative z-10 w-[200px]">
@@ -301,7 +302,7 @@ export default function TrashAppointmentsPage() {
                 <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
                     <th className="px-6 py-4 font-black">Biển số</th>
-                    <th className="px-6 py-4 font-black">Container</th>
+                    <th className="px-6 py-4 font-black">Container / Mục đích</th>
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn & Giờ</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
@@ -321,14 +322,23 @@ export default function TrashAppointmentsPage() {
                           {apt.truckPlate}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
-                        {apt.containerNo}
+                      <td className="px-6 py-4">
+                        <p className="font-mono font-bold text-[#121212] dark:text-[#ffffff] text-[14px]">
+                          {apt.containerNo}
+                        </p>
+                        <p className={`text-[11px] font-black uppercase tracking-wider inline-block px-2 py-0.5 rounded-[4px] mt-1 ${
+                          apt.purpose === "Lấy container"
+                            ? "bg-[#00D4FF]/10 text-[#00D4FF]"
+                            : "bg-[#f59e0b]/10 text-[#f59e0b]"
+                        }`}>
+                          {apt.purpose}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-bold text-[#121212] dark:text-[#ffffff]">
                           {apt.driverId?.driverName || "Chưa xác định"}
                         </p>
-                        <p className="text-[#666666] dark:text-[#b3b3b3] font-mono text-[12px] mt-1">
+                        <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
                           {apt.driverId?.driverPhone || "-"}
                         </p>
                       </td>

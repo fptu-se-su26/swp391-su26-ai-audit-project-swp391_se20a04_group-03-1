@@ -24,11 +24,13 @@ import {
 } from "lucide-react";
 import JustValidate from "just-validate";
 import toast from "react-hot-toast";
+import { CustomSelect } from "@/components/CustomSelect";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState("operator");
 
   const formRef = useRef<HTMLFormElement>(null);
   const validatorRef = useRef<JustValidate | null>(null);
@@ -61,14 +63,23 @@ export default function RegisterPage() {
         { rule: "minLength", value: 6, errorMessage: "Mật khẩu tối thiểu 6 ký tự." },
       ])
       .addField("#confirmPassword", [
-        { rule: "required", errorMessage: "Vui lòng xác nhận mật khẩu." },
         {
-          validator: (value: string, fields: any) => {
-            if (fields["#password"] && fields["#password"].elem) {
-              const repeatPasswordValue = (fields["#password"].elem as HTMLInputElement).value;
-              return value === repeatPasswordValue;
+          validator: () => {
+            if (!formRef.current) return false;
+            const confirmPassElem = formRef.current.elements.namedItem("confirmPassword") as HTMLInputElement;
+            return !!confirmPassElem && confirmPassElem.value.trim() !== "";
+          },
+          errorMessage: "Vui lòng xác nhận mật khẩu.",
+        },
+        {
+          validator: () => {
+            if (!formRef.current) return false;
+            const passElem = formRef.current.elements.namedItem("password") as HTMLInputElement;
+            const confirmPassElem = formRef.current.elements.namedItem("confirmPassword") as HTMLInputElement;
+            if (passElem && confirmPassElem) {
+              return passElem.value === confirmPassElem.value;
             }
-            return true;
+            return false;
           },
           errorMessage: "Mật khẩu không khớp.",
         },
@@ -129,7 +140,7 @@ export default function RegisterPage() {
         validatorRef.current.destroy();
       }
     };
-  }, []);
+  }, [showPassword, showConfirmPassword]);
 
   return (
     <div className="min-h-screen w-full flex bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] font-sans transition-colors duration-300">
@@ -232,21 +243,18 @@ export default function RegisterPage() {
                     Bộ phận vận hành
                   </Label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#999999] dark:text-[#b3b3b3] pointer-events-none">
-                      <Shield className="h-5 w-5" />
-                    </span>
-                    <select
+                    <CustomSelect
                       id="role"
                       name="role"
-                      disabled={isLoading}
-                      defaultValue="operator"
-                      className="w-full h-12 pl-12 pr-4 rounded-[8px] border border-[#e5e5e5] dark:border-[#272727] bg-[#f8f8f8] dark:bg-[#121212] text-sm text-[#121212] dark:text-[#ffffff] font-bold focus:outline-none focus:ring-2 focus:ring-[#1ed760] transition-colors appearance-none"
-                    >
-                      <option value="operator">Cán bộ Bãi (Yard Operator)</option>
-                      <option value="gatekeeper">Kiểm soát Cổng (Gatekeeper)</option>
-                      <option value="admin">Quản trị Hệ thống (System Admin)</option>
-                      <option value="technician">Kỹ thuật viên (Crane Tech)</option>
-                    </select>
+                      value={role}
+                      onChange={setRole}
+                      options={[
+                        { value: "operator", label: "Cán bộ Bãi (Yard Operator)" },
+                        { value: "gatekeeper", label: "Kiểm soát Cổng (Gatekeeper)" },
+                        { value: "admin", label: "Quản trị Hệ thống (System Admin)" },
+                        { value: "technician", label: "Kỹ thuật viên (Crane Tech)" }
+                      ]}
+                    />
                   </div>
                 </div>
 

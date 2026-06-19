@@ -107,7 +107,7 @@ export default function GatePage() {
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_API_URL
-      ? process.env.NEXT_PUBLIC_API_URL.replace("/api", "")
+      ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "")
       : "http://localhost:4000";
     const socket = io(socketUrl);
 

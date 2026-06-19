@@ -42,7 +42,7 @@ interface Provider {
   name: string;
   bic_codes: string[];
   contact_email: string;
-  status: "ACTIVE" | "SUSPENDED";
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
   createdAt: string;
 }
 
@@ -99,7 +99,7 @@ export default function ProvidersPage() {
         setTotalPages(1);
       }
     } catch (err: any) {
-      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách hãng tàu.");
+      toast.error(err.message || "Đã xảy ra lỗi khi tải danh sách nhà cung cấp.");
     } finally {
       setLoading(false);
     }
@@ -153,6 +153,10 @@ export default function ProvidersPage() {
         { rule: "required", errorMessage: "Bắt buộc." },
         { rule: "email", errorMessage: "Email không hợp lệ." },
       ])
+      .addField("#password", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        { rule: "minLength", value: 6, errorMessage: "Tối thiểu 6 ký tự." },
+      ])
       .addField("#bic_codes", [
         {
           rule: "customRegexp",
@@ -168,6 +172,7 @@ export default function ProvidersPage() {
           code: formData.get("code")?.toString().trim().toUpperCase(),
           name: formData.get("name")?.toString().trim(),
           contact_email: formData.get("contact_email")?.toString().trim(),
+          password: formData.get("password")?.toString(),
           bic_codes: formData.get("bic_codes")?.toString().trim()
             ? formData
                 .get("bic_codes")
@@ -178,7 +183,7 @@ export default function ProvidersPage() {
             : [],
         };
 
-        const loadingToast = toast.loading("Đang lưu hãng tàu...");
+        const loadingToast = toast.loading("Đang lưu nhà cung cấp...");
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/container-providers/create`,
@@ -193,14 +198,14 @@ export default function ProvidersPage() {
           const result = await res.json();
 
           if (!res.ok || result.code === "error") {
-            throw new Error(result.message || "Lỗi khi thêm hãng tàu.");
+            throw new Error(result.message || "Lỗi khi thêm nhà cung cấp.");
           }
 
-          toast.success("Thêm hãng tàu thành công!", { id: loadingToast });
+          toast.success("Thêm nhà cung cấp thành công!", { id: loadingToast });
           setShowForm(false);
           fetchProviders();
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", {
+          toast.error(err.message || "Không thể lưu thông tin nhà cung cấp.", {
             id: loadingToast,
           });
         }
@@ -250,7 +255,7 @@ export default function ProvidersPage() {
 
   // Soft Delete
   const handleDeleteProvider = async (id: string) => {
-    const loadingToast = toast.loading("Đang xóa hãng tàu...");
+    const loadingToast = toast.loading("Đang xóa nhà cung cấp...");
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/container-providers/delete/${id}`,
@@ -266,10 +271,10 @@ export default function ProvidersPage() {
         throw new Error(result.message || "Lỗi khi đưa vào thùng rác.");
       }
 
-      toast.success("Đã chuyển hãng tàu vào thùng rác.", { id: loadingToast });
+      toast.success("Đã chuyển nhà cung cấp vào thùng rác.", { id: loadingToast });
       fetchProviders();
     } catch (err: any) {
-      toast.error(err.message || "Không thể xóa hãng tàu.", {
+      toast.error(err.message || "Không thể xóa nhà cung cấp.", {
         id: loadingToast,
       });
     }
@@ -280,10 +285,10 @@ export default function ProvidersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
-            Quản lý hãng tàu
+            Quản lý nhà cung cấp
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
-            Quản lý danh sách các hãng tàu (Container Providers)
+            Quản lý danh sách các nhà cung cấp (Container Providers)
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -301,7 +306,7 @@ export default function ProvidersPage() {
             className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
           >
             <Plus className="h-5 w-5" />
-            Thêm hãng tàu
+            Thêm nhà cung cấp
           </Button>
         </div>
       </div>
@@ -310,10 +315,10 @@ export default function ProvidersPage() {
         <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm animate-in fade-in slide-in-from-top-4 duration-200 overflow-visible">
           <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
             <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
-              Thêm hãng tàu mới
+              Thêm nhà cung cấp mới
             </CardTitle>
             <CardDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold text-[14px]">
-              Điền thông tin chi tiết của hãng tàu cung cấp container.
+              Điền thông tin chi tiết của nhà cung cấp cung cấp container.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-8">
@@ -324,7 +329,7 @@ export default function ProvidersPage() {
                     htmlFor="code"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                   >
-                    Mã hãng tàu
+                    Mã nhà cung cấp
                   </Label>
                   <Input
                     id="code"
@@ -338,7 +343,7 @@ export default function ProvidersPage() {
                     htmlFor="name"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
                   >
-                    Tên hãng tàu
+                    Tên nhà cung cấp
                   </Label>
                   <Input
                     id="name"
@@ -363,6 +368,21 @@ export default function ProvidersPage() {
                   />
                 </div>
                 <div className="space-y-3">
+                  <Label
+                    htmlFor="password"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mật khẩu đăng nhập
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="text"
+                    placeholder="Nhập mật khẩu cho nhà cung cấp"
+                    className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                  />
+                </div>
+                <div className="space-y-3 md:col-span-2">
                   <Label
                     htmlFor="bic_codes"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
@@ -403,7 +423,7 @@ export default function ProvidersPage() {
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div>
               <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
-                Danh sách hãng tàu
+                Danh sách nhà cung cấp
               </CardTitle>
             </div>
 
@@ -425,6 +445,7 @@ export default function ProvidersPage() {
                   options={[
                     { value: "ALL", label: "Tất cả trạng thái" },
                     { value: "ACTIVE", label: "Đang hoạt động" },
+                    { value: "INACTIVE", label: "Chưa kích hoạt" },
                     { value: "SUSPENDED", label: "Đình chỉ" },
                   ]}
                   placeholder="Mọi trạng thái"
@@ -461,8 +482,8 @@ export default function ProvidersPage() {
               <Building2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
               <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
                 {searchQuery || statusFilter !== "ALL"
-                  ? "Không tìm thấy hãng tàu nào phù hợp."
-                  : "Chưa có hãng tàu nào trong hệ thống."}
+                  ? "Không tìm thấy nhà cung cấp nào phù hợp."
+                  : "Chưa có nhà cung cấp nào trong hệ thống."}
               </p>
             </div>
           ) : (
@@ -471,7 +492,7 @@ export default function ProvidersPage() {
                 <thead className="text-[10px] uppercase tracking-[2px] text-[#666666] dark:text-[#999999] bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727]">
                   <tr>
                     <th className="px-6 py-4 font-black">Mã HT</th>
-                    <th className="px-6 py-4 font-black">Tên hãng tàu</th>
+                    <th className="px-6 py-4 font-black">Tên nhà cung cấp</th>
                     <th className="px-6 py-4 font-black">Mã BIC</th>
                     <th className="px-6 py-4 font-black">Email</th>
                     <th className="px-6 py-4 font-black">Ngày tạo</th>
@@ -511,15 +532,17 @@ export default function ProvidersPage() {
                           className={`inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border ${
                             comp.status === "ACTIVE"
                               ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
-                              : "bg-[#f59e0b]/10 text-[#f59e0b] border-[#f59e0b]/20"
+                              : comp.status === "INACTIVE"
+                                ? "bg-[#999999]/10 text-[#999999] border-[#999999]/20"
+                                : "bg-[#f59e0b]/10 text-[#f59e0b] border-[#f59e0b]/20"
                           }`}
                         >
-                          {comp.status === "ACTIVE" ? "Hoạt động" : "Đình chỉ"}
+                          {comp.status === "ACTIVE" ? "Hoạt động" : comp.status === "INACTIVE" ? "Chưa kích hoạt" : "Đình chỉ"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {comp.status === "SUSPENDED" && (
+                          {comp.status !== "ACTIVE" && (
                             <Button
                               onClick={() =>
                                 handleUpdateStatus(comp._id, "ACTIVE")
@@ -561,10 +584,10 @@ export default function ProvidersPage() {
                             <AlertDialogContent className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] rounded-[16px]">
                               <AlertDialogHeader>
                                 <AlertDialogTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff]">
-                                  Xóa hãng tàu này?
+                                  Xóa nhà cung cấp này?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-[#666666] dark:text-[#b3b3b3] font-bold">
-                                  Hãng tàu{" "}
+                                  Nhà cung cấp{" "}
                                   <span className="text-[#121212] dark:text-[#ffffff]">
                                     {comp.name}
                                   </span>{" "}

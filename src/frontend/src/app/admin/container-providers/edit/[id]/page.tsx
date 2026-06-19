@@ -88,6 +88,12 @@ export default function EditContainerProviderPage({
         { rule: "required", errorMessage: "Bắt buộc." },
         { rule: "email", errorMessage: "Email không hợp lệ." },
       ])
+      .addField("#password", [
+        { 
+          validator: (value: string) => !value || value.length >= 6,
+          errorMessage: "Tối thiểu 6 ký tự." 
+        },
+      ])
       .addField("#bic_codes", [
         {
           rule: "customRegexp",
@@ -106,6 +112,7 @@ export default function EditContainerProviderPage({
           code: formData.get("code")?.toString().trim().toUpperCase(),
           name: formData.get("name")?.toString().trim(),
           contact_email: formData.get("contact_email")?.toString().trim(),
+          password: formData.get("password")?.toString(),
           bic_codes: formData.get("bic_codes")?.toString().trim()
             ? formData
                 .get("bic_codes")
@@ -135,10 +142,10 @@ export default function EditContainerProviderPage({
             throw new Error(result.message || "Lỗi khi cập nhật nhà cung cấp.");
           }
 
-          toast.success("Cập nhật hãng tàu thành công!", { id: loadingToast });
+          toast.success("Cập nhật nhà cung cấp thành công!", { id: loadingToast });
           setTimeout(() => router.push("/admin/container-providers"), 1500);
         } catch (err: any) {
-          toast.error(err.message || "Không thể lưu thông tin hãng tàu.", { id: loadingToast });
+          toast.error(err.message || "Không thể lưu thông tin nhà cung cấp.", { id: loadingToast });
         }
       });
 
@@ -181,10 +188,10 @@ export default function EditContainerProviderPage({
         </Link>
         <div>
           <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
-            Chỉnh sửa hãng tàu
+            Chỉnh sửa nhà cung cấp
           </h1>
           <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
-            Cập nhật thông tin cho hãng tàu {provider?.name}
+            Cập nhật thông tin cho nhà cung cấp {provider?.name}
           </p>
         </div>
       </div>
@@ -201,7 +208,7 @@ export default function EditContainerProviderPage({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <Label htmlFor="code" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                  Mã hãng tàu
+                  Mã nhà cung cấp
                 </Label>
                 <Input
                   id="code"
@@ -212,7 +219,7 @@ export default function EditContainerProviderPage({
               </div>
               <div className="space-y-3">
                 <Label htmlFor="name" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                  Tên hãng tàu
+                  Tên nhà cung cấp
                 </Label>
                 <Input
                   id="name"
@@ -248,6 +255,18 @@ export default function EditContainerProviderPage({
                   className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
                 />
               </div>
+              <div className="space-y-3">
+                <Label htmlFor="password" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Mật khẩu đăng nhập
+                </Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Để trống nếu không đổi mật khẩu"
+                  className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                />
+              </div>
               <div className="space-y-3 relative md:col-span-2">
                 <Label htmlFor="status" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
                   Trạng thái
@@ -260,6 +279,7 @@ export default function EditContainerProviderPage({
                     onChange={setSelectedStatus}
                     options={[
                       { value: "ACTIVE", label: "Đang hoạt động" },
+                      { value: "INACTIVE", label: "Chưa kích hoạt" },
                       { value: "SUSPENDED", label: "Đình chỉ" },
                     ]}
                     placeholder="-- Chọn trạng thái --"

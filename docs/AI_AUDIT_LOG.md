@@ -1950,6 +1950,343 @@ Kinh nghiệm rút ra là đối với các hệ thống giám sát và vận h�
 
 Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách xây dựng hệ thống realtime giữa Backend và Frontend, đồng thời giảm đáng kể độ trễ trong việc hiển thị thông tin vận hành. Đây là nền tảng quan trọng để phát triển các chức năng giám sát nâng cao và tích hợp AI trong các giai đoạn tiếp theo của dự án.
 ```
+
+
+---
+
+### Lần sử dụng AI số 15
+
+| Nội dung            | Thông tin                                    |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng        | 07/06/2026                                   |
+| Công cụ AI          | Antigravity                                  |
+| Mục đích sử dụng    | Xây dựng giao diện xác thực cho doanh nghiệp |
+| Phần việc liên quan | Coding                                       |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                |
+| Phần liên quan      | Company Portal                               |
+
+#### 15.1. Prompt đã sử dụng
+
+```text
+Phân tích src/frontend/DESIGN.md và src/frontend.
+
+Bạn là 1 senior Next.js và có kinh nghiệm nhiều năm tạo giao diện.
+
+Tôi đã có sẵn các trang thuộc phần src/frontend/src/app/admin, trong này chứa giao diện dành cho các tính năng của bên quản trị viên và của hệ thống.
+
+Bây giờ tôi cần bạn triển khai các trang cho bên company sẽ nằm trong src/frontend/src/app/client/company.
+
+Cần thực hiện các bước như sau:
+1. Ở trang landing page, sẽ có phần liên kết tới trang giao diện đăng nhập cho công ty.
+2. Các trang xác thực của công ty sẽ nằm trong src/frontend/src/app/client/company/(auth), bao gồm tất cả các trang giống như bên admin.
+
+Trước tiên tôi cần bạn hoàn thành các nhiệm vụ này.
+
+Lưu ý:
+- Chưa cần fetch API.
+- Phải theo file DESIGN.md.
+- Đồng bộ giao diện với các trang admin thành một thể thống nhất.
+- Không để CSS ở trang này một kiểu, trang kia một kiểu.
+```
+
+#### 15.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các trang quản trị dành cho Admin, nhóm bắt đầu triển khai giao diện dành cho doanh nghiệp sử dụng hệ thống.
+
+Mục tiêu là tạo ra khu vực xác thực riêng cho Company Portal nhưng vẫn giữ phong cách thiết kế thống nhất với hệ thống Admin hiện có.
+
+Ở giai đoạn này nhóm chỉ tập trung vào giao diện và cấu trúc route, chưa cần kết nối API.
+```
+
+#### 15.3. Kết quả AI gợi ý
+
+```text
+AI đề xuất triển khai giao diện xác thực cho doanh nghiệp dựa trên cấu trúc sẵn có của Admin.
+
+Các công việc chính gồm:
+- Cập nhật Landing Page và thêm nút điều hướng đến trang đăng nhập doanh nghiệp.
+- Tạo thư mục client/company/(auth).
+- Tạo các trang Login, Register, Forgot Password và Reset Password.
+- Tái sử dụng bố cục và phong cách giao diện từ Admin Auth.
+- Điều chỉnh nội dung text, ví dụ email và đường dẫn cho phù hợp với tài khoản doanh nghiệp.
+- Chỉnh sửa danh sách loại hình doanh nghiệp ở trang đăng ký.
+```
+
+#### 15.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Thêm nút “Doanh nghiệp” tại Landing Page để điều hướng tới trang đăng nhập công ty.
+- Tạo nhóm trang xác thực cho Company tại client/company/(auth).
+- Xây dựng các trang Login, Register, Forgot Password và Reset Password.
+- Đồng bộ giao diện Company Auth với Admin Auth.
+- Điều chỉnh nội dung hiển thị từ ngữ cảnh Admin sang ngữ cảnh doanh nghiệp.
+```
+
+#### 15.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Kiểm tra lại giao diện để đảm bảo đồng bộ với file DESIGN.md.
+- Chỉnh sửa text hiển thị cho phù hợp với đối tượng người dùng là doanh nghiệp.
+- Thay đổi ví dụ email từ admin sang email doanh nghiệp.
+- Cập nhật các đường dẫn điều hướng từ /admin sang /client/company.
+- Điều chỉnh danh sách loại hình doanh nghiệp như Đơn vị vận tải, Forwarder, Hãng tàu, Chủ hàng XNK.
+```
+
+#### 15.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 15.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                                                                                                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | Cập nhật sau...                                                                                                                                                                                                                                                                                                   |
+| File liên quan        | `src/frontend/src/app/page.tsx`, `src/frontend/src/app/client/company/(auth)/login/page.tsx`, `src/frontend/src/app/client/company/(auth)/register/page.tsx`, `src/frontend/src/app/client/company/(auth)/forgot-password/page.tsx`, `src/frontend/src/app/client/company/(auth)/reset-password/[email]/page.tsx` |
+| Screenshot            | Landing Page có nút Doanh nghiệp và các trang xác thực Company                                                                                                                                                                                                                                                    |
+| Kết quả chạy/test     | Điều hướng đúng sang Company Auth, giao diện hiển thị đồng bộ với Admin                                                                                                                                                                                                                                           |
+| Link tài liệu/báo cáo |                                                                                                                                                                                                                                                                                                                   |
+| Ghi chú khác          |                                                                                                                                                                                                                                                                                                                   |
+
+#### 15.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi phát triển nhiều nhóm người dùng trong cùng một hệ thống, việc tái sử dụng cấu trúc giao diện sẵn có giúp tiết kiệm thời gian, đồng thời đảm bảo trải nghiệm người dùng nhất quán và dễ bảo trì.
+```
+
+---
+
+### Lần sử dụng AI số 16
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 03/06/2026                                              |
+| Công cụ AI          | Antigravity |
+| Mục đích sử dụng    | Xây dựng chức năng quản lí nhà cung cấp container       |
+| Phần việc liên quan | Coding                  |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                          |
+
+#### 16.1. Prompt đã sử dụng
+
+```text
+Phân tích src/frontend/src/app/admin/.
+
+Tôi muốn tạo và hoàn thiện trang quản lí nhà cung cấp container:
+
+1. Tạo trang nhà cung cấp container bao gồm trang chính, trang trash, trang create, trang edit,... tương tự như src/frontend/src/app/admin/companies.
+
+2. Tạo model container-provider:
+- code (4 kí tự đầu của mã container)
+- name
+- bic_codes (Danh sách mã Prefix 3 chữ cái được đăng ký quốc tế)
+- contact_email (Để hệ thống tự động gửi cảnh báo rỉ sét)
+- status: ENUM('ACTIVE', 'SUSPENDED')
+- timestamp
+
+Theo dạng mẫu các model có sẵn trong dự án.
+
+3. Triển khai các tính năng như tìm kiếm, bộ lọc, phân trang ở trang chính và cả trang thùng rác.
+
+Lưu ý: code backend phải theo thói quen viết backend hiện tại của tôi.
+```
+
+#### 16.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất xây dựng module Container Provider theo kiến trúc tương tự Company Management để đảm bảo tính nhất quán.
+
+Các chức năng chính gồm:
+- Tạo model ContainerProvider.
+- Xây dựng API CRUD.
+- Hỗ trợ Soft Delete và Trash Management.
+- Xây dựng các trang List, Create, Edit và Trash.
+- Tích hợp tìm kiếm theo mã hoặc tên nhà cung cấp.
+- Hỗ trợ bộ lọc trạng thái ACTIVE và SUSPENDED.
+- Hỗ trợ phân trang cho danh sách chính và thùng rác.
+- Đề xuất chuẩn hóa dữ liệu BIC Code và Container Code để thuận tiện cho việc kiểm tra container trong tương lai.
+```
+
+#### 16.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Thiết kế cấu trúc dữ liệu ContainerProvider.
+- Xây dựng các trang quản lí nhà cung cấp container.
+- Áp dụng mô hình CRUD tương tự Company Management.
+- Tích hợp chức năng tìm kiếm, bộ lọc và phân trang.
+- Bổ sung cơ chế quản lí dữ liệu đã xóa thông qua Trash Page.
+```
+
+#### 16.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Điều chỉnh cấu trúc dữ liệu để phù hợp với nghiệp vụ quản lí container thực tế.
+- Chuẩn hóa định dạng mã code và BIC Code.
+- Kiểm tra và tối ưu giao diện để đồng bộ với các module quản trị khác.
+- Chuẩn bị nền tảng để tích hợp các chức năng cảnh báo tình trạng container trong tương lai.
+```
+
+#### 16.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | cập nhật sau... |
+| File liên quan    | `src/backend/models/container-provider.model.ts`, `src/backend/controllers/container-providers.controller.ts`, `src/frontend/src/app/admin/container-providers/page.tsx`                                                                                                                                    |
+| Screenshot        | Trang quản lí nhà cung cấp container                                                                                                                                    |
+| Kết quả chạy/test | CRUD, tìm kiếm, lọc và phân trang hoạt động đúng kế                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      | Đây là bước đầu tiên để xây dựng cổng thông tin dành cho doanh nghiệp.                                                                                                                                    |
+
+#### 16.6. Nhận xét cá nhân/nhóm
+
+```text
+Kinh nghiệm rút ra: Việc tái sử dụng kiến trúc và giao diện từ các module quản lí đã có giúp giảm thời gian phát triển đáng kể, đồng thời đảm bảo tính nhất quán và khả năng bảo trì của hệ thống khi số lượng module ngày càng tăng.
+```
+
+---
+
+
+## 5. Bảng tổng hợp mức độ sử dụng AI
+
+Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
+
+| Hạng mục                    | Không dùng AI | AI hỗ trợ ít | AI hỗ trợ nhiều | AI sinh chính | Ghi chú |
+| --------------------------- | :-----------: | :----------: | :-------------: | :-----------: | ------- |
+| Phân tích yêu cầu           |               |              |                 |               |         |
+| Viết user story/use case    |               |              |                 |               |         |
+| Thiết kế database           |               |              |                 |               |         |
+| Thiết kế kiến trúc hệ thống |               |              |                 |               |         |
+| Thiết kế giao diện          |               |              |                 |               |         |
+| Code frontend               |               |              |                 |               |         |
+| Code backend                |               |              |                 |               |         |
+| Debug lỗi                   |               |              |                 |               |         |
+| Viết test case              |               |              |                 |               |         |
+| Kiểm thử sản phẩm           |               |              |                 |               |         |
+| Tối ưu code                 |               |              |                 |               |         |
+| Viết báo cáo                |               |              |                 |               |         |
+| Làm slide thuyết trình      |               |              |                 |               |         |
+
+---
+
+## 6. Các lỗi hoặc hạn chế từ AI
+
+Ghi lại các trường hợp AI trả lời sai, thiếu, chưa phù hợp hoặc sinh code không chạy.
+
+| STT | Lỗi/hạn chế từ AI | Cách phát hiện | Cách xử lý/cải tiến |
+| --: | ----------------- | -------------- | ------------------- |
+|   1 |                   |                |                     |
+|   2 |                   |                |                     |
+|   3 |                   |                |                     |
+
+---
+
+## 7. Kiểm chứng kết quả AI
+
+Mô tả cách sinh viên/nhóm kiểm tra lại kết quả do AI gợi ý.
+
+Có thể bao gồm:
+
+- Chạy thử chương trình
+- Viết test case
+- So sánh với yêu cầu đề bài
+- Kiểm tra output
+- Đối chiếu tài liệu môn học
+- Hỏi lại giảng viên
+- Review cùng thành viên nhóm
+- Kiểm tra lỗi bảo mật
+- Kiểm tra bằng dữ liệu mẫu
+- So sánh trước và sau khi dùng AI
+
+### Nội dung kiểm chứng
+
+```text
+Viết tại đây...
+```
+
+---
+
+## 8. Đóng góp cá nhân hoặc đóng góp nhóm
+
+### 8.1. Đối với bài cá nhân
+
+Mô tả phần sinh viên tự làm, phần AI hỗ trợ và phần đã tự cải tiến.
+
+```text
+Viết tại đây...
+```
+
+### 8.2. Đối với bài nhóm
+
+| Thành viên | MSSV | Nhiệm vụ chính | Có sử dụng AI không? | Minh chứng đóng góp |
+| ---------- | ---- | -------------- | -------------------- | ------------------- |
+|            |      |                | Có / Không           |                     |
+|            |      |                | Có / Không           |                     |
+|            |      |                | Có / Không           |                     |
+|            |      |                | Có / Không           |                     |
+
+---
+
+## 9. Reflection cuối bài
+
+### 9.1. AI đã hỗ trợ em/nhóm ở điểm nào?
+
+```text
+Viết tại đây...
+```
+
+### 9.2. Phần nào em/nhóm không sử dụng theo gợi ý của AI? Vì sao?
+
+```text
+Viết tại đây...
+```
+
+### 9.3. Em/nhóm đã kiểm tra tính đúng đắn của kết quả AI như thế nào?
+
+```text
+Viết tại đây...
+```
+
+### 9.4. Nếu không có AI, phần nào sẽ khó khăn nhất?
+
+```text
+Viết tại đây...
+```
+
+### 9.5. Sau bài tập/project này, em/nhóm học được gì về môn học?
+
+```text
+Viết tại đây...
+```
+
+### 9.6. Sau bài tập/project này, em/nhóm học được gì về cách sử dụng AI có trách nhiệm?
+
+```text
+Viết tại đây...
+```
+
+---
+
+## 10. Cam kết học thuật
+
+Sinh viên/nhóm cam kết rằng:
+
+- Nội dung AI hỗ trợ đã được ghi nhận trung thực.
+- Không nộp nguyên văn kết quả AI mà không kiểm tra.
+- Có khả năng giải thích các phần đã nộp.
+- Chịu trách nhiệm về tính đúng đắn của sản phẩm cuối cùng.
+- Hiểu rằng việc sử dụng AI không khai báo có thể ảnh hưởng đến kết quả đánh giá.
+
+| Đại diện sinh viên/nhóm | Ngày xác nhận |
+| ----------------------- | ------------- |
+|                         |               |
+
+
 ---
 
 ### Lần sử dụng AI số 15

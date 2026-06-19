@@ -28,6 +28,16 @@ const companySchema = new Schema(
       required: true,
     },
 
+    password: {
+      type: String,
+      required: true,
+    },
+
+    companyRole: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CompanyRole",
+    },
+
     status: {
       type: String,
       enum: ["Active", "Inactive", "Suspended"],

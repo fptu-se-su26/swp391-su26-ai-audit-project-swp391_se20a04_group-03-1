@@ -161,21 +161,19 @@ export default function TrashCompaniesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+          <h1 className="text-4xl font-black text-[#f3727f] tracking-tight uppercase">
             Thùng rác - Công ty
           </h1>
-          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+          <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
             Các công ty đã bị xóa. Bạn có thể khôi phục hoặc xóa vĩnh viễn.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/admin/companies">
-            <Button
-              variant="outline"
-              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            <Button variant="outline" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
               Quay lại danh sách
@@ -200,7 +198,7 @@ export default function TrashCompaniesPage() {
                   placeholder="Tìm mã, tên công ty, số điện thoại..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                  className="pl-11 bg-[#ffffff] dark:bg-[#181818] border border-[#d6dbde] dark:border-[#272727] rounded-[500px] h-10 font-bold text-[14px] focus-visible:ring-0 focus-visible:border-[#f3727f] dark:focus-visible:border-[#f3727f] hover:border-[#f3727f] transition-colors"
                 />
               </div>
 

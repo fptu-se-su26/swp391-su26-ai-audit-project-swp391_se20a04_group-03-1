@@ -1,0 +1,111 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import {
+  LayoutDashboard,
+  Container,
+  History,
+  Settings,
+  X
+} from "lucide-react"
+
+interface ProviderSidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+const menuItems = [
+  {
+    label: "Dashboard",
+    href: "/client/provider/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    label: "Quản lý Container",
+    href: "/client/provider/containers",
+    icon: Container,
+  },
+  {
+    label: "Lịch sử Giao dịch",
+    href: "/client/provider/history",
+    icon: History,
+  },
+]
+
+export function ProviderSidebar({ isOpen, onClose }: ProviderSidebarProps) {
+  const pathname = usePathname()
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-[#000000]/50 lg:hidden z-40"
+          onClick={onClose}
+          aria-label="Close sidebar"
+        />
+      )}
+
+      <aside
+        className={cn(
+          "fixed left-0 top-[72px] bottom-0 w-64 border-r border-[#e5e5e5] dark:border-[#272727] bg-[#ffffff] dark:bg-[#181818] p-4 transition-all duration-300 lg:relative lg:top-0 lg:translate-x-0 z-50",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex items-center justify-between lg:hidden mb-6">
+          <h2 className="text-lg font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">Menu</h2>
+          <button onClick={onClose} className="p-2 rounded-[500px] text-[#666666] hover:bg-[#f0f0f0] dark:text-[#b3b3b3] dark:hover:bg-[#272727] transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-4 px-5 py-3.5 rounded-[500px] text-[14px] font-bold transition-all duration-200",
+                  isActive
+                    ? "bg-[#1ed760] text-[#121212] shadow-sm transform scale-[1.02]"
+                    : "text-[#666666] dark:text-[#b3b3b3] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff]"
+                )}
+              >
+                <Icon className={cn(
+                  "h-5 w-5 transition-transform duration-200",
+                  isActive ? "text-[#121212]" : "text-[#999999] dark:text-[#666666] group-hover:text-[#121212] dark:group-hover:text-[#ffffff]"
+                )} />
+                <span className={cn(isActive && "uppercase tracking-wider text-[13px]")}>{item.label}</span>
+              </Link>
+            )
+          })}
+
+          <div className="pt-4 pb-2">
+            <div className="h-px w-full bg-[#e5e5e5] dark:bg-[#272727]" />
+          </div>
+
+          <Link
+            href="/client/provider/settings"
+            className={cn(
+              "flex items-center gap-4 px-5 py-3.5 rounded-[500px] text-[14px] font-bold transition-all duration-200",
+              pathname === "/client/provider/settings"
+                ? "bg-[#1ed760] text-[#121212] shadow-sm transform scale-[1.02]"
+                : "text-[#666666] dark:text-[#b3b3b3] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff]"
+            )}
+          >
+            <Settings className={cn(
+              "h-5 w-5 transition-transform duration-200",
+              pathname === "/client/provider/settings" ? "text-[#121212]" : "text-[#999999] dark:text-[#666666] group-hover:text-[#121212] dark:group-hover:text-[#ffffff]"
+            )} />
+            <span className={cn(pathname === "/client/provider/settings" && "uppercase tracking-wider text-[13px]")}>Cài đặt</span>
+          </Link>
+        </nav>
+      </aside>
+    </>
+  )
+}

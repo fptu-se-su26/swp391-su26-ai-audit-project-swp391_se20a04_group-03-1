@@ -117,18 +117,16 @@ export default function GateLogsTrashPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[32px] font-black text-[#121212] dark:text-[#ffffff] tracking-tight">
+          <h1 className="text-4xl font-black text-[#f3727f] tracking-tight uppercase">
             Thùng rác - Nhật ký cổng
           </h1>
-          <p className="text-[#666666] dark:text-[#b3b3b3] font-bold mt-1">
+          <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
             Khôi phục hoặc xóa vĩnh viễn nhật ký xe ra vào đã xóa
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/admin/gate">
-            <Button
-              variant="outline"
-              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            <Button variant="outline" className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#121212] dark:hover:border-[#ffffff] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
               Quay lại hệ thống

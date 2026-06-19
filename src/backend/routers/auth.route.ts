@@ -13,6 +13,8 @@ router.post(
 
 router.post("/login", authValidate.loginPost, authController.loginPost);
 
+router.get("/client-roles", authController.getClientRoles);
+
 router.get("/logout", authController.logout);
 
 router.post(

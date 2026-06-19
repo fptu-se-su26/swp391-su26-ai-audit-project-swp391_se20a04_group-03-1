@@ -47,6 +47,11 @@ const appointmentSchema = new Schema(
         "23:00-00:00",
       ],
     },
+    purpose: {
+      type: String,
+      required: true,
+      enum: ["Lấy container", "Trả container"],
+    },
     status: {
       type: String,
       required: true,

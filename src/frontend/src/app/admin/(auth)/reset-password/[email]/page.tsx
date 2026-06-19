@@ -63,14 +63,23 @@ export default function ResetPasswordPage() {
         { rule: "minLength", value: 6, errorMessage: "Mật khẩu tối thiểu 6 ký tự." },
       ])
       .addField("#confirmPassword", [
-        { rule: "required", errorMessage: "Vui lòng xác nhận mật khẩu mới." },
         {
-          validator: (value: any, fields: any) => {
-            if (fields["#password"] && fields["#password"].elem) {
-              const repeatPasswordValue = (fields["#password"].elem as HTMLInputElement).value;
-              return value === repeatPasswordValue;
+          validator: () => {
+            if (!formRef.current) return false;
+            const confirmPassElem = formRef.current.elements.namedItem("confirmPassword") as HTMLInputElement;
+            return !!confirmPassElem && confirmPassElem.value.trim() !== "";
+          },
+          errorMessage: "Vui lòng xác nhận mật khẩu.",
+        },
+        {
+          validator: () => {
+            if (!formRef.current) return false;
+            const passElem = formRef.current.elements.namedItem("password") as HTMLInputElement;
+            const confirmPassElem = formRef.current.elements.namedItem("confirmPassword") as HTMLInputElement;
+            if (passElem && confirmPassElem) {
+              return passElem.value === confirmPassElem.value;
             }
-            return true;
+            return false;
           },
           errorMessage: "Mật khẩu không khớp.",
         },
@@ -110,11 +119,7 @@ export default function ResetPasswordPage() {
           router.push("/admin/login");
         }, 1800);
       } catch (err: any) {
-        toast.error(err.message, { 
-          id: loadingToast,
-          className: "bg-white dark:bg-[#f3727f] text-[#121212] dark:text-[#121212] border-[#e5e5e5] dark:border-transparent",
-          iconTheme: { primary: '#f3727f', secondary: '#ffffff' }
-        });
+        toast.error(err.message, { id: loadingToast });
       } finally {
         setIsLoading(false);
       }
@@ -127,7 +132,7 @@ export default function ResetPasswordPage() {
         validatorRef.current.destroy();
       }
     };
-  }, [email, router]);
+  }, [showPassword, showConfirmPassword, email, router]);
 
   return (
     <div className="min-h-screen w-full flex bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] font-sans transition-colors duration-300">

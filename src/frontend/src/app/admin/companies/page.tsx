@@ -165,6 +165,10 @@ export default function CompaniesPage() {
         { rule: "required", errorMessage: "Bắt buộc." },
         { rule: "email", errorMessage: "Email không hợp lệ." },
       ])
+      .addField("#password", [
+        { rule: "required", errorMessage: "Bắt buộc." },
+        { rule: "minLength", value: 7, errorMessage: "Từ 7 ký tự trở lên." },
+      ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
@@ -178,6 +182,8 @@ export default function CompaniesPage() {
           contactPerson: formData.get("contactPerson")?.toString().trim(),
           contactPhone: formData.get("contactPhone")?.toString().trim(),
           email: formData.get("email")?.toString().trim().toLowerCase(),
+          password: formData.get("password")?.toString().trim(),
+          roleCode: "transport",
         };
 
         const loadingToast = toast.loading("Đang lưu công ty...");
@@ -374,7 +380,7 @@ export default function CompaniesPage() {
                     className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
                   />
                 </div>
-                <div className="space-y-3 md:col-span-2">
+                <div className="space-y-3 md:col-span-1">
                   <Label
                     htmlFor="email"
                     className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
@@ -386,6 +392,21 @@ export default function CompaniesPage() {
                     name="email"
                     type="email"
                     placeholder="contact@company.com"
+                    className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
+                  />
+                </div>
+                <div className="space-y-3 md:col-span-1">
+                  <Label
+                    htmlFor="password"
+                    className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                  >
+                    Mật khẩu đăng nhập
+                  </Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Tối thiểu 7 ký tự"
                     className="bg-[#f8f8f8] dark:bg-[#121212] border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px]"
                   />
                 </div>
@@ -529,19 +550,19 @@ export default function CompaniesPage() {
                               ? "bg-[#1ed760]/10 text-[#1ed760] border-[#1ed760]/20"
                               : comp.status === "Suspended"
                                 ? "bg-[#f3727f]/10 text-[#f3727f] border-[#f3727f]/20"
-                                : "bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]"
+                                : "bg-[#f59e0b]/10 text-[#f59e0b] border-[#f59e0b]/20"
                           }`}
                         >
                           {comp.status === "Active"
                             ? "Hoạt động"
                             : comp.status === "Suspended"
                               ? "Đình chỉ"
-                              : "Ngừng HĐ"}
+                              : "Chờ duyệt"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {comp.status === "Suspended" && (
+                          {(comp.status === "Suspended" || comp.status === "Inactive") && (
                             <Button
                               onClick={() =>
                                 handleUpdateStatus(comp._id, "Active")

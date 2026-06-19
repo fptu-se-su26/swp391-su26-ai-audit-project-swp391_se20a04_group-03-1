@@ -385,12 +385,27 @@ def yard_capture_worker(yard_id, camera_ip):
         
     print(f"[Yard Feed Worker] Started stream for Yard ID: {yard_id}")
 
-    def check_overlap(box_x1, box_y1, box_x2, box_y2, slot_x, slot_y, slot_w, slot_h, img_w, img_h):
-        sx = int(slot_x / 100.0 * img_w)
-        sy = int(slot_y / 100.0 * img_h)
-        sw = int(slot_w / 100.0 * img_w)
-        sh = int(slot_h / 100.0 * img_h)
-        return not (box_x2 < sx or box_x1 > sx + sw or box_y2 < sy or box_y1 > sy + sh)
+    def check_overlap(box_x1, box_y1, box_x2, box_y2, slot, img_w, img_h):
+        import numpy as np
+        if 'points' in slot and slot['points']:
+            pts = [[int(p['x'] / 100.0 * img_w), int(p['y'] / 100.0 * img_h)] for p in slot['points']]
+            poly = np.array(pts, np.int32)
+            
+            box_poly = np.array([[box_x1, box_y1], [box_x2, box_y1], [box_x2, box_y2], [box_x1, box_y2]], np.int32)
+            cx, cy = (box_x1 + box_x2) // 2, (box_y1 + box_y2) // 2
+            
+            if cv2.pointPolygonTest(poly, (cx, cy), False) >= 0: return True
+            for bx, by in box_poly:
+                if cv2.pointPolygonTest(poly, (int(bx), int(by)), False) >= 0: return True
+            for px, py in poly:
+                if box_x1 <= px <= box_x2 and box_y1 <= py <= box_y2: return True
+            return False
+        else:
+            sx = int(slot.get('x',0) / 100.0 * img_w)
+            sy = int(slot.get('y',0) / 100.0 * img_h)
+            sw = int(slot.get('width',0) / 100.0 * img_w)
+            sh = int(slot.get('height',0) / 100.0 * img_h)
+            return not (box_x2 < sx or box_x1 > sx + sw or box_y2 < sy or box_y1 > sy + sh)
 
     frame_count = 0
     previous_occupied_slots = set()
@@ -416,42 +431,68 @@ def yard_capture_worker(yard_id, camera_ip):
                 boxes = results[0].boxes
                 xyxys = boxes.xyxy.cpu().tolist()
                 confs = boxes.conf.cpu().tolist()
-                for xyxy, conf in zip(xyxys, confs):
-                    if conf > 0.5:
-                        x1, y1, x2, y2 = map(int, xyxy)
-                        current_ai_boxes.append((x1, y1, x2, y2))
+                clss = boxes.cls.cpu().tolist()
+                
+                # Dictionary for COCO vehicle classes
+                vehicle_classes = {2: 'car', 3: 'motorcycle', 5: 'bus', 7: 'truck'}
+                
+                for xyxy, conf, cls in zip(xyxys, confs, clss):
+                    cls_id = int(cls)
+                    x1, y1, x2, y2 = map(int, xyxy)
+                    
+                    if conf > 0.15:
+                        label = ""
+                        if cls_id in vehicle_classes:
+                            label = f"{vehicle_classes[cls_id]} {conf:.2f}"
+                        else:
+                            label = f"cls_{cls_id} {conf:.2f}"
+                            
+                        # Cho phép TẤT CẢ các vật thể được phát hiện kích hoạt ô đỗ (để dễ demo với đồ chơi)
+                        current_ai_boxes.append((x1, y1, x2, y2, label, True))
                         current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
                         for slot in current_slots:
-                            if check_overlap(x1, y1, x2, y2, slot['x'], slot['y'], slot['width'], slot['height'], w, h):
+                            if check_overlap(x1, y1, x2, y2, slot, w, h):
                                 occupied_slots.add(slot.get('slotName'))
                                 
             last_occupied_slots = occupied_slots
             last_ai_boxes = current_ai_boxes
         else:
-            # Use previous results for intermediate frames
             occupied_slots = last_occupied_slots
             current_ai_boxes = last_ai_boxes
             
         # Draw AI boxes
-        for (x1, y1, x2, y2) in current_ai_boxes:
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 165, 0), 2)
+        for box_data in current_ai_boxes:
+            x1, y1, x2, y2, label, is_veh = box_data
+            color = (255, 165, 0) if is_veh else (255, 255, 255) # Orange for vehicles, White for others
+            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+            cv2.putText(frame, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
                     
         # Draw slots
         current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
         for slot in current_slots:
-            sx = int(slot['x'] / 100.0 * w)
-            sy = int(slot['y'] / 100.0 * h)
-            sw = int(slot['width'] / 100.0 * w)
-            sh = int(slot['height'] / 100.0 * h)
             is_occupied = slot.get('slotName') in occupied_slots
             color = (0, 0, 255) if is_occupied else (0, 255, 0)
             status_text = "Occupied" if is_occupied else "Empty"
-            
             overlay = frame.copy()
-            cv2.rectangle(overlay, (sx, sy), (sx + sw, sy + sh), color, -1)
-            cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
-            cv2.rectangle(frame, (sx, sy), (sx + sw, sy + sh), color, 2)
-            cv2.putText(frame, f"{slot['slotName']} - {status_text}", (sx, sy - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            
+            if 'points' in slot and slot['points']:
+                import numpy as np
+                pts = [[int(p['x'] / 100.0 * w), int(p['y'] / 100.0 * h)] for p in slot['points']]
+                poly = np.array([pts], np.int32)
+                cv2.fillPoly(overlay, poly, color)
+                cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
+                cv2.polylines(frame, poly, True, color, 2)
+                tx, ty = min([p[0] for p in pts]), min([p[1] for p in pts])
+                cv2.putText(frame, f"{slot['slotName']} - {status_text}", (tx, ty - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            else:
+                sx = int(slot.get('x',0) / 100.0 * w)
+                sy = int(slot.get('y',0) / 100.0 * h)
+                sw = int(slot.get('width',0) / 100.0 * w)
+                sh = int(slot.get('height',0) / 100.0 * h)
+                cv2.rectangle(overlay, (sx, sy), (sx + sw, sy + sh), color, -1)
+                cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
+                cv2.rectangle(frame, (sx, sy), (sx + sw, sy + sh), color, 2)
+                cv2.putText(frame, f"{slot['slotName']} - {status_text}", (sx, sy - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
             
         stream_frame = cv2.resize(frame, (640, 480))
         ret_encode, buffer = cv2.imencode('.jpg', stream_frame, [cv2.IMWRITE_JPEG_QUALITY, 50])

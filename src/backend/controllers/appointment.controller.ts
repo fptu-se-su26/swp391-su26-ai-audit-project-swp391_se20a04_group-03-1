@@ -1,10 +1,34 @@
 import { NextFunction, Request, Response } from "express";
 import { Appointment } from "../models/appointment.model";
 import { Driver } from "../models/driver.model";
+import { Container } from "../models/container.model";
 
 export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
-    const { truckPlate, scheduledDate, timeSlot } = req.body;
+    const { truckPlate, scheduledDate, timeSlot, containerNo, purpose } = req.body;
+
+    // 0. Kiểm tra Mục đích và Tình trạng container
+    const container = await Container.findOne({ number: containerNo, isDeleted: false });
+    if (!container) {
+      return res.json({
+        code: "error",
+        message: "Không tìm thấy thông tin container.",
+      });
+    }
+
+    if (purpose === "Lấy container" && !["Đã nhập cảng", "Đang lưu bãi"].includes(container.portStatus)) {
+      return res.json({
+        code: "error",
+        message: "Mục đích lấy container không hợp lệ: Container này hiện không ở Trong cảng.",
+      });
+    }
+
+    if (purpose === "Trả container" && !["Chưa nhập cảng", "Đã xuất cảng"].includes(container.portStatus)) {
+      return res.json({
+        code: "error",
+        message: "Mục đích trả container không hợp lệ: Container này hiện đang ở Trong cảng.",
+      });
+    }
 
     // 1. Kiểm tra 1 xe chỉ được đặt 1 lần/ngày
     const existAppointmentInDay = await Appointment.findOne({
@@ -163,7 +187,30 @@ export const appointmentDetailGet = async (req: Request, res: Response) => {
 
 export const appointmentEditPatch = async (req: Request, res: Response) => {
   try {
-    const { id, truckPlate, scheduledDate } = req.body;
+    const { id, truckPlate, scheduledDate, containerNo, purpose } = req.body;
+
+    // 0. Kiểm tra Mục đích và Tình trạng container
+    const container = await Container.findOne({ number: containerNo, isDeleted: false });
+    if (!container) {
+      return res.json({
+        code: "error",
+        message: "Không tìm thấy thông tin container.",
+      });
+    }
+
+    if (purpose === "Lấy container" && !["Đã nhập cảng", "Đang lưu bãi"].includes(container.portStatus)) {
+      return res.json({
+        code: "error",
+        message: "Mục đích lấy container không hợp lệ: Container này hiện không ở Trong cảng.",
+      });
+    }
+
+    if (purpose === "Trả container" && !["Chưa nhập cảng", "Đã xuất cảng"].includes(container.portStatus)) {
+      return res.json({
+        code: "error",
+        message: "Mục đích trả container không hợp lệ: Container này hiện đang ở Trong cảng.",
+      });
+    }
 
     // Kiểm tra trùng lịch hẹn của xe trong cùng 1 ngày (không tính chính nó)
     const existAppointmentInDay = await Appointment.findOne({

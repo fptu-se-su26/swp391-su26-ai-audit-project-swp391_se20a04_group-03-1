@@ -1,0 +1,335 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import JustValidate from "just-validate";
+import toast from "react-hot-toast";
+import { CustomSelect } from "@/components/CustomSelect";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+
+export default function EditContainerPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+  
+  const [formType, setFormType] = useState("20ft");
+  const [formStatus, setFormStatus] = useState("Hàng");
+  const [formPortStatus, setFormPortStatus] = useState("Chưa nhập cảng");
+  const [formNumberDigits, setFormNumberDigits] = useState("");
+  
+  const [providers, setProviders] = useState<any[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState("");
+  const [bicCodes, setBicCodes] = useState<string[]>([]);
+  const [selectedBic, setSelectedBic] = useState("");
+  
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const validatorRef = useRef<JustValidate | null>(null);
+
+  // Fetch Providers
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/container-providers?limit=1000`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.data) {
+          setProviders(data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi lấy danh sách hãng tàu:", error);
+      }
+    };
+    fetchProviders();
+  }, []);
+
+  // Fetch Container details
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/containers/detail/${id}`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.code === "success" && data.data) {
+          const c = data.data;
+          setFormType(c.type);
+          setFormStatus(c.status);
+          setFormPortStatus(c.portStatus || "Chưa nhập cảng");
+          setSelectedProvider(c.providerId ? c.providerId._id : "");
+
+          const number = c.number as string;
+          const bicStr = number.substring(0, 4);
+          const digits = number.substring(4);
+          
+          setFormNumberDigits(digits);
+          setSelectedBic(bicStr);
+        } else {
+          toast.error("Không tìm thấy container.");
+          router.push("/admin/containers");
+        }
+      } catch (error) {
+        toast.error("Lỗi khi tải dữ liệu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchDetail();
+  }, [id, router]);
+
+  // Update BIC codes when provider changes
+  useEffect(() => {
+    if (selectedProvider) {
+      const provider = providers.find((p) => p._id === selectedProvider);
+      if (provider && provider.bic_codes) {
+        setBicCodes(provider.bic_codes);
+        // Do not auto-select if we already have selectedBic from detail load
+        if (provider.bic_codes.length > 0 && !provider.bic_codes.includes(selectedBic)) {
+          setSelectedBic(provider.bic_codes[0]);
+        }
+      } else {
+        setBicCodes([]);
+        setSelectedBic("");
+      }
+    } else {
+      setBicCodes([]);
+    }
+  }, [selectedProvider, providers, selectedBic]);
+
+  // Form Validator
+  useEffect(() => {
+    if (!formRef.current || loading) return;
+
+    const validator = new JustValidate(formRef.current, {
+      errorFieldCssClass: "border-[#f3727f] focus:ring-[#f3727f] focus:border-[#f3727f]",
+      errorLabelCssClass: "text-[#f3727f] text-[12px] font-bold uppercase tracking-wider mt-1 block",
+    });
+
+    validatorRef.current = validator;
+
+    validator
+      .addField("#number", [
+        { rule: "required", errorMessage: "Bắt buộc nhập 7 chữ số." },
+        { rule: "customRegexp", value: /^[0-9]{7}$/i, errorMessage: "Phải bao gồm đúng 7 chữ số (VD: 1234567)" }
+      ])
+      .onSuccess(async (event: any) => {
+        event.preventDefault();
+
+        if (!selectedProvider) {
+          toast.error("Vui lòng chọn Hãng tàu.");
+          return;
+        }
+
+        if (!selectedBic) {
+          toast.error("Vui lòng chọn mã BIC.");
+          return;
+        }
+
+        const formData = new FormData(formRef.current!);
+        const numberDigits = formData.get("number")?.toString().trim();
+        const fullContainerNo = `${selectedBic}${numberDigits}`;
+
+        const payload = {
+          id,
+          number: fullContainerNo,
+          type: formType,
+          status: formStatus,
+          portStatus: formPortStatus,
+          providerId: selectedProvider,
+        };
+
+        setSaving(true);
+        const loadingToast = toast.loading("Đang cập nhật...");
+
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/containers/update`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            credentials: "include",
+          });
+          const data = await res.json();
+
+          if (data.code === "success") {
+            toast.success(data.message || "Thành công!", { id: loadingToast });
+            setTimeout(() => {
+              router.push("/admin/containers");
+            }, 1000);
+          } else {
+            toast.error(data.message || "Đã xảy ra lỗi.", { id: loadingToast });
+            setSaving(false);
+          }
+        } catch (error) {
+          toast.error("Lỗi kết nối mạng.", { id: loadingToast });
+          setSaving(false);
+        }
+      });
+
+    return () => {
+      if (validatorRef.current) {
+        validatorRef.current.destroy();
+        validatorRef.current = null;
+      }
+    };
+  }, [formType, formStatus, formPortStatus, selectedProvider, selectedBic, loading, id, router]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-[#1ed760]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
+            Cập nhật Container
+          </h1>
+          <p className="text-[#666666] dark:text-[#b3b3b3] mt-2 text-[16px]">
+            Chỉnh sửa thông tin container hiện tại
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/containers">
+            <Button
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2 px-6 h-12"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Quay lại danh sách
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-visible border-t-4 border-t-[#00754A]">
+        <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6">
+          <CardTitle className="text-2xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
+            Chỉnh sửa thông tin
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-8">
+          <form ref={formRef} className="space-y-8 max-w-4xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Hãng tàu
+                </Label>
+                <CustomSelect
+                  value={selectedProvider}
+                  onChange={setSelectedProvider}
+                  options={providers.map((p) => ({ value: p._id, label: `${p.code} - ${p.name}` }))}
+                  placeholder="Chọn hãng tàu..."
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label
+                  htmlFor="number"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Mã BIC Container
+                </Label>
+                <div className="flex gap-2">
+                  <div className="w-[100px]">
+                    <CustomSelect
+                      value={selectedBic}
+                      onChange={setSelectedBic}
+                      options={bicCodes.map((bic) => ({ value: bic, label: bic }))}
+                      placeholder={bicCodes.length > 0 ? "BIC" : "N/A"}
+                    />
+                  </div>
+                  <Input
+                    id="number"
+                    name="number"
+                    placeholder="VD: 1234567"
+                    maxLength={7}
+                    value={formNumberDigits}
+                    onChange={(e) => setFormNumberDigits(e.target.value)}
+                    className="flex-1 uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:ring-[#1ed760] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Kích thước / Loại
+                </Label>
+                <CustomSelect
+                  value={formType}
+                  onChange={setFormType}
+                  options={[
+                    { value: "20ft", label: "20ft Standard" },
+                    { value: "40ft", label: "40ft Standard" },
+                    { value: "40ft HC", label: "40ft High Cube" },
+                    { value: "45ft", label: "45ft High Cube" },
+                  ]}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Tình trạng (Rỗng/Hàng)
+                </Label>
+                <CustomSelect
+                  value={formStatus}
+                  onChange={setFormStatus}
+                  options={[
+                    { value: "Hàng", label: "Có Hàng (Full)" },
+                    { value: "Rỗng", label: "Rỗng (Empty)" },
+                  ]}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                  Trạng thái LogiPort
+                </Label>
+                <CustomSelect
+                  value={formPortStatus}
+                  onChange={setFormPortStatus}
+                  options={[
+                    { value: "Chưa nhập cảng", label: "Chưa nhập cảng" },
+                    { value: "Đã nhập cảng", label: "Đã nhập cảng" },
+                    { value: "Đang lưu bãi", label: "Đang lưu bãi" },
+                    { value: "Đã xuất cảng", label: "Đã xuất cảng" },
+                  ]}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-6 border-t border-[#e5e5e5] dark:border-[#272727]">
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 h-12 rounded-[500px]"
+              >
+                {saving ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Cập Nhật"
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

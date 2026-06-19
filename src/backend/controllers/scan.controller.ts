@@ -5,6 +5,12 @@ import { io } from "../index";
 import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
 
+interface ScanCache {
+  plate?: { text: string; time: number };
+  container?: { text: string; time: number };
+}
+const cameraScanCache: Record<string, ScanCache> = {};
+
 const captureAndSaveImageAsync = async (transactionId: string, cameraIp: string) => {
   try {
     const pythonApiUrl = process.env.PYTHON_API_URL || "http://127.0.0.1:5001";
@@ -42,7 +48,21 @@ export const scanPost = async (req: Request, res: Response) => {
     if (!text || !type || !status) {
       res.json({ code: "error", message: "Thiếu thông tin" });
       return;
-      return;
+    }
+
+    if (!cameraScanCache[cameraIp]) {
+      cameraScanCache[cameraIp] = {};
+    }
+    if (type === "plate") cameraScanCache[cameraIp].plate = { text, time: Date.now() };
+    if (type === "container") cameraScanCache[cameraIp].container = { text, time: Date.now() };
+
+    // Clear stale cache (older than 2 minutes)
+    const twoMinsAgo = Date.now() - 2 * 60 * 1000;
+    if (cameraScanCache[cameraIp].plate && cameraScanCache[cameraIp].plate!.time < twoMinsAgo) {
+      delete cameraScanCache[cameraIp].plate;
+    }
+    if (cameraScanCache[cameraIp].container && cameraScanCache[cameraIp].container!.time < twoMinsAgo) {
+      delete cameraScanCache[cameraIp].container;
     }
 
     // 1. Find valid appointment by plate or container
@@ -50,7 +70,8 @@ export const scanPost = async (req: Request, res: Response) => {
     if (type === "plate") {
       query.truckPlate = text;
     } else if (type === "container") {
-      query.containerNo = text;
+      // DB stores 11 chars, Python AI returns 10 chars (omitting check digit). Use prefix match.
+      query.containerNo = { $regex: new RegExp("^" + text, "i") };
     }
 
     // We can sort by scheduledDate to get the most relevant one if multiple exist
@@ -125,6 +146,50 @@ export const scanPost = async (req: Request, res: Response) => {
         });
         return;
       } else {
+        // --- BEGIN NEW REQUIREMENT LOGIC ---
+        if (appointment.purpose === "Lấy container") {
+          // Chỉ yêu cầu biển số
+          if (!cameraScanCache[cameraIp]?.plate || cameraScanCache[cameraIp].plate!.text !== appointment.truckPlate) {
+            res.json({ code: "ignored", message: "Đang chờ quét biển số xe (Mục đích: Lấy container)" });
+            return;
+          }
+        } else if (appointment.purpose === "Trả container") {
+          // Bắt buộc yêu cầu cả biển số và container
+          const hasValidPlate = cameraScanCache[cameraIp]?.plate?.text === appointment.truckPlate;
+          const cachedContainerText = cameraScanCache[cameraIp]?.container?.text || "";
+          const hasValidContainer = cachedContainerText && appointment.containerNo.toUpperCase().startsWith(cachedContainerText.toUpperCase());
+
+          if (!hasValidPlate || !hasValidContainer) {
+            // Timeout logic
+            const missing = !hasValidPlate ? "Biển số xe" : "Mã container";
+            const pTime = cameraScanCache[cameraIp]?.plate?.time;
+            const cTime = cameraScanCache[cameraIp]?.container?.time;
+            const refTime = pTime || cTime;
+
+            if (refTime && (Date.now() - refTime > 60000)) {
+              io.emit("gate_scan_error", {
+                plate: appointment.truckPlate,
+                message: `[Cổng vào - Trả container] CẢNH BÁO: Quá 1 phút chưa quét được ${missing}!`,
+              });
+            } else {
+              io.emit("gate_scan_error", {
+                plate: appointment.truckPlate,
+                message: `[Cổng vào - Trả container] Đang chờ quét thêm: ${missing}...`,
+              });
+            }
+            res.json({
+              code: "ignored",
+              message: `Yêu cầu quét đủ biển số và mã container. Thiếu: ${missing}`,
+            });
+            return;
+          }
+          
+          // Clear so we don't double trigger
+          delete cameraScanCache[cameraIp].plate;
+          delete cameraScanCache[cameraIp].container;
+        }
+        // --- END NEW REQUIREMENT LOGIC ---
+
         // Create new check-in
         transaction = new GateTransaction({
           actualTruckPlate: appointment.truckPlate,
@@ -155,9 +220,62 @@ export const scanPost = async (req: Request, res: Response) => {
         });
         return;
       } else {
+        // --- BEGIN NEW LOGIC FOR CHECK OUT ---
+        if (appointment.purpose === "Lấy container") {
+          // Bắt buộc quét được container
+          const hasValidPlate = cameraScanCache[cameraIp]?.plate?.text === appointment.truckPlate;
+          const cachedContainerText = cameraScanCache[cameraIp]?.container?.text || "";
+          const hasValidContainer = cachedContainerText && appointment.containerNo.toUpperCase().startsWith(cachedContainerText.toUpperCase());
+
+          if (!hasValidPlate || !hasValidContainer) {
+            const missing = !hasValidPlate ? "Biển số xe" : "Mã container";
+            const pTime = cameraScanCache[cameraIp]?.plate?.time;
+            const cTime = cameraScanCache[cameraIp]?.container?.time;
+            const refTime = pTime || cTime;
+
+            if (refTime && (Date.now() - refTime > 60000)) {
+              io.emit("gate_scan_error", {
+                plate: appointment.truckPlate,
+                message: `[Cổng ra - Lấy container] CẢNH BÁO: Quá 1 phút chưa quét được ${missing}!`,
+              });
+            } else {
+              io.emit("gate_scan_error", {
+                plate: appointment.truckPlate,
+                message: `[Cổng ra - Lấy container] Đang chờ quét thêm: ${missing}...`,
+              });
+            }
+            res.json({
+              code: "ignored",
+              message: `Yêu cầu quét đủ biển số và mã container. Thiếu: ${missing}`,
+            });
+            return;
+          }
+          delete cameraScanCache[cameraIp].plate;
+          delete cameraScanCache[cameraIp].container;
+        } else if (appointment.purpose === "Trả container") {
+          // Bắt buộc KHÔNG CÓ container
+          if (cameraScanCache[cameraIp]?.container) {
+            io.emit("gate_scan_error", {
+              plate: appointment.truckPlate,
+              message: `[Cổng ra - Trả container] LỖI: Phát hiện xe đang chở container ra ngoài! Không cho phép mở cổng.`,
+            });
+            res.json({
+              code: "error",
+              message: "Phát hiện xe chở container ra ngoài (không hợp lệ)",
+            });
+            return;
+          }
+
+          if (!cameraScanCache[cameraIp]?.plate || cameraScanCache[cameraIp].plate!.text !== appointment.truckPlate) {
+            res.json({ code: "ignored", message: "Đang chờ quét biển số xe" });
+            return;
+          }
+          delete cameraScanCache[cameraIp].plate;
+        }
+        // --- END NEW LOGIC FOR CHECK OUT ---
+
         // Update checkout time
         transaction.checkOutTime = now;
-        transaction.status = "out";
         transaction.status = "out";
         transaction.ocrConfidence = confidence;
         await transaction.save();
@@ -204,6 +322,27 @@ export const scanPost = async (req: Request, res: Response) => {
       plate: text,
       message: status === "in" ? "Check-in thành công" : "Check-out thành công",
     });
+
+    // --- GỬI LỆNH MỞ CỔNG TỚI ESP32 ---
+    try {
+      const esp32Ip = process.env.ESP32_IP || "http://192.168.1.100";
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout 3s tránh treo server
+      
+      const p = appointment.truckPlate || "";
+      const c = appointment.containerNo || "";
+      fetch(`${esp32Ip}/api/open-gate?plate=${encodeURIComponent(p)}&container=${encodeURIComponent(c)}`, {
+        method: "GET",
+        signal: controller.signal
+      }).then(res => res.text())
+        .then(data => console.log(`[ESP32] Lệnh mở cổng thành công:`, data))
+        .catch(err => console.error("[ESP32] Không thể kết nối tới ESP32:", err.message));
+        
+      clearTimeout(timeoutId);
+    } catch (err) {
+      console.error("[ESP32] Lỗi hệ thống khi gọi ESP32:", err);
+    }
+    // -----------------------------------
 
     res.json({ code: "success", message: "Processed successfully" });
     return;

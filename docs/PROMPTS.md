@@ -544,202 +544,6 @@ Kinh nghiệm rút ra: Việc sử dụng Socket.IO giúp hệ thống phản h�
 ```
 
 ---
-### Prompt số 12
-
-| Nội dung            | Thông tin                           |
-| ------------------- | ----------------------------------- |
-| Ngày sử dụng        | ...                                 |
-| Công cụ AI          | Antigravity                         |
-| Mục đích            | Phát triển tính năng quản lí tài xế |
-| Phần việc liên quan | Coding                              |
-| Mức độ sử dụng      | Hỏi hướng dẫn                       |
-| Phần liên quan      | Driver Management                   |
-
-#### 12.1. Prompt nguyên văn
-
-```text
-Bây giờ, tôi muốn triển khai chi tiết dự án hơn bằng việc thêm vào model Tài xế:
-
-Model driver có các trường sau:
-- driverId
-- companyId
-- driverName
-- driverPhone
-- isDeleted
-- createdAt
-- updatedAt
-
-Tạo trang quản lí tài xế có đầy đủ các chức năng CRUD và các trang con như edit, trash,... tương tự như quản lí công ty và quản lí appointment.
-```
-
-#### 12.2. Bối cảnh khi viết prompt
-
-```text
-Sau khi hoàn thiện các chức năng quản lí công ty và lịch hẹn, nhóm tiếp tục mở rộng hệ thống bằng việc xây dựng phân hệ quản lí tài xế.
-
-Mục tiêu là quản lí tập trung thông tin tài xế thuộc các công ty vận tải, đồng thời đảm bảo giao diện và nghiệp vụ thống nhất với các module đã triển khai trước đó.
-```
-
-#### 12.3. Kết quả AI trả về
-
-```text
-AI đề xuất xây dựng đầy đủ module Driver Management bao gồm Backend và Frontend.
-
-Các chức năng chính:
-- Tạo model Driver.
-- Xây dựng API CRUD tài xế.
-- Hỗ trợ tìm kiếm và phân trang.
-- Soft Delete và Hard Delete.
-- Khôi phục dữ liệu từ thùng rác.
-- Xây dựng giao diện danh sách tài xế.
-- Xây dựng giao diện thêm mới và chỉnh sửa tài xế.
-```
-
-#### 12.4. Kết quả đã áp dụng vào bài
-
-```text
-- Thiết kế model Driver.
-- Xây dựng API CRUD cho tài xế.
-- Tạo giao diện danh sách tài xế.
-- Tạo giao diện thêm mới và chỉnh sửa tài xế.
-- Xây dựng chức năng thùng rác và khôi phục dữ liệu.
-- Tích hợp tìm kiếm và phân trang.
-```
-
-#### 12.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-- Nhóm điều chỉnh giao diện để đồng bộ với module Company và Appointment.
-- Tối ưu các bộ lọc tìm kiếm và phân trang.
-- Kiểm thử lại toàn bộ luồng CRUD để đảm bảo dữ liệu hoạt động ổn định.
-- Chuẩn bị cấu trúc để liên kết Driver với các module khác trong tương lai.
-```
-
-#### 12.6. Đánh giá chất lượng prompt
-
-* [x] Prompt rõ ràng
-* [x] Prompt có đủ bối cảnh
-* [ ] Prompt còn thiếu thông tin
-* [x] Prompt tạo ra kết quả tốt
-* [ ] Prompt tạo ra kết quả chưa phù hợp
-* [ ] Cần hỏi lại AI nhiều lần
-* [x] Cần tự kiểm tra và chỉnh sửa nhiều
-* [ ] Kết quả AI có lỗi hoặc chưa chính xác
-#### 12.7. Minh chứng liên quan
-
-| Loại minh chứng       | Nội dung                                                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Link commit           | Cập nhật sau...                                                                                                                      |
-| File liên quan        | `src/backend/models/driver.model.ts`, `src/backend/controllers/drivers.controller.ts`, `src/frontend/src/app/admin/drivers/page.tsx` |
-| Screenshot            | Trang quản lí tài xế                                                                                                                 |
-| Kết quả chạy/test     | CRUD tài xế hoạt động ổn định                                                                                                        |
-| Link tài liệu/báo cáo |                                                                                                                                      |
-| Ghi chú khác          |                                                                                                                                      |
-
-#### 12.8. Ghi chú thêm
-
-```text
-Kinh nghiệm rút ra: Khi xây dựng các module CRUD mới, việc tái sử dụng cấu trúc từ các module đã hoàn thành giúp giảm đáng kể thời gian phát triển và đảm bảo tính nhất quán của hệ thống.
-```
-### Prompt số 13
-
-| Nội dung            | Thông tin                                               |
-| ------------------- | ------------------------------------------------------- |
-| Ngày sử dụng        | ...                                                     |
-| Công cụ AI          | Antigravity                                             |
-| Mục đích            | Tối ưu chức năng lựa chọn công ty trong biểu mẫu tài xế |
-| Phần việc liên quan | Coding                                                  |
-| Mức độ sử dụng      | Hỏi hướng dẫn                                           |
-| Phần liên quan      | Driver Management                                       |
-
-#### 13.1. Prompt nguyên văn
-
-```text
-Tôi có lưu ý trong form create hay edit cho driver thì ở trường company là một thẻ select chứa danh sách công ty.
-
-Tuy nhiên tôi nghĩ sẽ có khá nhiều công ty nên nếu fetch toàn bộ dữ liệu một lần sẽ gây lag.
-
-Tôi muốn xử lí theo hướng:
-- Cho phép người dùng nhập tên công ty.
-- Dùng debounce để tìm kiếm.
-- Chuyển từ khóa thành regex để tìm công ty phù hợp.
-- Hiển thị danh sách công ty cho người dùng lựa chọn.
-
-Hoặc thay vì select truyền thống thì chỉ tải khoảng 20 công ty mỗi lần. Nếu người dùng cuộn xuống cuối danh sách thì tiếp tục tải thêm dữ liệu từ database.
-
-Hãy xử lí các tính năng này một cách mượt mà và ít lỗi nhất.
-```
-
-#### 13.2. Bối cảnh khi viết prompt
-
-```text
-Sau khi hoàn thiện chức năng quản lí tài xế, nhóm nhận thấy việc lựa chọn công ty bằng select truyền thống không phù hợp khi số lượng công ty tăng lên.
-
-Nhóm muốn tối ưu trải nghiệm người dùng cũng như hiệu năng hệ thống bằng cách chỉ tải dữ liệu cần thiết và hỗ trợ tìm kiếm theo thời gian thực.
-```
-
-#### 13.3. Kết quả AI trả về
-
-```text
-AI đề xuất thay thế select truyền thống bằng Async Company Select.
-
-Các chức năng chính:
-- Tìm kiếm công ty theo từ khóa.
-- Debounce để giảm số lượng request.
-- Chỉ tải dữ liệu theo nhu cầu sử dụng.
-- Hiển thị danh sách công ty dạng dropdown động.
-- Hỗ trợ tải thêm dữ liệu khi người dùng cuộn xuống cuối danh sách.
-- Tự động đóng danh sách khi người dùng nhấn ra ngoài.
-```
-
-#### 13.4. Kết quả đã áp dụng vào bài
-
-```text
-- Thiết kế Async Company Select.
-- Tích hợp debounce cho chức năng tìm kiếm công ty.
-- Tích hợp API tìm kiếm theo từ khóa.
-- Giới hạn số lượng dữ liệu tải về mỗi lần.
-- Hỗ trợ tải thêm dữ liệu khi cuộn danh sách.
-- Cải thiện trải nghiệm người dùng khi chọn công ty.
-```
-
-#### 13.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-- Nhóm điều chỉnh thời gian debounce để phù hợp với tốc độ phản hồi của hệ thống.
-- Tối ưu API tìm kiếm công ty nhằm giảm tải cho cơ sở dữ liệu.
-- Cải thiện giao diện dropdown để hiển thị rõ ràng hơn trên các màn hình có kích thước khác nhau.
-- Kiểm thử với số lượng dữ liệu lớn để đánh giá hiệu năng thực tế.
-```
-
-#### 13.6. Đánh giá chất lượng prompt
-
-* [x] Prompt rõ ràng
-* [x] Prompt có đủ bối cảnh
-* [ ] Prompt còn thiếu thông tin
-* [x] Prompt tạo ra kết quả tốt
-* [ ] Prompt tạo ra kết quả chưa phù hợp
-* [ ] Cần hỏi lại AI nhiều lần
-* [x] Cần tự kiểm tra và chỉnh sửa nhiều
-* [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 13.7. Minh chứng liên quan
-
-| Loại minh chứng       | Nội dung                                                                                                                                                            |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit           | Cập nhật sau...                                                                                                                                                     |
-| File liên quan        | `src/frontend/src/components/AsyncCompanySelect.tsx`, `src/frontend/src/app/admin/drivers/create/page.tsx`, `src/frontend/src/app/admin/drivers/edit/[id]/page.tsx` |
-| Screenshot            | Chức năng tìm kiếm và lựa chọn công ty                                                                                                                              |
-| Kết quả chạy/test     | Tìm kiếm công ty hoạt động mượt mà với lượng dữ liệu lớn                                                                                                            |
-| Link tài liệu/báo cáo |                                                                                                                                                                     |
-| Ghi chú khác          |                                                                                                                                                                     |
-
-#### 13.8. Ghi chú thêm
-
-```text
-Kinh nghiệm rút ra: Không phải lúc nào select truyền thống cũng phù hợp. Khi dữ liệu tăng lên, việc áp dụng debounce, lazy loading và tìm kiếm theo thời gian thực giúp cải thiện đáng kể hiệu năng và trải nghiệm người dùng.
-```
----
 
 ## Prompt số 12
 
@@ -1059,6 +863,232 @@ Ops / Improvements: Đề xuất thêm shim cho CSS types, điều chỉnh icon 
 
 ```text
 
+```
+
+---
+
+### Prompt số 15
+
+| Nội dung            | Thông tin                                         |
+| ------------------- | ------------------------------------------------- |
+| Ngày sử dụng        | 07/06/2026                                        |
+| Công cụ AI          | Antigravity                                       |
+| Mục đích            | Xây dựng giao diện xác thực dành cho doanh nghiệp |
+| Phần việc liên quan | Coding                                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                     |
+| Phần liên quan      | Company Portal                                    |
+
+#### 15.1. Prompt nguyên văn
+
+```text
+Phân tích src/frontend/DESIGN.md và src/frontend.
+
+Bạn là một senior Next.js và có nhiều năm kinh nghiệm thiết kế giao diện.
+
+Tôi đã có sẵn các trang thuộc src/frontend/src/app/admin dành cho quản trị viên.
+
+Bây giờ tôi cần triển khai các trang cho doanh nghiệp tại:
+
+src/frontend/src/app/client/company
+
+Cần thực hiện các bước sau:
+
+1. Ở trang landing page sẽ có phần liên kết tới giao diện đăng nhập dành cho doanh nghiệp.
+2. Các trang xác thực của doanh nghiệp sẽ nằm trong:
+   src/frontend/src/app/client/company/(auth)
+
+Bao gồm tất cả các trang giống như bên admin.
+
+Trước tiên hãy hoàn thành các nhiệm vụ này.
+
+Lưu ý:
+- Chưa cần fetch API.
+- Phải tuân thủ theo DESIGN.md.
+- Giao diện phải đồng bộ với hệ thống admin.
+- Không được để mỗi khu vực một kiểu giao diện khác nhau.
+```
+
+#### 15.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các chức năng dành cho quản trị viên, nhóm bắt đầu triển khai cổng thông tin dành cho doanh nghiệp.
+
+Mục tiêu là xây dựng hệ thống xác thực riêng cho doanh nghiệp nhưng vẫn giữ được sự đồng nhất về giao diện và trải nghiệm người dùng trên toàn hệ thống.
+
+Trong giai đoạn này nhóm chỉ tập trung xây dựng giao diện và cấu trúc trang, chưa kết nối với Backend API.
+```
+
+#### 15.3. Kết quả AI trả về
+
+```text
+AI đề xuất tái sử dụng cấu trúc giao diện và kiến trúc từ module xác thực của Admin để đảm bảo tính nhất quán.
+
+Các chức năng được triển khai gồm:
+- Bổ sung liên kết đăng nhập doanh nghiệp trên Landing Page.
+- Tạo nhóm route xác thực dành cho doanh nghiệp.
+- Xây dựng các trang:
+  + Login
+  + Register
+  + Forgot Password
+  + Reset Password
+- Tạo layout riêng cho Company Auth.
+- Điều chỉnh nội dung hiển thị phù hợp với ngữ cảnh doanh nghiệp.
+- Đồng bộ thiết kế theo chuẩn trong DESIGN.md.
+```
+
+#### 15.4. Kết quả đã áp dụng vào bài
+
+```text
+- Bổ sung nút truy cập dành cho doanh nghiệp trên Landing Page.
+- Tạo cấu trúc thư mục client/company/(auth).
+- Xây dựng các giao diện Login, Register, Forgot Password và Reset Password.
+- Đồng bộ giao diện với hệ thống Admin.
+- Điều chỉnh nội dung hiển thị phù hợp với doanh nghiệp vận tải và logistics.
+```
+
+#### 15.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm điều chỉnh các nội dung hiển thị để phù hợp với đối tượng sử dụng là doanh nghiệp.
+- Thay đổi các ví dụ email và thông tin mô tả cho phù hợp với môi trường thực tế.
+- Điều chỉnh danh sách loại hình doanh nghiệp trong màn hình đăng ký.
+- Kiểm tra lại tính thống nhất giữa Company Portal và Admin Portal.
+```
+
+#### 15.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 15.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                                                              |
+| File liên quan        | `src/frontend/src/app/page.tsx`, `src/frontend/src/app/client/company/(auth)/login/page.tsx`, `src/frontend/src/app/client/company/(auth)/register/page.tsx` |
+| Screenshot            | Landing Page và các trang xác thực doanh nghiệp                                                                                                              |
+| Kết quả chạy/test     | Điều hướng và giao diện hoạt động đúng theo thiết kế                                                                                                         |
+| Link tài liệu/báo cáo |                                                                                                                                                              |
+| Ghi chú khác          | Đây là bước đầu tiên để xây dựng cổng thông tin dành cho doanh nghiệp.                                                                                       |
+
+#### 15.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Khi phát triển nhiều nhóm người dùng khác nhau trong cùng một hệ thống, việc tái sử dụng cấu trúc giao diện và các component sẵn có giúp giảm thời gian phát triển, đồng thời đảm bảo tính nhất quán và dễ bảo trì về lâu dài.
+```
+
+---
+
+### Prompt số 16
+
+| Nội dung            | Thông tin                                         |
+| ------------------- | ------------------------------------------------- |
+| Ngày sử dụng        | 03/06/2026                                        |
+| Công cụ AI          | Antigravity                                       |
+| Mục đích            | Xây dựng chức năng quản lí nhà cung cấp container |
+| Phần việc liên quan | Coding                                            |
+| Mức độ sử dụng      | Hỏi hướng dẫn                                     |
+| Phần liên quan      | Container Provider Management                     |
+
+#### 16.1. Prompt nguyên văn
+
+```text
+Phân tích src/frontend/src/app/admin/.
+
+Tôi muốn tạo và hoàn thiện trang quản lí nhà cung cấp container:
+
+1. Tạo trang nhà cung cấp container bao gồm trang chính, trang trash, trang create, trang edit,... tương tự như src/frontend/src/app/admin/companies.
+
+2. Tạo model container-provider:
+- code (4 kí tự đầu của mã container)
+- name
+- bic_codes (Danh sách mã Prefix 3 chữ cái được đăng ký quốc tế)
+- contact_email (Để hệ thống tự động gửi cảnh báo rỉ sét)
+- status: ENUM('ACTIVE', 'SUSPENDED')
+- timestamp
+
+Theo dạng mẫu các model có sẵn trong dự án.
+
+3. Triển khai các tính năng như tìm kiếm, bộ lọc, phân trang ở trang chính và cả trang thùng rác.
+
+Lưu ý: code backend phải theo thói quen viết backend hiện tại của tôi.
+```
+
+#### 16.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi hoàn thiện các chức năng quản lí công ty, tài xế và lịch hẹn, nhóm tiếp tục mở rộng hệ thống bằng việc bổ sung module quản lí nhà cung cấp container.
+
+Mục tiêu là quản lí thông tin các hãng sở hữu container, phục vụ việc theo dõi, kiểm tra và cảnh báo tình trạng container trong quá trình vận hành tại cảng.
+```
+
+#### 16.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng module Container Provider theo kiến trúc tương tự Company Management để đảm bảo tính nhất quán.
+
+Các chức năng chính gồm:
+- Tạo model ContainerProvider.
+- Xây dựng API CRUD.
+- Hỗ trợ Soft Delete và Trash Management.
+- Xây dựng các trang List, Create, Edit và Trash.
+- Tích hợp tìm kiếm theo mã hoặc tên nhà cung cấp.
+- Hỗ trợ bộ lọc trạng thái ACTIVE và SUSPENDED.
+- Hỗ trợ phân trang cho danh sách chính và thùng rác.
+- Đề xuất chuẩn hóa dữ liệu BIC Code và Container Code để thuận tiện cho việc kiểm tra container trong tương lai.
+```
+
+#### 16.4. Kết quả đã áp dụng vào bài
+
+```text
+- Thiết kế cấu trúc dữ liệu ContainerProvider.
+- Xây dựng các trang quản lí nhà cung cấp container.
+- Áp dụng mô hình CRUD tương tự Company Management.
+- Tích hợp chức năng tìm kiếm, bộ lọc và phân trang.
+- Bổ sung cơ chế quản lí dữ liệu đã xóa thông qua Trash Page.
+```
+
+#### 16.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+- Điều chỉnh cấu trúc dữ liệu để phù hợp với nghiệp vụ quản lí container thực tế.
+- Chuẩn hóa định dạng mã code và BIC Code.
+- Kiểm tra và tối ưu giao diện để đồng bộ với các module quản trị khác.
+- Chuẩn bị nền tảng để tích hợp các chức năng cảnh báo tình trạng container trong tương lai.
+```
+
+#### 16.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 16.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Link commit           | Cập nhật sau...                                                                                                                                              |
+| File liên quan        | `src/backend/models/container-provider.model.ts`, `src/backend/controllers/container-providers.controller.ts`, `src/frontend/src/app/admin/container-providers/page.tsx` |
+| Screenshot            | Trang quản lí nhà cung cấp container                                                                                                               |
+| Kết quả chạy/test     | CRUD, tìm kiếm, lọc và phân trang hoạt động đúng kế                                                                                                         |
+| Link tài liệu/báo cáo |                                                                                                                                                              |
+| Ghi chú khác          | Đây là bước đầu tiên để xây dựng cổng thông tin dành cho doanh nghiệp.                                                                                       |
+
+#### 16.8. Ghi chú thêm
+
+```text
+Kinh nghiệm rút ra: Việc tái sử dụng kiến trúc và giao diện từ các module quản lí đã có giúp giảm thời gian phát triển đáng kể, đồng thời đảm bảo tính nhất quán và khả năng bảo trì của hệ thống khi số lượng module ngày càng tăng.
 ```
 
 ---
