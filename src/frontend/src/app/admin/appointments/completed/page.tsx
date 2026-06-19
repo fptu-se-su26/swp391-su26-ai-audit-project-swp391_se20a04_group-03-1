@@ -49,6 +49,7 @@ interface Appointment {
   containerNo: string;
   scheduledDate: string;
   timeSlot: string;
+  purpose: string;
   status: "Pending" | "Confirmed" | "Cancelled" | "Completed" | "CheckedOut";
   createdAt: string;
 }

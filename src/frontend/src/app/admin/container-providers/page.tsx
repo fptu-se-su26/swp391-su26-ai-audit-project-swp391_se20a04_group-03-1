@@ -42,7 +42,7 @@ interface Provider {
   name: string;
   bic_codes: string[];
   contact_email: string;
-  status: "ACTIVE" | "SUSPENDED";
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
   createdAt: string;
 }
 
