@@ -30,10 +30,14 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.0.6",
     "@types/redis": "^4.0.10",
     "@types/streamifier": "^0.1.2",
+    "jest": "^30.4.2",
+    "node-mocks-http": "^1.17.2",
     "nodemon": "^3.1.11",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

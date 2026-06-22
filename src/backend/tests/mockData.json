@@ -1,0 +1,23 @@
+{
+  "systemTime": "2023-10-10T10:00:00+07:00",
+  "invalidSystemTime": "2023-10-10T12:00:00+07:00",
+  "baseAppointment": {
+    "_id": "app123",
+    "truckPlate": "29A12345",
+    "containerNo": "CONT1234567",
+    "scheduledDate": "2023-10-10T00:00:00+07:00",
+    "timeSlot": "09:00-11:00",
+    "status": "Confirmed",
+    "purpose": "Lấy container"
+  },
+  "invalid": {
+    "truckPlate": "30B99999",
+    "containerNo": "WRONGCONT"
+  },
+  "tx": {
+    "mockId": "mocked_tx_123",
+    "tx1": "tx1",
+    "tx2": "tx2",
+    "tx3": "tx3"
+  }
+}

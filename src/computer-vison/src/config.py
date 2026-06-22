@@ -15,13 +15,17 @@ FLASK_PORT = int(os.getenv("FLASK_PORT", 5001))
 CAMERA_INDEX = int(os.getenv("CAMERA_INDEX", 0))
 
 # AI Model Paths
+# Tự động dùng bản tối ưu ncnn cho Raspberry Pi CPU nếu có
+ncnn_plate_path = os.path.join(MODELS_DIR, "best_ncnn_model")
+ncnn_container_path = os.path.join(MODELS_DIR, "container-code_ncnn_model")
+
 YOLO_PLATE_MODEL_PATH = os.getenv(
     "YOLO_PLATE_MODEL_PATH", 
-    os.path.join(MODELS_DIR, "best.pt")
+    ncnn_plate_path if os.path.isdir(ncnn_plate_path) else os.path.join(MODELS_DIR, "best.pt")
 )
 YOLO_CONTAINER_MODEL_PATH = os.getenv(
     "YOLO_CONTAINER_MODEL_PATH", 
-    os.path.join(MODELS_DIR, "container-code.pt")
+    ncnn_container_path if os.path.isdir(ncnn_container_path) else os.path.join(MODELS_DIR, "container-code.pt")
 )
 
 # AI Processing Parameters
