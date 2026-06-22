@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies like typescript)
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -27,7 +27,7 @@ ENV NODE_ENV=production
 COPY package*.json ./
 
 # Install ONLY production dependencies (reduces image size significantly)
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Copy compiled JavaScript from builder stage
 COPY --from=builder /app/dist ./dist
