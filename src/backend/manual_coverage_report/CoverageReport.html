@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Code Coverage Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CoverageReport.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Code Coverage Report</h1>
+            <p>Generated Manually | Date: 2026-06-23</p>
+        </header>
+
+        <section class="overview">
+
+            <div class="card">
+                <h3>Line Coverage</h3>
+                <div class="progress-wrapper">
+                    <div class="progress-header">
+                        <span>Total Lines Tested</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-high" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Branch Coverage</h3>
+                <div class="progress-wrapper">
+                    <div class="progress-header">
+                        <span>Conditions Tested</span>
+                        <span>96.59%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-high" style="width: 96.59%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Mutation Coverage</h3>
+                <div class="progress-wrapper">
+                    <div class="progress-header">
+                        <span>Mutants Killed</span>
+                        <span>72.38%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-medium" style="width: 72.38%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main>
+
+            <section class="module-section">
+                <h2>Module: scan.controller.test.ts (54 Test Cases)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Case ID</th>
+                                <th>Test Case Description</th>
+                                <th>Result</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: scanPost (Basic validation) <span class="group-count">(6 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>missingRequiredFields</code></td>
+                                <td>Should return error if missing required fields</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>noValidAppointmentFound</code></td>
+                                <td>Should return ignored if no valid appointment found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>timeIsInvalid30Mins</code></td>
+                                <td>Should return ignored if time is invalid (>30 mins late)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>timeSlotCrossingMidnight</code></td>
+                                <td>Should handle time slot crossing midnight</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>clearStaleCache</code></td>
+                                <td>Should clear stale cache</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>ignoreIfTypeIsUnknown</code></td>
+                                <td>Should ignore if type is unknown</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: scanPost (IN gate, Pick-up (Lấy container)) <span class="group-count">(9 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>plateMatches</code></td>
+                                <td>Should success if plate matches</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>aiApiReturningOkFalse</code></td>
+                                <td>Should handle AI API returning ok: false silently</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>cloudinaryUploadReject</code></td>
+                                <td>Should handle cloudinary upload reject</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>fetchExceptionInAiApi</code></td>
+                                <td>Should handle fetch exception in AI API</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>esp32FetchExceptionSilently</code></td>
+                                <td>Should handle ESP32 fetch exception silently</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>catchBlockWrapperForEsp32</code></td>
+                                <td>Should handle catch block wrapper for ESP32</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>angChQuTBi</code></td>
+                                <td>Should return "Đang chờ quét biển" if plate is unmatched</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>successfullyWithoutCameraip</code></td>
+                                <td>Should process successfully without cameraIp</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>skipSpecificPurposeLogicIf</code></td>
+                                <td>Should skip specific purpose logic if purpose is unknown</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: scanPost (IN gate, Drop-off (Trả container)) <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>bothPlateAndContainerMatch</code></td>
+                                <td>Should success if both plate and container match</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>missingContainerIfContainerInvalid</code></td>
+                                <td>Should return missing container if container invalid</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>timeoutIfContainerNotScanned</code></td>
+                                <td>Should warn timeout if container not scanned > 60s</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: scanPost (OUT gate, Pick-up (Lấy container)) <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>bothMatchAndTransactionExists</code></td>
+                                <td>Should success if both match and transaction exists</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>missingContainerOnOutGate</code></td>
+                                <td>Missing container on out gate pick-up</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>timeoutIfContainerNotScanned</code></td>
+                                <td>Should warn timeout if container not scanned > 60s for out gate pick-up</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: scanPost (OUT gate, Drop-off (Trả container)) <span class="group-count">(4 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>plateMatchesAndNoContainer</code></td>
+                                <td>Should success if plate matches and NO container</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>containerDetectedForDropOff</code></td>
+                                <td>Should error if container detected for Drop-off at out gate</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>warningIfPlateMismatchOn</code></td>
+                                <td>Should return warning if plate mismatch on out gate drop-off</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>skipSpecificPurposeLogicIf</code></td>
+                                <td>Should skip specific purpose logic if purpose is unknown (out gate)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: scanPost (Edge Cases) <span class="group-count">(4 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>inGateButAlreadyChecked</code></td>
+                                <td>IN gate but already checked in</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>outGateButNoCheck</code></td>
+                                <td>OUT gate but no check-in record</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>serverErrorIfDbThrows</code></td>
+                                <td>Should return server error if DB throws exception in scanPost</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>skipTransactionLogicIfStatus</code></td>
+                                <td>Should skip transaction logic if status is neither in nor out</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: helperAndCrudMethods <span class="group-count">(25 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogsSuccess</code></td>
+                                <td>GetLogs - success</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogsError</code></td>
+                                <td>GetLogs - error</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogspaginatedSuccess</code></td>
+                                <td>GetLogsPaginated - success</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogdetailFound</code></td>
+                                <td>GetLogDetail - found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogdetailNotFound</code></td>
+                                <td>GetLogDetail - not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>manualcheckoutpatchSuccess</code></td>
+                                <td>ManualCheckoutPatch - success</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>manualcheckoutpatchNoAppointmentid</code></td>
+                                <td>ManualCheckoutPatch - no appointmentId</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>manualcheckoutpatchAppointmentNotFound</code></td>
+                                <td>ManualCheckoutPatch - appointment not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>manualcheckoutpatchErrorAlreadyOut</code></td>
+                                <td>ManualCheckoutPatch - error (already out)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>softdeletelogdelete</code></td>
+                                <td>SoftDeleteLogDelete</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>logstrashget</code></td>
+                                <td>LogsTrashGet</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>logstrashgetWithSearchAndStatus</code></td>
+                                <td>LogsTrashGet - with search and status</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>restorelogpatch</code></td>
+                                <td>RestoreLogPatch</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>harddeletelogdelete</code></td>
+                                <td>HardDeleteLogDelete</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogspaginatedError</code></td>
+                                <td>GetLogsPaginated - error</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getlogdetailError</code></td>
+                                <td>GetLogDetail - error</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>manualcheckoutpatchErrorNotFound</code></td>
+                                <td>ManualCheckoutPatch - error not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>manualcheckoutpatchErrorThrow</code></td>
+                                <td>ManualCheckoutPatch - error throw</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>softdeletelogdeleteNotFound</code></td>
+                                <td>SoftDeleteLogDelete - not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>softdeletelogdeleteErrorThrow</code></td>
+                                <td>SoftDeleteLogDelete - error throw</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>logstrashgetErrorThrow</code></td>
+                                <td>LogsTrashGet - error throw</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>restorelogpatchNotFound</code></td>
+                                <td>RestoreLogPatch - not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>restorelogpatchErrorThrow</code></td>
+                                <td>RestoreLogPatch - error throw</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>harddeletelogdeleteNotFound</code></td>
+                                <td>HardDeleteLogDelete - not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>harddeletelogdeleteErrorThrow</code></td>
+                                <td>HardDeleteLogDelete - error throw</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="module-section">
+                <h2>Module: appointment.api.test.ts (4 Test Cases)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Case ID</th>
+                                <th>Test Case Description</th>
+                                <th>Result</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: createAppointmentApi <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>createAppointmentSuccessfully</code></td>
+                                <td>Should create appointment successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>validationFailsMissingTruckplate</code></td>
+                                <td>Should return Error if validation fails (Missing truckPlate)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>capacityIsFull20Appointments</code></td>
+                                <td>Should return Error if capacity is full (20 appointments)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: getAppointmentsApi <span class="group-count">(1 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>listOfAppointmentsWithPagination</code></td>
+                                <td>Should return list of appointments with pagination</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="module-section">
+                <h2>Module: appointment.controller.test.ts (43 Test Cases)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Case ID</th>
+                                <th>Test Case Description</th>
+                                <th>Result</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: createAppointmentPost <span class="group-count">(8 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>createAppointmentSuccessfully</code></td>
+                                <td>Should create appointment successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>carAlreadyHasAppointmentToday</code></td>
+                                <td>Should return error if car already has appointment today</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>createSuccessfullyWhenTimeslotHas</code></td>
+                                <td>Should create successfully when timeslot has 19/20 vehicles</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>capacityIsFull2020</code></td>
+                                <td>Should return error if capacity is full (20/20)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>purposeIsLYContainer</code></td>
+                                <td>Should return error if purpose is Lấy container but portStatus is not in port</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>purposeIsTrContainerBut</code></td>
+                                <td>Should return error if purpose is Trả container but portStatus is already in port</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>containerInformationIsNotFound</code></td>
+                                <td>Should return error if container information is not found in database</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>catchErrorAndReturnSystem</code></td>
+                                <td>Should catch error and return system error on db exception</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentsGet <span class="group-count">(8 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>getListWithDefaultPagination</code></td>
+                                <td>Should get list with default pagination values</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentListByStatusConfirmed</code></td>
+                                <td>Should filter appointment list by status="Confirmed"</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentListByADate</code></td>
+                                <td>Should filter appointment list by a date range</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentListWithOnlyStartdate</code></td>
+                                <td>Should filter appointment list with only startDate</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentListWithOnlyEnddate</code></td>
+                                <td>Should filter appointment list with only endDate</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>searchAppointmentListByDriver</code></td>
+                                <td>Should search appointment list by driver name/phone or plates</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>emptyListCorrectlyWhenTotalitems</code></td>
+                                <td>Should return empty list correctly when totalItems is 0</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>catchErrorOnDbException</code></td>
+                                <td>Should catch error on DB exception</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentDetailGet <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentDetailsIfFound</code></td>
+                                <td>Should return success with appointment details if found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentIdNotFound</code></td>
+                                <td>Should return error if appointment ID not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>castErrorOrFormatExceptions</code></td>
+                                <td>Should handle cast error or format exceptions in findById</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentEditPatch <span class="group-count">(6 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>updateAppointmentSuccessfully</code></td>
+                                <td>Should update appointment successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>rejectEditIfPurposeIs</code></td>
+                                <td>Should reject edit if purpose is Lấy container but portStatus is not in port</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>rejectEditIfPurposeIs</code></td>
+                                <td>Should reject edit if purpose is Trả container but portStatus is already in port</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>rejectUpdateIfTruckAlready</code></td>
+                                <td>Should reject update if truck already has another appointment on that day</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>onEditIfContainerIs</code></td>
+                                <td>Should return error on edit if container is not found</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>systemErrorsOnExceptionDuring</code></td>
+                                <td>Should handle system errors on exception during edit</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentStatusPatch <span class="group-count">(5 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>confirmAppointmentSuccessfullyIfCapacity</code></td>
+                                <td>Should confirm appointment successfully if capacity is not full and no duplicate</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>rejectStatusChangeToConfirmed</code></td>
+                                <td>Should reject status change to Confirmed if another confirmed appointment exists for that day</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>updateStatusToCancelledSuccessfully</code></td>
+                                <td>Should update status to Cancelled successfully without truck duplicate check</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentNotFoundForStatus</code></td>
+                                <td>Should return error if appointment not found for status update</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>onExceptionDuringStatusUpdate</code></td>
+                                <td>Should return error on exception during status update</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentDeletePatch <span class="group-count">(4 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>softDeleteAppointmentSuccessfully</code></td>
+                                <td>Should soft-delete appointment successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentIsAlreadySoftDeleted</code></td>
+                                <td>Should return error if appointment is already soft-deleted</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentNotFoundForSoft</code></td>
+                                <td>Should return error if appointment not found for soft-delete</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>onExceptionDuringSoftDelete</code></td>
+                                <td>Should return error on exception during soft-delete</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentsTrashGet <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>getTrashListWithStatus</code></td>
+                                <td>Should get trash list with status, search, and date filters</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>getTrashListWithOnly</code></td>
+                                <td>Should get trash list with only startDate or only endDate</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>onExceptionDuringTrashFetch</code></td>
+                                <td>Should return error on exception during trash fetch</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentRestorePatch <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>restoreSoftDeletedAppointmentSuccessfully</code></td>
+                                <td>Should restore soft-deleted appointment successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentIsNotInThe</code></td>
+                                <td>Should return error if appointment is not in the trash (isDeleted is false)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>onExceptionDuringRestore</code></td>
+                                <td>Should return error on exception during restore</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentHardDelete <span class="group-count">(3 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>hardDeleteAppointmentSuccessfully</code></td>
+                                <td>Should hard delete appointment successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>appointmentIsNotInThe</code></td>
+                                <td>Should return error if appointment is not in the trash (isDeleted is false)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>onExceptionDuringHardDelete</code></td>
+                                <td>Should return error on exception during hard delete</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="module-section">
+                <h2>Module: appointment.repository.test.ts (14 Test Cases)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Case ID</th>
+                                <th>Test Case Description</th>
+                                <th>Result</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: appointmentRepository <span class="group-count">(14 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>testMSLNg</code></td>
+                                <td>Test đếm số lượng Lịch hẹn (Sức chứa) - countDocuments</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatTheSystemUpdates</code></td>
+                                <td>Verify that the system updates the Appointment status from PENDING to CONFIRMED when Admin approves</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatTheSystemBlocks</code></td>
+                                <td>Verify that the system blocks the cancellation action when trucking company attempts to cancel COMPLETED appointment</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatTheSystemAutomatically</code></td>
+                                <td>Verify that the system automatically updates status from CONFIRMED to EXPIRED after 30 minutes window pass</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatTruckingCompanyProactively</code></td>
+                                <td>Verify that trucking company proactively cancels a valid CONFIRMED appointment and returns 1 quota slot</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatTheSystemRejects</code></td>
+                                <td>Verify that the system rejects the booking and sets status to REJECTED/CANCELLED when maximum quota reached</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemDisplaysErrorAnd</code></td>
+                                <td>Verify system displays error and keeps barrier closed when PENDING vehicle attempts to check-in</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemDeniesGateEntry</code></td>
+                                <td>Verify system denies gate entry when CONFIRMED vehicle arrives at In-Gate too early (> 30 mins)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemAllowsGateEntry</code></td>
+                                <td>Verify system allows gate entry and updates status to GATE_IN when vehicle arrives exactly at lower bound (-30 mins)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemAllowsGateEntry</code></td>
+                                <td>Verify system allows gate entry when vehicle arrives exactly at upper bound (+30 mins of end time)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemDeniesGateEntry</code></td>
+                                <td>Verify system denies gate entry when vehicle arrives too late (> +30 mins)</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemBlocksDeleteApi</code></td>
+                                <td>Verify system blocks delete API request when appointment status is actively processing in yard</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemBlocksBookingCreation</code></td>
+                                <td>Verify system blocks booking creation when duplicate truckPlate exists in the same time slot</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyTruckingCompanyCancelsTheir</code></td>
+                                <td>Verify trucking company cancels their own PENDING appointment from waiting list successfully</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="module-section">
+                <h2>Module: gateTransaction.repository.test.ts (10 Test Cases)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Case ID</th>
+                                <th>Test Case Description</th>
+                                <th>Result</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="group-row">
+                                <td colspan="4">Function / Group: gateTransactionRepository <span class="group-count">(10 cases)</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>testFilterVPhN</code></td>
+                                <td>Test filter và phân trang GateTransaction bằng Regex và Date range</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatTheSystemUpdates</code></td>
+                                <td>Verify that the system updates Appointment status to COMPLETED when truck triggers Gate-Out process</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyThatAGatetransactionRecord</code></td>
+                                <td>Verify that a GateTransaction record is created with status GATE_OUT and precise checkOutTime timestamp</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemProcessesSuccessfullyWhen</code></td>
+                                <td>Verify system processes successfully when guard executes manual fallback QR scan with reason</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemKeepsAppointmentStatus</code></td>
+                                <td>Verify system keeps Appointment status as CONFIRMED if the manual fallback process is cancelled or data is empty</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemRecordsOnlyCheckintime</code></td>
+                                <td>Verify system records only checkInTime (leaving checkOutTime undefined) during In-Gate execution</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifySystemRecordsOnlyCheckouttime</code></td>
+                                <td>Verify system records only checkOutTime (leaving checkInTime undefined) during Out-Gate execution</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>verifyAsynchronousErrorHandlingPrevents</code></td>
+                                <td>Verify asynchronous error handling prevents hung transactions and triggers fallback when e-EIR PDF generation times out</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>updateAppointmentStatusToCompleted</code></td>
+                                <td>Should update Appointment status to COMPLETED when truck triggers Gate-Out process</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>createAGatetransactionRecordWith</code></td>
+                                <td>Should create a GateTransaction record with status GATE_OUT and precise checkOutTime</td>
+                                <td><span class="badge pass">Pass</span></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.progress-fill').forEach(el => {
+                const width = el.style.width;
+                el.style.width = '0%';
+                setTimeout(() => {
+                    el.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

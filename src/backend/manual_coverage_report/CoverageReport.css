@@ -1,0 +1,197 @@
+:root {
+  --primary-color: #2563eb;
+  --success-color: #16a34a;
+  --warning-color: #eab308;
+  --danger-color: #dc2626;
+  --background-color: #f8fafc;
+  --card-background: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --group-bg: #f1f5f9;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* Overview Section */
+.overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background-color: var(--card-background);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: var(--text-main);
+  margin-bottom: 16px;
+}
+
+/* Progress Bar */
+.progress-wrapper {
+  margin-bottom: 8px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background-color: var(--border-color);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0; /* Animated to full width inline */
+}
+
+/* Colors for progress */
+.fill-high { background-color: var(--success-color); }
+.fill-medium { background-color: var(--warning-color); }
+.fill-low { background-color: var(--danger-color); }
+
+/* Details Section */
+.module-section {
+  background-color: var(--card-background);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 32px;
+}
+
+.module-section h2 {
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+/* Tables */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  text-align: left;
+}
+
+th, td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+tr {
+  transition: background-color 0.2s ease;
+}
+
+tr:not(.group-row):hover {
+  background-color: #f8fafc;
+}
+
+/* Grouping Row Styles */
+.group-row {
+  background-color: var(--group-bg);
+  font-weight: 700;
+}
+
+.group-row td {
+  border-top: 2px solid #cbd5e1;
+  color: var(--text-main);
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.group-count {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+
+/* Badge styling for Result */
+.badge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge.pass {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badge.fail {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge.skip {
+  background-color: #f1f5f9;
+  color: #475569;
+}

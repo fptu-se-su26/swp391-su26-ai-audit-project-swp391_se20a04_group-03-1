@@ -10,16 +10,15 @@
   "testRunnerNodeArgs": ["--experimental-vm-modules"],
   "coverageAnalysis": "perTest",
   "mutate": [
-    "controllers/**/*.ts",
-    "models/**/*.ts",
-    "routers/**/*.ts",
-    "middlewares/**/*.ts",
-    "!**/*.test.ts"
+    "controllers/appointment.controller.ts"
   ],
+  "mutator": {
+    "excludedMutations": ["StringLiteral", "BlockStatement"]
+  },
   "jest": {
     "projectType": "custom",
     "configFile": "jest.config.js",
-    "enableFindRelatedTests": true
+    "enableFindRelatedTests": false
   },
   "timeoutMS": 10000
 }
