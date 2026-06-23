@@ -7,12 +7,7 @@ const TEST_MONGO_URI =
 
 describe("Appointment Repository / Database Tests", () => {
   // 1. Khởi chạy kết nối Database trước khi chạy bất kỳ bài test nào
-  beforeAll(async () => {
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-    }
-    await mongoose.connect(TEST_MONGO_URI);
-  }, 30000);
+  // Kết nối DB đã được xử lý bởi jest.setup.ts
 
   // 2. Ép buộc clear sạch dữ liệu bảng trước MỖI bài test (Không dùng bọc IF)
   beforeEach(async () => {
@@ -21,11 +16,7 @@ describe("Appointment Repository / Database Tests", () => {
   });
 
   // 3. Đóng kết nối Mongoose sạch sẽ sau khi tất cả các bài test chạy xong
-  afterAll(async () => {
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.connection.close();
-    }
-  });
+  // Đóng kết nối DB đã được xử lý bởi jest.setup.ts
 
   it("Test đếm số lượng Lịch hẹn (Sức chứa) - countDocuments", async () => {
     // Arrange

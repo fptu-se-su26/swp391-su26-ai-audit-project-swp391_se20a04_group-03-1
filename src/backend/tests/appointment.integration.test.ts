@@ -16,13 +16,7 @@ app.use(express.json());
 app.use("/api/appointments", requireAuth, appointmentRouter);
 
 describe("Integration Test: Appointment Controller", () => {
-  // 1. Mở kết nối Database một lần duy nhất trước khi chạy chuỗi test này
-  beforeAll(async () => {
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-    }
-    await mongoose.connect(TEST_MONGO_URI);
-  }, 30000);
+  // Mở kết nối DB đã được xử lý bởi jest.setup.ts
 
   // 2. Dọn sạch bảng dữ liệu trước mỗi test case để tránh xung đột dữ liệu rác
   beforeEach(async () => {
@@ -31,12 +25,7 @@ describe("Integration Test: Appointment Controller", () => {
     }
   });
 
-  // 3. Đóng kết nối Database sạch sẽ ngay sau khi toàn bộ test case hoàn tất (Giải quyết lỗi Open Handles)
-  afterAll(async () => {
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.connection.close();
-    }
-  });
+  // Đóng kết nối DB đã được xử lý bởi jest.setup.ts
 
   describe("GET /api/appointments", () => {
     it("Tra ve danh sach rong khi DB khong co du lieu", async () => {

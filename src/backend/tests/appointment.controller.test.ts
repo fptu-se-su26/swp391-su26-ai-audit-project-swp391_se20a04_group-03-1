@@ -48,7 +48,9 @@ describe('Appointment Controller Unit Tests (TC27 - TC60)', () => {
   });
 
   afterEach(() => {
-    consoleSpy.mockRestore();
+    if (consoleSpy) {
+      consoleSpy.mockRestore();
+    }
   });
 
   describe('createAppointmentPost', () => {

@@ -8,12 +8,7 @@ const TEST_MONGO_URI =
 
 describe("GateTransaction Repository / Database Tests", () => {
   // 1. Kết nối database test trước khi chạy các test case trong file này
-  beforeAll(async () => {
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-    }
-    await mongoose.connect(TEST_MONGO_URI);
-  }, 30000);
+  // Kết nối DB đã được xử lý bởi jest.setup.ts
 
   // 2. Dọn sạch cả 2 bảng dữ liệu liên quan trước mỗi bài test để đảm bảo môi trường độc lập
   beforeEach(async () => {
@@ -115,9 +110,5 @@ describe("GateTransaction Repository / Database Tests", () => {
   }, 15000); // <-- Gán timeout 15s trực tiếp tại đây
 
   // 4. Đóng kết nối Mongoose sạch sẽ hoàn toàn sau khi tất cả test case chạy xong (Giải quyết dứt điểm Open Handles)
-  afterAll(async () => {
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.connection.close();
-    }
-  });
+  // Đóng kết nối DB đã được xử lý bởi jest.setup.ts
 });

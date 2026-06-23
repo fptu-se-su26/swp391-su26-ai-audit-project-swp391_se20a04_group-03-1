@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "reporters": [
+    "html",
+    "clear-text",
+    "progress"
+  ],
+  "testRunner": "jest",
+  "testRunnerNodeArgs": ["--experimental-vm-modules"],
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "controllers/**/*.ts",
+    "models/**/*.ts",
+    "routers/**/*.ts",
+    "middlewares/**/*.ts",
+    "!**/*.test.ts"
+  ],
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.js",
+    "enableFindRelatedTests": true
+  },
+  "timeoutMS": 10000
+}
