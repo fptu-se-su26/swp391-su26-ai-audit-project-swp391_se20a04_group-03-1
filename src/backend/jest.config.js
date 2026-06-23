@@ -12,6 +12,7 @@ module.exports = {
   ],
   testPathIgnorePatterns: [
     "/node_modules/",
+    "/.stryker-tmp/",
     "appointment.integration.test.ts",
     "appointment.repository.test.ts",
     "gateTransaction.repository.test.ts"
