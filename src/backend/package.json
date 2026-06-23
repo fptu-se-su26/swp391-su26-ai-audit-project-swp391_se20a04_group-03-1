@@ -8,6 +8,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.ts",
+    "test:coverage": "jest --coverage",
     "build": "tsc",
     "test": "jest --runInBand",
     "test:cov": "jest --coverage --runInBand"
