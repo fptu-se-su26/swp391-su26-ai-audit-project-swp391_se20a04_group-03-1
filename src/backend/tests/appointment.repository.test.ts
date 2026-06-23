@@ -1,17 +1,18 @@
-import mongoose from 'mongoose';
-import { Appointment } from '../models/appointment.model';
+import "dotenv/config";
+import mongoose from "mongoose";
+import { Appointment } from "../models/appointment.model";
 
-const TEST_MONGO_URI = process.env.MONGO_URI_TEST || 'mongodb://localhost:27017/swp391_test_db';
+const TEST_MONGO_URI =
+  process.env.DATABASE || "mongodb://localhost:27017/swp391_test_db";
 
-describe('Appointment Repository / Database Tests', () => {
-  
+describe("Appointment Repository / Database Tests", () => {
   // 1. Khởi chạy kết nối Database trước khi chạy bất kỳ bài test nào
   beforeAll(async () => {
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
     }
     await mongoose.connect(TEST_MONGO_URI);
-  });
+  }, 30000);
 
   // 2. Ép buộc clear sạch dữ liệu bảng trước MỖI bài test (Không dùng bọc IF)
   beforeEach(async () => {
@@ -26,11 +27,11 @@ describe('Appointment Repository / Database Tests', () => {
     }
   });
 
-  it('Test đếm số lượng Lịch hẹn (Sức chứa) - countDocuments', async () => {
+  it("Test đếm số lượng Lịch hẹn (Sức chứa) - countDocuments", async () => {
     // Arrange
-    const targetDate = new Date('2024-12-01T00:00:00Z');
-    const targetSlot = '08:00-09:00';
-    
+    const targetDate = new Date("2024-12-01T00:00:00Z");
+    const targetSlot = "08:00-09:00";
+
     // Tạo 20 record trùng timeslot và ngày (Hợp lệ)
     const mockAppointments = [];
     for (let i = 0; i < 20; i++) {
@@ -40,9 +41,9 @@ describe('Appointment Repository / Database Tests', () => {
         containerNo: `CONT${100000 + i}`,
         scheduledDate: targetDate,
         timeSlot: targetSlot,
-        purpose: 'Lấy container',
-        status: 'Pending',
-        isDeleted: false
+        purpose: "Lấy container",
+        status: "Pending",
+        isDeleted: false,
       });
     }
 
@@ -52,10 +53,10 @@ describe('Appointment Repository / Database Tests', () => {
       driverId: new mongoose.Types.ObjectId(),
       containerNo: `CONT999999`,
       scheduledDate: targetDate,
-      timeSlot: '09:00-10:00', // Khác khung giờ
-      purpose: 'Lấy container',
-      status: 'Pending',
-      isDeleted: false
+      timeSlot: "09:00-10:00", // Khác khung giờ
+      purpose: "Lấy container",
+      status: "Pending",
+      isDeleted: false,
     });
 
     // Thêm 1 record trạng thái Cancelled (để test lọc Cancelled)
@@ -65,9 +66,9 @@ describe('Appointment Repository / Database Tests', () => {
       containerNo: `CONT888888`,
       scheduledDate: targetDate,
       timeSlot: targetSlot,
-      purpose: 'Lấy container',
-      status: 'Cancelled', // Trạng thái hủy
-      isDeleted: false
+      purpose: "Lấy container",
+      status: "Cancelled", // Trạng thái hủy
+      isDeleted: false,
     });
 
     // Bulk insert dữ liệu vào database test
@@ -83,5 +84,5 @@ describe('Appointment Repository / Database Tests', () => {
 
     // Assert: Kết quả đếm phải bằng đúng 20
     expect(currentSlotCount).toBe(20);
-  }, 15000); 
+  }, 15000);
 });
