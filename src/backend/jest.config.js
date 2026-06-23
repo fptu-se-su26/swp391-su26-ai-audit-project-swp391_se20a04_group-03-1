@@ -2,6 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  maxWorkers: 1,
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',

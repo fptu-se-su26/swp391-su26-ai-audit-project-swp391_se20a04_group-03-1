@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Appointment } from "../models/appointment.model";
 
-const TEST_MONGO_URI = process.env.DATABASE || "mongodb://localhost:27017/swp391_test_appointment_db";
+const TEST_MONGO_URI = process.env.TEST_DATABASE || "mongodb://localhost:27017/swp391_test_appointment_db";
 
 describe("Appointment Repository / Database Tests", () => {
   
