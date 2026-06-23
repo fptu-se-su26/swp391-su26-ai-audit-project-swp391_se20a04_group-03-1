@@ -2,15 +2,19 @@ import mongoose from "mongoose";
 import { GateTransaction } from "../models/gateTransaction.model";
 import { Appointment } from "../models/appointment.model";
 
-const TEST_MONGO_URI = process.env.TEST_DATABASE || "mongodb://localhost:27017/swp391_test_gatetransaction_db";
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+let mongoServer: MongoMemoryServer;
 
 describe("GateTransaction Repository / Database Tests", () => {
   
   beforeAll(async () => {
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
     }
-    await mongoose.connect(TEST_MONGO_URI);
+    await mongoose.connect(uri);
   }, 30000);
 
   beforeEach(async () => {
@@ -21,6 +25,9 @@ describe("GateTransaction Repository / Database Tests", () => {
   afterAll(async () => {
     if (mongoose.connection.readyState !== 0) {
       await mongoose.connection.close();
+    }
+    if (mongoServer) {
+      await mongoServer.stop();
     }
   });
 
