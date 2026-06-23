@@ -12,9 +12,7 @@ module.exports = {
   ],
   testPathIgnorePatterns: [
     "/node_modules/",
-    "appointment.integration.test.ts",
-    "appointment.repository.test.ts",
-    "gateTransaction.repository.test.ts"
+    "appointment.integration.test.ts"
   ],
   setupFiles: ['dotenv/config'],
   setupFilesAfterEnv: ['./tests/jest.setup.ts'],

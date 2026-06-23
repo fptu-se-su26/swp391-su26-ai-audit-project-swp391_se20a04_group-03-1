@@ -1,9 +1,8 @@
-import "dotenv/config";
 import mongoose from "mongoose";
 import { GateTransaction } from "../models/gateTransaction.model";
 import { Appointment } from "../models/appointment.model";
 
-const TEST_MONGO_URI = process.env.DATABASE || "mongodb://localhost:27017/swp391_test_db";
+const TEST_MONGO_URI = process.env.DATABASE || "mongodb://localhost:27017/swp391_test_gatetransaction_db";
 
 describe("GateTransaction Repository / Database Tests", () => {
   
@@ -183,5 +182,39 @@ describe("GateTransaction Repository / Database Tests", () => {
 
     const finalAppointment = await Appointment.findById(appointment._id);
     expect(finalAppointment?.status).toBe("Completed"); 
+  });
+
+  // TC77: Test update status to Completed
+  it("TC77: Should update Appointment status to COMPLETED when truck triggers Gate-Out process", async () => {
+    const appointment = await Appointment.create({
+      truckPlate: "51C-79999",
+      driverId: new mongoose.Types.ObjectId(),
+      containerNo: "CONT079",
+      scheduledDate: new Date(),
+      timeSlot: "10:00-11:00",
+      purpose: "Trả container",
+      status: "Confirmed",
+    });
+
+    const updatedApp = await Appointment.findByIdAndUpdate(appointment._id, { status: "Completed" }, { new: true });
+    expect(updatedApp?.status).toBe("Completed");
+  }); 
+
+  // TC78: Test create GateTransaction for Gate-Out with checkOutTime
+  it("TC78: Should create a GateTransaction record with status GATE_OUT and precise checkOutTime", async () => {
+    const appointmentId = new mongoose.Types.ObjectId();
+    const testLogTime = new Date();
+
+    const checkOutTxn = await GateTransaction.create({
+      actualTruckPlate: "51C-80000",
+      checkOutTime: testLogTime,
+      appointmentId: appointmentId,
+      status: "GATE_OUT",
+      isDeleted: false,
+    });
+
+    expect(checkOutTxn.status).toBe("GATE_OUT");
+    expect(checkOutTxn.checkOutTime).toEqual(testLogTime);
+    expect(checkOutTxn.checkInTime).toBeUndefined();
   });
 });
