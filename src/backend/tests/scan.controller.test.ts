@@ -117,21 +117,36 @@ describe('scan.controller', () => {
     it('should clear stale cache', async () => {
       const req1 = createRequest({ body: { text: 'oldPlate', type: 'plate', status: 'in', cameraIp: 'staleIp' } });
       const req2 = createRequest({ body: { text: 'oldContainer', type: 'container', status: 'in', cameraIp: 'staleIp' } });
-      await scanPost(req1, createResponse());
-      await scanPost(req2, createResponse());
+      const res1 = createResponse();
+      const res2 = createResponse();
+      await scanPost(req1, res1);
+      await scanPost(req2, res2);
+
+      jest.advanceTimersByTime(150000); // 2.5 mins
+
+      const req3 = createRequest({ body: { text: 'newContainer', type: 'container', status: 'in', cameraIp: 'staleIp' } });
+      const res3 = createResponse();
+      await scanPost(req3, res3);
 
       jest.advanceTimersByTime(150000); // 2.5 mins
 
       const appt = { ...baseAppointment, purpose: 'Lấy container' };
       (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery(appt));
       (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
-      const req3 = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'staleIp' } });
-      const res = createResponse();
+      const req4 = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'staleIp' } });
+      const res4 = createResponse();
       
       (global.fetch as jest.Mock).mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8), text: async () => 'ok' });
-      await scanPost(req3, res);
+      await scanPost(req4, res4);
 
-      expect(res._getJSONData().code).toBe('success');
+      expect(res4._getJSONData().code).toBe('success');
+    });
+
+    it('should ignore if type is unknown', async () => {
+      const req = createRequest({ body: { text: 'abc', type: 'unknown', status: 'in', cameraIp: 'ipX' } });
+      const res = createResponse();
+      await scanPost(req, res);
+      expect(res._getJSONData().code).toBe('ignored');
     });
   });
 
@@ -235,6 +250,29 @@ describe('scan.controller', () => {
 
       expect(res1._getJSONData()).toEqual({ code: 'ignored', message: 'Đang chờ quét biển số xe (Mục đích: Lấy container)' });
     });
+
+    it('TC_No_CameraIP: should process successfully without cameraIp', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      (GateTransaction.prototype.save as jest.Mock).mockResolvedValue(true);
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8), text: async () => 'ok' });
+      await scanPost(req, res);
+      expect(res._getJSONData().code).toBe('success');
+    });
+
+    it('TC_Invalid_Purpose: should skip specific purpose logic if purpose is unknown', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip_purp' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockResolvedValue({ ...mockData.baseAppointment, purpose: 'Tham quan' })
+      });
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      await scanPost(req, res);
+      expect(res._getJSONData().code).toBe('success');
+    });
   });
 
   describe('scanPost - Group 3: IN gate, Drop-off (Trả container)', () => {
@@ -306,6 +344,23 @@ describe('scan.controller', () => {
       await scanPost(req, res);
       expect(res._getJSONData()).toEqual({ code: 'ignored', message: 'Yêu cầu quét đủ biển số và mã container. Thiếu: Mã container' });
     });
+
+    it('TC13_Timeout: should warn timeout if container not scanned > 60s for out gate pick-up', async () => {
+      const appt = { ...baseAppointment, purpose: 'Lấy container' };
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery(appt));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue({ _id: mockData.tx.tx1, status: 'in', save: jest.fn() });
+
+      await scanPost(createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'out', cameraIp: 'ip13_time' } }), createResponse());
+      
+      jest.advanceTimersByTime(65000);
+
+      const req = createRequest({ body: { text: mockData.invalid.containerNo, type: 'container', status: 'out', cameraIp: 'ip13_time' } });
+      const res = createResponse();
+      await scanPost(req, res);
+      
+      expect(res._getJSONData()).toEqual({ code: 'ignored', message: 'Yêu cầu quét đủ biển số và mã container. Thiếu: Mã container' });
+      expect(io.emit).toHaveBeenCalledWith('gate_scan_error', expect.objectContaining({ message: expect.stringContaining('Quá 1 phút chưa quét được Mã container') }));
+    });
   });
 
   describe('scanPost - Group 5: OUT gate, Drop-off (Trả container)', () => {
@@ -330,6 +385,38 @@ describe('scan.controller', () => {
       const res = createResponse();
       await scanPost(req, res);
       expect(res._getJSONData()).toEqual({ code: 'error', message: 'Phát hiện xe chở container ra ngoài (không hợp lệ)' });
+    });
+
+    it('TC_Out_Dropoff_Mismatch: should return warning if plate mismatch on out gate drop-off', async () => {
+      const req = createRequest({ body: { text: 'SAI_BIEN_SO', type: 'plate', status: 'out', cameraIp: 'ip_out_drop' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockResolvedValue({ ...mockData.baseAppointment, purpose: 'Trả container' })
+      });
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue({
+        actualTruckPlate: mockData.baseAppointment.truckPlate,
+        status: 'in', save: jest.fn()
+      });
+      await scanPost(req, res);
+      expect(res._getJSONData().code).toBe('ignored');
+      expect(res._getJSONData().message).toBe('Đang chờ quét biển số xe');
+    });
+
+    it('TC_Invalid_Purpose_Out: should skip specific purpose logic if purpose is unknown (out gate)', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'out', cameraIp: 'ip_purp2' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockResolvedValue({ ...mockData.baseAppointment, purpose: 'Tham quan', save: jest.fn() })
+      });
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue({
+        _id: 'mock_tx_id',
+        actualTruckPlate: mockData.baseAppointment.truckPlate,
+        status: 'in', save: jest.fn()
+      });
+      await scanPost(req, res);
+      expect(res._getJSONData().code).toBe('success');
     });
   });
 
@@ -365,6 +452,18 @@ describe('scan.controller', () => {
       await scanPost(req, res);
       expect(res._getJSONData()).toEqual({ code: 'error', message: 'Server error' });
       expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Scan Error:'), expect.any(Error));
+    });
+
+    it('TC_Invalid_Status: should skip transaction logic if status is neither in nor out', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'maintenance', cameraIp: 'ipx' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue({
+        _id: 'mock_tx_id', actualTruckPlate: 'plate1', actualContainerNo: 'cont1', checkInTime: new Date()
+      });
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8), text: async () => 'ok' });
+      await scanPost(req, res);
+      expect(res._getJSONData().code).toBe('success');
     });
   });
 
@@ -423,6 +522,27 @@ describe('scan.controller', () => {
       expect(res._getJSONData().code).toBe('success');
     });
 
+    it('manualCheckoutPatch - no appointmentId', async () => {
+      const req = createRequest({ params: { id: 'log1' } });
+      const res = createResponse();
+      (GateTransaction.findById as jest.Mock).mockResolvedValue({
+        _id: 'log1', status: 'in', save: jest.fn(), appointmentId: null
+      });
+      await manualCheckoutPatch(req, res);
+      expect(res._getJSONData().code).toBe('success');
+    });
+
+    it('manualCheckoutPatch - appointment not found', async () => {
+      const req = createRequest({ params: { id: 'log2' } });
+      const res = createResponse();
+      (GateTransaction.findById as jest.Mock).mockResolvedValue({
+        _id: 'log2', status: 'in', save: jest.fn(), appointmentId: 'app1'
+      });
+      (Appointment.findById as jest.Mock).mockResolvedValue(null);
+      await manualCheckoutPatch(req, res);
+      expect(res._getJSONData().code).toBe('success');
+    });
+
     it('manualCheckoutPatch - error (already out)', async () => {
       const tx = { _id: mockData.tx.tx1, status: 'out', save: jest.fn(), appointmentId: 'app1' };
       (GateTransaction.findById as jest.Mock).mockResolvedValue(tx);
@@ -445,6 +565,14 @@ describe('scan.controller', () => {
       (GateTransaction.find as jest.Mock).mockReturnValue(mockFind);
       const res = createResponse();
       await logsTrashGet(createRequest(), res);
+      expect(res._getJSONData().code).toBe('success');
+    });
+
+    it('logsTrashGet - with search and status', async () => {
+      const req = createRequest({ query: { search: '29A', status: 'in' } });
+      const res = createResponse();
+      await logsTrashGet(req, res);
+      expect(GateTransaction.countDocuments).toHaveBeenCalledWith({ isDeleted: true, actualTruckPlate: { $regex: '29A', $options: 'i' }, status: 'in' });
       expect(res._getJSONData().code).toBe('success');
     });
 
