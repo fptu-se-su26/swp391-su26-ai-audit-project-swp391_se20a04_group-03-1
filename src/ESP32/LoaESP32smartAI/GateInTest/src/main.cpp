@@ -20,8 +20,8 @@
 // --- ĐỊNH NGHĨA CHÂN CHO 3 ĐÈN LED ---
 // (Bạn có thể thay đổi các chân này tuỳ theo sơ đồ đấu nối thực tế của thiết
 // bị)
-#define LED1_PIN 12
-#define LED2_PIN 13
+#define LED1_PIN 13
+#define LED2_PIN 12
 #define LED3_PIN 14
 
 // --- ĐỊNH NGHĨA TRẠNG THÁI CẢM BIẾN ---
