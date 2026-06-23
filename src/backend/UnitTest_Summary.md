@@ -1,19 +1,19 @@
-# Báo Cáo Tổng Kết Unit Test (Unit Test Summary)
+# Báo Cáo Tổng Kết Test (Unit Test & Integration Test)
 
-Tài liệu này tổng hợp lại toàn bộ trạng thái chạy Unit Test hiện tại của dự án. 
+Tài liệu này tổng hợp lại toàn bộ trạng thái chạy Kiểm thử tự động (Automated Testing) hiện tại của dự án. 
 
 ## 📊 Tổng Quan (Overview)
-- **Tổng số File / Class được test:** 1
-- **Tổng số Test Cases (TCs):** 25
-- **Số lượng TC Pass:** 25
+- **Tổng số File / Class được test:** 3 (`scan.controller`, `appointment.controller`, `appointment.api`)
+- **Tổng số Test Cases (TCs):** 72
+- **Số lượng TC Pass:** 72
 - **Số lượng TC Fail:** 0
-- **Mức độ bao phủ mã nguồn (Line Coverage):** 84.87%
+- **Mức độ bao phủ mã nguồn (Line Coverage):** 90.26%
 
 ---
 
 ## 📋 Chi Tiết Từng Lớp (Classes / Controllers)
 
-### 1. `scan.controller.ts`
+### 1. `scan.controller.ts` (Unit Test)
 Đây là controller đóng vai trò quan trọng nhất, chứa nghiệp vụ quét tự động (camera), kiểm tra đối chiếu lịch hẹn tại Cổng Vào (IN) và Cổng Ra (OUT), kiểm tra mục đích (Lấy / Trả container) và lưu log hệ thống.
 
 - **Số Test Cases:** 25
@@ -27,14 +27,26 @@ Tài liệu này tổng hợp lại toàn bộ trạng thái chạy Unit Test hi
   - **Group 6: Edge Cases** (Các ca ngoại lệ như lặp check-in, chưa check-in đã check-out) -> **2 TCs (Pass)**
   - **Helper & CRUD Methods** (Phân trang lịch sử, lấy chi tiết log, check-out tay, xóa mềm/xóa cứng, khôi phục) -> **11 TCs (Pass)**
 
+### 2. `appointment.controller.ts` (Unit Test & Integration Test)
+Controller quản lý toàn bộ nghiệp vụ đặt lịch hẹn ra vào cảng, kiểm tra xe, kiểm tra tình trạng sức chứa (capacity) và thao tác phân trang.
+
+- **Số Test Cases Unit Test:** 43
+- **Số Test Cases Integration Test (`appointment.api.test.ts`):** 4
+- **Trạng thái:** 🟢 PASS (100%)
+- **Các nhóm kịch bản Integration Test đã xác thực (dùng Supertest + DB ảo):**
+  - Khởi tạo lịch hẹn thành công (Status 201/200).
+  - Trả về mã lỗi khi Validation Fail (Ví dụ: Biển số sai định dạng).
+  - Trả về mã lỗi khi Hệ thống đã đầy Slot (Quá tải).
+  - Lấy danh sách lịch hẹn thành công có phân trang.
+
 ---
-*Ghi chú: Toàn bộ Unit Test được chạy độc lập thông qua công cụ Jest với kiến trúc Mocking (giả lập) hoàn toàn 100% Database (Mongoose) và API để đảm bảo tốc độ cũng như tính chính xác của thuật toán.*
+*Ghi chú: Toàn bộ Test được chạy qua công cụ Jest. Unit Test dùng kiến trúc Mocking (giả lập) 100%. Integration Test dùng `MongoMemoryServer` để đảm bảo tốc độ cũng như tính chính xác tuyệt đối mà không cần DB vật lý.*
 
 ---
 
 ## 🚀 Mô tả thay đổi (Pull Request Info)
 
-Cập nhật hệ thống bằng việc thiết lập môi trường Unit Test hoàn chỉnh (Jest) và bổ sung 25 Test Cases chuyên sâu cho luồng nhận diện camera tự động (`scan.controller.ts`). Đồng thời refactor lại kiến trúc dữ liệu giả lập (Mocking) để đảm bảo Clean Code.
+Cập nhật hệ thống bằng việc thiết lập môi trường Unit Test & Integration Test hoàn chỉnh (Jest, Supertest, MongoMemoryServer). Bổ sung thêm Integration Test cho nghiệp vụ tạo lịch hẹn để bao quát các kịch bản Validation thực tế của Joi và chặn Authentication Middleware hiệu quả.
 
 **Loại thay đổi:**
 - [ ] ✨ Tính năng mới (`feat`)
@@ -51,7 +63,7 @@ Cập nhật hệ thống bằng việc thiết lập môi trường Unit Test h
 ### Code
 - [x] Code biên dịch không có lỗi (`npx tsc --noEmit`)
 - [x] Tất cả test hiện có vẫn pass (`npx jest`)
-- [x] Đã viết test cho tính năng / fix mới (Coverage: 84.87%)
+- [x] Đã viết test cho tính năng / fix mới (Coverage: 90.26%)
 - [x] Coverage không giảm so với nhánh `main`
 - [x] Không có `console.log()` rác trong code production
 
@@ -66,30 +78,29 @@ Cập nhật hệ thống bằng việc thiết lập môi trường Unit Test h
 
 | Test | Mô tả | Kết quả |
 |------|-------|---------|
-| `scanPost Group 1-6` | Kiểm thử toàn diện 6 luồng quét Check-in / Check-out (Trễ giờ, Nhầm bãi, Phát hiện lỗi) | ✅ Pass |
-| `Helper & CRUD Methods` | Phân trang, hiển thị chi tiết, Xoá mềm, Khôi phục bản ghi Log | ✅ Pass |
-
----
-
-## 🤖 Sử dụng AI *(bỏ qua nếu không dùng)*
-
-- [ ] PR này **không** dùng AI
-- [x] PR này **có** dùng AI — đã cập nhật `AI_AUDIT_LOG.md` và `PROMPTS.md`
-
-**Tóm tắt nhanh**:
-
-| Công cụ | Mục đích | File | Mức hỗ trợ |
-|---------|----------|------|-----------|
-| Gemini / Antigravity | Cấu hình khung Jest, viết bộ 25 Unit Test (Mocking 100%), tối ưu Clean Code cho file Test | `scan.controller.test.ts`, `mockData.json`, `tsconfig.json` | High |
+| `scanPost Group 1-6` | Kiểm thử toàn diện 6 luồng quét Check-in / Check-out | ✅ Pass |
+| `appointment.controller` | Phân trang, tạo lịch hẹn, chặn lỗi trùng/hết chỗ | ✅ Pass |
+| `appointment.api (Int)` | Giả lập HTTP Request gọi API qua Router và Middleware tới DB ảo | ✅ Pass |
 
 ---
 
 ## 📸 Screenshots / Output
 
 ```bash
-Test Suites: 1 passed, 1 total
-Tests:       25 passed, 25 total
+PASS tests/appointment.api.test.ts (5.382 s)
+PASS tests/scan.controller.test.ts
+PASS tests/appointment.controller.test.ts
+
+=============================== Coverage summary ===============================
+Statements   : 90.37% ( 432/478 )
+Branches     : 85.1% ( 200/235 )
+Functions    : 93.1% ( 27/29 )
+Lines        : 90.26% ( 408/452 )
+================================================================================
+
+Test Suites: 3 passed, 3 total
+Tests:       72 passed, 72 total
 Snapshots:   0 total
-Time:        7.279 s
+Time:        6.981 s, estimated 18 s
 Ran all test suites.
 ```

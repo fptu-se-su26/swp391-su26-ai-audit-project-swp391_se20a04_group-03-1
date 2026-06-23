@@ -1,29 +1,31 @@
-# Hướng Dẫn Chạy & Viết Unit Test Của Dự Án
+# Hướng Dẫn Chạy & Viết Test Của Dự Án (Unit Test & Integration Test)
 
-Tài liệu này (`GuideTest.md`) được tạo ra nhằm hướng dẫn chi tiết cách chạy Unit Test và duy trì các file test trong toàn bộ dự án của chúng ta (sử dụng Jest, node-mocks-http và TypeScript).
+Tài liệu này (`GuideTest.md`) được tạo ra nhằm hướng dẫn chi tiết cách chạy Test và duy trì các file test trong toàn bộ dự án của chúng ta. Dự án hiện tại áp dụng hai loại kiểm thử tự động:
+1. **Unit Test:** Dùng để kiểm thử độc lập hàm/controller (Sử dụng `node-mocks-http`).
+2. **Integration Test:** Dùng để kiểm thử luồng API và kết nối Database ảo (Sử dụng `Supertest` + `MongoMemoryServer`).
 
 ---
 
 ## 1. Môi Trường & Cài Đặt
 
-Dự án sử dụng công cụ **Jest** làm framework chính để test. Vì toàn bộ code được viết bằng TypeScript nên ta có sử dụng thêm **ts-jest**.
+Dự án sử dụng công cụ **Jest** làm framework chính. Vì toàn bộ code được viết bằng TypeScript nên ta có sử dụng thêm **ts-jest**.
 
-- Nếu có thành viên mới clone code về, chỉ cần chạy lệnh sau tại thư mục `src/backend` để lấy toàn bộ module (kể cả module test):
+- Lệnh cài đặt (chỉ dành cho người mới clone code):
   ```bash
+  cd src/backend
   npm install
   ```
 
 ---
 
-## 2. Cách Chạy Các Bài Kiểm Thử (Unit Test)
+## 2. Cách Chạy Các Bài Kiểm Thử
 
 Mở terminal và di chuyển vào thư mục `src/backend`:
-```bash
-cd src/backend
-```
 
-- **Chạy toàn bộ test suite:**
+- **Chạy toàn bộ test suite (cả Unit và Integration):**
   ```bash
+  npm run test
+  # hoặc
   npx jest
   ```
 
@@ -34,19 +36,14 @@ cd src/backend
   ```
   *Mẹo: Mở file `coverage/lcov-report/index.html` lên bằng trình duyệt, bạn sẽ thấy chi tiết giao diện màu xanh (đã test) và màu đỏ (chưa được chạy tới) của file code gốc.*
 
-- **Chạy duy nhất một file test cụ thể (Ví dụ: `scan.controller.test.ts`):**
-  ```bash
-  npx jest tests/scan.controller.test.ts
-  ```
-
 ---
 
-## 3. Quy Ước Viết Code Test (Kiến trúc Mocking)
+## 3. Hướng Dẫn Viết Unit Test (node-mocks-http)
 
-Do tiêu chí của chúng ta là **cô lập hoàn toàn**, test KHÔNG được kết nối vào Database thật hay chờ call API thật. Hãy sử dụng 3 chiến thuật giả lập (mocking) dưới đây:
+**Mục đích:** Test siêu nhanh logic của Controller mà không chạy Express. Phù hợp với các hàm tính toán, điều kiện if/else phức tạp.
 
 ### a) Mock Request & Response (Mô phỏng API Request)
-Sử dụng thư viện `node-mocks-http` để gọi hàm controller mà không cần chạy server Express.
+Sử dụng thư viện `node-mocks-http`:
 ```typescript
 import { createRequest, createResponse } from 'node-mocks-http';
 
@@ -61,74 +58,86 @@ await scanPost(req, res);
 expect(res._getJSONData().code).toBe('success');
 ```
 
-### b) Mock Mongoose (Database MongoDB)
-Thay vì kết nối DB, chúng ta sẽ ép các hàm DB trả về kết quả giả.
-```typescript
-// Báo cho Jest biết là ta cần giả lập model này
-jest.mock('../models/appointment.model');
-
-// Trong Test Case: Ép hàm findOne trả về object giả mong muốn
-(Appointment.findOne as jest.Mock).mockReturnValue({
-  populate: jest.fn().mockReturnThis(),
-  sort: jest.fn().mockResolvedValue({ truckPlate: '29A12345' }) // <== Data trả về
-});
-```
-
-### c) Mock Fake Timers (Kiểm soát Thời gian Hệ Thống)
-Hệ thống AI Audit phụ thuộc nhiều vào khung giờ hẹn và đếm ngược thời gian chờ Timeout. Do đó, phải luôn "đóng băng" thời gian hệ thống trong Test.
+### b) Mock Fake Timers (Kiểm soát Thời gian Hệ Thống)
 ```typescript
 beforeEach(() => {
   jest.useFakeTimers();
-  // Set thời gian hệ thống ở đúng mốc 10:00:00 sáng
   jest.setSystemTime(new Date('2023-10-10T10:00:00+07:00'));
 });
-
-// Tua thời gian đi qua 65 giây để ép lỗi Timeout (áp dụng khi test)
-jest.advanceTimersByTime(65000); 
+jest.advanceTimersByTime(65000); // Tua đi 65s
 ```
 
 ---
 
-## 4. Hướng Dẫn Thêm Test Case Cho File Mới
+## 4. Hướng Dẫn Viết Integration Test (Supertest)
 
-Khi bạn tạo một Controller mới (ví dụ `user.controller.ts`), bạn hãy tạo file test tương ứng theo cấu trúc: `tests/user.controller.test.ts`.
+**Mục đích:** Test một luồng hoàn chỉnh từ lúc gửi Request HTTP (phải đi qua Middleware) cho đến lúc lưu xuống DB ảo, giúp đảm bảo các component liên kết với nhau chuẩn xác. Đặt đuôi file là `.api.test.ts` hoặc `.integration.test.ts`.
 
-**Cấu trúc chuẩn của một Test File:**
+### a) Khởi tạo Express App Ảo và DB Ảo (MongoMemoryServer)
+Chúng ta KHÔNG được gọi vào Database thật (mongodb://localhost:27017/...). File test chuẩn phải thiết lập MongoDB trên RAM:
+
 ```typescript
-import { Request, Response } from 'express';
-import { createRequest, createResponse } from 'node-mocks-http';
-import { createUser } from '../controllers/user.controller';
-import { User } from '../models/user.model';
+import request from 'supertest';
+import express from 'express';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
+import rootRouter from '../routers/index.route';
 
-jest.mock('../models/user.model');
+const app = express();
+app.use(express.json());
+app.use('/api', rootRouter); // Gắn route cần test
 
-describe('User Controller', () => {
-  beforeEach(() => {
-    // Luôn dọn dẹp bộ nhớ đệm giả lập trước mỗi TC
-    jest.clearAllMocks(); 
-  });
+let mongoServer: MongoMemoryServer;
 
-  it('TC01: Nên tạo User thành công', async () => {
-    const req = createRequest({ body: { name: 'Nam' } });
-    const res = createResponse();
-    
-    (User.prototype.save as jest.Mock).mockResolvedValue(true);
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  await mongoose.connect(mongoServer.getUri());
+}, 30000);
 
-    await createUser(req, res);
-
-    expect(res._getJSONData().code).toBe('success');
-  });
+afterAll(async () => {
+  await mongoose.connection.close();
+  await mongoServer.stop();
 });
+```
+
+### b) Viết Test Case với Supertest
+Việc test sẽ giống như bạn gọi API thực tế trên Postman, sau đó kiểm tra dữ liệu dưới DB:
+
+```typescript
+it('Nên trả về success khi tạo data', async () => {
+  // 1. Arrange: Chuẩn bị DB giả
+  await Appointment.create({ truckPlate: "29A11111" });
+
+  // 2. Act: Gắn body vào Request Supertest
+  const response = await request(app)
+    .post('/api/appointments/create')
+    .send({ truckPlate: "29A11111" });
+
+  // 3. Assert: Kiểm tra HTTP Status & Data trả về
+  expect(response.status).toBe(200);
+  expect(response.body.code).toBe('error'); // Trả error do đã tồn tại
+});
+```
+
+### c) Bỏ qua Authentication Middleware (Bypass)
+Nếu bạn không muốn test việc đăng nhập (cần token JWT), bạn có thể dùng `jest.mock` để chặn middleware trước khi `app.use('/api', rootRouter)` chạy:
+
+```typescript
+jest.mock('../middlewares/auth.middleware', () => ({
+  requireAuth: (req: any, res: any, next: any) => next(),
+  requireAuthCompany: (req: any, res: any, next: any) => next(),
+  requireAuthProvider: (req: any, res: any, next: any) => next()
+}));
 ```
 
 ---
 
 ## 5. Những Lỗi Thường Gặp (Troubleshooting)
 
-1. **Lỗi `TypeError: GateTransaction.countDocuments is not a function`**: 
-   - Lý do: Quên khai báo giả lập cho hàm đó khi dùng `jest.mock`.
-   - Khắc phục: Khai báo ngay trên đầu block test `(GateTransaction.countDocuments as jest.Mock).mockResolvedValue(0);`
-2. **Nhiễu dữ liệu Cache**:
-   - Nếu Controller của bạn lưu biến Cache bằng `IP` hoặc `ID` (như file `scan.controller.ts`), hãy cho mỗi test một ID ngẫu nhiên. Ví dụ bài trước dùng `cameraIp: 'ip1'`, thì bài test sau dùng `cameraIp: 'ip2'` để không xài lại bộ Cache cũ đã lưu trong nhớ.
+1. **Lỗi Timeout Mongoose (`MongooseError: Operation buffering timed out`)**:
+   - Lý do: Bạn trỏ test file vào DB thật nhưng hệ thống chưa có sẵn DB đó, hoặc bạn quên gọi `MongoMemoryServer`.
+   - Khắc phục: Sử dụng `MongoMemoryServer` như hướng dẫn ở mục 4.
+2. **Lỗi `TypeError: xxx is not a function` (Unit Test)**: 
+   - Khắc phục: Do bạn quên mock hàm của DB khi test độc lập. Sử dụng `(Model.hàm_đó as jest.Mock).mockResolvedValue(0);`
 3. **Múi giờ**:
    - Hãy set `+07:00` trong `new Date('...+07:00')` tại các bài test, tránh trường hợp máy local của Dev và máy ảo CI/CD chạy khác múi giờ gây sai lệch.
