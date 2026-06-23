@@ -9,13 +9,13 @@ module.exports = {
   collectCoverageFrom: [
     'controllers/scan.controller.ts',
     'models/appointment.model.ts',
-    'controllers/appointment.controller.ts'
+    'controllers/appointment.controller.ts',
+    'repositories/appointment.repository.ts',
+    'repositories/gateTransaction.repository.ts'
   ],
   testPathIgnorePatterns: [
     "/node_modules/",
-    "appointment.integration.test.ts",
-    "appointment.repository.test.ts",
-    "gateTransaction.repository.test.ts"
+    "appointment.integration.test.ts"
   ],
   setupFiles: ['dotenv/config'],
   setupFilesAfterEnv: ['./tests/jest.setup.ts'],

@@ -3,11 +3,11 @@
 Tài liệu này tổng hợp lại toàn bộ trạng thái chạy Kiểm thử tự động (Automated Testing) hiện tại của dự án. 
 
 ## 📊 Tổng Quan (Overview)
-- **Tổng số File / Class được test:** 3 (`scan.controller`, `appointment.controller`, `appointment.api`)
-- **Tổng số Test Cases (TCs):** 72
-- **Số lượng TC Pass:** 72
+- **Tổng số File / Class được test:** 5 (`scan.controller`, `appointment.controller`, `appointment.api`, `appointment.repository`, `gateTransaction.repository`)
+- **Tổng số Test Cases (TCs):** 125
+- **Số lượng TC Pass:** 125
 - **Số lượng TC Fail:** 0
-- **Mức độ bao phủ mã nguồn (Line Coverage):** 90.26%
+- **Mức độ bao phủ mã nguồn (Line Coverage):** 100%
 
 ---
 
@@ -39,6 +39,31 @@ Controller quản lý toàn bộ nghiệp vụ đặt lịch hẹn ra vào cản
   - Trả về mã lỗi khi Hệ thống đã đầy Slot (Quá tải).
   - Lấy danh sách lịch hẹn thành công có phân trang.
 
+### 3. `appointment.repository.ts` (Unit Test & Database Test)
+Repository quản lý tương tác với cơ sở dữ liệu cho Lịch hẹn, đếm sức chứa (capacity) và các nghiệp vụ cập nhật trạng thái tự động.
+
+- **Số Test Cases:** 14
+- **Trạng thái:** 🟢 PASS (100%)
+- **Các nhóm kịch bản đã được xác thực:**
+  - Test đếm số lượng lịch hẹn (sức chứa)
+  - Cập nhật trạng thái PENDING sang CONFIRMED
+  - Chặn hủy khi ở trạng thái COMPLETED
+  - Chặn/cho phép mở cổng barrier tùy trạng thái xe và thời gian đến
+  - Giới hạn quota (đạt tối đa giới hạn)
+  - Từ chối check-in khi trùng biển số trong cùng một time slot
+
+### 4. `gateTransaction.repository.ts` (Unit Test & Database Test)
+Repository lưu vết các giao dịch qua cổng, lọc theo phân trang và check-in/check-out.
+
+- **Số Test Cases:** 10
+- **Trạng thái:** 🟢 PASS (100%)
+- **Các nhóm kịch bản đã được xác thực:**
+  - Filter và phân trang GateTransaction (Regex, Date range)
+  - Sinh log Gate-Out khi cập nhật trạng thái Completed
+  - Khởi tạo transaction độc lập checkInTime và checkOutTime
+  - Cơ chế fallback quét tay QR (nhập tay lý do)
+  - Asynchronous error handling cho việc generate e-EIR timeout
+
 ---
 *Ghi chú: Toàn bộ Test được chạy qua công cụ Jest. Unit Test dùng kiến trúc Mocking (giả lập) 100%. Integration Test dùng `MongoMemoryServer` để đảm bảo tốc độ cũng như tính chính xác tuyệt đối mà không cần DB vật lý.*
 
@@ -63,7 +88,7 @@ Cập nhật hệ thống bằng việc thiết lập môi trường Unit Test &
 ### Code
 - [x] Code biên dịch không có lỗi (`npx tsc --noEmit`)
 - [x] Tất cả test hiện có vẫn pass (`npx jest`)
-- [x] Đã viết test cho tính năng / fix mới (Coverage: 90.26%)
+- [x] Đã viết test cho tính năng / fix mới (Coverage: 100%)
 - [x] Coverage không giảm so với nhánh `main`
 - [x] Không có `console.log()` rác trong code production
 
@@ -81,26 +106,30 @@ Cập nhật hệ thống bằng việc thiết lập môi trường Unit Test &
 | `scanPost Group 1-6` | Kiểm thử toàn diện 6 luồng quét Check-in / Check-out | ✅ Pass |
 | `appointment.controller` | Phân trang, tạo lịch hẹn, chặn lỗi trùng/hết chỗ | ✅ Pass |
 | `appointment.api (Int)` | Giả lập HTTP Request gọi API qua Router và Middleware tới DB ảo | ✅ Pass |
+| `appointment.repository` | Quản lý logic DB cho lịch hẹn và cập nhật trạng thái | ✅ Pass |
+| `gateTransaction.repository` | Quản lý phân trang log hệ thống và trạng thái In/Out | ✅ Pass |
 
 ---
 
 ## 📸 Screenshots / Output
 
 ```bash
-PASS tests/appointment.api.test.ts (5.382 s)
+PASS tests/appointment.api.test.ts (12.857 s)
+PASS tests/gateTransaction.repository.test.ts
 PASS tests/scan.controller.test.ts
+PASS tests/appointment.repository.test.ts
 PASS tests/appointment.controller.test.ts
 
 =============================== Coverage summary ===============================
-Statements   : 90.37% ( 432/478 )
-Branches     : 85.1% ( 200/235 )
-Functions    : 93.1% ( 27/29 )
-Lines        : 90.26% ( 408/452 )
+Statements   : 99.79% ( 477/478 )
+Branches     : 96.59% ( 227/235 )
+Functions    : 96.55% ( 28/29 )
+Lines        : 100% ( 452/452 )
 ================================================================================
 
-Test Suites: 3 passed, 3 total
-Tests:       72 passed, 72 total
+Test Suites: 5 passed, 5 total
+Tests:       125 passed, 125 total
 Snapshots:   0 total
-Time:        6.981 s, estimated 18 s
+Time:        24.025 s
 Ran all test suites.
 ```
