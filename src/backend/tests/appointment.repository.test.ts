@@ -33,7 +33,7 @@ describe('Appointment Repository / Database Tests', () => {
     
     // Tạo 20 record trùng timeslot và ngày (Hợp lệ)
     const mockAppointments = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i <=19; i++) {
       mockAppointments.push({
         truckPlate: `51C-${10000 + i}`,
         driverId: new mongoose.Types.ObjectId(),

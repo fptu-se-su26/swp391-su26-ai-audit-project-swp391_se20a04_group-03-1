@@ -99,7 +99,6 @@ describe('GateTransaction Repository / Database Tests', () => {
 
     const totalCount = await GateTransaction.countDocuments(query);
 
-    // Assert
     // Tổng số records khớp đk là 2: (51C-12345, 51C-12346)
     expect(totalCount).toBe(2);
     

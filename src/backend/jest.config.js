@@ -8,7 +8,7 @@ module.exports = {
   collectCoverageFrom: [
     'controllers/scan.controller.ts',
     'models/appointment.model.ts',
-    'controllers/appointment.controller.ts'
+    'models/gateTransaction.model.ts'
   ],
   setupFiles: ['dotenv/config'],
 };
