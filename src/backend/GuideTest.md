@@ -118,18 +118,6 @@ it('Nên trả về success khi tạo data', async () => {
   expect(response.body.code).toBe('error'); // Trả error do đã tồn tại
 });
 ```
-
-### c) Bỏ qua Authentication Middleware (Bypass)
-Nếu bạn không muốn test việc đăng nhập (cần token JWT), bạn có thể dùng `jest.mock` để chặn middleware trước khi `app.use('/api', rootRouter)` chạy:
-
-```typescript
-jest.mock('../middlewares/auth.middleware', () => ({
-  requireAuth: (req: any, res: any, next: any) => next(),
-  requireAuthCompany: (req: any, res: any, next: any) => next(),
-  requireAuthProvider: (req: any, res: any, next: any) => next()
-}));
-```
-
 ---
 
 ## 5. Những Lỗi Thường Gặp (Troubleshooting)

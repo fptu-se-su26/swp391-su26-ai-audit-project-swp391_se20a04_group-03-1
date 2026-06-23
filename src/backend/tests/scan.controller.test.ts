@@ -46,10 +46,14 @@ describe('scan.controller', () => {
       this.save = jest.fn().mockResolvedValue(true);
       return this;
     });
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.useRealTimers();
+    (console.error as jest.Mock).mockRestore();
+    (console.log as jest.Mock).mockRestore();
   });
 
   const baseAppointment = {
@@ -93,6 +97,42 @@ describe('scan.controller', () => {
         message: 'Chưa tới hoặc đã quá khung giờ lịch hẹn (09:00-11:00).' 
       });
     });
+
+    it('should handle time slot crossing midnight', async () => {
+      const appt = { ...baseAppointment, timeSlot: '23:00-01:00' };
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery(appt));
+      
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip_midnight' } });
+      const res = createResponse();
+      
+      const midnightTestTime = new Date(mockData.baseAppointment.scheduledDate);
+      midnightTestTime.setHours(23, 30, 0, 0);
+      jest.setSystemTime(midnightTestTime);
+
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      await scanPost(req, res);
+      expect(res._getJSONData().code).not.toBe('error');
+    });
+
+    it('should clear stale cache', async () => {
+      const req1 = createRequest({ body: { text: 'oldPlate', type: 'plate', status: 'in', cameraIp: 'staleIp' } });
+      const req2 = createRequest({ body: { text: 'oldContainer', type: 'container', status: 'in', cameraIp: 'staleIp' } });
+      await scanPost(req1, createResponse());
+      await scanPost(req2, createResponse());
+
+      jest.advanceTimersByTime(150000); // 2.5 mins
+
+      const appt = { ...baseAppointment, purpose: 'Lấy container' };
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery(appt));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      const req3 = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'staleIp' } });
+      const res = createResponse();
+      
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8), text: async () => 'ok' });
+      await scanPost(req3, res);
+
+      expect(res._getJSONData().code).toBe('success');
+    });
   });
 
   describe('scanPost - Group 2: IN gate, Pick-up (Lấy container)', () => {
@@ -107,6 +147,82 @@ describe('scan.controller', () => {
 
       await scanPost(req, res);
       expect(res._getJSONData()).toEqual({ code: 'success', message: 'Processed successfully' });
+    });
+
+    it('should handle AI API returning ok: false silently', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip3' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      (GateTransaction.prototype.save as jest.Mock).mockResolvedValue(true);
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: false }); // AI API fail
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ text: async () => 'ok' }); // ESP32
+
+      await scanPost(req, res);
+      await Promise.resolve();
+      expect(res._getJSONData().code).toBe('success');
+    });
+
+    it('should handle cloudinary upload reject', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip3' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) });
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ text: async () => 'ok' });
+
+      const cloudinary = require('../config/cloudinary.config');
+      cloudinary.uploader.upload_stream.mockImplementationOnce((options: any, callback: any) => {
+        callback(new Error('Cloudinary Error'), null);
+        return { pipe: jest.fn() };
+      });
+
+      await scanPost(req, res);
+      await Promise.resolve();
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Lỗi chụp ảnh cổng async:'), expect.any(Error));
+    });
+
+    it('should handle fetch exception in AI API', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip3' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network Error'));
+
+      await scanPost(req, res);
+      await Promise.resolve();
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Lỗi chụp ảnh cổng async:'), expect.any(Error));
+    });
+
+    it('should handle ESP32 fetch exception silently', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip_esp_err' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+      (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }); // AI
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('ESP Network Error')); // ESP
+
+      await scanPost(req, res);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Không thể kết nối tới ESP32'), expect.any(String));
+      expect(res._getJSONData().code).toBe('success');
+    });
+
+    it('should handle catch block wrapper for ESP32', async () => {
+       const originalAbortController = global.AbortController;
+       global.AbortController = jest.fn().mockImplementation(() => { throw new Error('Sync Error'); });
+       
+       const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip3' } });
+       const res = createResponse();
+       (Appointment.findOne as jest.Mock).mockReturnValue(mockAppointmentQuery({ ...baseAppointment, purpose: 'Lấy container' }));
+       (GateTransaction.findOne as jest.Mock).mockResolvedValue(null);
+       
+       await scanPost(req, res);
+       expect(console.error).toHaveBeenCalledWith(expect.stringContaining('[ESP32] Lỗi hệ thống khi gọi ESP32:'), expect.any(Error));
+       
+       global.AbortController = originalAbortController;
     });
 
     it('TC02/TC03: should return "Đang chờ quét biển" if plate is unmatched', async () => {
@@ -237,6 +353,19 @@ describe('scan.controller', () => {
       await scanPost(req, res);
       expect(res._getJSONData()).toEqual({ code: 'ignored', message: 'Không tìm thấy dữ liệu check-in cho xe này.' });
     });
+
+    it('TC26: should return server error if DB throws exception in scanPost', async () => {
+      const req = createRequest({ body: { text: mockData.baseAppointment.truckPlate, type: 'plate', status: 'in', cameraIp: 'ip12' } });
+      const res = createResponse();
+      (Appointment.findOne as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockRejectedValue(new Error('DB Crash'))
+      });
+      
+      await scanPost(req, res);
+      expect(res._getJSONData()).toEqual({ code: 'error', message: 'Server error' });
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Scan Error:'), expect.any(Error));
+    });
   });
 
   describe('Helper & CRUD Methods', () => {
@@ -332,6 +461,84 @@ describe('scan.controller', () => {
       const res = createResponse();
       await hardDeleteLogDelete(createRequest({ params: { id: mockData.tx.tx1 } }), res);
       expect(res._getJSONData().code).toBe('success');
+    });
+
+    it('getLogsPaginated - error', async () => {
+      (GateTransaction.countDocuments as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      const res = createResponse();
+      await getLogsPaginated(createRequest(), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('getLogDetail - error', async () => {
+      (GateTransaction.findById as jest.Mock).mockImplementation(() => { throw new Error('DB Error'); });
+      const res = createResponse();
+      await getLogDetail(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('manualCheckoutPatch - error not found', async () => {
+      (GateTransaction.findById as jest.Mock).mockResolvedValue(null);
+      const res = createResponse();
+      await manualCheckoutPatch(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+      expect(res._getJSONData().message).toBe('Không tìm thấy nhật ký');
+    });
+
+    it('manualCheckoutPatch - error throw', async () => {
+      (GateTransaction.findById as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      const res = createResponse();
+      await manualCheckoutPatch(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('softDeleteLogDelete - not found', async () => {
+      (GateTransaction.findById as jest.Mock).mockResolvedValue(null);
+      const res = createResponse();
+      await softDeleteLogDelete(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('softDeleteLogDelete - error throw', async () => {
+      (GateTransaction.findById as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      const res = createResponse();
+      await softDeleteLogDelete(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('logsTrashGet - error throw', async () => {
+      (GateTransaction.countDocuments as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      const res = createResponse();
+      await logsTrashGet(createRequest(), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('restoreLogPatch - not found', async () => {
+      (GateTransaction.findById as jest.Mock).mockResolvedValue(null);
+      const res = createResponse();
+      await restoreLogPatch(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('restoreLogPatch - error throw', async () => {
+      (GateTransaction.findById as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      const res = createResponse();
+      await restoreLogPatch(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('hardDeleteLogDelete - not found', async () => {
+      (GateTransaction.findByIdAndDelete as jest.Mock).mockResolvedValue(null);
+      const res = createResponse();
+      await hardDeleteLogDelete(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
+    });
+
+    it('hardDeleteLogDelete - error throw', async () => {
+      (GateTransaction.findByIdAndDelete as jest.Mock).mockRejectedValue(new Error('DB Error'));
+      const res = createResponse();
+      await hardDeleteLogDelete(createRequest({ params: { id: mockData.tx.tx1 } }), res);
+      expect(res._getJSONData().code).toBe('error');
     });
   });
 });
