@@ -2,7 +2,28 @@ import mongoose from 'mongoose';
 import { GateTransaction } from '../models/gateTransaction.model';
 import { Appointment } from '../models/appointment.model';
 
+// Đường dẫn database dành riêng cho việc chạy Test
+const TEST_MONGO_URI = process.env.MONGO_URI_TEST || 'mongodb://localhost:27017/swp391_test_db';
+
 describe('GateTransaction Repository / Database Tests', () => {
+
+  // 1. Kết nối database test trước khi chạy các test case trong file này
+  beforeAll(async () => {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+    await mongoose.connect(TEST_MONGO_URI);
+  });
+
+  // 2. Dọn sạch cả 2 bảng dữ liệu liên quan trước mỗi bài test để đảm bảo môi trường độc lập
+  beforeEach(async () => {
+    if (mongoose.connection.readyState === 1) {
+      await GateTransaction.deleteMany({});
+      await Appointment.deleteMany({});
+    }
+  });
+
+  // 3. Tăng timeout lên 15000ms đề phòng tác vụ populate/insert dữ liệu tốn thời gian hơn dự kiến
   it('Test filter và phân trang GateTransaction', async () => {
     // Arrange: Thêm Appointment giả để test populate
     const mockAppointment = await Appointment.create({
@@ -91,5 +112,12 @@ describe('GateTransaction Repository / Database Tests', () => {
     // Kiểm tra populate đã hoạt động (appointmentId không còn là ObjectId mà là object có truckPlate)
     expect(results[0].appointmentId).toBeDefined();
     expect((results[0].appointmentId as any).containerNo).toBe('CONT12345');
+  }, 15000); // <-- Gán timeout 15s trực tiếp tại đây
+
+  // 4. Đóng kết nối Mongoose sạch sẽ hoàn toàn sau khi tất cả test case chạy xong (Giải quyết dứt điểm Open Handles)
+  afterAll(async () => {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
   });
 });

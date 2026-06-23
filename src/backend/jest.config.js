@@ -6,6 +6,9 @@ module.exports = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-    'controllers/scan.controller.ts'
-  ]
+    'controllers/scan.controller.ts',
+    'models/appointment.model.ts',
+    'controllers/appointment.controller.ts'
+  ],
+  setupFiles: ['dotenv/config'],
 };

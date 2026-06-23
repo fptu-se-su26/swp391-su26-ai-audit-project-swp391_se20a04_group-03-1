@@ -1,7 +1,31 @@
 import mongoose from 'mongoose';
 import { Appointment } from '../models/appointment.model';
 
+const TEST_MONGO_URI = process.env.MONGO_URI_TEST || 'mongodb://localhost:27017/swp391_test_db';
+
 describe('Appointment Repository / Database Tests', () => {
+  
+  // 1. Khởi chạy kết nối Database trước khi chạy bất kỳ bài test nào
+  beforeAll(async () => {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+    await mongoose.connect(TEST_MONGO_URI);
+  });
+
+  // 2. Ép buộc clear sạch dữ liệu bảng trước MỖI bài test (Không dùng bọc IF)
+  beforeEach(async () => {
+    // Đảm bảo xóa sạch không để lại bất kỳ dữ liệu rác nào từ file test khác
+    await Appointment.deleteMany({});
+  });
+
+  // 3. Đóng kết nối Mongoose sạch sẽ sau khi tất cả các bài test chạy xong
+  afterAll(async () => {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+  });
+
   it('Test đếm số lượng Lịch hẹn (Sức chứa) - countDocuments', async () => {
     // Arrange
     const targetDate = new Date('2024-12-01T00:00:00Z');
@@ -46,7 +70,7 @@ describe('Appointment Repository / Database Tests', () => {
       isDeleted: false
     });
 
-    // Bulk insert dữ liệu thật vào in-memory DB
+    // Bulk insert dữ liệu vào database test
     await Appointment.insertMany(mockAppointments);
 
     // Act: Thực thi câu lệnh truy vấn thực tế y hệt trong Controller
@@ -57,7 +81,7 @@ describe('Appointment Repository / Database Tests', () => {
       isDeleted: false,
     });
 
-    // Assert: Kết quả đếm phải bằng đúng 20 (bỏ qua bản ghi Cancelled và bản ghi khác slot)
+    // Assert: Kết quả đếm phải bằng đúng 20
     expect(currentSlotCount).toBe(20);
-  });
+  }, 15000); 
 });
