@@ -694,209 +694,6 @@ Viết tại đây...
 
 ### Lần sử dụng AI số 6
 
-| Nội dung            | Thông tin                                                                                                        |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Ngày sử dụng        | 25/05/2026                                                                                                       |
-| Công cụ AI          | GithubCopilot, Gemini                                                                                            |
-| Mục đích sử dụng    | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
-| Phần việc liên quan | coding                                                                                                           |
-| Mức độ sử dụng      | Hỏi hướng dẫn                                                                                                    |
-
-#### 6.1. Prompt đã sử dụng
-
-```text
-Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
-```
-
-#### 6.2. Kết quả AI gợi ý
-
-```text
-Mục tiêu chính: ưu tiên quét QR nhanh (QR-first) và hiển thị Driver Pass tức thì.
-UI/UX:
-Thêm/điều chỉnh màn quét QR lớn, khung QR tập trung ở trên cùng, kích thước và padding giảm để thao tác nhanh hơn.
-Hiển thị DriverPassModal ngay khi quét hợp lệ, kèm haptics/feedback.
-Thêm toast/snackbar vị trí top-right cho thông báo đăng nhập/scan (đã mở rộng Snackbar để hỗ trợ vị trí).
-Card và block nội dung được compact (giới hạn maxWidth, giảm padding) để tránh chiếm chỗ thừa trên màn nhỏ.
-Header của ScreenShell giảm kích thước để cân bằng không gian.
-Tích hợp hoạt động:
-Liên kết chặt với auth store (điều hướng về (tabs) sau login/guest, nhận authToast để show toast).
-Quét → xử lý luồng (validate → show modal → commit) đã được nối với state hiện tại.
-File chính thay đổi: DashboardScreen.tsx, Dashboard.style.ts, DriverPassModal (component), Snackbar.tsx (vị trí), và một vài chỉnh style chung (ScreenShell.tsx).
-```
-
-#### 6.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-```text
-Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
-Giao diện & bố cục:
-Thêm khung quét QR lớn, đặt ở vị trí nổi bật trên đầu màn hình để quét nhanh.
-Giảm padding / thu nhỏ các card và giới hạn maxWidth để giao diện compact, phù hợp màn nhỏ.
-Giảm kích thước header trong ScreenShell để nhường không gian cho QR.
-Tương tác & phản hồi:
-Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics.
-Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí).
-Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest).
-Files (chỉnh sửa chính):
-DashboardScreen.tsx — UI/flow quét QR.
-Dashboard.style.ts — compact layout, kích thước QR/card.
-ScreenShell.tsx — giảm header/padding chung.
-Snackbar.tsx — hỗ trợ vị trí top-right.
-DriverPassModal (component) — hiển thị dữ liệu sau quét.
-```
-
-#### 6.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-```text
-Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
-Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
-Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
-```
-
-#### 6.5. Minh chứng
-
-| Loại minh chứng   | Nội dung                                                                                                                                                                                                                                                                            |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3                                                                                                                                              |
-| File liên quan    | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,                                                                                                                      |
-| Screenshot        | (Ảnh màn hình trang dashboard)                                                                                                                                                                                                                                                      |
-| Kết quả chạy/test | Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
-| Link video demo   |                                                                                                                                                                                                                                                                                     |
-| Ghi chú khác      | Prompt này cho phep tai xe co the su dung truc tiep nhanh chong.                                                                                                                                                                                                                    |
-
-#### 6.6. Nhận xét cá nhân/nhóm
-
-```text
-Viết tại đây...
-```
-
----
-
-### Lần sử dụng AI số 7
-
-| Nội dung            | Thông tin               |
-| ------------------- | ----------------------- |
-| Ngày sử dụng        | 25/05/2026              |
-| Công cụ AI          | GithubCopilot, Gemini   |
-| Mục đích sử dụng    | Xây dựng trang lịch hẹn |
-| Phần việc liên quan | coding                  |
-| Mức độ sử dụng      | Hỏi hướng dẫn           |
-
-#### 7.1. Prompt đã sử dụng
-
-```text
-Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
-```
-
-#### 7.2. Kết quả AI gợi ý
-
-```text
-AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
-1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
-2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
-3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
-4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
-Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
-```
-
-#### 7.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-```text
-- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
-- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
-- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
-- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
-```
-
-#### 7.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-```text
-- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
-- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
-```
-
-#### 7.5. Minh chứng
-
-| Loại minh chứng   | Nội dung                                                                                                                               |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
-| File liên quan    | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts`                                |
-| Screenshot        | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                                                         |
-| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                        |
-| Link video demo   |                                                                                                                                        |
-| Ghi chú khác      | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                |
-
-#### 7.6. Nhận xét cá nhân/nhóm
-
-```text
-Viết tại đây...
-```
-
----
-
-### Lần sử dụng AI số 8
-
-| Nội dung            | Thông tin                                                                                                        |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Ngày sử dụng        | 25/05/2026                                                                                                       |
-| Công cụ AI          | GithubCopilot, Gemini                                                                                            |
-| Mục đích sử dụng    | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
-| Phần việc liên quan | coding                                                                                                           |
-| Mức độ sử dụng      | Hỏi hướng dẫn                                                                                                    |
-
-#### 8.1. Prompt đã sử dụng
-
-```text
-Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
-```
-
-#### 8.2. Kết quả AI gợi ý
-
-```text
-AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
-1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
-2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
-3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
-4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
-Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
-```
-
-#### 8.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-```text
-- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
-- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
-- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
-- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
-```
-
-#### 8.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-```text
-- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
-- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
-```
-
-#### 8.5. Minh chứng
-
-| Loại minh chứng   | Nội dung                                                                                                                               |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
-| File liên quan    | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts`                                |
-| Screenshot        | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                                                         |
-| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                        |
-| Link video demo   |                                                                                                                                        |
-| Ghi chú khác      | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                |
-
-#### 8.6. Nhận xét cá nhân/nhóm
-
-```text
-Viết tại đây...
-```
-
----
-
-### Lần sử dụng AI số 6
-
 | Nội dung            | Thông tin                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------ |
 | Ngày sử dụng        | 27/05/2026                                                                                       |
@@ -1604,19 +1401,18 @@ Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách 
 | Ngày sử dụng        | 25/05/2026                                                                                                       |
 | Công cụ AI          | GithubCopilot, Gemini                                                                                            |
 | Mục đích sử dụng    | Xây dựng cấu trúc thư mục cho mobile app, triển khai các trang giao diện cần thiết cho một tài xế sử dụng mobile |
-| Phần việc liên quan | Coding                                                                                                           |
+| Phần việc liên quan | coding                                                                                                           |
 | Mức độ sử dụng      | Hỏi hướng dẫn                                                                                                    |
-| Phần liên quan      | QR Coder Scanner                                                                                                 |
 
 #### 12.1. Prompt đã sử dụng
 
-```text id="g2k8wn"
-MTừ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
 ```
 
-#### 12.2. Bối cảnh khi viết prompt
+#### 12.2. Kết quả AI gợi ý
 
-```text id="6w3f8m"
+```text
 Mục tiêu chính: ưu tiên quét QR nhanh (QR-first) và hiển thị Driver Pass tức thì.
 UI/UX:
 Thêm/điều chỉnh màn quét QR lớn, khung QR tập trung ở trên cùng, kích thước và padding giảm để thao tác nhanh hơn.
@@ -1628,12 +1424,11 @@ Tích hợp hoạt động:
 Liên kết chặt với auth store (điều hướng về (tabs) sau login/guest, nhận authToast để show toast).
 Quét → xử lý luồng (validate → show modal → commit) đã được nối với state hiện tại.
 File chính thay đổi: DashboardScreen.tsx, Dashboard.style.ts, DriverPassModal (component), Snackbar.tsx (vị trí), và một vài chỉnh style chung (ScreenShell.tsx).
-
 ```
 
-#### 12.3. Kết quả AI gợi ý
+#### 12.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
-```text id="m3z1kf"
+```text
 Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
 Giao diện & bố cục:
 Thêm khung quét QR lớn, đặt ở vị trí nổi bật trên đầu màn hình để quét nhanh.
@@ -1651,53 +1446,96 @@ Snackbar.tsx — hỗ trợ vị trí top-right.
 DriverPassModal (component) — hiển thị dữ liệu sau quét.
 ```
 
-#### 12.4. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 12.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
-```text id="x0m98t"
+```text
 Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
 Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
 Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
 ```
 
-#### 12.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 12.5. Minh chứng
 
-```text id="4r6u5q"
-Mục tiêu: ưu tiên quét QR (QR-first) và hiển thị Driver Pass tức thì.
-Giao diện: giảm padding, giới hạn maxWidth, khung QR lớn ở vị trí nổi bật, header nhỏ lại để nhường không gian QR.
-Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt haptics; thông báo dùng Snackbar vị trí top-right.
-```
+| Loại minh chứng   | Nội dung                                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3                                                                                                                                              |
+| File liên quan    | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,                                                                                                                      |
+| Screenshot        | (Ảnh màn hình trang dashboard)                                                                                                                                                                                                                                                      |
+| Kết quả chạy/test | Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
+| Link video demo   |                                                                                                                                                                                                                                                                                     |
+| Ghi chú khác      | Prompt này cho phep tai xe co the su dung truc tiep nhanh chong.                                                                                                                                                                                                                    |
 
-#### 12.6. Đánh giá chất lượng prompt
+#### 12.6. Nhận xét cá nhân/nhóm
 
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [x] Cần hỏi lại AI nhiều lần
-- [x] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 12.7. Minh chứng liên quan
-
-| Loại minh chứng       | Nội dung                                                                                                                                                                                                                                                                            |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit           | `https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/3b0ab134fd71c7c94878970ab11ce884027974d3`                                                                                                                                            |
-| File liên quan        | `src/frontend_mobile-expo/src/modules/dashboard/screens/DashboardScreen.tsx`, `src/frontend_mobile-expo/src/modules/dashboard/components/DriverPassModal.tsx`,                                                                                                                      |
-| Screenshot            | (Ảnh màn hình trang dashboard)                                                                                                                                                                                                                                                      |
-| Kết quả chạy/test     | Khi quét hợp lệ: tự động mở DriverPassModal và bật phản hồi haptics. Thông báo đăng nhập/scan dùng Snackbar với vị trí top-right (đã mở rộng component để hỗ trợ vị trí). Luồng quét → validate → show modal → commit đã nối với auth store (điều hướng về (tabs) sau login/guest). |
-| Link tài liệu/báo cáo |                                                                                                                                                                                                                                                                                     |
-| Ghi chú khác          | Đ Prompt này cho phep tai xe co the su dung truc tiep nhanh chong.                                                                                                                                                                                                                  |
-
-#### 12.8. Ghi chú thêm
-
-```text id="p7c2mv"
-
+```text
+Viết tại đây...
 ```
 
 ---
 
 ### Lần sử dụng AI số 13
+
+| Nội dung            | Thông tin               |
+| ------------------- | ----------------------- |
+| Ngày sử dụng        | 25/05/2026              |
+| Công cụ AI          | GithubCopilot, Gemini   |
+| Mục đích sử dụng    | Xây dựng trang lịch hẹn |
+| Phần việc liên quan | coding                  |
+| Mức độ sử dụng      | Hỏi hướng dẫn           |
+
+#### 13.1. Prompt đã sử dụng
+
+```text
+Từ bối cảnh trên, bạn là 1 senior đầy kinh nghiệm về reactnative mobile app, trong phần mobile expo đi từ src/mobile , hãy dùng các component từ shadcn ui hoặc các thư viện có sẵn, tạo cho tôi các trang cần thiết và quan trọng cho dự án. Những trang giao diện sẽ nằm trong mobile-expo/src/component/pages. Yêu cầu về giao diện: dễ nhìn, dễ hiểu và dễ thao tác, màu sắc nhẹ nhàng kết hợp với hình ảnh thiết kế UI của stitch mà tôi đinhs kèm. Bây giờ hãy thiết kế trang dashboard, trang dashboard yêu cầu trong trang dashboard có hiển thị mã QR khi bấm vào button, tài xế chỉ việc đưa mã QR cho người quản lý nhà xe để quét, kết hợp ý tưởng mà bạn đã đưa ra cùng với việc xử lý nghiệp vụ
+```
+
+#### 13.2. Kết quả AI gợi ý
+
+```text
+AI đã phân tích và thiết kế một Workflow chi tiết cho quá trình đặt lịch, bao gồm các giai đoạn:
+1. **Trước khi đến cảng (Pre-arrival):** Doanh nghiệp vận tải nhập thông tin tạo lịch hẹn. Hệ thống kiểm tra sức chứa (Capacity) theo khung giờ để tránh quá tải.
+2. **Khi đến cổng (At Gate):** So khớp dữ liệu lịch hẹn với kết quả quét AI (biển số, mã container).
+3. **Trong cảng (In-yard):** Thay đổi trạng thái lịch hẹn thành "Đã vào".
+4. **Hoàn thành (Completion):** Xe rời cảng, đổi trạng thái thành "Đã ra".
+Đồng thời, AI còn vạch ra các API cần thiết (`POST /appointments`, `GET /appointments`, `PATCH /appointments/:id/status`) và cách triển khai trên Frontend.
+```
+
+#### 13.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+- Áp dụng Workflow này làm kim chỉ nam để xây dựng toàn bộ Module 1.
+- Xây dựng giao diện Frontend (`/admin/appointments`) hiển thị danh sách lịch hẹn bằng Data Table phân trang (Pagination).
+- Xây dựng form Thêm mới/Chỉnh sửa (`/admin/appointments/edit/[id]`) sử dụng `just-validate` để bắt lỗi nhập liệu.
+- Viết Backend API (Router, Controller, Model `appointment.model.ts`) xử lý các bộ lọc tìm kiếm (từ ngày... đến ngày...) và phân trang trực tiếp từ Database.
+```
+
+#### 13.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+- Nhóm đã liên tục trao đổi với AI (Antigravity) qua nhiều prompt tiếp theo để fix các lỗi phát sinh trong quá trình code như: Frontend không gọi được API, lỗi Route `params.id` bị thiếu `await` trong Next.js.
+- Nhóm chủ động yêu cầu AI làm thêm tính năng **"Thùng rác" (Soft Delete)**: Thêm nút "Xóa tạm", tạo trang chứa lịch hẹn đã xóa, và nút "Khôi phục" hoặc "Xóa vĩnh viễn" - những tính năng nâng cao không có trong prompt gốc.
+```
+
+#### 13.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/e6fd46150a16a218258cd199ed650e8116842f0c |
+| File liên quan    | `src/frontend/src/app/admin/appointments/page.tsx`, `src/backend/controllers/appointment.controller.ts`                                |
+| Screenshot        | (Ảnh màn hình danh sách lịch hẹn và Thùng rác)                                                                                         |
+| Kết quả chạy/test | Form validate chính xác, lọc và phân trang 10 items/trang hoạt động tốt, API xử lý nhanh chóng.                                        |
+| Link video demo   |                                                                                                                                        |
+| Ghi chú khác      | Prompt này là bước đệm tuyệt vời để thiết kế kiến trúc hệ thống trước khi lao vào code.                                                |
+
+#### 13.6. Nhận xét cá nhân/nhóm
+
+```text
+Viết tại đây...
+```
+
+---
+
+### Lần sử dụng AI số 14
 
 | Nội dung            | Thông tin                          |
 | ------------------- | ---------------------------------- |
@@ -1708,7 +1546,7 @@ Hành vi: quét → validate → mở DriverPassModal → commit; kích hoạt h
 | Mức độ sử dụng      | Hỏi hướng dẫn                      |
 | Phần liên quan      | Gate Management                    |
 
-#### 13.1. Prompt đã sử dụng
+#### 14.1. Prompt đã sử dụng
 
 ```text id="g2k8wn"
 Vai  trò: Bạn hãy đóng vai là một senior chuyên về phát triển react native mobile app sử dụng các công cụ thư viện  hiện đại với nhiều năm kinh nghiệm
@@ -1730,7 +1568,7 @@ Yêu cầu bắt buộc: Thiết kế theo hình ảnh stitch tôi gửi sử d�
 
 ```
 
-#### 13.2. Bối cảnh khi viết prompt
+#### 14.2. Bối cảnh khi viết prompt
 
 ```text id="6w3f8m"
 Người dùng mục tiêu: tài xế/nhân viên điều phối cần xem, lọc, và quản lý lịch hẹn nhanh trên di động — thao tác một tay, tap targets lớn, hiển thị thông tin quan trọng trước.
@@ -1739,7 +1577,7 @@ Thành phần UI cần có: appointment list (grouped by ngày), item card (time
 Luồng chính: tải danh sách → hiển thị nhóm/ngày → user tap item → mở modal/chi tiết → từ chi tiết gọi hành động (navigate, gọi API, show toast) → cập nhật list. Hỗ trợ guest/local auth flow như hiện tại.
 ```
 
-#### 13.3. Kết quả AI gợi ý
+#### 14.3. Kết quả AI gợi ý
 
 ```text id="m3z1kf"
 Components: AppointmentsScreen.tsx: list + grouping theo ngày, item card, filters, empty/loading states.
@@ -1754,7 +1592,7 @@ Docs: README.md ngắn hướng dẫn chạy, mock API, và acceptance criteria.
 Deliverable format: mã TSX + styles + hooks + README + checklist, sẵn để drop vào src/frontend_mobile-expo/src/modules/appointments.
 ```
 
-#### 13.4. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 14.4. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text id="x0m98t"
 Layout & spacing:
@@ -1787,7 +1625,7 @@ Kiểm thử & QA:
 Acceptance checklist bao gồm: load + grouping theo ngày, filter hoạt động, mở detail/modal, actions gửi request và cập nhật UI, không overflow trên màn nhỏ.
 ```
 
-#### 13.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 14.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text id="4r6u5q"
 Giảm băng thông truyền tải bằng cách chỉ emit những trường dữ liệu thực sự cần thiết (chỉ gửi id, thời điểm, trạng thái, mã container, tên tài xế khi cần).
@@ -1798,127 +1636,6 @@ Tách riêng style cho mỗi màn (per-screen styles), thu gọn layout (maxWidt
 Thêm trải nghiệm người dùng: pull-to-refresh, trạng thái loading/empty, toasts qua Snackbar và phản hồi haptics cho các hành động quan trọng.
 Cải thiện độ tin cậy UI: dùng optimistic updates cho thao tác nhanh, revalidate sau khi server trả về kết quả, và mock API để phát triển offline.
 Chuẩn bị nền tảng mở rộng: kiến trúc cho phép thêm các event realtime cho Yard Management và Computer Vision sau này.
-```
-
-#### 13.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [x] Cần hỏi lại AI nhiều lần
-- [x] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 13.7. Minh chứng liên quan
-
-| Loại minh chứng       | Nội dung                                                                                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Link commit           | `https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/6e6ad9b23242b99dfdb169c4c949df15df3d3a2c` |
-| File liên quan        | `src/frontend_mobile-expo/src/modules/appointments/screens/AppointmentsScreen.tsx`                                                       |
-| Screenshot            | Tài xế có thể xem lịch hẹn trang này                                                                                                     |
-| Kết quả chạy/test     | Test Successfully                                                                                                                        |
-| Link tài liệu/báo cáo |                                                                                                                                          |
-| Ghi chú khác          |                                                                                                                                          |
-
-#### 13.8. Ghi chú thêm
-
-```text id="p7c2mv"
-
-```
-
----
-
-### Lần sử dụng AI số 14
-
-| Nội dung            | Thông tin                                            |
-| ------------------- | ---------------------------------------------------- |
-| Ngày sử dụng        | 30/05/2026                                           |
-| Công cụ AI          | Antigravity                                          |
-| Mục đích sử dụng    | Phát triển tính năng realtime cho trang quản lý cổng |
-| Phần việc liên quan | Coding                                               |
-| Mức độ sử dụng      | Hỏi hướng dẫn                                        |
-| Phần liên quan      | Gate Management                                      |
-
-#### 14.1. Prompt đã sử dụng
-
-```text id="g2k8wn"
-Sau khi backend check các thông số python gửi lên là hợp lí thì thêm vào database.
-
-Sau khi lưu thông tin vào database thì gộp các dữ liệu cần thiết lại bao gồm:
-- Biển số xe
-- Tên tài xế
-- Mã container
-- Thời gian
-- Trạng thái IN hoặc OUT
-
-Sau khi đã lấy được các trường dữ liệu cần thiết này thì backend dùng Socket.IO để emit lên frontend.
-
-Ở trang Gate frontend dùng Socket.IO Client để nhận các thông tin hiển thị trên 2 section.
-
-Ở section Active Vehicles hiển thị:
-- Số xe đã vào
-- Số xe đã ra
-- Số xe chờ
-
-Ở section Gate Log hiển thị các trường thông tin được emit từ backend.
-
-Trước mắt tôi cần bạn thực hiện những mong muốn này của tôi, tất nhiên bạn cũng có thể thêm ý tưởng của bạn vào nếu nó hợp lí với logic và nghiệp vụ của phần này.
-```
-
-#### 14.2. Bối cảnh khi viết prompt
-
-```text id="6w3f8m"
-Sau khi hoàn thiện luồng OCR và xử lý giao dịch cổng ở phía Backend, nhóm tiếp tục triển khai cơ chế cập nhật dữ liệu theo thời gian thực cho hệ thống Gate Management.
-
-Trong quá trình vận hành thực tế, nhân viên giám sát cần theo dõi liên tục các phương tiện ra vào cảng mà không phải tải lại trang hoặc thực hiện thao tác làm mới dữ liệu thủ công. Vì vậy nhóm mong muốn xây dựng một cơ chế realtime giúp mọi thay đổi được phản ánh ngay lập tức trên giao diện.
-
-Bên cạnh đó, nhóm cũng muốn hiển thị các thống kê trực quan về số lượng xe đang hoạt động tại cổng và lịch sử giao dịch mới nhất để hỗ trợ công tác điều phối và giám sát.
-```
-
-#### 14.3. Kết quả AI gợi ý
-
-```text id="m3z1kf"
-Antigravity đề xuất sử dụng Socket.IO để xây dựng cơ chế giao tiếp thời gian thực giữa Backend và Frontend.
-
-Các đề xuất chính bao gồm:
-- Emit dữ liệu ngay sau khi giao dịch cổng được xác thực và lưu thành công vào cơ sở dữ liệu.
-- Chuẩn hóa dữ liệu truyền lên Frontend chỉ bao gồm các trường cần thiết như biển số xe, tài xế, mã container, thời gian và trạng thái.
-- Đồng bộ dữ liệu Gate Log theo thời gian thực.
-- Tự động cập nhật thống kê Active Vehicles khi có giao dịch mới phát sinh.
-- Giảm số lượng API polling nhằm tối ưu hiệu năng hệ thống.
-- Đề xuất xây dựng khu vực Appointment Completed để quản lý các lịch hẹn đã hoàn thành.
-- Chuẩn bị sẵn kiến trúc cho các sự kiện realtime khác trong tương lai.
-```
-
-#### 14.4. Phần sinh viên/nhóm đã sử dụng từ AI
-
-```text id="x0m98t"
-Nhóm đã áp dụng các đề xuất từ AI để xây dựng cơ chế realtime cho hệ thống quản lý cổng.
-
-Các nội dung đã được triển khai gồm:
-- Thiết kế và tích hợp Socket.IO cho Backend.
-- Xây dựng cơ chế emit dữ liệu sau khi phát sinh giao dịch mới.
-- Đồng bộ dữ liệu Gate Log theo thời gian thực.
-- Cập nhật số liệu Active Vehicles mà không cần tải lại trang.
-- Kết nối Socket.IO Client trên Frontend.
-- Thiết kế giao diện hiển thị dữ liệu realtime cho nhân viên vận hành.
-- Xây dựng trang Appointment Completed phục vụ quản lý lịch hẹn đã hoàn tất.
-```
-
-#### 14.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-```text id="4r6u5q"
-Sau khi tham khảo kết quả từ Antigravity, nhóm tiếp tục điều chỉnh và tối ưu thêm một số thành phần để phù hợp với yêu cầu vận hành thực tế.
-
-Các cải tiến bao gồm:
-- Chỉ emit các trường dữ liệu thực sự cần thiết nhằm giảm tải băng thông truyền tải.
-- Tối ưu cách hiển thị Gate Log để ưu tiên các giao dịch mới nhất.
-- Điều chỉnh giao diện thống kê theo nhu cầu giám sát của nhân viên vận hành.
-- Bổ sung cơ chế giới hạn số lượng bản ghi hiển thị nhằm tránh ảnh hưởng hiệu năng khi dữ liệu tăng lên.
-- Chuẩn hóa cấu trúc dữ liệu realtime giữa Backend và Frontend.
-- Chuẩn bị kiến trúc để mở rộng thêm các sự kiện realtime cho Yard Management và Computer Vision trong tương lai.
 ```
 
 #### 14.6. Đánh giá chất lượng prompt
@@ -1934,23 +1651,20 @@ Các cải tiến bao gồm:
 
 #### 14.7. Minh chứng liên quan
 
-| Loại minh chứng       | Nội dung                                                                                                                |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Link commit           | Cập nhật sau...                                                                                                         |
-| File liên quan        | `src/frontend/src/app/admin/gate/page.tsx`, `src/backend/socket/index.ts`, `src/backend/controllers/scan.controller.ts` |
-| Screenshot            | Active Vehicles và Gate Log cập nhật realtime                                                                           |
-| Kết quả chạy/test     | Dữ liệu được đồng bộ tức thời giữa Backend và Frontend                                                                  |
-| Link tài liệu/báo cáo |                                                                                                                         |
-| Ghi chú khác          | Đây là bước hoàn thiện chức năng giám sát cổng theo thời gian thực                                                      |
+| Loại minh chứng       | Nội dung                                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit           | `https://github.com/fptu-se-su26/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/commit/6e6ad9b23242b99dfdb169c4c949df15df3d3a2c` |
+| File liên quan        | `src/frontend_mobile-expo/src/modules/appointments/screens/AppointmentsScreen.tsx`                                                       |
+| Screenshot            | Tài xế có thể xem lịch hẹn trang này                                                                                                     |
+| Kết quả chạy/test     | Test Successfully                                                                                                                        |
+| Link tài liệu/báo cáo |                                                                                                                                          |
+| Ghi chú khác          |                                                                                                                                          |
 
 #### 14.8. Ghi chú thêm
 
 ```text id="p7c2mv"
-Kinh nghiệm rút ra là đối với các hệ thống giám sát và vận hành thời gian thực, việc cập nhật dữ liệu ngay khi phát sinh sự kiện mang lại trải nghiệm sử dụng tốt hơn rất nhiều so với cơ chế tải lại dữ liệu định kỳ.
 
-Thông qua quá trình triển khai Socket.IO, nhóm hiểu rõ hơn về cách xây dựng hệ thống realtime giữa Backend và Frontend, đồng thời giảm đáng kể độ trễ trong việc hiển thị thông tin vận hành. Đây là nền tảng quan trọng để phát triển các chức năng giám sát nâng cao và tích hợp AI trong các giai đoạn tiếp theo của dự án.
 ```
-
 
 ---
 
@@ -2289,7 +2003,7 @@ Sinh viên/nhóm cam kết rằng:
 
 ---
 
-### Lần sử dụng AI số 15
+### Lần sử dụng AI số 17
 
 | Nội dung | Thông tin |
 |---|---|
@@ -2299,7 +2013,7 @@ Sinh viên/nhóm cam kết rằng:
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
-#### 15.1. Prompt đã sử dụng
+#### 17.1. Prompt đã sử dụng
 
 ```text
 **Vai trò:** Chuyên gia lập trình hệ thống nhúng (Embedded Systems Engineer) chuyên về ESP32.
@@ -2314,150 +2028,6 @@ Sinh viên/nhóm cam kết rằng:
 - Sau 2 giây mở cổng, điều khiển servo trở về trạng thái 0 độ.
 
 **Định dạng đầu ra:** Toàn bộ source code `main.cpp` đầy đủ cho môi trường PlatformIO, kèm chú thích cấu hình chân (pinout) chi tiết.
-```
-
-#### 15.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 15.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 15.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 15.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 15.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 16
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Cải tiến Logic Hoạt Động & Thêm Cảm Biến Hồng Ngoại |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 16.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư hệ thống IoT.
-
-**Ngữ cảnh:** Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
-
-**Nhiệm vụ:** Cập nhật luồng hoạt động tự động của hệ thống.
-
-**Yêu cầu:**
-- Trạng thái đóng: LCD hiện "Dang dong cong..." và đợi 5 giây (servo 0 độ).
-- Trạng thái đón khách: LCD hiện "WELCOME!", phát 3 tiếng bíp, servo xoay 90 độ. Sau đó chuyển sang trạng thái chờ "Cho xe di qua..." và giữ cổng mở vô thời hạn.
-- Khi xe cắt ngang cảm biến hồng ngoại: LCD chuyển sang in dòng chữ "Dang qua cong...".
-- Thoát trạng thái: Sau khi xe đi qua hoàn toàn (tín hiệu cảm biến trở về HIGH), đợi 1 giây an toàn, hạ cổng xuống và quay lại từ đầu.
-
-**Định dạng đầu ra:** Mã nguồn C++ hoàn chỉnh và các bước nối dây bổ sung.
-```
-
-#### 16.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 16.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 16.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 16.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 16.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 17
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Xử lý lỗi giao tiếp HTTP (ESP32 và Server) |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 17.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư phần mềm mạng (Network Software Engineer).
-
-**Ngữ cảnh:** Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
-
-**Nhiệm vụ:** Gỡ lỗi quá trình ESP32 tải file âm thanh từ server HTTP.
-
-**Yêu cầu:** Phân tích nguyên nhân tại sao ESP32 báo lỗi "Không nhận được file" dù file đã thực sự tồn tại trên server. Hãy kiểm tra các khía cạnh: cấu hình tường lửa Windows (Firewall), khác biệt dải IP tĩnh/động, hoặc lỗi phân tích cú pháp URL trên mạch.
-
-**Định dạng đầu ra:** Danh sách các bước kiểm tra (check-list) mạng và đoạn code HTTP Client (sử dụng thư viện HTTPClient) đã được tinh chỉnh để tải file an toàn.
 ```
 
 #### 17.2. Kết quả AI gợi ý
@@ -2512,22 +2082,26 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Gỡ lỗi kết nối Mạng và IP |
+| Mục đích | Cải tiến Logic Hoạt Động & Thêm Cảm Biến Hồng Ngoại |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 18.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Chuyên gia mạng nhúng (Embedded Network Expert).
+**Vai trò:** Kỹ sư hệ thống IoT.
 
-**Ngữ cảnh:** Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
+**Ngữ cảnh:** Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
 
-**Nhiệm vụ:** Khắc phục lỗi ESP32 không chịu kết nối WiFi mới và không phát ra âm thanh.
+**Nhiệm vụ:** Cập nhật luồng hoạt động tự động của hệ thống.
 
-**Yêu cầu:** Liệt kê các khả năng gây ra lỗi mạng (như băng tần 5GHz không được hỗ trợ trên ESP32) và đưa ra kỹ thuật chẩn đoán lỗi vòng lặp `WiFi.begin()`.
+**Yêu cầu:**
+- Trạng thái đóng: LCD hiện "Dang dong cong..." và đợi 5 giây (servo 0 độ).
+- Trạng thái đón khách: LCD hiện "WELCOME!", phát 3 tiếng bíp, servo xoay 90 độ. Sau đó chuyển sang trạng thái chờ "Cho xe di qua..." và giữ cổng mở vô thời hạn.
+- Khi xe cắt ngang cảm biến hồng ngoại: LCD chuyển sang in dòng chữ "Dang qua cong...".
+- Thoát trạng thái: Sau khi xe đi qua hoàn toàn (tín hiệu cảm biến trở về HIGH), đợi 1 giây an toàn, hạ cổng xuống và quay lại từ đầu.
 
-**Định dạng đầu ra:** Đoạn mã bổ sung hàm in log kết nối WiFi ra Serial Monitor để chẩn đoán trạng thái `WiFi.status()`.
+**Định dạng đầu ra:** Mã nguồn C++ hoàn chỉnh và các bước nối dây bổ sung.
 ```
 
 #### 18.2. Kết quả AI gợi ý
@@ -2582,22 +2156,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Khắc phục lỗi Nguồn cho Servo |
+| Mục đích | Xử lý lỗi giao tiếp HTTP (ESP32 và Server) |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 19.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Kỹ sư Điện tử (Electronics Engineer).
+**Vai trò:** Kỹ sư phần mềm mạng (Network Software Engineer).
 
-**Ngữ cảnh:** Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
+**Ngữ cảnh:** Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
 
-**Nhiệm vụ:** Tìm và khắc phục lỗi phần cứng kết nối nguồn.
+**Nhiệm vụ:** Gỡ lỗi quá trình ESP32 tải file âm thanh từ server HTTP.
 
-**Yêu cầu:** Phân tích lỗi kỹ thuật về "Nối chung mass/GND" giữa các bộ nguồn độc lập. Giải thích ngắn gọn cơ chế băm xung PWM cần mạch tham chiếu điện áp.
+**Yêu cầu:** Phân tích nguyên nhân tại sao ESP32 báo lỗi "Không nhận được file" dù file đã thực sự tồn tại trên server. Hãy kiểm tra các khía cạnh: cấu hình tường lửa Windows (Firewall), khác biệt dải IP tĩnh/động, hoặc lỗi phân tích cú pháp URL trên mạch.
 
-**Định dạng đầu ra:** Giải thích kỹ thuật và hướng dẫn sửa lại dây nối (sơ đồ kết nối lại).
+**Định dạng đầu ra:** Danh sách các bước kiểm tra (check-list) mạng và đoạn code HTTP Client (sử dụng thư viện HTTPClient) đã được tinh chỉnh để tải file an toàn.
 ```
 
 #### 19.2. Kết quả AI gợi ý
@@ -2652,22 +2226,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Hiệu chỉnh góc xoay Servo |
+| Mục đích | Gỡ lỗi kết nối Mạng và IP |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 20.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Kỹ sư Hệ thống Điều khiển (Control Systems Engineer).
+**Vai trò:** Chuyên gia mạng nhúng (Embedded Network Expert).
 
-**Ngữ cảnh:** Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
+**Ngữ cảnh:** Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
 
-**Nhiệm vụ:** Tinh chỉnh các thông số cấp xung PWM.
+**Nhiệm vụ:** Khắc phục lỗi ESP32 không chịu kết nối WiFi mới và không phát ra âm thanh.
 
-**Yêu cầu:** Cung cấp kỹ thuật sử dụng giới hạn min/max pulse (microsecond) thay thế cho việc gọi độ thẳng. Giúp tôi căn chỉnh lại điểm 0 thực tế và góc vuông 90 độ thực tế.
+**Yêu cầu:** Liệt kê các khả năng gây ra lỗi mạng (như băng tần 5GHz không được hỗ trợ trên ESP32) và đưa ra kỹ thuật chẩn đoán lỗi vòng lặp `WiFi.begin()`.
 
-**Định dạng đầu ra:** Đoạn mã cấu hình `gateServo.attach(pin, minPulse, maxPulse)` kèm chú thích cách thay đổi thông số pulse.
+**Định dạng đầu ra:** Đoạn mã bổ sung hàm in log kết nối WiFi ra Serial Monitor để chẩn đoán trạng thái `WiFi.status()`.
 ```
 
 #### 20.2. Kết quả AI gợi ý
@@ -2722,22 +2296,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Sửa lỗi hiển thị dữ liệu LCD |
+| Mục đích | Khắc phục lỗi Nguồn cho Servo |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 21.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Kỹ sư Nhúng.
+**Vai trò:** Kỹ sư Điện tử (Electronics Engineer).
 
-**Ngữ cảnh:** Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
+**Ngữ cảnh:** Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
 
-**Nhiệm vụ:** Chẩn đoán và sửa lỗi đường truyền tín hiệu I2C.
+**Nhiệm vụ:** Tìm và khắc phục lỗi phần cứng kết nối nguồn.
 
-**Yêu cầu:** Nêu ra các nguyên nhân khả dĩ nhất (như xung nhiễu dây điện dài, sai địa chỉ 0x27/0x3F, hoặc nguồn điện vào 3.3V thay vì 5V không đủ độ tương phản).
+**Yêu cầu:** Phân tích lỗi kỹ thuật về "Nối chung mass/GND" giữa các bộ nguồn độc lập. Giải thích ngắn gọn cơ chế băm xung PWM cần mạch tham chiếu điện áp.
 
-**Định dạng đầu ra:** Cung cấp một đoạn mã "I2C Scanner" chuẩn của Arduino để giúp tôi tìm đúng địa chỉ phần cứng của màn hình.
+**Định dạng đầu ra:** Giải thích kỹ thuật và hướng dẫn sửa lại dây nối (sơ đồ kết nối lại).
 ```
 
 #### 21.2. Kết quả AI gợi ý
@@ -2792,22 +2366,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Thiết lập môi trường Server AI (Python) |
+| Mục đích | Hiệu chỉnh góc xoay Servo |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 22.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Chuyên gia Python và Trí tuệ nhân tạo (AI Expert).
+**Vai trò:** Kỹ sư Hệ thống Điều khiển (Control Systems Engineer).
 
-**Ngữ cảnh:** Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
+**Ngữ cảnh:** Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
 
-**Nhiệm vụ:** Xử lý triệt để lỗi môi trường thư viện.
+**Nhiệm vụ:** Tinh chỉnh các thông số cấp xung PWM.
 
-**Yêu cầu:** Hướng dẫn chính xác câu lệnh cài đặt thư viện `PyTorch` hỗ trợ cho CPU/GPU trên Windows. Giải thích vì sao khi dùng venv cần phải cài lại thư viện thay vì dùng chung với Python gốc.
+**Yêu cầu:** Cung cấp kỹ thuật sử dụng giới hạn min/max pulse (microsecond) thay thế cho việc gọi độ thẳng. Giúp tôi căn chỉnh lại điểm 0 thực tế và góc vuông 90 độ thực tế.
 
-**Định dạng đầu ra:** Lệnh cài đặt cụ thể trong terminal Windows (ví dụ: pip install).
+**Định dạng đầu ra:** Đoạn mã cấu hình `gateServo.attach(pin, minPulse, maxPulse)` kèm chú thích cách thay đổi thông số pulse.
 ```
 
 #### 22.2. Kết quả AI gợi ý
@@ -2862,22 +2436,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Quản lý Tài liệu Dự án |
+| Mục đích | Sửa lỗi hiển thị dữ liệu LCD |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 23.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Chuyên viên viết tài liệu kỹ thuật (Technical Writer).
+**Vai trò:** Kỹ sư Nhúng.
 
-**Ngữ cảnh:** Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
+**Ngữ cảnh:** Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
 
-**Nhiệm vụ:** Soạn thảo thêm mục "Hướng dẫn khởi động và chạy server ảo".
+**Nhiệm vụ:** Chẩn đoán và sửa lỗi đường truyền tín hiệu I2C.
 
-**Yêu cầu:** Viết một cách bài bản, rõ ràng từ các bước căn bản nhất (mở terminal ở đâu, tạo venv thế nào, chạy requirements.txt, cho đến lệnh start server).
+**Yêu cầu:** Nêu ra các nguyên nhân khả dĩ nhất (như xung nhiễu dây điện dài, sai địa chỉ 0x27/0x3F, hoặc nguồn điện vào 3.3V thay vì 5V không đủ độ tương phản).
 
-**Định dạng đầu ra:** Đoạn văn bản định dạng Markdown (.md) chuẩn, sử dụng các khối code-block cho mọi lệnh terminal để người đọc dễ dàng copy/paste.
+**Định dạng đầu ra:** Cung cấp một đoạn mã "I2C Scanner" chuẩn của Arduino để giúp tôi tìm đúng địa chỉ phần cứng của màn hình.
 ```
 
 #### 23.2. Kết quả AI gợi ý
@@ -2932,24 +2506,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Dọn dẹp & Quản lý Mã Nguồn |
+| Mục đích | Thiết lập môi trường Server AI (Python) |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 24.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Kỹ sư DevOps và chuyên gia quản lý Git.
+**Vai trò:** Chuyên gia Python và Trí tuệ nhân tạo (AI Expert).
 
-**Ngữ cảnh:** Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
+**Ngữ cảnh:** Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
 
-**Nhiệm vụ:** Thiết lập các bộ quy tắc loại trừ file (gitignore) cho dự án monorepo này.
+**Nhiệm vụ:** Xử lý triệt để lỗi môi trường thư viện.
 
-**Yêu cầu:** 
-- Tạo file `.gitignore` tiêu chuẩn nhằm loại bỏ: thư mục build `.pio/`, file biên dịch `*.elf`, cache của Python `__pycache__/`, môi trường ảo `venv/` và thông tin lưu trữ VS Code.
-- Đảm bảo các mô hình nặng (file .pth) hoặc data nhạy cảm không bị đưa lên Git nhưng các config thiết yếu vẫn được giữ.
+**Yêu cầu:** Hướng dẫn chính xác câu lệnh cài đặt thư viện `PyTorch` hỗ trợ cho CPU/GPU trên Windows. Giải thích vì sao khi dùng venv cần phải cài lại thư viện thay vì dùng chung với Python gốc.
 
-**Định dạng đầu ra:** Nội dung nguyên văn cho các file `.gitignore` để gán vào các thư mục tương ứng.
+**Định dạng đầu ra:** Lệnh cài đặt cụ thể trong terminal Windows (ví dụ: pip install).
 ```
 
 #### 24.2. Kết quả AI gợi ý
@@ -3004,22 +2576,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Xử lý Lỗi Cài đặt Thư viện bằng Pip (Virtual Environment) |
+| Mục đích | Quản lý Tài liệu Dự án |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 25.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Chuyên gia Môi trường Python (Python Environment Specialist).
+**Vai trò:** Chuyên viên viết tài liệu kỹ thuật (Technical Writer).
 
-**Ngữ cảnh:** Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
+**Ngữ cảnh:** Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
 
-**Nhiệm vụ:** Khắc phục lỗi đường dẫn môi trường của trình quản lý gói pip.
+**Nhiệm vụ:** Soạn thảo thêm mục "Hướng dẫn khởi động và chạy server ảo".
 
-**Yêu cầu:** Giải thích nguyên nhân (thường do di chuyển thư mục chứa venv làm sai lệch đường dẫn tuyệt đối của pip). Cung cấp giải pháp dùng `python -m pip install` thay vì gọi trực tiếp `pip`, hoặc hướng dẫn xóa và tạo lại venv một cách an toàn.
+**Yêu cầu:** Viết một cách bài bản, rõ ràng từ các bước căn bản nhất (mở terminal ở đâu, tạo venv thế nào, chạy requirements.txt, cho đến lệnh start server).
 
-**Định dạng đầu ra:** Câu lệnh khắc phục lỗi có thể chạy ngay trong Terminal.
+**Định dạng đầu ra:** Đoạn văn bản định dạng Markdown (.md) chuẩn, sử dụng các khối code-block cho mọi lệnh terminal để người đọc dễ dàng copy/paste.
 ```
 
 #### 25.2. Kết quả AI gợi ý
@@ -3074,22 +2646,24 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Gỡ bỏ Công cụ Giả lập Linux (MSYS2) Gây Xung Đột |
+| Mục đích | Dọn dẹp & Quản lý Mã Nguồn |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 26.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Quản trị viên Hệ thống Windows (Windows System Administrator).
+**Vai trò:** Kỹ sư DevOps và chuyên gia quản lý Git.
 
-**Ngữ cảnh:** Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
+**Ngữ cảnh:** Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
 
-**Nhiệm vụ:** Hướng dẫn loại bỏ sự cản trở của MSYS2 đối với môi trường lập trình Python.
+**Nhiệm vụ:** Thiết lập các bộ quy tắc loại trừ file (gitignore) cho dự án monorepo này.
 
-**Yêu cầu:** Liệt kê các bước cụ thể để mở "Environment Variables" (Biến môi trường) trên Windows, tìm và xóa đường dẫn của MSYS2 ra khỏi biến PATH.
+**Yêu cầu:** 
+- Tạo file `.gitignore` tiêu chuẩn nhằm loại bỏ: thư mục build `.pio/`, file biên dịch `*.elf`, cache của Python `__pycache__/`, môi trường ảo `venv/` và thông tin lưu trữ VS Code.
+- Đảm bảo các mô hình nặng (file .pth) hoặc data nhạy cảm không bị đưa lên Git nhưng các config thiết yếu vẫn được giữ.
 
-**Định dạng đầu ra:** Danh sách hướng dẫn từng bước (step-by-step) trên giao diện đồ họa Windows.
+**Định dạng đầu ra:** Nội dung nguyên văn cho các file `.gitignore` để gán vào các thư mục tương ứng.
 ```
 
 #### 26.2. Kết quả AI gợi ý
@@ -3144,22 +2718,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Tự Động Hóa Thực Thi Lệnh Terminal |
+| Mục đích | Xử lý Lỗi Cài đặt Thư viện bằng Pip (Virtual Environment) |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 27.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Trợ lý lập trình AI tự động (Agentic AI Assistant).
+**Vai trò:** Chuyên gia Môi trường Python (Python Environment Specialist).
 
-**Ngữ cảnh:** Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
+**Ngữ cảnh:** Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
 
-**Nhiệm vụ:** Chạy trực tiếp các lệnh Terminal để sửa lỗi môi trường Python trên thiết bị của tôi.
+**Nhiệm vụ:** Khắc phục lỗi đường dẫn môi trường của trình quản lý gói pip.
 
-**Yêu cầu:** Hãy sử dụng khả năng thực thi mã lệnh/terminal tự động của bạn để xóa thư mục `venv` cũ bị lỗi, tạo lại `venv` mới và kích hoạt, sau đó cài đặt `requirements.txt` mà không cần tôi phải tự gõ bất kỳ phím nào.
+**Yêu cầu:** Giải thích nguyên nhân (thường do di chuyển thư mục chứa venv làm sai lệch đường dẫn tuyệt đối của pip). Cung cấp giải pháp dùng `python -m pip install` thay vì gọi trực tiếp `pip`, hoặc hướng dẫn xóa và tạo lại venv một cách an toàn.
 
-**Định dạng đầu ra:** Kết quả thực thi từ hệ thống (Log/Output) xác nhận môi trường đã sẵn sàng.
+**Định dạng đầu ra:** Câu lệnh khắc phục lỗi có thể chạy ngay trong Terminal.
 ```
 
 #### 27.2. Kết quả AI gợi ý
@@ -3214,22 +2788,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) |
+| Mục đích | Gỡ bỏ Công cụ Giả lập Linux (MSYS2) Gây Xung Đột |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 28.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Người kiểm duyệt tài liệu (Technical Reviewer).
+**Vai trò:** Quản trị viên Hệ thống Windows (Windows System Administrator).
 
-**Ngữ cảnh:** Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
+**Ngữ cảnh:** Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
 
-**Nhiệm vụ:** Rà soát và cập nhật nội dung tài liệu.
+**Nhiệm vụ:** Hướng dẫn loại bỏ sự cản trở của MSYS2 đối với môi trường lập trình Python.
 
-**Yêu cầu:** Hãy đọc toàn bộ nội dung file tài liệu hiện tại, đối chiếu với những thay đổi kỹ thuật ta vừa làm (như sử dụng IP tĩnh mới, lệnh `python -m pip`, cấu hình ESP32). Đề xuất những thông tin bị lỗi thời cần xóa đi và viết bổ sung những thông tin mới.
+**Yêu cầu:** Liệt kê các bước cụ thể để mở "Environment Variables" (Biến môi trường) trên Windows, tìm và xóa đường dẫn của MSYS2 ra khỏi biến PATH.
 
-**Định dạng đầu ra:** Danh sách các điểm cần chỉnh sửa (bullet points) và đoạn văn bản nháp Markdown để thay thế.
+**Định dạng đầu ra:** Danh sách hướng dẫn từng bước (step-by-step) trên giao diện đồ họa Windows.
 ```
 
 #### 28.2. Kết quả AI gợi ý
@@ -3284,24 +2858,22 @@ Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm
 |---|---|
 | Ngày sử dụng | 15/06/2026 |
 | Công cụ AI | Gemini |
-| Mục đích | Tinh chỉnh Server API Trả Về Luồng Âm Thanh |
+| Mục đích | Tự Động Hóa Thực Thi Lệnh Terminal |
 | Phần việc liên quan | ESP32 |
 | Mức độ sử dụng | Tạo code và gỡ lỗi |
 
 #### 29.1. Prompt đã sử dụng
 
 ```text
-**Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
+**Vai trò:** Trợ lý lập trình AI tự động (Agentic AI Assistant).
 
-**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+**Ngữ cảnh:** Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
 
-**Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
+**Nhiệm vụ:** Chạy trực tiếp các lệnh Terminal để sửa lỗi môi trường Python trên thiết bị của tôi.
 
-**Yêu cầu:** 
-- Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
-- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
+**Yêu cầu:** Hãy sử dụng khả năng thực thi mã lệnh/terminal tự động của bạn để xóa thư mục `venv` cũ bị lỗi, tạo lại `venv` mới và kích hoạt, sau đó cài đặt `requirements.txt` mà không cần tôi phải tự gõ bất kỳ phím nào.
 
-**Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
+**Định dạng đầu ra:** Kết quả thực thi từ hệ thống (Log/Output) xác nhận môi trường đã sẵn sàng.
 ```
 
 #### 29.2. Kết quả AI gợi ý
@@ -3340,6 +2912,148 @@ Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù
 | Ghi chú khác | |
 
 #### 29.6. Nhận xét cá nhân/nhóm
+
+Sinh viên/nhóm học được gì sau lần sử dụng AI này?
+
+```text
+Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
+```
+
+
+---
+
+### Lần sử dụng AI số 30
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) |
+| Phần việc liên quan | ESP32 |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 30.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Người kiểm duyệt tài liệu (Technical Reviewer).
+
+**Ngữ cảnh:** Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
+
+**Nhiệm vụ:** Rà soát và cập nhật nội dung tài liệu.
+
+**Yêu cầu:** Hãy đọc toàn bộ nội dung file tài liệu hiện tại, đối chiếu với những thay đổi kỹ thuật ta vừa làm (như sử dụng IP tĩnh mới, lệnh `python -m pip`, cấu hình ESP32). Đề xuất những thông tin bị lỗi thời cần xóa đi và viết bổ sung những thông tin mới.
+
+**Định dạng đầu ra:** Danh sách các điểm cần chỉnh sửa (bullet points) và đoạn văn bản nháp Markdown để thay thế.
+```
+
+#### 30.2. Kết quả AI gợi ý
+
+Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
+
+```text
+AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
+```
+
+#### 30.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
+
+```text
+Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
+```
+
+#### 30.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
+
+```text
+Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
+```
+
+#### 30.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit |  |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | Thành công |
+| Link video demo | |
+| Ghi chú khác | |
+
+#### 30.6. Nhận xét cá nhân/nhóm
+
+Sinh viên/nhóm học được gì sau lần sử dụng AI này?
+
+```text
+Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
+```
+
+
+---
+
+### Lần sử dụng AI số 31
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Tinh chỉnh Server API Trả Về Luồng Âm Thanh |
+| Phần việc liên quan | ESP32 |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 31.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
+
+**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+
+**Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
+
+**Yêu cầu:** 
+- Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
+- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
+
+**Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
+```
+
+#### 31.2. Kết quả AI gợi ý
+
+Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
+
+```text
+AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
+```
+
+#### 31.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
+
+```text
+Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
+```
+
+#### 31.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
+
+```text
+Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
+```
+
+#### 31.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit |  |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | Thành công |
+| Link video demo | |
+| Ghi chú khác | |
+
+#### 31.6. Nhận xét cá nhân/nhóm
 
 Sinh viên/nhóm học được gì sau lần sử dụng AI này?
 
