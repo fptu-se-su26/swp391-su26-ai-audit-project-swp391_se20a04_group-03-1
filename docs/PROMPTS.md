@@ -1090,9 +1090,1202 @@ Các chức năng chính gồm:
 ```text
 Kinh nghiệm rút ra: Việc tái sử dụng kiến trúc và giao diện từ các module quản lí đã có giúp giảm thời gian phát triển đáng kể, đồng thời đảm bảo tính nhất quán và khả năng bảo trì của hệ thống khi số lượng module ngày càng tăng.
 ```
+---
+
+### Prompt số 17
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Khởi tạo cấu trúc phần cứng và logic lõi ESP32 |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 17.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên gia lập trình hệ thống nhúng (Embedded Systems Engineer) chuyên về ESP32.
+
+**Ngữ cảnh:** Tôi đang phát triển dự án `LoaESP32smartAI` chạy trên PlatformIO. Dự án sử dụng màn hình LCD I2C, module khuếch đại âm thanh MAX98357A (I2S) và động cơ Servo (SG90/MG996R).
+
+**Nhiệm vụ:** Viết mã C++ cho ESP32 tích hợp các thành phần cứng trên.
+
+**Yêu cầu:** 
+- Cứ mỗi 5 giây, điều khiển servo xoay 90 độ để mở cổng.
+- Khi cổng mở, in dòng chữ "WELCOME" ra màn hình LCD, đồng thời phát ra 3 tiếng "tinh tinh tinh" qua loa bằng I2S.
+- Sau 2 giây mở cổng, điều khiển servo trở về trạng thái 0 độ.
+
+**Định dạng đầu ra:** Toàn bộ source code `main.cpp` đầy đủ cho môi trường PlatformIO, kèm chú thích cấu hình chân (pinout) chi tiết.
+```
+
+#### 17.2. Bối cảnh khi viết prompt
+
+```text
+Tôi đang phát triển dự án `LoaESP32smartAI` chạy trên PlatformIO. Dự án sử dụng màn hình LCD I2C, module khuếch đại âm thanh MAX98357A (I2S) và động cơ Servo (SG90/MG996R).
+```
+
+#### 17.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 17.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 17.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 17.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 17.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 17.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
 
 ---
 
+### Prompt số 18
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Cải tiến Logic Hoạt Động & Thêm Cảm Biến Hồng Ngoại |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 18.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư hệ thống IoT.
+
+**Ngữ cảnh:** Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
+
+**Nhiệm vụ:** Cập nhật luồng hoạt động tự động của hệ thống.
+
+**Yêu cầu:**
+- Trạng thái đóng: LCD hiện "Dang dong cong..." và đợi 5 giây (servo 0 độ).
+- Trạng thái đón khách: LCD hiện "WELCOME!", phát 3 tiếng bíp, servo xoay 90 độ. Sau đó chuyển sang trạng thái chờ "Cho xe di qua..." và giữ cổng mở vô thời hạn.
+- Khi xe cắt ngang cảm biến hồng ngoại: LCD chuyển sang in dòng chữ "Dang qua cong...".
+- Thoát trạng thái: Sau khi xe đi qua hoàn toàn (tín hiệu cảm biến trở về HIGH), đợi 1 giây an toàn, hạ cổng xuống và quay lại từ đầu.
+
+**Định dạng đầu ra:** Mã nguồn C++ hoàn chỉnh và các bước nối dây bổ sung.
+```
+
+#### 18.2. Bối cảnh khi viết prompt
+
+```text
+Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
+```
+
+#### 18.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 18.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 18.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 18.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 18.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 18.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 19
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Xử lý lỗi giao tiếp HTTP (ESP32 và Server) |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 19.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư phần mềm mạng (Network Software Engineer).
+
+**Ngữ cảnh:** Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
+
+**Nhiệm vụ:** Gỡ lỗi quá trình ESP32 tải file âm thanh từ server HTTP.
+
+**Yêu cầu:** Phân tích nguyên nhân tại sao ESP32 báo lỗi "Không nhận được file" dù file đã thực sự tồn tại trên server. Hãy kiểm tra các khía cạnh: cấu hình tường lửa Windows (Firewall), khác biệt dải IP tĩnh/động, hoặc lỗi phân tích cú pháp URL trên mạch.
+
+**Định dạng đầu ra:** Danh sách các bước kiểm tra (check-list) mạng và đoạn code HTTP Client (sử dụng thư viện HTTPClient) đã được tinh chỉnh để tải file an toàn.
+```
+
+#### 19.2. Bối cảnh khi viết prompt
+
+```text
+Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
+```
+
+#### 19.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 19.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 19.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 19.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 19.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 19.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 20
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Gỡ lỗi kết nối Mạng và IP |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 20.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên gia mạng nhúng (Embedded Network Expert).
+
+**Ngữ cảnh:** Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
+
+**Nhiệm vụ:** Khắc phục lỗi ESP32 không chịu kết nối WiFi mới và không phát ra âm thanh.
+
+**Yêu cầu:** Liệt kê các khả năng gây ra lỗi mạng (như băng tần 5GHz không được hỗ trợ trên ESP32) và đưa ra kỹ thuật chẩn đoán lỗi vòng lặp `WiFi.begin()`.
+
+**Định dạng đầu ra:** Đoạn mã bổ sung hàm in log kết nối WiFi ra Serial Monitor để chẩn đoán trạng thái `WiFi.status()`.
+```
+
+#### 20.2. Bối cảnh khi viết prompt
+
+```text
+Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
+```
+
+#### 20.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 20.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 20.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 20.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 20.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 20.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 21
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Khắc phục lỗi Nguồn cho Servo |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 21.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư Điện tử (Electronics Engineer).
+
+**Ngữ cảnh:** Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
+
+**Nhiệm vụ:** Tìm và khắc phục lỗi phần cứng kết nối nguồn.
+
+**Yêu cầu:** Phân tích lỗi kỹ thuật về "Nối chung mass/GND" giữa các bộ nguồn độc lập. Giải thích ngắn gọn cơ chế băm xung PWM cần mạch tham chiếu điện áp.
+
+**Định dạng đầu ra:** Giải thích kỹ thuật và hướng dẫn sửa lại dây nối (sơ đồ kết nối lại).
+```
+
+#### 21.2. Bối cảnh khi viết prompt
+
+```text
+Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
+```
+
+#### 21.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 21.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 21.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 21.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 21.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 21.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 22
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Hiệu chỉnh góc xoay Servo |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 22.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư Hệ thống Điều khiển (Control Systems Engineer).
+
+**Ngữ cảnh:** Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
+
+**Nhiệm vụ:** Tinh chỉnh các thông số cấp xung PWM.
+
+**Yêu cầu:** Cung cấp kỹ thuật sử dụng giới hạn min/max pulse (microsecond) thay thế cho việc gọi độ thẳng. Giúp tôi căn chỉnh lại điểm 0 thực tế và góc vuông 90 độ thực tế.
+
+**Định dạng đầu ra:** Đoạn mã cấu hình `gateServo.attach(pin, minPulse, maxPulse)` kèm chú thích cách thay đổi thông số pulse.
+```
+
+#### 22.2. Bối cảnh khi viết prompt
+
+```text
+Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
+```
+
+#### 22.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 22.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 22.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 22.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 22.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 22.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 23
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Sửa lỗi hiển thị dữ liệu LCD |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 23.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư Nhúng.
+
+**Ngữ cảnh:** Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
+
+**Nhiệm vụ:** Chẩn đoán và sửa lỗi đường truyền tín hiệu I2C.
+
+**Yêu cầu:** Nêu ra các nguyên nhân khả dĩ nhất (như xung nhiễu dây điện dài, sai địa chỉ 0x27/0x3F, hoặc nguồn điện vào 3.3V thay vì 5V không đủ độ tương phản).
+
+**Định dạng đầu ra:** Cung cấp một đoạn mã "I2C Scanner" chuẩn của Arduino để giúp tôi tìm đúng địa chỉ phần cứng của màn hình.
+```
+
+#### 23.2. Bối cảnh khi viết prompt
+
+```text
+Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
+```
+
+#### 23.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 23.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 23.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 23.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 23.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 23.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 24
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Thiết lập môi trường Server AI (Python) |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 24.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên gia Python và Trí tuệ nhân tạo (AI Expert).
+
+**Ngữ cảnh:** Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
+
+**Nhiệm vụ:** Xử lý triệt để lỗi môi trường thư viện.
+
+**Yêu cầu:** Hướng dẫn chính xác câu lệnh cài đặt thư viện `PyTorch` hỗ trợ cho CPU/GPU trên Windows. Giải thích vì sao khi dùng venv cần phải cài lại thư viện thay vì dùng chung với Python gốc.
+
+**Định dạng đầu ra:** Lệnh cài đặt cụ thể trong terminal Windows (ví dụ: pip install).
+```
+
+#### 24.2. Bối cảnh khi viết prompt
+
+```text
+Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
+```
+
+#### 24.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 24.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 24.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 24.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 24.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 24.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 25
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Quản lý Tài liệu Dự án |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 25.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên viên viết tài liệu kỹ thuật (Technical Writer).
+
+**Ngữ cảnh:** Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
+
+**Nhiệm vụ:** Soạn thảo thêm mục "Hướng dẫn khởi động và chạy server ảo".
+
+**Yêu cầu:** Viết một cách bài bản, rõ ràng từ các bước căn bản nhất (mở terminal ở đâu, tạo venv thế nào, chạy requirements.txt, cho đến lệnh start server).
+
+**Định dạng đầu ra:** Đoạn văn bản định dạng Markdown (.md) chuẩn, sử dụng các khối code-block cho mọi lệnh terminal để người đọc dễ dàng copy/paste.
+```
+
+#### 25.2. Bối cảnh khi viết prompt
+
+```text
+Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
+```
+
+#### 25.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 25.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 25.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 25.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 25.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 25.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 26
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Dọn dẹp & Quản lý Mã Nguồn |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 26.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư DevOps và chuyên gia quản lý Git.
+
+**Ngữ cảnh:** Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
+
+**Nhiệm vụ:** Thiết lập các bộ quy tắc loại trừ file (gitignore) cho dự án monorepo này.
+
+**Yêu cầu:** 
+- Tạo file `.gitignore` tiêu chuẩn nhằm loại bỏ: thư mục build `.pio/`, file biên dịch `*.elf`, cache của Python `__pycache__/`, môi trường ảo `venv/` và thông tin lưu trữ VS Code.
+- Đảm bảo các mô hình nặng (file .pth) hoặc data nhạy cảm không bị đưa lên Git nhưng các config thiết yếu vẫn được giữ.
+
+**Định dạng đầu ra:** Nội dung nguyên văn cho các file `.gitignore` để gán vào các thư mục tương ứng.
+```
+
+#### 26.2. Bối cảnh khi viết prompt
+
+```text
+Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
+```
+
+#### 26.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 26.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 26.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 26.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 26.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 26.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 27
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Xử lý Lỗi Cài đặt Thư viện bằng Pip (Virtual Environment) |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 27.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên gia Môi trường Python (Python Environment Specialist).
+
+**Ngữ cảnh:** Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
+
+**Nhiệm vụ:** Khắc phục lỗi đường dẫn môi trường của trình quản lý gói pip.
+
+**Yêu cầu:** Giải thích nguyên nhân (thường do di chuyển thư mục chứa venv làm sai lệch đường dẫn tuyệt đối của pip). Cung cấp giải pháp dùng `python -m pip install` thay vì gọi trực tiếp `pip`, hoặc hướng dẫn xóa và tạo lại venv một cách an toàn.
+
+**Định dạng đầu ra:** Câu lệnh khắc phục lỗi có thể chạy ngay trong Terminal.
+```
+
+#### 27.2. Bối cảnh khi viết prompt
+
+```text
+Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
+```
+
+#### 27.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 27.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 27.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 27.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 27.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 27.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 28
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Gỡ bỏ Công cụ Giả lập Linux (MSYS2) Gây Xung Đột |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 28.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Quản trị viên Hệ thống Windows (Windows System Administrator).
+
+**Ngữ cảnh:** Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
+
+**Nhiệm vụ:** Hướng dẫn loại bỏ sự cản trở của MSYS2 đối với môi trường lập trình Python.
+
+**Yêu cầu:** Liệt kê các bước cụ thể để mở "Environment Variables" (Biến môi trường) trên Windows, tìm và xóa đường dẫn của MSYS2 ra khỏi biến PATH.
+
+**Định dạng đầu ra:** Danh sách hướng dẫn từng bước (step-by-step) trên giao diện đồ họa Windows.
+```
+
+#### 28.2. Bối cảnh khi viết prompt
+
+```text
+Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
+```
+
+#### 28.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 28.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 28.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 28.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 28.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 28.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 29
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Tự Động Hóa Thực Thi Lệnh Terminal |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 29.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Trợ lý lập trình AI tự động (Agentic AI Assistant).
+
+**Ngữ cảnh:** Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
+
+**Nhiệm vụ:** Chạy trực tiếp các lệnh Terminal để sửa lỗi môi trường Python trên thiết bị của tôi.
+
+**Yêu cầu:** Hãy sử dụng khả năng thực thi mã lệnh/terminal tự động của bạn để xóa thư mục `venv` cũ bị lỗi, tạo lại `venv` mới và kích hoạt, sau đó cài đặt `requirements.txt` mà không cần tôi phải tự gõ bất kỳ phím nào.
+
+**Định dạng đầu ra:** Kết quả thực thi từ hệ thống (Log/Output) xác nhận môi trường đã sẵn sàng.
+```
+
+#### 29.2. Bối cảnh khi viết prompt
+
+```text
+Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
+```
+
+#### 29.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 29.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 29.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 29.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 29.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 29.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 30
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 30.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Người kiểm duyệt tài liệu (Technical Reviewer).
+
+**Ngữ cảnh:** Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
+
+**Nhiệm vụ:** Rà soát và cập nhật nội dung tài liệu.
+
+**Yêu cầu:** Hãy đọc toàn bộ nội dung file tài liệu hiện tại, đối chiếu với những thay đổi kỹ thuật ta vừa làm (như sử dụng IP tĩnh mới, lệnh `python -m pip`, cấu hình ESP32). Đề xuất những thông tin bị lỗi thời cần xóa đi và viết bổ sung những thông tin mới.
+
+**Định dạng đầu ra:** Danh sách các điểm cần chỉnh sửa (bullet points) và đoạn văn bản nháp Markdown để thay thế.
+```
+
+#### 30.2. Bối cảnh khi viết prompt
+
+```text
+Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
+```
+
+#### 30.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 30.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 30.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 30.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 30.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 30.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+
+---
+
+### Prompt số 31
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Tinh chỉnh Server API Trả Về Luồng Âm Thanh |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 31.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
+
+**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+
+**Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
+
+**Yêu cầu:** 
+- Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
+- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
+
+**Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
+```
+
+#### 31.2. Bối cảnh khi viết prompt
+
+```text
+Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+```
+
+#### 31.3. Kết quả AI trả về
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 31.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 31.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 31.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 31.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | |
+| Screenshot | |
+| Kết quả chạy/test | |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 31.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+---
 ## 6. Prompt quan trọng nhất
 
 > > > > > > > main
@@ -1265,1198 +2458,3 @@ Sinh viên/nhóm cam kết rằng:
 | ----------------------- | ------------- |
 |                         |               |
 
-
----
-
-### Prompt số 14
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Khởi tạo cấu trúc phần cứng và logic lõi ESP32 |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 14.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Chuyên gia lập trình hệ thống nhúng (Embedded Systems Engineer) chuyên về ESP32.
-
-**Ngữ cảnh:** Tôi đang phát triển dự án `LoaESP32smartAI` chạy trên PlatformIO. Dự án sử dụng màn hình LCD I2C, module khuếch đại âm thanh MAX98357A (I2S) và động cơ Servo (SG90/MG996R).
-
-**Nhiệm vụ:** Viết mã C++ cho ESP32 tích hợp các thành phần cứng trên.
-
-**Yêu cầu:** 
-- Cứ mỗi 5 giây, điều khiển servo xoay 90 độ để mở cổng.
-- Khi cổng mở, in dòng chữ "WELCOME" ra màn hình LCD, đồng thời phát ra 3 tiếng "tinh tinh tinh" qua loa bằng I2S.
-- Sau 2 giây mở cổng, điều khiển servo trở về trạng thái 0 độ.
-
-**Định dạng đầu ra:** Toàn bộ source code `main.cpp` đầy đủ cho môi trường PlatformIO, kèm chú thích cấu hình chân (pinout) chi tiết.
-```
-
-#### 14.2. Bối cảnh khi viết prompt
-
-```text
-Tôi đang phát triển dự án `LoaESP32smartAI` chạy trên PlatformIO. Dự án sử dụng màn hình LCD I2C, module khuếch đại âm thanh MAX98357A (I2S) và động cơ Servo (SG90/MG996R).
-```
-
-#### 14.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 14.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 14.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 14.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 14.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 14.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 15
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Cải tiến Logic Hoạt Động & Thêm Cảm Biến Hồng Ngoại |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 15.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư hệ thống IoT.
-
-**Ngữ cảnh:** Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
-
-**Nhiệm vụ:** Cập nhật luồng hoạt động tự động của hệ thống.
-
-**Yêu cầu:**
-- Trạng thái đóng: LCD hiện "Dang dong cong..." và đợi 5 giây (servo 0 độ).
-- Trạng thái đón khách: LCD hiện "WELCOME!", phát 3 tiếng bíp, servo xoay 90 độ. Sau đó chuyển sang trạng thái chờ "Cho xe di qua..." và giữ cổng mở vô thời hạn.
-- Khi xe cắt ngang cảm biến hồng ngoại: LCD chuyển sang in dòng chữ "Dang qua cong...".
-- Thoát trạng thái: Sau khi xe đi qua hoàn toàn (tín hiệu cảm biến trở về HIGH), đợi 1 giây an toàn, hạ cổng xuống và quay lại từ đầu.
-
-**Định dạng đầu ra:** Mã nguồn C++ hoàn chỉnh và các bước nối dây bổ sung.
-```
-
-#### 15.2. Bối cảnh khi viết prompt
-
-```text
-Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
-```
-
-#### 15.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 15.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 15.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 15.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 15.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 15.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 16
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Xử lý lỗi giao tiếp HTTP (ESP32 và Server) |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 16.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư phần mềm mạng (Network Software Engineer).
-
-**Ngữ cảnh:** Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
-
-**Nhiệm vụ:** Gỡ lỗi quá trình ESP32 tải file âm thanh từ server HTTP.
-
-**Yêu cầu:** Phân tích nguyên nhân tại sao ESP32 báo lỗi "Không nhận được file" dù file đã thực sự tồn tại trên server. Hãy kiểm tra các khía cạnh: cấu hình tường lửa Windows (Firewall), khác biệt dải IP tĩnh/động, hoặc lỗi phân tích cú pháp URL trên mạch.
-
-**Định dạng đầu ra:** Danh sách các bước kiểm tra (check-list) mạng và đoạn code HTTP Client (sử dụng thư viện HTTPClient) đã được tinh chỉnh để tải file an toàn.
-```
-
-#### 16.2. Bối cảnh khi viết prompt
-
-```text
-Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
-```
-
-#### 16.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 16.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 16.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 16.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 16.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 16.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 17
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Gỡ lỗi kết nối Mạng và IP |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 17.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Chuyên gia mạng nhúng (Embedded Network Expert).
-
-**Ngữ cảnh:** Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
-
-**Nhiệm vụ:** Khắc phục lỗi ESP32 không chịu kết nối WiFi mới và không phát ra âm thanh.
-
-**Yêu cầu:** Liệt kê các khả năng gây ra lỗi mạng (như băng tần 5GHz không được hỗ trợ trên ESP32) và đưa ra kỹ thuật chẩn đoán lỗi vòng lặp `WiFi.begin()`.
-
-**Định dạng đầu ra:** Đoạn mã bổ sung hàm in log kết nối WiFi ra Serial Monitor để chẩn đoán trạng thái `WiFi.status()`.
-```
-
-#### 17.2. Bối cảnh khi viết prompt
-
-```text
-Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
-```
-
-#### 17.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 17.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 17.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 17.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 17.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 17.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 18
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Khắc phục lỗi Nguồn cho Servo |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 18.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư Điện tử (Electronics Engineer).
-
-**Ngữ cảnh:** Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
-
-**Nhiệm vụ:** Tìm và khắc phục lỗi phần cứng kết nối nguồn.
-
-**Yêu cầu:** Phân tích lỗi kỹ thuật về "Nối chung mass/GND" giữa các bộ nguồn độc lập. Giải thích ngắn gọn cơ chế băm xung PWM cần mạch tham chiếu điện áp.
-
-**Định dạng đầu ra:** Giải thích kỹ thuật và hướng dẫn sửa lại dây nối (sơ đồ kết nối lại).
-```
-
-#### 18.2. Bối cảnh khi viết prompt
-
-```text
-Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
-```
-
-#### 18.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 18.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 18.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 18.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 18.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 18.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 19
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Hiệu chỉnh góc xoay Servo |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 19.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư Hệ thống Điều khiển (Control Systems Engineer).
-
-**Ngữ cảnh:** Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
-
-**Nhiệm vụ:** Tinh chỉnh các thông số cấp xung PWM.
-
-**Yêu cầu:** Cung cấp kỹ thuật sử dụng giới hạn min/max pulse (microsecond) thay thế cho việc gọi độ thẳng. Giúp tôi căn chỉnh lại điểm 0 thực tế và góc vuông 90 độ thực tế.
-
-**Định dạng đầu ra:** Đoạn mã cấu hình `gateServo.attach(pin, minPulse, maxPulse)` kèm chú thích cách thay đổi thông số pulse.
-```
-
-#### 19.2. Bối cảnh khi viết prompt
-
-```text
-Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
-```
-
-#### 19.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 19.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 19.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 19.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 19.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 19.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 20
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Sửa lỗi hiển thị dữ liệu LCD |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 20.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư Nhúng.
-
-**Ngữ cảnh:** Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
-
-**Nhiệm vụ:** Chẩn đoán và sửa lỗi đường truyền tín hiệu I2C.
-
-**Yêu cầu:** Nêu ra các nguyên nhân khả dĩ nhất (như xung nhiễu dây điện dài, sai địa chỉ 0x27/0x3F, hoặc nguồn điện vào 3.3V thay vì 5V không đủ độ tương phản).
-
-**Định dạng đầu ra:** Cung cấp một đoạn mã "I2C Scanner" chuẩn của Arduino để giúp tôi tìm đúng địa chỉ phần cứng của màn hình.
-```
-
-#### 20.2. Bối cảnh khi viết prompt
-
-```text
-Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
-```
-
-#### 20.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 20.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 20.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 20.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 20.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 20.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 21
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Thiết lập môi trường Server AI (Python) |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 21.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Chuyên gia Python và Trí tuệ nhân tạo (AI Expert).
-
-**Ngữ cảnh:** Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
-
-**Nhiệm vụ:** Xử lý triệt để lỗi môi trường thư viện.
-
-**Yêu cầu:** Hướng dẫn chính xác câu lệnh cài đặt thư viện `PyTorch` hỗ trợ cho CPU/GPU trên Windows. Giải thích vì sao khi dùng venv cần phải cài lại thư viện thay vì dùng chung với Python gốc.
-
-**Định dạng đầu ra:** Lệnh cài đặt cụ thể trong terminal Windows (ví dụ: pip install).
-```
-
-#### 21.2. Bối cảnh khi viết prompt
-
-```text
-Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
-```
-
-#### 21.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 21.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 21.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 21.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 21.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 21.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 22
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Quản lý Tài liệu Dự án |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 22.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Chuyên viên viết tài liệu kỹ thuật (Technical Writer).
-
-**Ngữ cảnh:** Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
-
-**Nhiệm vụ:** Soạn thảo thêm mục "Hướng dẫn khởi động và chạy server ảo".
-
-**Yêu cầu:** Viết một cách bài bản, rõ ràng từ các bước căn bản nhất (mở terminal ở đâu, tạo venv thế nào, chạy requirements.txt, cho đến lệnh start server).
-
-**Định dạng đầu ra:** Đoạn văn bản định dạng Markdown (.md) chuẩn, sử dụng các khối code-block cho mọi lệnh terminal để người đọc dễ dàng copy/paste.
-```
-
-#### 22.2. Bối cảnh khi viết prompt
-
-```text
-Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
-```
-
-#### 22.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 22.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 22.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 22.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 22.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 22.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 23
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Dọn dẹp & Quản lý Mã Nguồn |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 23.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư DevOps và chuyên gia quản lý Git.
-
-**Ngữ cảnh:** Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
-
-**Nhiệm vụ:** Thiết lập các bộ quy tắc loại trừ file (gitignore) cho dự án monorepo này.
-
-**Yêu cầu:** 
-- Tạo file `.gitignore` tiêu chuẩn nhằm loại bỏ: thư mục build `.pio/`, file biên dịch `*.elf`, cache của Python `__pycache__/`, môi trường ảo `venv/` và thông tin lưu trữ VS Code.
-- Đảm bảo các mô hình nặng (file .pth) hoặc data nhạy cảm không bị đưa lên Git nhưng các config thiết yếu vẫn được giữ.
-
-**Định dạng đầu ra:** Nội dung nguyên văn cho các file `.gitignore` để gán vào các thư mục tương ứng.
-```
-
-#### 23.2. Bối cảnh khi viết prompt
-
-```text
-Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
-```
-
-#### 23.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 23.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 23.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 23.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 23.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 23.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 24
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Xử lý Lỗi Cài đặt Thư viện bằng Pip (Virtual Environment) |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 24.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Chuyên gia Môi trường Python (Python Environment Specialist).
-
-**Ngữ cảnh:** Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
-
-**Nhiệm vụ:** Khắc phục lỗi đường dẫn môi trường của trình quản lý gói pip.
-
-**Yêu cầu:** Giải thích nguyên nhân (thường do di chuyển thư mục chứa venv làm sai lệch đường dẫn tuyệt đối của pip). Cung cấp giải pháp dùng `python -m pip install` thay vì gọi trực tiếp `pip`, hoặc hướng dẫn xóa và tạo lại venv một cách an toàn.
-
-**Định dạng đầu ra:** Câu lệnh khắc phục lỗi có thể chạy ngay trong Terminal.
-```
-
-#### 24.2. Bối cảnh khi viết prompt
-
-```text
-Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
-```
-
-#### 24.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 24.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 24.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 24.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 24.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 24.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 25
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Gỡ bỏ Công cụ Giả lập Linux (MSYS2) Gây Xung Đột |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 25.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Quản trị viên Hệ thống Windows (Windows System Administrator).
-
-**Ngữ cảnh:** Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
-
-**Nhiệm vụ:** Hướng dẫn loại bỏ sự cản trở của MSYS2 đối với môi trường lập trình Python.
-
-**Yêu cầu:** Liệt kê các bước cụ thể để mở "Environment Variables" (Biến môi trường) trên Windows, tìm và xóa đường dẫn của MSYS2 ra khỏi biến PATH.
-
-**Định dạng đầu ra:** Danh sách hướng dẫn từng bước (step-by-step) trên giao diện đồ họa Windows.
-```
-
-#### 25.2. Bối cảnh khi viết prompt
-
-```text
-Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
-```
-
-#### 25.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 25.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 25.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 25.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 25.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 25.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 26
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Tự Động Hóa Thực Thi Lệnh Terminal |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 26.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Trợ lý lập trình AI tự động (Agentic AI Assistant).
-
-**Ngữ cảnh:** Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
-
-**Nhiệm vụ:** Chạy trực tiếp các lệnh Terminal để sửa lỗi môi trường Python trên thiết bị của tôi.
-
-**Yêu cầu:** Hãy sử dụng khả năng thực thi mã lệnh/terminal tự động của bạn để xóa thư mục `venv` cũ bị lỗi, tạo lại `venv` mới và kích hoạt, sau đó cài đặt `requirements.txt` mà không cần tôi phải tự gõ bất kỳ phím nào.
-
-**Định dạng đầu ra:** Kết quả thực thi từ hệ thống (Log/Output) xác nhận môi trường đã sẵn sàng.
-```
-
-#### 26.2. Bối cảnh khi viết prompt
-
-```text
-Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
-```
-
-#### 26.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 26.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 26.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 26.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 26.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 26.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 27
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 27.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Người kiểm duyệt tài liệu (Technical Reviewer).
-
-**Ngữ cảnh:** Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
-
-**Nhiệm vụ:** Rà soát và cập nhật nội dung tài liệu.
-
-**Yêu cầu:** Hãy đọc toàn bộ nội dung file tài liệu hiện tại, đối chiếu với những thay đổi kỹ thuật ta vừa làm (như sử dụng IP tĩnh mới, lệnh `python -m pip`, cấu hình ESP32). Đề xuất những thông tin bị lỗi thời cần xóa đi và viết bổ sung những thông tin mới.
-
-**Định dạng đầu ra:** Danh sách các điểm cần chỉnh sửa (bullet points) và đoạn văn bản nháp Markdown để thay thế.
-```
-
-#### 27.2. Bối cảnh khi viết prompt
-
-```text
-Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
-```
-
-#### 27.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 27.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 27.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 27.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 27.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 27.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
-
-
----
-
-### Prompt số 28
-
-| Nội dung | Thông tin |
-| --- | --- |
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Tinh chỉnh Server API Trả Về Luồng Âm Thanh |
-| Phần việc liên quan | ESP32 / Backend / AI |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 28.1. Prompt nguyên văn
-
-```text
-**Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
-
-**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
-
-**Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
-
-**Yêu cầu:** 
-- Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
-- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
-
-**Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
-```
-
-#### 28.2. Bối cảnh khi viết prompt
-
-```text
-Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
-```
-
-#### 28.3. Kết quả AI trả về
-
-```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
-```
-
-#### 28.4. Kết quả đã áp dụng vào bài
-
-```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
-```
-
-#### 28.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
-
-```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
-```
-
-#### 28.6. Đánh giá chất lượng prompt
-
-- [x] Prompt rõ ràng
-- [x] Prompt có đủ bối cảnh
-- [ ] Prompt còn thiếu thông tin
-- [x] Prompt tạo ra kết quả tốt
-- [ ] Prompt tạo ra kết quả chưa phù hợp
-- [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
-- [ ] Kết quả AI có lỗi hoặc chưa chính xác
-
-#### 28.7. Minh chứng liên quan
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit | |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | |
-| Link tài liệu/báo cáo | |
-| Ghi chú khác | |
-
-#### 28.8. Ghi chú thêm
-
-```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
-```
