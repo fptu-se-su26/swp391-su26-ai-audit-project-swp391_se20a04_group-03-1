@@ -9,7 +9,7 @@
 #define SERVO_PIN 33
 // Tinh chỉnh 2 thông số này để bù trừ góc lệch của Servo
 #define ANGLE_CLOSED 0 // Góc đóng cổng
-#define ANGLE_OPEN   90  // Góc mở cổng
+#define ANGLE_OPEN 90  // Góc mở cổng
 
 #define I2S_BCLK 26
 #define I2S_LRC 25
@@ -17,20 +17,57 @@
 
 #define IR_PIN 32 // Chân kết nối cảm biến hồng ngoại
 
+// --- CẢM BIẾN ĐẾM XE CHỜ ---
+#define IR_WAIT_1 19
+#define IR_WAIT_2 18
+#define IR_WAIT_3 17
+#define IR_WAIT_4 16
+
 // --- ĐỊNH NGHĨA TRẠNG THÁI CẢM BIẾN ---
-// CHÚ Ý: Cảm biến hồng ngoại (IR) phổ biến (như FC-51) thường xuất mức LOW khi CÓ vật cản.
-// Tuy nhiên theo comment cũ, mã đang để HIGH = Có xe. 
-// NẾU BẠN THẤY CỔNG MỞ RỒI ĐÓNG LẠI NGAY LẬP TỨC KHI KHÔNG CÓ XE, HÃY ĐẢO NGƯỢC 2 GIÁ TRỊ DƯỚI ĐÂY:
-#define IR_CAR_PRESENT HIGH  // Trạng thái khi CÓ xe cản tia hồng ngoại
-#define IR_NO_CAR      LOW   // Trạng thái khi KHÔNG CÓ xe
+// CHÚ Ý: Cảm biến hồng ngoại (IR) phổ biến (như FC-51) thường xuất mức LOW khi
+// CÓ vật cản. Tuy nhiên theo comment cũ, mã đang để HIGH = Có xe. NẾU BẠN THẤY
+// CỔNG MỞ RỒI ĐÓNG LẠI NGAY LẬP TỨC KHI KHÔNG CÓ XE, HÃY ĐẢO NGƯỢC 2 GIÁ TRỊ
+// DƯỚI ĐÂY:
+#define IR_CAR_PRESENT HIGH // Trạng thái khi CÓ xe cản tia hồng ngoại
+#define IR_NO_CAR LOW       // Trạng thái khi KHÔNG CÓ xe
 
 // --- KHỞI TẠO ĐỐI TƯỢNG ---
-LiquidCrystal_I2C lcd(0x27, 16, 2); 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 Servo gateServo;
 
 // --- BIẾN TRẠNG THÁI ---
 unsigned long lastCloseTime = 0;
 bool isGateOpen = false;
+int lastWaitingCars = -1;
+
+// --- HÀM ĐẾM XE CHỜ ---
+int getWaitingCars() {
+  int count = 0;
+  if (digitalRead(IR_WAIT_1) == HIGH)
+    count++;
+  if (digitalRead(IR_WAIT_2) == HIGH)
+    count++;
+  if (digitalRead(IR_WAIT_3) == HIGH)
+    count++;
+  if (digitalRead(IR_WAIT_4) == HIGH)
+    count++;
+  return count;
+}
+
+// --- HÀM CẬP NHẬT MÀN HÌNH LCD ---
+void updateDisplay(const char *line2) {
+  int count = getWaitingCars();
+  int angle = isGateOpen ? ANGLE_OPEN : ANGLE_CLOSED;
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  char buf[17];
+  sprintf(buf, "Goc:%2d|Cho:%dxe", angle, count);
+  lcd.print(buf);
+
+  lcd.setCursor(0, 1);
+  lcd.print(line2);
+}
 
 // --- HÀM CẤU HÌNH I2S CHO MODULE MAX98357A ---
 void setupI2S() {
@@ -64,16 +101,18 @@ void playTone(float freq, int duration_ms) {
   size_t bytes_written;
 
   for (int i = 0; i < num_samples; i++) {
-    sample = (int16_t)(10000.0 * sin(2.0 * M_PI * freq * i / sample_rate)); 
-    i2s_write(I2S_NUM_0, &sample, sizeof(sample), &bytes_written, 10 / portTICK_PERIOD_MS);
+    sample = (int16_t)(10000.0 * sin(2.0 * M_PI * freq * i / sample_rate));
+    i2s_write(I2S_NUM_0, &sample, sizeof(sample), &bytes_written,
+              10 / portTICK_PERIOD_MS);
   }
-  
-  i2s_zero_dma_buffer(I2S_NUM_0); 
+
+  i2s_zero_dma_buffer(I2S_NUM_0);
 }
 
 // --- HÀM ĐIỀU KHIỂN SERVO (MƯỢT NHẤT, KHÔNG DỪNG) ---
 void moveServoSmoothly(int startAngle, int targetAngle) {
-  int delayMs = 15;  // Dừng 15ms cho mỗi độ để quay mượt, liên tục, không bị khựng
+  int delayMs =
+      15; // Dừng 15ms cho mỗi độ để quay mượt, liên tục, không bị khựng
 
   if (startAngle < targetAngle) {
     for (int angle = startAngle; angle <= targetAngle; angle++) {
@@ -108,7 +147,7 @@ void setup() {
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
   gateServo.setPeriodHertz(50);
-  gateServo.attach(SERVO_PIN, 500, 2400); 
+  gateServo.attach(SERVO_PIN, 500, 2400);
   gateServo.write(ANGLE_CLOSED);
 
   // 3. Khởi tạo I2S cho loa
@@ -116,37 +155,43 @@ void setup() {
 
   // 4. Khởi tạo cảm biến hồng ngoại
   pinMode(IR_PIN, INPUT);
+  pinMode(IR_WAIT_1, INPUT);
+  pinMode(IR_WAIT_2, INPUT);
+  pinMode(IR_WAIT_3, INPUT);
+  pinMode(IR_WAIT_4, INPUT);
 
   // 5. Thiết lập trạng thái ban đầu
   isGateOpen = false;
   lastCloseTime = millis(); // Bắt đầu tính thời gian để mở cổng
 
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Dong cong.Goc:");
-  lcd.print(ANGLE_CLOSED);
-  lcd.setCursor(0, 1);
-  lcd.print("Cho 5s de mo...");
+  lastWaitingCars = getWaitingCars();
+  updateDisplay("Cho 5s de mo...");
   Serial.println("GateOut 02 Ready! Cho 5 giay de mo cong...");
 }
 
 void loop() {
+  // Liên tục cập nhật số xe chờ trên LCD nếu có thay đổi
+  int currentWaitingCars = getWaitingCars();
+  if (currentWaitingCars != lastWaitingCars) {
+    lastWaitingCars = currentWaitingCars;
+    if (!isGateOpen) {
+      updateDisplay("Cho 5s de mo...");
+    } else {
+      updateDisplay("Moi xe ra...");
+    }
+  }
+
   if (!isGateOpen) {
     // Nếu cổng đang đóng, kiểm tra xem đã đủ 5 giây chưa
     if (millis() - lastCloseTime >= 5000) {
       Serial.println("-> Da du 5s, mo cong!");
-      
+
       // Mở cổng
       moveServoSmoothly(ANGLE_CLOSED, ANGLE_OPEN);
       isGateOpen = true;
 
       // Cập nhật LCD
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Mo cong. Goc:");
-      lcd.print(ANGLE_OPEN);
-      lcd.setCursor(0, 1);
-      lcd.print("Moi xe ra...");
+      updateDisplay("Moi xe ra...");
 
       // Phát âm thanh cảnh báo
       for (int i = 0; i < 3; i++) {
@@ -154,45 +199,43 @@ void loop() {
         delay(100);
         yield();
       }
-      
+
       Serial.println("-> Dang cho xe di qua tia hong ngoai...");
     }
   } else {
     // Nếu cổng đang mở: chờ xe đi qua
-    
+
     // 1. Chờ xe đi vào vùng cảm biến (Quét 1 lần, phản hồi ngay lập tức)
     if (digitalRead(IR_PIN) == IR_CAR_PRESENT) {
       Serial.println("-> Phat hien xe. Van giu cong...");
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Xe dang qua...");
-      lcd.setCursor(0, 1);
-      lcd.print("Goc servo: ");
-      lcd.print(ANGLE_OPEN);
+      updateDisplay("Xe dang qua...");
 
       // 2. Chờ xe đi qua hẳn (Quét 1 lần, không cần giữ để xác thực)
       while (true) {
         if (digitalRead(IR_PIN) == IR_NO_CAR) {
           break; // Xe đã qua hẳn, thoát vòng lặp ngay lập tức
         }
+
+        // Cập nhật số xe chờ ngay trong khi xe đang qua
+        int waiting = getWaitingCars();
+        if (waiting != lastWaitingCars) {
+          lastWaitingCars = waiting;
+          updateDisplay("Xe dang qua...");
+        }
+
         delay(10); // Thêm delay nhỏ để tránh block CPU (watchdog)
       }
 
       Serial.println("-> Xe da qua khoi. Chuan bi dong cong...");
       delay(1000); // Đợi thêm 1 giây an toàn sau khi xe đi qua
-      
+
       // Đóng cổng lại
       Serial.println("-> Dong cong...");
       moveServoSmoothly(ANGLE_OPEN, ANGLE_CLOSED);
       isGateOpen = false;
       lastCloseTime = millis(); // Cập nhật lại thời gian đóng cổng gần nhất
 
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Dong cong.Goc:");
-      lcd.print(ANGLE_CLOSED);
-      lcd.setCursor(0, 1);
-      lcd.print("Cho 5s de mo...");
+      updateDisplay("Cho 5s de mo...");
     }
   }
 }
