@@ -84,8 +84,7 @@ Sinh viên/nhóm cần ghi lại:
 | 30 | 15/06/2026 | Gemini | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) | | | | |
 | 31 | 15/06/2026 | Gemini | Tinh chỉnh Server API Trả Về Luồng Âm Thanh | | | | |
 
----
-
+## 5. Prompt chi tiết
 ### Prompt số 1
 
 | Nội dung | Thông tin |
@@ -3107,37 +3106,36 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 ```
 
 ---
-## 6. Prompt quan trọng nhất
 
-> > > > > > > main
+## 6. Prompt quan trọng nhất
 
 Chọn một prompt có ảnh hưởng lớn nhất đến bài tập/project.
 
-### 8.1. Prompt được chọn
+### 6.1. Prompt được chọn
 
 ```text
 Dán prompt quan trọng nhất tại đây.
 ```
 
-### 8.2. Vì sao prompt này quan trọng?
+### 6.2. Vì sao prompt này quan trọng?
 
 ```text
 Viết tại đây...
 ```
 
-### 8.3. Kết quả prompt này mang lại
+### 6.3. Kết quả prompt này mang lại
 
 ```text
 Viết tại đây...
 ```
 
-### 8.4. Sinh viên/nhóm đã kiểm tra kết quả như thế nào?
+### 6.4. Sinh viên/nhóm đã kiểm tra kết quả như thế nào?
 
 ```text
 Viết tại đây...
 ```
 
-### 8.5. Sinh viên/nhóm đã cải tiến gì từ kết quả AI?
+### 6.5. Sinh viên/nhóm đã cải tiến gì từ kết quả AI?
 
 ```text
 Viết tại đây...
@@ -3145,17 +3143,17 @@ Viết tại đây...
 
 ---
 
-## 9. Prompt chưa hiệu quả
+## 7. Prompt chưa hiệu quả
 
 Ghi lại ít nhất một prompt chưa tạo ra kết quả tốt hoặc chưa phù hợp.
 
-### 9.1. Prompt chưa hiệu quả
+### 7.1. Prompt chưa hiệu quả
 
 ```text
 Dán prompt chưa hiệu quả tại đây.
 ```
 
-### 9.2. Vì sao prompt này chưa hiệu quả?
+### 7.2. Vì sao prompt này chưa hiệu quả?
 
 ```text
 Viết tại đây...
@@ -3172,19 +3170,19 @@ Gợi ý nguyên nhân:
 - Không yêu cầu AI giải thích.
 - Hỏi AI làm toàn bộ thay vì hỏi từng phần.
 
-### 9.3. Cách cải thiện prompt
+### 7.3. Cách cải thiện prompt
 
 ```text
 Viết tại đây...
 ```
 
-### 9.4. Prompt sau khi cải tiến
+### 7.4. Prompt sau khi cải tiến
 
 ```text
 Dán prompt đã được cải tiến tại đây.
 ```
 
-### 9.5. Kết quả sau khi cải tiến prompt
+### 7.5. Kết quả sau khi cải tiến prompt
 
 ```text
 Viết tại đây...
@@ -3192,9 +3190,9 @@ Viết tại đây...
 
 ---
 
-## 10. Bài học về cách viết prompt
+## 8. Bài học về cách viết prompt
 
-### 10.1. Khi viết prompt, em/nhóm cần cung cấp thông tin gì để AI trả lời tốt hơn?
+### 8.1. Khi viết prompt, em/nhóm cần cung cấp thông tin gì để AI trả lời tốt hơn?
 
 ```text
 Viết tại đây...
@@ -3211,13 +3209,13 @@ Gợi ý:
 - Format kết quả mong muốn.
 - Yêu cầu AI giải thích từng bước.
 
-### 10.2. Em/nhóm đã học được gì về cách đặt câu hỏi cho AI?
+### 8.2. Em/nhóm đã học được gì về cách đặt câu hỏi cho AI?
 
 ```text
 Viết tại đây...
 ```
 
-### 10.3. Lần sau em/nhóm sẽ cải thiện prompt như thế nào?
+### 8.3. Lần sau em/nhóm sẽ cải thiện prompt như thế nào?
 
 ```text
 Viết tại đây...
@@ -3225,47 +3223,47 @@ Viết tại đây...
 
 ---
 
-## 11. Phân loại prompt đã sử dụng
+## 9. Phân loại prompt đã sử dụng
 
 Đánh dấu số lượng prompt theo từng nhóm.
 
-| Loại prompt                  | Số lượng | Ví dụ prompt tiêu biểu |
-| ---------------------------- | -------: | ---------------------- |
-| Prompt phân tích yêu cầu     |          |                        |
-| Prompt giải thích kiến thức  |          |                        |
-| Prompt thiết kế giải pháp    |          |                        |
-| Prompt thiết kế database     |          |                        |
-| Prompt sinh code mẫu         |          |                        |
-| Prompt debug lỗi             |          |                        |
-| Prompt viết test case        |          |                        |
-| Prompt review code           |          |                        |
-| Prompt tối ưu code           |          |                        |
-| Prompt viết báo cáo          |          |                        |
-| Prompt chuẩn bị thuyết trình |          |                        |
-| Prompt khác                  |          |                        |
+| Loại prompt | Số lượng | Ví dụ prompt tiêu biểu |
+|---|---:|---|
+| Prompt phân tích yêu cầu |  |  |
+| Prompt giải thích kiến thức |  |  |
+| Prompt thiết kế giải pháp |  |  |
+| Prompt thiết kế database |  |  |
+| Prompt sinh code mẫu |  |  |
+| Prompt debug lỗi |  |  |
+| Prompt viết test case |  |  |
+| Prompt review code |  |  |
+| Prompt tối ưu code |  |  |
+| Prompt viết báo cáo |  |  |
+| Prompt chuẩn bị thuyết trình |  |  |
+| Prompt khác |  |  |
 
 ---
 
-## 12. Checklist chất lượng prompt
+## 10. Checklist chất lượng prompt
 
 Sinh viên/nhóm tự kiểm tra chất lượng prompt đã dùng.
 
-| Tiêu chí                                                 | Đã đạt? | Ghi chú |
-| -------------------------------------------------------- | :-----: | ------- |
-| Prompt có mục tiêu rõ ràng                               |         |         |
-| Prompt có đủ bối cảnh                                    |         |         |
-| Prompt có nêu công nghệ/ngôn ngữ sử dụng                 |         |         |
-| Prompt có nêu yêu cầu đầu ra                             |         |         |
-| Prompt không yêu cầu AI làm toàn bộ bài một cách máy móc |         |         |
-| Prompt có yêu cầu AI giải thích hoặc phân tích           |         |         |
-| Kết quả AI được kiểm tra lại                             |         |         |
-| Kết quả AI được chỉnh sửa trước khi sử dụng              |         |         |
-| Prompt quan trọng được ghi lại đầy đủ                    |         |         |
-| Prompt sai/chưa hiệu quả được rút kinh nghiệm            |         |         |
+| Tiêu chí | Đã đạt? | Ghi chú |
+|---|:---:|---|
+| Prompt có mục tiêu rõ ràng |  |  |
+| Prompt có đủ bối cảnh |  |  |
+| Prompt có nêu công nghệ/ngôn ngữ sử dụng |  |  |
+| Prompt có nêu yêu cầu đầu ra |  |  |
+| Prompt không yêu cầu AI làm toàn bộ bài một cách máy móc |  |  |
+| Prompt có yêu cầu AI giải thích hoặc phân tích |  |  |
+| Kết quả AI được kiểm tra lại |  |  |
+| Kết quả AI được chỉnh sửa trước khi sử dụng |  |  |
+| Prompt quan trọng được ghi lại đầy đủ |  |  |
+| Prompt sai/chưa hiệu quả được rút kinh nghiệm |  |  |
 
 ---
 
-## 13. Cam kết sử dụng prompt minh bạch
+## 11. Cam kết sử dụng prompt minh bạch
 
 Sinh viên/nhóm cam kết rằng:
 
@@ -3276,6 +3274,5 @@ Sinh viên/nhóm cam kết rằng:
 - Chịu trách nhiệm với sản phẩm cuối cùng.
 
 | Đại diện sinh viên/nhóm | Ngày xác nhận |
-| ----------------------- | ------------- |
-|                         |               |
-
+|---|---|
+|  |  |
