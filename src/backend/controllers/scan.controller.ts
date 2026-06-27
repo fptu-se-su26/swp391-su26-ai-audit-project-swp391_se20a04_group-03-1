@@ -46,7 +46,7 @@ export const scanPost = async (req: Request, res: Response) => {
     // status indicates gate type: "in" or "out"
 
     if (!text || !type || !status) {
-      res.json({ code: "error", message: "Thiếu thông tin" });
+      res.status(400).json({ code: "error", message: "Thiếu thông tin" });
       return;
     }
 
@@ -84,7 +84,7 @@ export const scanPost = async (req: Request, res: Response) => {
         plate: text,
         message: "Không tìm thấy lịch hẹn đã duyệt cho xe này.",
       });
-      res.json({
+      res.status(200).json({
         code: "ignored",
         message: "Không tìm thấy lịch hẹn đã duyệt cho xe này.",
       });
@@ -118,7 +118,7 @@ export const scanPost = async (req: Request, res: Response) => {
         plate: text,
         message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`,
       });
-      res.json({
+      res.status(200).json({
         code: "ignored",
         message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`,
       });
@@ -140,7 +140,7 @@ export const scanPost = async (req: Request, res: Response) => {
           plate: text,
           message: "Xe này đã check-in và đang ở trong bãi.",
         });
-        res.json({
+        res.status(200).json({
           code: "ignored",
           message: "Xe này đã check-in và đang ở trong bãi.",
         });
@@ -150,7 +150,7 @@ export const scanPost = async (req: Request, res: Response) => {
         if (appointment.purpose === "Lấy container") {
           // Chỉ yêu cầu biển số
           if (!cameraScanCache[cameraIp]?.plate || cameraScanCache[cameraIp].plate!.text !== appointment.truckPlate) {
-            res.json({ code: "ignored", message: "Đang chờ quét biển số xe (Mục đích: Lấy container)" });
+            res.status(200).json({ code: "ignored", message: "Đang chờ quét biển số xe (Mục đích: Lấy container)" });
             return;
           }
         } else if (appointment.purpose === "Trả container") {
@@ -177,7 +177,7 @@ export const scanPost = async (req: Request, res: Response) => {
                 message: `[Cổng vào - Trả container] Đang chờ quét thêm: ${missing}...`,
               });
             }
-            res.json({
+            res.status(200).json({
               code: "ignored",
               message: `Yêu cầu quét đủ biển số và mã container. Thiếu: ${missing}`,
             });
@@ -214,7 +214,7 @@ export const scanPost = async (req: Request, res: Response) => {
           plate: text,
           message: "Không tìm thấy dữ liệu check-in cho xe này.",
         });
-        res.json({
+        res.status(200).json({
           code: "ignored",
           message: "Không tìm thấy dữ liệu check-in cho xe này.",
         });
@@ -244,7 +244,7 @@ export const scanPost = async (req: Request, res: Response) => {
                 message: `[Cổng ra - Lấy container] Đang chờ quét thêm: ${missing}...`,
               });
             }
-            res.json({
+            res.status(200).json({
               code: "ignored",
               message: `Yêu cầu quét đủ biển số và mã container. Thiếu: ${missing}`,
             });
@@ -259,7 +259,7 @@ export const scanPost = async (req: Request, res: Response) => {
               plate: appointment.truckPlate,
               message: `[Cổng ra - Trả container] LỖI: Phát hiện xe đang chở container ra ngoài! Không cho phép mở cổng.`,
             });
-            res.json({
+            res.status(400).json({
               code: "error",
               message: "Phát hiện xe chở container ra ngoài (không hợp lệ)",
             });
@@ -267,7 +267,7 @@ export const scanPost = async (req: Request, res: Response) => {
           }
 
           if (!cameraScanCache[cameraIp]?.plate || cameraScanCache[cameraIp].plate!.text !== appointment.truckPlate) {
-            res.json({ code: "ignored", message: "Đang chờ quét biển số xe" });
+            res.status(200).json({ code: "ignored", message: "Đang chờ quét biển số xe" });
             return;
           }
           delete cameraScanCache[cameraIp].plate;
@@ -344,11 +344,11 @@ export const scanPost = async (req: Request, res: Response) => {
     }
     // -----------------------------------
 
-    res.json({ code: "success", message: "Processed successfully" });
+    res.status(200).json({ code: "success", message: "Processed successfully" });
     return;
   } catch (error) {
     console.error("Scan Error: ", error);
-    res.json({ code: "error", message: "Server error" });
+    res.status(400).json({ code: "error", message: "Server error" });
       return;
   }
 };
@@ -380,7 +380,7 @@ export const getLogs = async (req: Request, res: Response) => {
       status: log.status
     }));
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: {
         activeCount: activeVehicles,
@@ -391,7 +391,7 @@ export const getLogs = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error("Get Logs Error: ", error);
-    res.json({ code: "error", message: "Server error" });
+    res.status(400).json({ code: "error", message: "Server error" });
       return;
   }
 };
@@ -438,7 +438,7 @@ export const getLogsPaginated = async (req: Request, res: Response) => {
       isDeleted: false 
     });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: logs,
       stats: {
@@ -455,7 +455,7 @@ export const getLogsPaginated = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error("Get Logs Paginated Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi lấy danh sách nhật ký" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi lấy danh sách nhật ký" });
       return;
   }
 };
@@ -466,14 +466,14 @@ export const getLogDetail = async (req: Request, res: Response) => {
       "appointmentId",
     );
     if (!log) {
-      res.json({ code: "error", message: "Không tìm thấy nhật ký" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy nhật ký" });
       return;
     }
-    res.json({ code: "success", data: log });
+    res.status(200).json({ code: "success", data: log });
     return;
   } catch (error) {
     console.error("Get Log Detail Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi lấy chi tiết nhật ký" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi lấy chi tiết nhật ký" });
       return;
   }
 };
@@ -482,11 +482,11 @@ export const manualCheckoutPatch = async (req: Request, res: Response) => {
   try {
     const log = await GateTransaction.findById(req.params.id);
     if (!log) {
-      res.json({ code: "error", message: "Không tìm thấy nhật ký" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy nhật ký" });
       return;
     }
     if (log.status === "out") {
-      res.json({ code: "error", message: "Nhật ký này đã check-out" });
+      res.status(400).json({ code: "error", message: "Nhật ký này đã check-out" });
       return;
     }
 
@@ -502,11 +502,11 @@ export const manualCheckoutPatch = async (req: Request, res: Response) => {
       }
     }
 
-    res.json({ code: "success", message: "Check-out thủ công thành công" });
+    res.status(200).json({ code: "success", message: "Check-out thủ công thành công" });
     return;
   } catch (error) {
     console.error("Manual Checkout Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi check-out thủ công" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi check-out thủ công" });
       return;
   }
 };
@@ -515,16 +515,16 @@ export const softDeleteLogDelete = async (req: Request, res: Response) => {
   try {
     const log = await GateTransaction.findById(req.params.id);
     if (!log) {
-      res.json({ code: "error", message: "Không tìm thấy nhật ký" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy nhật ký" });
       return;
     }
     log.isDeleted = true;
     await log.save();
-    res.json({ code: "success", message: "Đã chuyển nhật ký vào thùng rác" });
+    res.status(200).json({ code: "success", message: "Đã chuyển nhật ký vào thùng rác" });
     return;
   } catch (error) {
     console.error("Soft Delete Log Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi xóa nhật ký" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi xóa nhật ký" });
       return;
   }
 };
@@ -552,7 +552,7 @@ export const logsTrashGet = async (req: Request, res: Response) => {
       .limit(limitNum)
       .populate({ path: "appointmentId", populate: { path: "driverId", select: "driverName" } });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: logs,
       pagination: {
@@ -565,7 +565,7 @@ export const logsTrashGet = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error("Get Logs Trash Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi lấy danh sách thùng rác" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi lấy danh sách thùng rác" });
       return;
   }
 };
@@ -574,16 +574,16 @@ export const restoreLogPatch = async (req: Request, res: Response) => {
   try {
     const log = await GateTransaction.findById(req.params.id);
     if (!log) {
-      res.json({ code: "error", message: "Không tìm thấy nhật ký" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy nhật ký" });
       return;
     }
     log.isDeleted = false;
     await log.save();
-    res.json({ code: "success", message: "Khôi phục nhật ký thành công" });
+    res.status(200).json({ code: "success", message: "Khôi phục nhật ký thành công" });
     return;
   } catch (error) {
     console.error("Restore Log Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi khôi phục nhật ký" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi khôi phục nhật ký" });
       return;
   }
 };
@@ -592,14 +592,14 @@ export const hardDeleteLogDelete = async (req: Request, res: Response) => {
   try {
     const result = await GateTransaction.findByIdAndDelete(req.params.id);
     if (!result) {
-      res.json({ code: "error", message: "Không tìm thấy nhật ký" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy nhật ký" });
       return;
     }
-    res.json({ code: "success", message: "Xóa vĩnh viễn nhật ký thành công" });
+    res.status(200).json({ code: "success", message: "Xóa vĩnh viễn nhật ký thành công" });
     return;
   } catch (error) {
     console.error("Hard Delete Log Error: ", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi xóa vĩnh viễn nhật ký" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi xóa vĩnh viễn nhật ký" });
       return;
   }
 };

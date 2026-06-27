@@ -16,7 +16,7 @@ export const trucksGet = async (req: Request, res: Response): Promise<void> => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: trucks,
     });

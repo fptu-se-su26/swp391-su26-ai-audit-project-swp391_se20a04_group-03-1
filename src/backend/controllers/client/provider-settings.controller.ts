@@ -7,19 +7,19 @@ export const getSettings = async (req: Request, res: Response) => {
     const provider = await ContainerProvider.findById(providerId).select("bic_codes code name contact_email");
 
     if (!provider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
     }
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: provider,
     });
   } catch (error) {
     console.error(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi khi lấy cài đặt",
     });
@@ -32,7 +32,7 @@ export const updateBicCodes = async (req: Request, res: Response) => {
     const { bic_codes } = req.body;
 
     if (!Array.isArray(bic_codes)) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Định dạng mã BIC không hợp lệ",
       });
@@ -50,20 +50,20 @@ export const updateBicCodes = async (req: Request, res: Response) => {
     ).select("bic_codes");
 
     if (!provider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
     }
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật mã BIC thành công",
       data: provider.bic_codes,
     });
   } catch (error) {
     console.error(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi khi cập nhật mã BIC",
     });

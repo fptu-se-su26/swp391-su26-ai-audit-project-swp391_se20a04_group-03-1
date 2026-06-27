@@ -10,7 +10,7 @@ export const registerPost = async (req: Request, res: Response) => {
     const { code, name, contact_email, password, roleCode, bic_codes } = req.body;
 
     if (roleCode !== "provider") {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Quyền không hợp lệ",
       });
@@ -18,7 +18,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
     const existEmail = await ContainerProvider.findOne({ contact_email });
     if (existEmail) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Email nhà cung cấp đã tồn tại",
       });
@@ -26,7 +26,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
     const existCode = await ContainerProvider.findOne({ code });
     if (existCode) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã nhà cung cấp đã tồn tại",
       });
@@ -106,13 +106,13 @@ export const registerPost = async (req: Request, res: Response) => {
     `;
     sendMail(contact_email, mailTitle, mailContent);
 
-    return res.json({
+    return res.status(200).json({
       code: "success",
       message: "Đăng ký thành công! Vui lòng chờ quản trị viên duyệt.",
     });
   } catch (error) {
     console.error(error);
-    return res.json({
+    return res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống",
     });
@@ -125,7 +125,7 @@ export const loginPost = async (req: Request, res: Response) => {
 
     const provider = await ContainerProvider.findOne({ contact_email: email, isDeleted: false });
     if (!provider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản hoặc mật khẩu không chính xác",
       });
@@ -133,21 +133,21 @@ export const loginPost = async (req: Request, res: Response) => {
 
     const isMatch = await bcrypt.compare(password, provider.password);
     if (!isMatch) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản hoặc mật khẩu không chính xác",
       });
     }
 
     if (provider.status === "INACTIVE") {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản của bạn chưa được kích hoạt",
       });
     }
 
     if (provider.status === "SUSPENDED") {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản của bạn đã bị khóa",
       });
@@ -186,13 +186,13 @@ export const loginPost = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    return res.json({
+    return res.status(200).json({
       code: "success",
       message: "Đăng nhập thành công!",
     });
   } catch (error) {
     console.error(error);
-    return res.json({
+    return res.status(400).json({
       code: "error",
       message: "Đã xảy ra lỗi máy chủ trong quá trình đăng nhập.",
     });
@@ -221,12 +221,12 @@ export const logout = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
     });
     
-    return res.json({
+    return res.status(200).json({
       code: "success",
       message: "Đăng xuất thành công",
     });
   } catch (error) {
-    return res.json({
+    return res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống",
     });
@@ -239,7 +239,7 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
     const provider = await ContainerProvider.findOne({ contact_email: email, isDeleted: false });
     
     if (!provider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Email không tồn tại trong hệ thống!",
       });
@@ -290,12 +290,12 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
 
     await sendMail(email, subject, html);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Mã OTP đã được gửi đến email của bạn",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể gửi email lúc này",
     });
@@ -309,14 +309,14 @@ export const otpPasswordPost = async (req: Request, res: Response) => {
     const storedOtp = await redisClient.get(`otp:provider:${email}`);
     
     if (!storedOtp) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã OTP đã hết hạn hoặc không tồn tại!",
       });
     }
 
     if (storedOtp !== otp) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã OTP không chính xác!",
       });
@@ -325,12 +325,12 @@ export const otpPasswordPost = async (req: Request, res: Response) => {
     await redisClient.del(`otp:provider:${email}`);
     await redisClient.setEx(`reset:provider:${email}`, 900, "verified");
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xác thực OTP thành công",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi xác thực",
     });
@@ -343,7 +343,7 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
     
     const provider = await ContainerProvider.findOne({ contact_email: email, isDeleted: false });
     if (!provider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Email không tồn tại trong hệ thống!",
       });
@@ -351,7 +351,7 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
 
     const storedOtp = await redisClient.get(`otp:provider:${email}`);
     if (!storedOtp || storedOtp !== otp) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã OTP không hợp lệ hoặc đã hết hạn",
       });
@@ -365,12 +365,12 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
 
     await redisClient.del(`otp:provider:${email}`);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Đổi mật khẩu thành công",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi cập nhật mật khẩu",
     });

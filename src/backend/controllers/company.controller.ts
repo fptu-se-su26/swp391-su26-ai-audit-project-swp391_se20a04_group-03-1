@@ -38,7 +38,7 @@ export const companiesGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: companyList,
       pagination: {
@@ -50,7 +50,7 @@ export const companiesGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách công ty",
     });
@@ -62,18 +62,18 @@ export const companyDetailGet = async (req: Request, res: Response) => {
     const { id } = req.params;
     const company = await Company.findById(id);
     if (!company) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin công ty",
       });
     }
-    res.json({
+    res.status(200).json({
       code: "success",
       data: company,
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy thông tin công ty",
     });
@@ -89,12 +89,12 @@ export const createCompanyPost = async (req: Request, res: Response) => {
 
     if (existCompany) {
       if (existCompany.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message: "Mã công ty hoặc email này đang nằm trong thùng rác. Hãy khôi phục hoặc xóa vĩnh viễn trước.",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã công ty hoặc email đã tồn tại",
       });
@@ -116,13 +116,13 @@ export const createCompanyPost = async (req: Request, res: Response) => {
 
     await newCompany.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Thêm mới công ty thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể tạo công ty",
     });
@@ -139,12 +139,12 @@ export const updateCompanyPatch = async (req: Request, res: Response) => {
 
     if (existCompany) {
       if (existCompany.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message: "Mã công ty hoặc email này đang được sử dụng bởi một công ty trong thùng rác.",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã công ty hoặc email đã tồn tại",
       });
@@ -167,13 +167,13 @@ export const updateCompanyPatch = async (req: Request, res: Response) => {
 
     await Company.updateOne({ _id: id }, updateData);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật công ty thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật công ty",
     });
@@ -187,7 +187,7 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
 
     const existCompany = await Company.findById(id);
     if (!existCompany) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin công ty",
       });
@@ -261,13 +261,13 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
       sendMail(existCompany.email, mailTitle, mailContent);
     }
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật trạng thái công ty thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật trạng thái công ty",
     });
@@ -280,7 +280,7 @@ export const softDeleteCompanyPatch = async (req: Request, res: Response) => {
 
     const existCompany = await Company.findById(id);
     if (!existCompany) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin công ty",
       });
@@ -291,13 +291,13 @@ export const softDeleteCompanyPatch = async (req: Request, res: Response) => {
     // Cascade soft delete all drivers belonging to this company
     await Driver.updateMany({ companyId: id }, { isDeleted: true });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa công ty thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa công ty",
     });
@@ -337,7 +337,7 @@ export const trashCompaniesGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: companyList,
       pagination: {
@@ -349,7 +349,7 @@ export const trashCompaniesGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách công ty đã xóa",
     });
@@ -361,7 +361,7 @@ export const restoreCompanyPatch = async (req: Request, res: Response) => {
     const { id } = req.params;
     const existCompany = await Company.findById(id);
     if (!existCompany) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin công ty",
       });
@@ -375,13 +375,13 @@ export const restoreCompanyPatch = async (req: Request, res: Response) => {
     // Cascade restore all drivers belonging to this company
     await Driver.updateMany({ companyId: id }, { isDeleted: false });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Khôi phục công ty thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể khôi phục công ty",
     });
@@ -393,7 +393,7 @@ export const hardDeleteCompanyDelete = async (req: Request, res: Response) => {
     const { id } = req.params;
     const existCompany = await Company.findById(id);
     if (!existCompany) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin công ty",
       });
@@ -403,13 +403,13 @@ export const hardDeleteCompanyDelete = async (req: Request, res: Response) => {
     await Driver.deleteMany({ companyId: id });
     
     await Company.deleteOne({ _id: id });
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa vĩnh viễn công ty thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa vĩnh viễn công ty",
     });
