@@ -29,6 +29,7 @@ export const registerPost = async (req: Request, res: Response) => {
       email,
       role,
       password: hashedPassword,
+      isActive: true,
     });
 
     await newAccount.save();

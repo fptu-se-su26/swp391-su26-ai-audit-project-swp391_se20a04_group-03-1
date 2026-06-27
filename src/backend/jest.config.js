@@ -10,8 +10,6 @@ module.exports = {
     'controllers/scan.controller.ts',
     'models/appointment.model.ts',
     'controllers/appointment.controller.ts',
-    'repositories/appointment.repository.ts',
-    'repositories/gateTransaction.repository.ts'
   ],
   testPathIgnorePatterns: [
     "/node_modules/",

@@ -98,8 +98,8 @@ describe('Appointment Integration Tests (Supertest)', () => {
         .post('/api/appointments/create')
         .send(payload);
 
-      // Validate Joi trả về HTTP 200 và code="error"
-      expect(response.status).toBe(200);
+      // Validate Joi trả về HTTP 400 và code="error"
+      expect(response.status).toBe(400);
       expect(response.body.code).toBe('error');
     });
 
@@ -141,7 +141,7 @@ describe('Appointment Integration Tests (Supertest)', () => {
         .post('/api/appointments/create')
         .send(payload);
 
-      expect(response.status).toBe(200); // Controller thực tế trả 200 kèm code error
+      expect(response.status).toBe(400); // Controller trả 400 kèm code error khi đầy slot
       expect(response.body.code).toBe('error');
       expect(response.body.message).toContain('đã đầy');
     });

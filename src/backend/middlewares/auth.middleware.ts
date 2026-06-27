@@ -25,7 +25,7 @@ export const requireAuth = async (
     // 1. Lấy token từ cookie
     const token = req.cookies.tokenAdmin;
     if (!token) {
-      return res.status(400).json({ code: "error", message: "Vui lòng đăng nhập" });
+      return res.status(401).json({ code: "error", message: "Vui lòng đăng nhập" });
     }
     // 2. Giải mã token
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
@@ -43,7 +43,7 @@ export const requireAuth = async (
         path: "/",
         secure: process.env.NODE_ENV === "production", // https: true, http: false
       });
-      return res.status(400).json({
+      return res.status(401).json({
         code: "error",
         message: "Tài khoản của bạn đã được đăng nhập ở một thiết bị khác.",
       });
@@ -62,7 +62,7 @@ export const requireAuth = async (
       path: "/",
       secure: process.env.NODE_ENV === "production", // https: true, http: false
     });
-    return res.status(400).json({
+    return res.status(401).json({
       code: "error",
       message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
     });
@@ -77,7 +77,7 @@ export const requireAuthCompany = async (
   try {
     const token = req.cookies.tokenCompany;
     if (!token) {
-      return res.status(400).json({ code: "error", message: "Vui lòng đăng nhập" });
+      return res.status(401).json({ code: "error", message: "Vui lòng đăng nhập" });
     }
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
     const activeVersion = await redisClient.get(`auth:company:session:${decoded.id}`);
@@ -93,7 +93,7 @@ export const requireAuthCompany = async (
         path: "/",
         secure: process.env.NODE_ENV === "production",
       });
-      return res.status(400).json({
+      return res.status(401).json({
         code: "error",
         message: "Tài khoản của bạn đã được đăng nhập ở một thiết bị khác.",
       });
@@ -112,7 +112,7 @@ export const requireAuthCompany = async (
       path: "/",
       secure: process.env.NODE_ENV === "production",
     });
-    return res.status(400).json({
+    return res.status(401).json({
       code: "error",
       message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
     });
@@ -127,7 +127,7 @@ export const requireAuthProvider = async (
   try {
     const token = req.cookies.tokenProvider;
     if (!token) {
-      return res.status(400).json({ code: "error", message: "Vui lòng đăng nhập" });
+      return res.status(401).json({ code: "error", message: "Vui lòng đăng nhập" });
     }
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
     const activeVersion = await redisClient.get(`auth:provider:session:${decoded.id}`);
@@ -143,7 +143,7 @@ export const requireAuthProvider = async (
         path: "/",
         secure: process.env.NODE_ENV === "production",
       });
-      return res.status(400).json({
+      return res.status(401).json({
         code: "error",
         message: "Tài khoản của bạn đã được đăng nhập ở một thiết bị khác.",
       });
@@ -162,7 +162,7 @@ export const requireAuthProvider = async (
       path: "/",
       secure: process.env.NODE_ENV === "production",
     });
-    return res.status(400).json({
+    return res.status(401).json({
       code: "error",
       message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
     });

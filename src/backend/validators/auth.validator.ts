@@ -29,7 +29,7 @@ export const registerPost = (
 
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });
@@ -53,7 +53,7 @@ export const loginPost = (req: Request, res: Response, next: NextFunction) => {
 
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });
@@ -77,7 +77,7 @@ export const forgotPasswordPost = (
 
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });
@@ -111,7 +111,7 @@ export const resetPasswordPost = (
 
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });

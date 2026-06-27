@@ -133,3 +133,24 @@ Snapshots:   0 total
 Time:        24.025 s
 Ran all test suites.
 ```
+
+---
+
+## ❓ FAQ: Tại sao Integration Test thường chạy chậm hơn Unit Test?
+
+Trong kết quả chạy test, có thể thấy các file Integration Test (ví dụ: `appointment.api.test.ts`) tiêu tốn nhiều thời gian (thường chiếm phần lớn thời gian chạy) trong khi các file Unit Test chỉ mất thời gian rất ngắn. Các lý do chính bao gồm:
+
+1. **Khởi tạo môi trường (Environment Setup):**
+   - **Integration Test:** Phải khởi tạo một Database ảo (`MongoMemoryServer`), thiết lập kết nối Mongoose, khởi tạo toàn bộ Express app (qua `Supertest`) và nạp tất cả các file định tuyến (Routers), Middleware đi kèm. Việc spin-up (khởi động) các thành phần này có chi phí thời gian lớn.
+   - **Unit Test:** Hoàn toàn bỏ qua môi trường thực thi phụ trợ. Test chạy trực tiếp các Class/Function cần kiểm thử và sử dụng Mocking (ví dụ: `jest.fn()`, `jest.spyOn()`) để giả lập các logic bên ngoài.
+
+2. **Giao tiếp I/O (I/O Operations):**
+   - **Integration Test:** Thực hiện các hành vi gửi HTTP Request thực sự (được Supertest loopback qua Express) và thao tác đọc/ghi dữ liệu thực tế vào DB ảo (`MongoMemoryServer`).
+   - **Unit Test:** Không có độ trễ do I/O mạng hoặc Database. Các lời gọi được giả lập và trả về kết quả ngay lập tức trong bộ nhớ.
+
+3. **Luồng xử lý toàn diện (Full Request Lifecycle):**
+   - **Integration Test:** Một test case phải đi qua toàn bộ vòng đời: `Supertest` -> `Express Router` -> `Authentication/Validation Middleware` -> `Controller` -> `Repository` -> `Mongoose` -> `Database ảo` -> trả về `Response`.
+   - **Unit Test:** Chạy thẳng vào phương thức (method) cụ thể đang được kiểm thử, cô lập hoàn toàn khỏi các Middleware hay hệ thống routing bên ngoài.
+
+4. **Quản lý trạng thái (State Management & Teardown):**
+   - **Integration Test:** Ở mỗi test case (trong hook `beforeEach` hoặc `afterEach`), hệ thống thường phải `deleteMany({})` để dọn dẹp sạch dữ liệu rác trong DB nhằm đảm bảo tính độc lập giữa các test case, gây tốn kém thêm thời gian thao tác DB.
