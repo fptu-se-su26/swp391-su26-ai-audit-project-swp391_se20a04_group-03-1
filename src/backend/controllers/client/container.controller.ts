@@ -46,7 +46,7 @@ export const containersGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: containerList,
       pagination: {
@@ -58,7 +58,7 @@ export const containersGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách container",
     });
@@ -77,18 +77,18 @@ export const getContainerDetail = async (req: Request, res: Response) => {
     });
 
     if (!container) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy container",
       });
     }
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: container,
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy thông tin container",
     });
@@ -105,13 +105,13 @@ export const createContainerPost = async (req: Request, res: Response) => {
     });
     if (existContainer) {
       if (existContainer.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message:
             "Mã container này đã bị xóa và đang nằm trong thùng rác. Vui lòng khôi phục lại!",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã container đã tồn tại trong hệ thống",
       });
@@ -127,13 +127,13 @@ export const createContainerPost = async (req: Request, res: Response) => {
 
     await newContainer.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Đăng ký container thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể đăng ký container: " + (error as Error).message,
     });
@@ -152,13 +152,13 @@ export const updateContainerPatch = async (req: Request, res: Response) => {
 
     if (existContainer) {
       if (existContainer.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message:
             "Mã container này đang nằm trong Thùng rác, không thể sử dụng để cập nhật!",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã container đã tồn tại trong hệ thống",
       });
@@ -166,7 +166,7 @@ export const updateContainerPatch = async (req: Request, res: Response) => {
 
     const container = await Container.findOne({ _id: id, providerId });
     if (!container) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy container hoặc bạn không có quyền sửa",
       });
@@ -181,13 +181,13 @@ export const updateContainerPatch = async (req: Request, res: Response) => {
 
     await container.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật container thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật container",
     });
@@ -201,7 +201,7 @@ export const softDeleteContainerPatch = async (req: Request, res: Response) => {
 
     const existContainer = await Container.findOne({ _id: id, providerId });
     if (!existContainer) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message:
           "Không tìm thấy thông tin container hoặc bạn không có quyền xóa",
@@ -211,13 +211,13 @@ export const softDeleteContainerPatch = async (req: Request, res: Response) => {
     existContainer.isDeleted = true;
     await existContainer.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Đã chuyển container vào thùng rác",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa container",
     });
@@ -267,7 +267,7 @@ export const trashContainersGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: containerList,
       pagination: {
@@ -279,7 +279,7 @@ export const trashContainersGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách container đã xóa",
     });
@@ -293,7 +293,7 @@ export const restoreContainerPatch = async (req: Request, res: Response) => {
 
     const existContainer = await Container.findOne({ _id: id, providerId });
     if (!existContainer) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message:
           "Không tìm thấy thông tin container hoặc bạn không có quyền khôi phục",
@@ -303,13 +303,13 @@ export const restoreContainerPatch = async (req: Request, res: Response) => {
     existContainer.isDeleted = false;
     await existContainer.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Khôi phục container thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể khôi phục container",
     });
@@ -326,7 +326,7 @@ export const hardDeleteContainerDelete = async (
 
     const existContainer = await Container.findOne({ _id: id, providerId });
     if (!existContainer) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message:
           "Không tìm thấy thông tin container hoặc bạn không có quyền xóa",
@@ -335,13 +335,13 @@ export const hardDeleteContainerDelete = async (
 
     await Container.deleteOne({ _id: id });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa vĩnh viễn container thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa vĩnh viễn container",
     });

@@ -10,21 +10,21 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     // 0. Kiểm tra Mục đích và Tình trạng container
     const container = await Container.findOne({ number: containerNo, isDeleted: false });
     if (!container) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin container.",
       });
     }
 
     if (purpose === "Lấy container" && !["Đã nhập cảng", "Đang lưu bãi"].includes(container.portStatus)) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mục đích lấy container không hợp lệ: Container này hiện không ở Trong cảng.",
       });
     }
 
     if (purpose === "Trả container" && !["Chưa nhập cảng", "Đã xuất cảng"].includes(container.portStatus)) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mục đích trả container không hợp lệ: Container này hiện đang ở Trong cảng.",
       });
@@ -39,7 +39,7 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     });
 
     if (existAppointmentInDay) {
-      res.json({
+      res.status(400).json({
         code: "error",
         message: "Xe đã có lịch hẹn trong ngày.",
       });
@@ -56,7 +56,7 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     });
 
     if (currentSlotCount >= MAX_CAPACITY_PER_SLOT) {
-      res.json({
+      res.status(400).json({
         code: "error",
         message: `Khung giờ ${timeSlot} đã đầy (${currentSlotCount}/${MAX_CAPACITY_PER_SLOT} xe). Vui lòng chọn khung giờ khác.`,
       });
@@ -66,13 +66,13 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     const newAppointment = new Appointment(req.body);
     await newAppointment.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Tạo lịch hẹn thành công",
     });
   } catch (error) {
     console.error("Create Appointment Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi tạo lịch hẹn",
     });
@@ -145,7 +145,7 @@ export const appointmentsGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: appointmentList,
       pagination: {
@@ -157,7 +157,7 @@ export const appointmentsGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Get Appointments Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi lấy danh sách lịch hẹn",
     });
@@ -176,18 +176,18 @@ export const appointmentDetailGet = async (req: Request, res: Response) => {
       populate: { path: "companyId" },
     });
     if (!appointment) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn",
       });
     }
-    res.json({
+    res.status(200).json({
       code: "success",
       data: appointment,
     });
   } catch (error) {
     console.error("Get Appointment Detail Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi lấy chi tiết lịch hẹn",
     });
@@ -201,21 +201,21 @@ export const appointmentEditPatch = async (req: Request, res: Response) => {
     // 0. Kiểm tra Mục đích và Tình trạng container
     const container = await Container.findOne({ number: containerNo, isDeleted: false });
     if (!container) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin container.",
       });
     }
 
     if (purpose === "Lấy container" && !["Đã nhập cảng", "Đang lưu bãi"].includes(container.portStatus)) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mục đích lấy container không hợp lệ: Container này hiện không ở Trong cảng.",
       });
     }
 
     if (purpose === "Trả container" && !["Chưa nhập cảng", "Đã xuất cảng"].includes(container.portStatus)) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mục đích trả container không hợp lệ: Container này hiện đang ở Trong cảng.",
       });
@@ -230,7 +230,7 @@ export const appointmentEditPatch = async (req: Request, res: Response) => {
     });
 
     if (existAppointmentInDay) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Xe đã có lịch hẹn khác trong ngày.",
       });
@@ -238,14 +238,14 @@ export const appointmentEditPatch = async (req: Request, res: Response) => {
 
     const currentAppointment = await Appointment.findById(id);
     if (!currentAppointment) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn",
       });
     }
 
     if (req.body.status === "Confirmed" && currentAppointment.status !== "Confirmed") {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Doanh nghiệp không có quyền duyệt lịch hẹn. Vui lòng chờ Ban Quản Lý phê duyệt.",
       });
@@ -253,13 +253,13 @@ export const appointmentEditPatch = async (req: Request, res: Response) => {
 
     await Appointment.updateOne({ _id: id }, req.body);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật lịch hẹn thành công",
     });
   } catch (error) {
     console.error("Edit Appointment Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi cập nhật lịch hẹn",
     });
@@ -274,7 +274,7 @@ export const appointmentStatusPatch = async (req: Request, res: Response) => {
     // 1. Lấy thông tin lịch hẹn hiện tại
     const appointment = await Appointment.findById(id);
     if (!appointment) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn",
       });
@@ -282,7 +282,7 @@ export const appointmentStatusPatch = async (req: Request, res: Response) => {
 
     // 2. Xử lý logic đặc biệt cho từng trạng thái
     if (status === "Confirmed") {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Doanh nghiệp không có quyền duyệt lịch hẹn. Vui lòng chờ Ban Quản Lý phê duyệt.",
       });
@@ -291,13 +291,13 @@ export const appointmentStatusPatch = async (req: Request, res: Response) => {
     // 3. Cập nhật trạng thái
     await Appointment.updateOne({ _id: id }, { status });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật trạng thái lịch hẹn thành công",
     });
   } catch (error) {
     console.error("Update Appointment Status Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi cập nhật trạng thái lịch hẹn",
     });
@@ -309,25 +309,25 @@ export const appointmentDeletePatch = async (req: Request, res: Response) => {
     const { id } = req.params;
     const appointment = await Appointment.findById(id);
     if (!appointment) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn",
       });
     }
     if (appointment.isDeleted === true) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Lịch hẹn đã bị xóa",
       });
     }
     await Appointment.updateOne({ _id: id }, { isDeleted: true });
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa lịch hẹn thành công",
     });
   } catch (error) {
     console.error("Delete Appointment Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi xóa lịch hẹn",
     });
@@ -400,7 +400,7 @@ export const appointmentsTrashGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: appointmentList,
       pagination: {
@@ -412,7 +412,7 @@ export const appointmentsTrashGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Get Trash Appointments Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi lấy danh sách thùng rác",
     });
@@ -424,20 +424,20 @@ export const appointmentRestorePatch = async (req: Request, res: Response) => {
     const { id } = req.params;
     const appointment = await Appointment.findById(id);
     if (!appointment || !appointment.isDeleted) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn trong thùng rác",
       });
     }
 
     await Appointment.updateOne({ _id: id }, { isDeleted: false });
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Khôi phục lịch hẹn thành công",
     });
   } catch (error) {
     console.error("Restore Appointment Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi khôi phục lịch hẹn",
     });
@@ -449,20 +449,20 @@ export const appointmentHardDelete = async (req: Request, res: Response) => {
     const { id } = req.params;
     const appointment = await Appointment.findById(id);
     if (!appointment || !appointment.isDeleted) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn trong thùng rác",
       });
     }
 
     await Appointment.deleteOne({ _id: id });
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa vĩnh viễn lịch hẹn thành công",
     });
   } catch (error) {
     console.error("Hard Delete Appointment Error: ", error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi hệ thống khi xóa vĩnh viễn lịch hẹn",
     });

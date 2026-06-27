@@ -8,10 +8,10 @@ import { Gate } from "../models/gate.model";
 export const yardsGet = async (req: Request, res: Response) => {
   try {
     const yards = await Yard.find({ isDeleted: false }).sort({ createdAt: -1 });
-    res.json({ code: "success", data: yards });
+    res.status(200).json({ code: "success", data: yards });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi lấy danh sách bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi lấy danh sách bãi đỗ" });
     return;
   }
 };
@@ -24,7 +24,7 @@ export const createYardPost = async (req: Request, res: Response) => {
       isDeleted: false,
     });
     if (existYard) {
-      return res.json({ code: "error", message: "Camera IP đã tồn tại" });
+      return res.status(400).json({ code: "error", message: "Camera IP đã tồn tại" });
       return;
     }
     const otherExistCamera = await Gate.findOne({
@@ -32,7 +32,7 @@ export const createYardPost = async (req: Request, res: Response) => {
       isDeleted: false,
     });
     if (otherExistCamera) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Camera IP đã tồn tại ở cổng",
       });
@@ -40,14 +40,14 @@ export const createYardPost = async (req: Request, res: Response) => {
     }
     const newYard = new Yard({ name, cameraIp });
     await newYard.save();
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Tạo bãi đỗ thành công",
       data: newYard,
     });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi tạo bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi tạo bãi đỗ" });
     return;
   }
 };
@@ -56,13 +56,13 @@ export const yardDetailGet = async (req: Request, res: Response) => {
   try {
     const yard = await Yard.findById(req.params.id);
     if (!yard) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
-    res.json({ code: "success", data: yard });
+    res.status(200).json({ code: "success", data: yard });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi lấy thông tin bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi lấy thông tin bãi đỗ" });
     return;
   }
 };
@@ -72,21 +72,21 @@ export const updateYardSlotsPatch = async (req: Request, res: Response) => {
     const { slots } = req.body;
     const yard = await Yard.findById(req.params.id);
     if (!yard) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
 
     yard.slots = slots;
     await yard.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật cấu hình bãi đỗ thành công",
       data: yard,
     });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi cấu hình bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi cấu hình bãi đỗ" });
     return;
   }
 };
@@ -95,17 +95,17 @@ export const deleteYardDelete = async (req: Request, res: Response) => {
   try {
     const yard = await Yard.findById(req.params.id);
     if (!yard) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
 
     yard.isDeleted = true;
     await yard.save();
 
-    res.json({ code: "success", message: "Xóa bãi đỗ thành công" });
+    res.status(200).json({ code: "success", message: "Xóa bãi đỗ thành công" });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi xóa bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi xóa bãi đỗ" });
     return;
   }
 };
@@ -116,7 +116,7 @@ export const syncYardDataPost = async (req: Request, res: Response) => {
     const { occupied_slots } = req.body;
 
     if (!occupied_slots || !Array.isArray(occupied_slots)) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Sai dữ liệu đầu vào",
       });
@@ -129,14 +129,14 @@ export const syncYardDataPost = async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
     });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Đã gửi dữ liệu bãi đỗ thành công",
     });
     return;
   } catch (error) {
     console.log("Lỗi đồng bộ dữ liệu bãi đỗ:", error);
-    res.json({ code: "error", message: "Lỗi đồng bộ dữ liệu bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi đồng bộ dữ liệu bãi đỗ" });
     return;
   }
 };
@@ -146,12 +146,12 @@ export const updateYardInfoPatch = async (req: Request, res: Response) => {
     const { name, cameraIp } = req.body;
     const yard = await Yard.findById(req.params.id);
     if (!yard) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
     const otherExistCamera = await Gate.findOne({ cameraIp: cameraIp });
     if (otherExistCamera) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Camera IP đã tồn tại ở cổng",
       });
@@ -162,14 +162,14 @@ export const updateYardInfoPatch = async (req: Request, res: Response) => {
     yard.cameraIp = cameraIp;
     await yard.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật thông tin bãi đỗ thành công",
       data: yard,
     });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi cập nhật cấu trúc bãi" });
+    res.status(400).json({ code: "error", message: "Lỗi cập nhật cấu trúc bãi" });
     return;
   }
 };
@@ -177,10 +177,10 @@ export const updateYardInfoPatch = async (req: Request, res: Response) => {
 export const yardsTrashGet = async (req: Request, res: Response) => {
   try {
     const yards = await Yard.find({ isDeleted: true }).sort({ createdAt: -1 });
-    res.json({ code: "success", data: yards });
+    res.status(200).json({ code: "success", data: yards });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi lấy danh sách bãi đỗ đã xóa" });
+    res.status(400).json({ code: "error", message: "Lỗi lấy danh sách bãi đỗ đã xóa" });
     return;
   }
 };
@@ -189,15 +189,15 @@ export const restoreYardPatch = async (req: Request, res: Response) => {
   try {
     const yard = await Yard.findById(req.params.id);
     if (!yard) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
     yard.isDeleted = false;
     await yard.save();
-    res.json({ code: "success", message: "Khôi phục bãi đỗ thành công" });
+    res.status(200).json({ code: "success", message: "Khôi phục bãi đỗ thành công" });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi khôi phục bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi khôi phục bãi đỗ" });
     return;
   }
 };
@@ -206,13 +206,13 @@ export const hardDeleteYardDelete = async (req: Request, res: Response) => {
   try {
     const result = await Yard.findByIdAndDelete(req.params.id);
     if (!result) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
-    res.json({ code: "success", message: "Xóa vĩnh viễn bãi đỗ thành công" });
+    res.status(200).json({ code: "success", message: "Xóa vĩnh viễn bãi đỗ thành công" });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi xóa vĩnh viễn bãi đỗ" });
+    res.status(400).json({ code: "error", message: "Lỗi xóa vĩnh viễn bãi đỗ" });
     return;
   }
 };
@@ -221,7 +221,7 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
   try {
     const yard = await Yard.findById(req.params.id);
     if (!yard) {
-      return res.json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
       return;
     }
 
@@ -231,7 +231,7 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
       `${pythonApiUrl}/snapshot?rtsp_url=${encodeURIComponent(yard.cameraIp)}`,
     );
     if (!aiResponse.ok) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không thể lấy ảnh từ luồng Camera",
       });
@@ -261,7 +261,7 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
     yard.snapshotUrl = cloudinaryResult.secure_url;
     await yard.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Chụp và lưu ảnh thành công",
       data: { snapshotUrl: yard.snapshotUrl },
@@ -269,7 +269,7 @@ export const takeYardSnapshotPost = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error("Lỗi snapshot:", error);
-    res.json({ code: "error", message: "Lỗi hệ thống khi chụp ảnh" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi chụp ảnh" });
     return;
   }
 };

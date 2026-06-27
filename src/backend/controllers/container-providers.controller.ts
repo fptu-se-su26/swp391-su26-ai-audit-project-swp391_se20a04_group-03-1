@@ -35,7 +35,7 @@ export const providersGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: providerList,
       pagination: {
@@ -47,7 +47,7 @@ export const providersGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách nhà cung cấp container",
     });
@@ -59,18 +59,18 @@ export const providerDetailGet = async (req: Request, res: Response) => {
     const { id } = req.params;
     const provider = await ContainerProvider.findById(id);
     if (!provider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
     }
-    res.json({
+    res.status(200).json({
       code: "success",
       data: provider,
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy thông tin nhà cung cấp",
     });
@@ -86,12 +86,12 @@ export const createProviderPost = async (req: Request, res: Response) => {
 
     if (existProvider) {
       if (existProvider.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message: "Mã nhà cung cấp hoặc email này đang nằm trong Thùng rác. Vui lòng vào Thùng rác để khôi phục hoặc xóa vĩnh viễn trước khi tạo lại!",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã nhà cung cấp hoặc email đã tồn tại",
       });
@@ -104,13 +104,13 @@ export const createProviderPost = async (req: Request, res: Response) => {
     const newProvider = new ContainerProvider(providerData);
     await newProvider.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Thêm mới nhà cung cấp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể tạo nhà cung cấp: " + (error as Error).message,
     });
@@ -127,12 +127,12 @@ export const updateProviderPatch = async (req: Request, res: Response) => {
 
     if (existProvider) {
       if (existProvider.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message: "Mã nhà cung cấp hoặc email này đang nằm trong Thùng rác, không thể sử dụng để cập nhật!",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã nhà cung cấp hoặc email đã tồn tại",
       });
@@ -148,13 +148,13 @@ export const updateProviderPatch = async (req: Request, res: Response) => {
 
     await ContainerProvider.updateOne({ _id: id }, updateData);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật nhà cung cấp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật nhà cung cấp",
     });
@@ -168,7 +168,7 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
 
     const existProvider = await ContainerProvider.findById(id);
     if (!existProvider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
@@ -243,13 +243,13 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
       sendMail(existProvider.contact_email, mailTitle, mailContent);
     }
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật trạng thái nhà cung cấp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật trạng thái",
     });
@@ -262,7 +262,7 @@ export const softDeleteProviderPatch = async (req: Request, res: Response) => {
 
     const existProvider = await ContainerProvider.findById(id);
     if (!existProvider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
@@ -271,13 +271,13 @@ export const softDeleteProviderPatch = async (req: Request, res: Response) => {
     existProvider.isDeleted = true;
     await existProvider.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa nhà cung cấp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa nhà cung cấp",
     });
@@ -316,7 +316,7 @@ export const trashProvidersGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: providerList,
       pagination: {
@@ -328,7 +328,7 @@ export const trashProvidersGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách đã xóa",
     });
@@ -340,7 +340,7 @@ export const restoreProviderPatch = async (req: Request, res: Response) => {
     const { id } = req.params;
     const existProvider = await ContainerProvider.findById(id);
     if (!existProvider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
@@ -349,13 +349,13 @@ export const restoreProviderPatch = async (req: Request, res: Response) => {
     existProvider.isDeleted = false;
     await existProvider.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Khôi phục nhà cung cấp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể khôi phục nhà cung cấp",
     });
@@ -367,19 +367,19 @@ export const hardDeleteProviderDelete = async (req: Request, res: Response) => {
     const { id } = req.params;
     const existProvider = await ContainerProvider.findById(id);
     if (!existProvider) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin nhà cung cấp",
       });
     }
     await ContainerProvider.deleteOne({ _id: id });
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa vĩnh viễn nhà cung cấp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa vĩnh viễn nhà cung cấp",
     });

@@ -29,7 +29,7 @@ export const driversGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data,
       pagination: {
@@ -42,7 +42,7 @@ export const driversGet = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Không thể lấy danh sách tài xế" });
+    res.status(400).json({ code: "error", message: "Không thể lấy danh sách tài xế" });
     return;
   }
 };
@@ -52,16 +52,16 @@ export const createDriverPost = async (req: Request, res: Response) => {
     const { driverId } = req.body;
     const exist = await Driver.findOne({ driverId, isDeleted: false });
     if (exist) {
-      res.json({ code: "error", message: "Mã CC/GPLX tài xế đã tồn tại" });
+      res.status(400).json({ code: "error", message: "Mã CC/GPLX tài xế đã tồn tại" });
       return;
     }
     const newDriver = new Driver(req.body);
     await newDriver.save();
-    res.json({ code: "success", message: "Thêm tài xế thành công" });
+    res.status(200).json({ code: "success", message: "Thêm tài xế thành công" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi thêm tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi thêm tài xế" });
     return;
   }
 };
@@ -78,21 +78,21 @@ export const updateDriverPatch = async (req: Request, res: Response) => {
         isDeleted: false,
       });
       if (exist) {
-        res.json({ code: "error", message: "Mã CC/GPLX tài xế đã tồn tại" });
+        res.status(400).json({ code: "error", message: "Mã CC/GPLX tài xế đã tồn tại" });
         return;
       }
     }
 
     const updated = await Driver.findByIdAndUpdate(id, req.body, { new: true });
     if (!updated) {
-      res.json({ code: "error", message: "Không tìm thấy tài xế" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy tài xế" });
       return;
     }
-    res.json({ code: "success", message: "Cập nhật thành công" });
+    res.status(200).json({ code: "success", message: "Cập nhật thành công" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi cập nhật tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi cập nhật tài xế" });
     return;
   }
 };
@@ -104,14 +104,14 @@ export const driverDetailGet = async (req: Request, res: Response) => {
       "companyName companyCode",
     );
     if (!data) {
-      res.json({ code: "error", message: "Không tìm thấy tài xế" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy tài xế" });
       return;
     }
-    res.json({ code: "success", data });
+    res.status(200).json({ code: "success", data });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi lấy chi tiết tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi lấy chi tiết tài xế" });
     return;
   }
 };
@@ -122,14 +122,14 @@ export const softDeleteDriverPatch = async (req: Request, res: Response) => {
       isDeleted: true,
     });
     if (!data) {
-      res.json({ code: "error", message: "Không tìm thấy tài xế" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy tài xế" });
       return;
     }
-    res.json({ code: "success", message: "Đã chuyển tài xế vào thùng rác" });
+    res.status(200).json({ code: "success", message: "Đã chuyển tài xế vào thùng rác" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi xóa tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi xóa tài xế" });
     return;
   }
 };
@@ -155,7 +155,7 @@ export const driversTrashGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data,
       pagination: {
@@ -168,7 +168,7 @@ export const driversTrashGet = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi lấy thùng rác tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi lấy thùng rác tài xế" });
     return;
   }
 };
@@ -177,12 +177,12 @@ export const restoreDriverPatch = async (req: Request, res: Response) => {
   try {
     const driver = await Driver.findById(req.params.id);
     if (!driver) {
-      return res.json({ code: "error", message: "Không tìm thấy tài xế" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy tài xế" });
     }
 
     const company = await Company.findById(driver.companyId);
     if (company && company.isDeleted) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không thể khôi phục tài xế vì công ty quản lý đang nằm trong thùng rác"
       });
@@ -191,10 +191,10 @@ export const restoreDriverPatch = async (req: Request, res: Response) => {
     driver.isDeleted = false;
     await driver.save();
 
-    res.json({ code: "success", message: "Khôi phục tài xế thành công" });
+    res.status(200).json({ code: "success", message: "Khôi phục tài xế thành công" });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi khi khôi phục tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi khôi phục tài xế" });
     return;
   }
 };
@@ -202,10 +202,10 @@ export const restoreDriverPatch = async (req: Request, res: Response) => {
 export const hardDeleteDriverDelete = async (req: Request, res: Response) => {
   try {
     await Driver.findByIdAndDelete(req.params.id);
-    res.json({ code: "success", message: "Xóa vĩnh viễn tài xế thành công" });
+    res.status(200).json({ code: "success", message: "Xóa vĩnh viễn tài xế thành công" });
     return;
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi khi xóa vĩnh viễn tài xế" });
+    res.status(400).json({ code: "error", message: "Lỗi khi xóa vĩnh viễn tài xế" });
     return;
   }
 };

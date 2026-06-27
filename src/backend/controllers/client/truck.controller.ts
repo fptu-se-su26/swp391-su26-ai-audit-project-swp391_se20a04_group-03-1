@@ -28,7 +28,7 @@ export const trucksGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data,
       pagination: {
@@ -41,7 +41,7 @@ export const trucksGet = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Không thể lấy danh sách xe" });
+    res.status(400).json({ code: "error", message: "Không thể lấy danh sách xe" });
     return;
   }
 };
@@ -53,18 +53,18 @@ export const createTruckPost = async (req: Request, res: Response) => {
     
     const exist = await Truck.findOne({ truckPlate, isDeleted: false });
     if (exist) {
-      res.json({ code: "error", message: "Biển số xe đã tồn tại" });
+      res.status(400).json({ code: "error", message: "Biển số xe đã tồn tại" });
       return;
     }
     
     const newTruck = new Truck({ ...req.body, companyId });
     await newTruck.save();
     
-    res.json({ code: "success", message: "Thêm xe thành công" });
+    res.status(200).json({ code: "success", message: "Thêm xe thành công" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi thêm xe" });
+    res.status(400).json({ code: "error", message: "Lỗi khi thêm xe" });
     return;
   }
 };
@@ -82,7 +82,7 @@ export const updateTruckPatch = async (req: Request, res: Response) => {
         isDeleted: false,
       });
       if (exist) {
-        res.json({ code: "error", message: "Biển số xe đã tồn tại" });
+        res.status(400).json({ code: "error", message: "Biển số xe đã tồn tại" });
         return;
       }
     }
@@ -94,14 +94,14 @@ export const updateTruckPatch = async (req: Request, res: Response) => {
     );
 
     if (!updated) {
-      res.json({ code: "error", message: "Không tìm thấy xe" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy xe" });
       return;
     }
-    res.json({ code: "success", message: "Cập nhật thành công" });
+    res.status(200).json({ code: "success", message: "Cập nhật thành công" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi cập nhật xe" });
+    res.status(400).json({ code: "error", message: "Lỗi khi cập nhật xe" });
     return;
   }
 };
@@ -113,15 +113,15 @@ export const truckDetailGet = async (req: Request, res: Response) => {
 
     const data = await Truck.findOne({ _id: id, companyId });
     if (!data) {
-      res.json({ code: "error", message: "Không tìm thấy xe" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy xe" });
       return;
     }
 
-    res.json({ code: "success", data });
+    res.status(200).json({ code: "success", data });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi lấy thông tin xe" });
+    res.status(400).json({ code: "error", message: "Lỗi khi lấy thông tin xe" });
     return;
   }
 };
@@ -138,15 +138,15 @@ export const softDeleteTruckPatch = async (req: Request, res: Response) => {
     );
 
     if (!updated) {
-      res.json({ code: "error", message: "Không tìm thấy xe" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy xe" });
       return;
     }
 
-    res.json({ code: "success", message: "Đã đưa vào thùng rác" });
+    res.status(200).json({ code: "success", message: "Đã đưa vào thùng rác" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi xóa xe" });
+    res.status(400).json({ code: "error", message: "Lỗi khi xóa xe" });
     return;
   }
 };
@@ -178,7 +178,7 @@ export const trucksTrashGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data,
       pagination: {
@@ -191,7 +191,7 @@ export const trucksTrashGet = async (req: Request, res: Response) => {
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Không thể lấy danh sách thùng rác" });
+    res.status(400).json({ code: "error", message: "Không thể lấy danh sách thùng rác" });
     return;
   }
 };
@@ -208,15 +208,15 @@ export const restoreTruckPatch = async (req: Request, res: Response) => {
     );
 
     if (!updated) {
-      res.json({ code: "error", message: "Không tìm thấy xe" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy xe" });
       return;
     }
 
-    res.json({ code: "success", message: "Đã khôi phục xe" });
+    res.status(200).json({ code: "success", message: "Đã khôi phục xe" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi khôi phục xe" });
+    res.status(400).json({ code: "error", message: "Lỗi khi khôi phục xe" });
     return;
   }
 };
@@ -229,15 +229,15 @@ export const hardDeleteTruckDelete = async (req: Request, res: Response) => {
     const deleted = await Truck.findOneAndDelete({ _id: id, companyId });
 
     if (!deleted) {
-      res.json({ code: "error", message: "Không tìm thấy xe" });
+      res.status(400).json({ code: "error", message: "Không tìm thấy xe" });
       return;
     }
 
-    res.json({ code: "success", message: "Đã xóa vĩnh viễn xe" });
+    res.status(200).json({ code: "success", message: "Đã xóa vĩnh viễn xe" });
     return;
   } catch (error) {
     console.error(error);
-    res.json({ code: "error", message: "Lỗi khi xóa vĩnh viễn" });
+    res.status(400).json({ code: "error", message: "Lỗi khi xóa vĩnh viễn" });
     return;
   }
 };

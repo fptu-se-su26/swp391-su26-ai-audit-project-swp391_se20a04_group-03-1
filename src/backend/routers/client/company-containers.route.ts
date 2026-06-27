@@ -11,9 +11,9 @@ router.get("/", async (req, res) => {
       query.number = new RegExp(search as string, "i");
     }
     const data = await Container.find(query).limit(parseInt(limit as string));
-    res.json({ code: "success", data });
+    res.status(200).json({ code: "success", data });
   } catch (error) {
-    res.json({ code: "error", message: "Lỗi hệ thống" });
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống" });
   }
 });
 

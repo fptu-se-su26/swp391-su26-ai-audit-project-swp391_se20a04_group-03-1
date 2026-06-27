@@ -12,7 +12,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
     const existEmail = await Company.findOne({ email });
     if (existEmail) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Email doanh nghiệp đã tồn tại",
       });
@@ -20,7 +20,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
     const existCode = await Company.findOne({ companyCode });
     if (existCode) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã số thuế/Mã doanh nghiệp đã tồn tại",
       });
@@ -31,7 +31,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
     const companyRole = await CompanyRole.findOne({ roleCode: { $regex: new RegExp(`^${role}$`, 'i') } });
     if (!companyRole) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Loại hình doanh nghiệp không hợp lệ",
       });
@@ -110,13 +110,13 @@ export const registerPost = async (req: Request, res: Response) => {
     `;
     sendMail(email, mailTitle, mailContent);
 
-    return res.json({
+    return res.status(200).json({
       code: "success",
       message: "Đăng ký tài khoản doanh nghiệp thành công!",
     });
   } catch (error) {
     console.error("Client Register Error:", error);
-    return res.json({
+    return res.status(400).json({
       code: "error",
       message: "Đã xảy ra lỗi hệ thống trong quá trình đăng ký.",
     });
@@ -128,14 +128,14 @@ export const loginPost = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const existAccount = await Company.findOne({ email });
     if (!existAccount) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản hoặc mật khẩu không chính xác",
       });
     }
 
     if (existAccount.isDeleted) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản đã bị xóa",
       });
@@ -143,14 +143,14 @@ export const loginPost = async (req: Request, res: Response) => {
 
     const isHashedPassword = await bcrypt.compare(password, existAccount.password);
     if (!isHashedPassword) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản hoặc mật khẩu không chính xác",
       });
     }
 
     if (existAccount.status !== "Active") {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Tài khoản của bạn không ở trạng thái hoạt động",
       });
@@ -180,13 +180,13 @@ export const loginPost = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    return res.json({
+    return res.status(200).json({
       code: "success",
       message: "Đăng nhập thành công!",
     });
   } catch (error) {
     console.error("Client Login Error:", error);
-    return res.json({
+    return res.status(400).json({
       code: "error",
       message: "Đã xảy ra lỗi hệ thống trong quá trình đăng nhập.",
     });
@@ -209,12 +209,12 @@ export const logout = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    return res.json({
+    return res.status(200).json({
       code: "success",
       message: "Đăng xuất thành công!",
     });
   } catch (error) {
-    return res.json({
+    return res.status(400).json({
       code: "error",
       message: "Đã xảy ra lỗi hệ thống",
     });
@@ -227,7 +227,7 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
     const company = await Company.findOne({ email, isDeleted: false });
     
     if (!company) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Email không tồn tại trong hệ thống!",
       });
@@ -278,12 +278,12 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
 
     await sendMail(email, subject, html);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Mã OTP đã được gửi đến email của bạn",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể gửi email lúc này",
     });
@@ -297,25 +297,25 @@ export const otpPasswordPost = async (req: Request, res: Response) => {
     const storedOtp = await redisClient.get(`otp:company:${email}`);
     
     if (!storedOtp) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã OTP đã hết hạn hoặc không tồn tại!",
       });
     }
 
     if (storedOtp !== otp) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã OTP không chính xác!",
       });
     }
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xác thực OTP thành công",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi xác thực",
     });
@@ -328,7 +328,7 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
     
     const company = await Company.findOne({ email, isDeleted: false });
     if (!company) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Email không tồn tại trong hệ thống!",
       });
@@ -336,7 +336,7 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
 
     const storedOtp = await redisClient.get(`otp:company:${email}`);
     if (!storedOtp || storedOtp !== otp) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã OTP không hợp lệ hoặc đã hết hạn",
       });
@@ -348,12 +348,12 @@ export const resetPasswordPost = async (req: Request, res: Response) => {
 
     await redisClient.del(`otp:company:${email}`);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Đổi mật khẩu thành công",
     });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Lỗi cập nhật mật khẩu",
     });

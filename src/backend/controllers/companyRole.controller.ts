@@ -31,7 +31,7 @@ export const rolesGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: roleList,
       pagination: {
@@ -43,7 +43,7 @@ export const rolesGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách loại hình doanh nghiệp",
     });
@@ -55,18 +55,18 @@ export const roleDetailGet = async (req: Request, res: Response) => {
     const { id } = req.params;
     const role = await CompanyRole.findById(id);
     if (!role) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
     }
-    res.json({
+    res.status(200).json({
       code: "success",
       data: role,
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy thông tin loại hình",
     });
@@ -80,12 +80,12 @@ export const createRolePost = async (req: Request, res: Response) => {
 
     if (existRole) {
       if (existRole.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message: "Mã loại hình này đang nằm trong thùng rác. Hãy khôi phục hoặc xóa vĩnh viễn trước.",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã loại hình đã tồn tại",
       });
@@ -94,13 +94,13 @@ export const createRolePost = async (req: Request, res: Response) => {
     const newRole = new CompanyRole(req.body);
     await newRole.save();
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Thêm mới loại hình doanh nghiệp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể tạo loại hình doanh nghiệp",
     });
@@ -114,11 +114,11 @@ export const updateRolePatch = async (req: Request, res: Response) => {
 
     const currentRole = await CompanyRole.findById(id);
     if (!currentRole) {
-      return res.json({ code: "error", message: "Không tìm thấy thông tin loại hình" });
+      return res.status(400).json({ code: "error", message: "Không tìm thấy thông tin loại hình" });
     }
     const protectedRoles = ["transport", "provider"];
     if (protectedRoles.includes(currentRole.roleCode.toLowerCase())) {
-      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể chỉnh sửa!" });
+      return res.status(400).json({ code: "error", message: "Đây là vai trò hệ thống, không thể chỉnh sửa!" });
     }
 
     const existRole = await CompanyRole.findOne({
@@ -128,12 +128,12 @@ export const updateRolePatch = async (req: Request, res: Response) => {
 
     if (existRole) {
       if (existRole.isDeleted) {
-        return res.json({
+        return res.status(400).json({
           code: "error",
           message: "Mã loại hình này đang được sử dụng bởi một loại hình trong thùng rác.",
         });
       }
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Mã loại hình đã tồn tại",
       });
@@ -141,13 +141,13 @@ export const updateRolePatch = async (req: Request, res: Response) => {
 
     await CompanyRole.updateOne({ _id: id }, req.body);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật loại hình doanh nghiệp thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật loại hình doanh nghiệp",
     });
@@ -161,7 +161,7 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
 
     const existRole = await CompanyRole.findById(id);
     if (!existRole) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
@@ -169,18 +169,18 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
 
     const protectedRoles = ["transport", "provider"];
     if (protectedRoles.includes(existRole.roleCode.toLowerCase())) {
-      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể khóa trạng thái!" });
+      return res.status(400).json({ code: "error", message: "Đây là vai trò hệ thống, không thể khóa trạng thái!" });
     }
 
     await CompanyRole.updateOne({ _id: id }, { status: newStatus });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Cập nhật trạng thái thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể cập nhật trạng thái",
     });
@@ -193,7 +193,7 @@ export const softDeleteRolePatch = async (req: Request, res: Response) => {
 
     const existRole = await CompanyRole.findById(id);
     if (!existRole) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
@@ -201,18 +201,18 @@ export const softDeleteRolePatch = async (req: Request, res: Response) => {
 
     const protectedRoles = ["transport", "provider"];
     if (protectedRoles.includes(existRole.roleCode.toLowerCase())) {
-      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể xóa!" });
+      return res.status(400).json({ code: "error", message: "Đây là vai trò hệ thống, không thể xóa!" });
     }
 
     await CompanyRole.updateOne({ _id: id }, { isDeleted: true, deletedAt: new Date() });
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa loại hình thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa loại hình",
     });
@@ -249,7 +249,7 @@ export const trashRolesGet = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       data: roleList,
       pagination: {
@@ -261,7 +261,7 @@ export const trashRolesGet = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể lấy danh sách loại hình đã xóa",
     });
@@ -273,7 +273,7 @@ export const restoreRolePatch = async (req: Request, res: Response) => {
     const { id } = req.params;
     const existRole = await CompanyRole.findById(id);
     if (!existRole) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
@@ -284,13 +284,13 @@ export const restoreRolePatch = async (req: Request, res: Response) => {
       { $set: { isDeleted: false }, $unset: { deletedAt: "" } }
     );
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Khôi phục loại hình thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể khôi phục loại hình",
     });
@@ -302,7 +302,7 @@ export const hardDeleteRoleDelete = async (req: Request, res: Response) => {
     const { id } = req.params;
     const existRole = await CompanyRole.findById(id);
     if (!existRole) {
-      return res.json({
+      return res.status(400).json({
         code: "error",
         message: "Không tìm thấy thông tin loại hình",
       });
@@ -310,18 +310,18 @@ export const hardDeleteRoleDelete = async (req: Request, res: Response) => {
 
     const protectedRoles = ["transport", "provider"];
     if (protectedRoles.includes(existRole.roleCode.toLowerCase())) {
-      return res.json({ code: "error", message: "Đây là vai trò hệ thống, không thể xóa vĩnh viễn!" });
+      return res.status(400).json({ code: "error", message: "Đây là vai trò hệ thống, không thể xóa vĩnh viễn!" });
     }
 
     await CompanyRole.findByIdAndDelete(id);
 
-    res.json({
+    res.status(200).json({
       code: "success",
       message: "Xóa vĩnh viễn loại hình thành công",
     });
   } catch (error) {
     console.log(error);
-    res.json({
+    res.status(400).json({
       code: "error",
       message: "Không thể xóa vĩnh viễn",
     });
