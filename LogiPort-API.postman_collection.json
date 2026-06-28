@@ -133,6 +133,16 @@
           "name": "Create Yard",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomInt = Math.floor(Math.random() * 1000000);",
+                  "pm.variables.set(\"randomCameraIp\", \"rtsp://192.168.1.\" + randomInt + \"/stream\");"
+                ],
+                "type": "javascript"
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -156,7 +166,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Bãi đỗ Khu A\",\n    \"cameraIp\": \"rtsp://192.168.1.100/stream\"\n}"
+              "raw": "{\n    \"name\": \"Bãi đỗ Khu A\",\n    \"cameraIp\": \"{{randomCameraIp}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/yards/create",
