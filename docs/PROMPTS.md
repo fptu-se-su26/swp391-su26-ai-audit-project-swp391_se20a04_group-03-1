@@ -83,6 +83,7 @@ Sinh viên/nhóm cần ghi lại:
 | 29 | 15/06/2026 | Gemini | Tự Động Hóa Thực Thi Lệnh Terminal | | | | |
 | 30 | 15/06/2026 | Gemini | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) | | | | |
 | 31 | 15/06/2026 | Gemini | Tinh chỉnh Server API Trả Về Luồng Âm Thanh | | | | |
+| 32 | 27/06/2026 | Antigravity | Cấu hình Negative Tests Postman & Căn chỉnh Backend | Test negative cases (missing field, wrong type)... | Sửa đổi Joi validators, auth middlewares và hoàn thiện test suite | Có | POSTMAN_NEGATIVE_TEST_REPORT.md |
 
 ## 5. Prompt chi tiết
 ### Prompt số 1
@@ -3100,6 +3101,78 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 | Ghi chú khác | |
 
 #### 31.8. Ghi chú thêm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+```
+
+---
+
+### Prompt số 32
+
+| Nội dung | Thông tin |
+|---|---|
+| Ngày sử dụng | 27/06/2026 |
+| Công cụ AI | Antigravity |
+| Mục đích | Cấu hình Negative Tests Postman & Căn chỉnh Backend |
+| Phần việc liên quan | Backend / Testing |
+| Mức độ sử dụng | Tạo code và gỡ lỗi |
+
+#### 32.1. Prompt đã sử dụng
+
+```text
+5. Test negative cases (missing field, wrong type)
+ Class / Method cần test
+Các API có validate payload body (như Login, Create Yard) hoặc yêu cầu quyền truy cập (Auth Required - ví dụ Get Yards).
+
+Test cases cần viết
+#	Test case	Input	Expected
+1	Thiếu trường bắt buộc (Missing field)	Body: Xóa trường email hoặc password lúc login	Trả về thông báo lỗi, Status 400
+2	Sai định dạng dữ liệu (Wrong type)	Body: Sai email format hoặc để trống String	Trả về thông báo lỗi, Status 400
+3	Thiếu Token (Unauthorized)	Headers: Không truyền hoặc truyền sai Auth Token	Trả về Status 401 Unauthorized
+4	Sai thông tin nghiệp vụ	Body: Đăng nhập sai tài khoản / mật khẩu	Trả về lỗi, code === "error"
+Kỹ thuật kiểm thử áp dụng
+Equivalence Partitioning (EP)
+Boundary Value Analysis (BVA)
+Error validation (Negative Testing)
+Statement Coverage
+Branch / Decision Coverage
+Exception testing
+Mock 
+
+Tất cả test case trong bảng đã có method tương ứng. Tôi sẽ thực hiện test API trên postman. Hướng dẫn giúp tôi yêu cầu này
+```
+
+#### 32.2. Kết quả AI gợi ý
+
+```text
+AI đề xuất sửa đổi các Joi Validators để trả về lỗi 400 Bad Request, cập nhật các Auth Middlewares để trả về lỗi 401 Unauthorized thay vì 400 khi thiếu token, đồng thời bổ sung logic tự kích hoạt tài khoản admin khi đăng ký và fix lỗi crash Redis. AI cũng viết hoàn thiện file Postman collection cấu trúc Negative Tests folder với đầy đủ Assertions.
+```
+
+#### 32.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng toàn bộ code sửa đổi validators, middlewares, config Redis và cấu hình file Postman Collection JSON.
+```
+
+#### 32.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Đã chỉnh sửa cấu hình tham số baseUrl và điều chỉnh lại Header Cookie thay cho tokenAdmin trong Postman để tránh ghi đè cookie phiên đăng nhập thực tế của Postman.
+```
+
+#### 32.5. Minh chứng
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | `src/backend/validators/auth.validator.ts`, `src/backend/validators/yard.validator.ts`, `src/backend/validators/appointment.validator.ts`, `src/backend/middlewares/auth.middleware.ts`, `src/backend/controllers/auth.controller.ts`, `LogiPort-API.postman_collection.json` |
+| Screenshot | Đã chạy thông suốt 12/12 assertions trên Postman và 125/125 test cases backend |
+| Kết quả chạy/test | Thành công 100% |
+| Link tài liệu/báo cáo | `POSTMAN_NEGATIVE_TEST_REPORT.md` |
+| Ghi chú khác | |
+
+#### 32.6. Ghi chú thêm
 
 ```text
 Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
