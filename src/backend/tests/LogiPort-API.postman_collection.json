@@ -1,0 +1,1657 @@
+{
+  "info": {
+    "_postman_id": "f6be2679-3354-47f5-b41b-e51c722a83ea",
+    "name": "LogiPort-API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56226659",
+    "_collection_link": "https://go.postman.co/collection/56226659-f6be2679-3354-47f5-b41b-e51c722a83ea?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "[POST] /auth/register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('testEmail', 'test_' + Date.now() + '@logiport.com');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"fullName\": \"System Admin\",\n    \"email\": \"{{testEmail}}\",\n    \"role\": \"admin\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /auth/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"gsxleoss@gmail.com\",\n    \"password\": \"1234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /auth/forgot-password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{testEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /auth/reset-password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"newpassword123\",\n    \"OTP\": \"12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Yards",
+      "item": [
+        {
+          "name": "[GET] /yards",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /yards/create",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomInt = Math.floor(Math.random() * 1000000);",
+                  "pm.variables.set(\"randomCameraIp\", \"rtsp://192.168.1.\" + randomInt + \"/stream\");",
+                  "pm.variables.set('randomName', 'Bãi đỗ ' + Date.now());"
+                ],
+                "type": "javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.code === 'success' && jsonData.data && jsonData.data._id) {",
+                  "    pm.environment.set('yardId', jsonData.data._id);",
+                  "}"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{randomName}}\",\n    \"cameraIp\": \"{{randomCameraIp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/yards/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /yards/create",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomInt = Math.floor(Math.random() * 1000000);",
+                  "pm.variables.set(\"randomCameraIp\", \"rtsp://192.168.1.\" + randomInt + \"/stream\");",
+                  "pm.variables.set('randomName', 'Bãi đỗ ' + Date.now());"
+                ],
+                "type": "javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.code === 'success' && jsonData.data && jsonData.data._id) {",
+                  "    pm.environment.set('yardId', jsonData.data._id);",
+                  "}"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{randomName}}\",\n    \"cameraIp\": \"{{randomCameraIp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/yards/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] /yards",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] /yards/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{yardId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /yards/:id/slots",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slots\": [\n    {\n      \"slotName\": \"A1\",\n      \"x\": 10,\n      \"y\": 10,\n      \"width\": 100,\n      \"height\": 50,\n      \"points\": [\n        {\n          \"x\": 10,\n          \"y\": 10\n        },\n        {\n          \"x\": 110,\n          \"y\": 10\n        },\n        {\n          \"x\": 110,\n          \"y\": 60\n        },\n        {\n          \"x\": 10,\n          \"y\": 60\n        }\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/yards/:id/slots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                ":id",
+                "slots"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{yardId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /yards/:id/info",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bãi đỗ Khu A Updated\",\n  \"cameraIp\": \"rtsp://192.168.1.100/stream\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/yards/:id/info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                ":id",
+                "info"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{yardId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[DELETE] /yards/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{yardId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] /yards/trash/list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards/trash/list",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                "trash",
+                "list"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /yards/:id/restore",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards/:id/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                ":id",
+                "restore"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{yardId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[DELETE] /yards/:id/force",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yards/:id/force",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards",
+                ":id",
+                "force"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{yardId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative Tests",
+      "item": [
+        {
+          "name": "[POST] /auth/login - Missing Field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Code is error and message explains missing field\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.code).to.eql(\"error\");",
+                  "    pm.expect(jsonData.message).to.include(\"Mật khẩu là bắt buộc\");",
+                  "});"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@logiport.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /auth/login - Invalid Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Code is error and message explains invalid format\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.code).to.eql(\"error\");",
+                  "    pm.expect(jsonData.message).to.include(\"Email không đúng định dạng\");",
+                  "});"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"invalid-email-format\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] /yards - Missing Field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Code is error\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.code).to.eql(\"error\");",
+                  "    pm.expect(jsonData.message).to.include(\"đăng nhập\");",
+                  "});"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "tokenAdmin=invalid_token_override"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/yards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /auth/login - Wrong Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Code is error\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.code).to.eql(\"error\");",
+                  "    pm.expect(jsonData.message).to.eql(\"Tài khoản hoặc mật khẩu không chính xác\");",
+                  "});"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@logiport.com\",\n    \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Client-role",
+      "item": [
+        {
+          "name": "[GET] /settings/client-roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.code === 'success' && jsonData.data && jsonData.data.length > 0) {",
+                  "    var target = jsonData.data.find(r => r.roleCode.toLowerCase() !== 'transport' && r.roleCode.toLowerCase() !== 'provider');",
+                  "    if (target) pm.environment.set('roleId', target._id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] /settings/client-roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.code === 'success' && jsonData.data && jsonData.data._id) {",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('randomCode', 'ROLE_' + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"roleCode\": \"{{randomCode}}\",\n    \"roleName\": \"Vai trò Test\",\n    \"description\": \"Test auto create\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /settings/client-roles/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('patchRandomCode', 'PATCH_' + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleCode\": \"{{patchRandomCode}}\",\n  \"roleName\": \"Vai trò Updated\",\n  \"description\": \"Cập nhật mô tả\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{roleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /settings/client-roles/:id/status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newStatus\": \"Inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles/:id/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{roleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /settings/client-roles/:id/",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('patchRandomCode', 'PATCH_' + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleCode\": \"{{patchRandomCode}}\",\n  \"roleName\": \"Vai trò Updated\",\n  \"description\": \"Cập nhật mô tả\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles/:id/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{roleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] /settings/client-roles/trash",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles/trash",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles",
+                "trash"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PATCH] /settings/client-roles/:id/restore",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles/:id/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles",
+                ":id",
+                "restore"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{roleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[DELETE] /settings/client-roles/:id/hard-delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Check Status Code (200 or 201)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Response Time (< 500ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test(\"Check Schema / JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test(\"Validate Code Field ('success')\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "        pm.expect(jsonData.code).to.eql(\"success\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settings/client-roles/:id/hard-delete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "client-roles",
+                ":id",
+                "hard-delete"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{roleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "[GET] /auth/logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Check Status Code (200 or 201)\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "",
+              "pm.test(\"Check Response Time (< 500ms)\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(\"Check Schema / JSON format\", function () {",
+              "    pm.response.to.be.json;",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('object');",
+              "});",
+              "",
+              "pm.test(\"Validate Code Field ('success')\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    if (pm.response.code === 200 || pm.response.code === 201) {",
+              "        pm.expect(jsonData.code).to.eql(\"success\");",
+              "    }",
+              "});"
+            ],
+            "type": "javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/logout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "logout"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
