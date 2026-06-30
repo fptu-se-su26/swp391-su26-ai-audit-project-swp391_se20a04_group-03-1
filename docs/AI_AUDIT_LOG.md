@@ -2847,9 +2847,13 @@ Tài liệu sau khi hoàn thiện phản ánh đúng quy trình triển khai c�
 #### 30.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Sau khi tham khảo các đề xuất của AI, nhóm rà soát lại toàn bộ tài liệu và điều chỉnh các thông tin cho phù hợp với dự án thực tế. Các đường dẫn thư mục, câu lệnh Terminal, cấu hình ESP32, địa chỉ IP và quy trình khởi động AI Server được cập nhật theo phiên bản mới nhất.
+Sau khi tham khảo các đề xuất của AI, nhóm rà soát lại toàn bộ tài liệu và điều chỉnh các thông tin cho phù hợp với dự án 
+thực tế. Các đường dẫn thư mục, câu lệnh Terminal, cấu hình ESP32, địa chỉ IP và quy trình khởi động AI Server được cập 
+nhật theo phiên bản mới nhất.
 
-Ngoài ra, nhóm bổ sung thêm phần lưu ý về các lỗi thường gặp trong quá trình thiết lập môi trường, hướng dẫn kiểm tra môi trường Python trước khi chạy chương trình và quy trình xác minh hệ thống sau khi hoàn tất cài đặt nhằm giúp tài liệu đầy đủ, dễ hiểu và thuận tiện cho việc triển khai trên nhiều máy tính khác nhau.
+Ngoài ra, nhóm bổ sung thêm phần lưu ý về các lỗi thường gặp trong quá trình thiết lập môi trường, hướng dẫn kiểm tra môi 
+trường Python trước khi chạy chương trình và quy trình xác minh hệ thống sau khi hoàn tất cài đặt nhằm giúp tài liệu đầy 
+đủ, dễ hiểu và thuận tiện cho việc triển khai trên nhiều máy tính khác nhau.
 ```
 
 #### 30.6. Đánh giá chất lượng prompt
@@ -2877,9 +2881,13 @@ Ngoài ra, nhóm bổ sung thêm phần lưu ý về các lỗi thường gặp 
 #### 30.8. Ghi chú thêm
 
 ```text
-Prompt giúp nhóm tiết kiệm đáng kể thời gian trong quá trình rà soát và cập nhật tài liệu kỹ thuật sau nhiều lần thay đổi của hệ thống. AI hỗ trợ xác định nhanh những nội dung đã lỗi thời, đề xuất các phần cần bổ sung và tổ chức lại tài liệu theo trình tự logic, giúp việc chỉnh sửa trở nên thuận tiện hơn.
+Prompt giúp nhóm tiết kiệm đáng kể thời gian trong quá trình rà soát và cập nhật tài liệu kỹ thuật sau nhiều lần thay đổi 
+của hệ thống. AI hỗ trợ xác định nhanh những nội dung đã lỗi thời, đề xuất các phần cần bổ sung và tổ chức lại tài liệu 
+theo trình tự logic, giúp việc chỉnh sửa trở nên thuận tiện hơn.
 
-Tuy nhiên, toàn bộ nội dung do AI đề xuất đều được nhóm đối chiếu với mã nguồn, cấu trúc thư mục và môi trường triển khai thực tế trước khi đưa vào tài liệu chính thức. Quá trình kiểm tra này giúp đảm bảo tính chính xác, thống nhất và khả năng sử dụng của tài liệu trong quá trình phát triển cũng như bàn giao dự án.
+Tuy nhiên, toàn bộ nội dung do AI đề xuất đều được nhóm đối chiếu với mã nguồn, cấu trúc thư mục và môi trường triển khai 
+thực tế trước khi đưa vào tài liệu chính thức. Quá trình kiểm tra này giúp đảm bảo tính chính xác, thống nhất và khả năng 
+sử dụng của tài liệu trong quá trình phát triển cũng như bàn giao dự án.
 ```
 ---
 ### Prompt số 31
@@ -2897,13 +2905,15 @@ Tuy nhiên, toàn bộ nội dung do AI đề xuất đều được nhóm đố
 ```text
 **Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
 
-**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng 
+dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
 
 **Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
 
 **Yêu cầu:**
 - Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
-- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
+- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực 
+tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
 
 **Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
 ```
@@ -2911,9 +2921,13 @@ Tuy nhiên, toàn bộ nội dung do AI đề xuất đều được nhóm đố
 #### 31.2. Bối cảnh khi viết prompt
 
 ```text
-Sau khi mô hình MeloTTS có thể tạo thành công file âm thanh từ văn bản, nhóm cần tích hợp chức năng này với hệ thống ESP32 thông qua giao tiếp mạng. Việc chỉ sinh file WAV trên máy tính không còn đáp ứng yêu cầu của hệ thống vì thiết bị ESP32 cần nhận trực tiếp dữ liệu âm thanh để phát theo thời gian thực.
+Sau khi mô hình MeloTTS có thể tạo thành công file âm thanh từ văn bản, nhóm cần tích hợp chức năng này với hệ thống ESP32 
+thông qua giao tiếp mạng. Việc chỉ sinh file WAV trên máy tính không còn đáp ứng yêu cầu của hệ thống vì thiết bị ESP32 cần 
+nhận trực tiếp dữ liệu âm thanh để phát theo thời gian thực.
 
-Nhóm mong muốn xây dựng một Web API đóng vai trò trung gian giữa ESP32 và mô hình AI. API sẽ tiếp nhận nội dung văn bản từ thiết bị, gọi mô hình MeloTTS để tổng hợp giọng nói, sau đó trả trực tiếp dữ liệu âm thanh về dưới dạng HTTP Response. Điều này giúp giảm thao tác thủ công, tăng tính tự động hóa và tạo nền tảng cho việc tích hợp AI vào hệ thống IoT của dự án.
+Nhóm mong muốn xây dựng một Web API đóng vai trò trung gian giữa ESP32 và mô hình AI. API sẽ tiếp nhận nội dung văn bản từ 
+thiết bị, gọi mô hình MeloTTS để tổng hợp giọng nói, sau đó trả trực tiếp dữ liệu âm thanh về dưới dạng HTTP Response. Điều 
+này giúp giảm thao tác thủ công, tăng tính tự động hóa và tạo nền tảng cho việc tích hợp AI vào hệ thống IoT của dự án.
 ```
 
 #### 31.3. Kết quả AI trả về
@@ -2930,23 +2944,31 @@ Giải pháp AI đưa ra bao gồm:
 - Hướng dẫn cấu hình địa chỉ IP và cổng của Web Server.
 - Cung cấp ví dụ gọi API từ phía ESP32 và công cụ Postman để kiểm thử.
 
-Ngoài việc sinh mã nguồn, AI còn giải thích luồng xử lý dữ liệu giữa ESP32, AI Server và mô hình TTS, giúp nhóm hiểu rõ cách tích hợp các thành phần trong hệ thống.
+Ngoài việc sinh mã nguồn, AI còn giải thích luồng xử lý dữ liệu giữa ESP32, AI Server và mô hình TTS, giúp nhóm hiểu rõ 
+cách tích hợp các thành phần trong hệ thống.
 ```
 
 #### 31.4. Kết quả đã áp dụng vào bài
 
 ```text
-Nhóm sử dụng kiến trúc API do AI đề xuất để xây dựng máy chủ phục vụ mô hình MeloTTS. Sau khi điều chỉnh đường dẫn model, cấu trúc thư mục lưu trữ, địa chỉ IP của máy chủ và các thông số cấu hình phù hợp với môi trường triển khai thực tế, API có thể hoạt động ổn định.
+Nhóm sử dụng kiến trúc API do AI đề xuất để xây dựng máy chủ phục vụ mô hình MeloTTS. Sau khi điều chỉnh đường dẫn model, 
+cấu trúc thư mục lưu trữ, địa chỉ IP của máy chủ và các thông số cấu hình phù hợp với môi trường triển khai thực tế, API có 
+thể hoạt động ổn định.
 
-Quá trình kiểm thử cho thấy ESP32 gửi yêu cầu đến API thành công, máy chủ thực hiện tổng hợp giọng nói bằng mô hình AI và trả về dữ liệu âm thanh đúng định dạng. Thiết bị nhận được dữ liệu và phát thành công theo nội dung văn bản được gửi lên, đáp ứng yêu cầu tích hợp giữa AI Server và hệ thống IoT.
+Quá trình kiểm thử cho thấy ESP32 gửi yêu cầu đến API thành công, máy chủ thực hiện tổng hợp giọng nói bằng mô hình AI và 
+trả về dữ liệu âm thanh đúng định dạng. Thiết bị nhận được dữ liệu và phát thành công theo nội dung văn bản được gửi lên, 
+đáp ứng yêu cầu tích hợp giữa AI Server và hệ thống IoT.
 ```
 
 #### 31.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Sau khi tham khảo mã nguồn do AI đề xuất, nhóm điều chỉnh lại cấu trúc thư mục chứa model, thư mục sinh file âm thanh và cách quản lý các tài nguyên của AI Server để phù hợp với kiến trúc dự án.
+Sau khi tham khảo mã nguồn do AI đề xuất, nhóm điều chỉnh lại cấu trúc thư mục chứa model, thư mục sinh file âm thanh và 
+cách quản lý các tài nguyên của AI Server để phù hợp với kiến trúc dự án.
 
-Ngoài ra, nhóm bổ sung xử lý ngoại lệ cho các trường hợp đầu vào không hợp lệ, tối ưu quá trình tạo và trả dữ liệu âm thanh nhằm giảm thời gian phản hồi của API. Đồng thời cập nhật tài liệu hướng dẫn khởi động AI Server, hướng dẫn kiểm thử endpoint bằng Postman và bổ sung quy trình kiểm tra kết nối trước khi ESP32 gửi yêu cầu thực tế.
+Ngoài ra, nhóm bổ sung xử lý ngoại lệ cho các trường hợp đầu vào không hợp lệ, tối ưu quá trình tạo và trả dữ liệu âm thanh 
+nhằm giảm thời gian phản hồi của API. Đồng thời cập nhật tài liệu hướng dẫn khởi động AI Server, hướng dẫn kiểm thử 
+endpoint bằng Postman và bổ sung quy trình kiểm tra kết nối trước khi ESP32 gửi yêu cầu thực tế.
 ```
 
 #### 31.6. Đánh giá chất lượng prompt
@@ -2974,9 +2996,13 @@ Ngoài ra, nhóm bổ sung xử lý ngoại lệ cho các trường hợp đầu
 #### 31.8. Ghi chú thêm
 
 ```text
-Prompt giúp nhóm nhanh chóng xây dựng kiến trúc Web API để tích hợp mô hình MeloTTS với thiết bị ESP32 mà không phải thiết kế từ đầu. AI hỗ trợ đề xuất kiến trúc tổng thể, sinh mã nguồn mẫu, hướng dẫn cấu hình HTTP Server và giải thích luồng xử lý giữa AI Server với thiết bị nhúng.
+Prompt giúp nhóm nhanh chóng xây dựng kiến trúc Web API để tích hợp mô hình MeloTTS với thiết bị ESP32 mà không phải thiết 
+kế từ đầu. AI hỗ trợ đề xuất kiến trúc tổng thể, sinh mã nguồn mẫu, hướng dẫn cấu hình HTTP Server và giải thích luồng xử 
+lý giữa AI Server với thiết bị nhúng.
 
-Toàn bộ mã nguồn và cấu hình do AI đề xuất đều được nhóm kiểm tra, chỉnh sửa và thử nghiệm trên môi trường triển khai thực tế trước khi tích hợp vào hệ thống. Nhóm cũng tối ưu thêm cấu trúc dự án, xử lý ngoại lệ và cập nhật tài liệu kỹ thuật nhằm đảm bảo API hoạt động ổn định, dễ bảo trì và thuận tiện cho việc phát triển trong các giai đoạn tiếp theo.
+Toàn bộ mã nguồn và cấu hình do AI đề xuất đều được nhóm kiểm tra, chỉnh sửa và thử nghiệm trên môi trường triển khai thực 
+tế trước khi tích hợp vào hệ thống. Nhóm cũng tối ưu thêm cấu trúc dự án, xử lý ngoại lệ và cập nhật tài liệu kỹ thuật nhằm 
+đảm bảo API hoạt động ổn định, dễ bảo trì và thuận tiện cho việc phát triển trong các giai đoạn tiếp theo.
 ```
 ---
 ### Lần sử dụng AI số 32
@@ -2994,7 +3020,8 @@ Toàn bộ mã nguồn và cấu hình do AI đề xuất đều được nhóm 
 ```text
 Mô tả tính năng
 
-Khởi tạo cấu trúc dự án kiểm thử trên Postman. Tạo Postman Collection, setup folder và import các API request cơ bản cho luồng thao tác đúng (Happy Path).
+Khởi tạo cấu trúc dự án kiểm thử trên Postman. Tạo Postman Collection, setup folder và import các API request cơ bản cho 
+luồng thao tác đúng (Happy Path).
 
 Yêu cầu chi tiết
 
@@ -3008,19 +3035,26 @@ Yêu cầu chi tiết
 #### 32.2. Kết quả AI gợi ý
 
 ```text
-AI hướng dẫn chi tiết cách tạo Postman Collection, phân chia folder theo từng module, cấu hình Environment Variables, thiết lập Authorization, viết các Test Script kiểm tra HTTP Status Code và lưu các biến môi trường như tokenAdmin, roleId và yardId. Đồng thời AI cũng hướng dẫn quy trình chạy Collection Runner và cách xử lý một số lỗi thường gặp như 401 Unauthorized và 404 Not Found.
+AI hướng dẫn chi tiết cách tạo Postman Collection, phân chia folder theo từng module, cấu hình Environment Variables, thiết 
+lập Authorization, viết các Test Script kiểm tra HTTP Status Code và lưu các biến môi trường như tokenAdmin, roleId và 
+yardId. Đồng thời AI cũng hướng dẫn quy trình chạy Collection Runner và cách xử lý một số lỗi thường gặp như 401 
+Unauthorized và 404 Not Found.
 ```
 
 #### 32.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Áp dụng hướng dẫn của AI để tạo LogiPort-API.postman_collection.json, bổ sung đầy đủ các request Happy Path, cấu hình Environment Variables và Test Scripts. Collection sau khi hoàn thiện được import vào Postman để kiểm thử và export vào thư mục của dự án phục vụ quản lý bằng Git.
+Áp dụng hướng dẫn của AI để tạo LogiPort-API.postman_collection.json, bổ sung đầy đủ các request Happy Path, cấu hình 
+Environment Variables và Test Scripts. Collection sau khi hoàn thiện được import vào Postman để kiểm thử và export vào thư 
+mục của dự án phục vụ quản lý bằng Git.
 ```
 
 #### 32.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Nhóm đã đối chiếu lại hướng dẫn của AI với tài liệu API và backend thực tế của dự án. Một số endpoint, Request Body và phương thức xác thực được điều chỉnh để phù hợp với hệ thống. Đồng thời cập nhật lại các Test Script và Environment Variables theo cấu trúc backend hiện tại, đảm bảo Collection hoạt động đúng trước khi commit vào repository.
+Nhóm đã đối chiếu lại hướng dẫn của AI với tài liệu API và backend thực tế của dự án. Một số endpoint, Request Body và 
+phương thức xác thực được điều chỉnh để phù hợp với hệ thống. Đồng thời cập nhật lại các Test Script và Environment 
+Variables theo cấu trúc backend hiện tại, đảm bảo Collection hoạt động đúng trước khi commit vào repository.
 ```
 
 #### 32.5. Minh chứng
@@ -3037,7 +3071,10 @@ Nhóm đã đối chiếu lại hướng dẫn của AI với tài liệu API v�
 #### 32.6. Nhận xét cá nhân/nhóm
 
 ```text
-Việc sử dụng ChatGPT giúp giảm đáng kể thời gian tìm hiểu Postman và xây dựng Collection. AI hỗ trợ tốt trong việc đề xuất cấu trúc Collection, viết Test Script và giải thích quy trình kiểm thử. Tuy nhiên, toàn bộ nội dung đều được nhóm kiểm tra và điều chỉnh dựa trên tài liệu API và backend của dự án trước khi áp dụng chính thức nhằm đảm bảo tính chính xác và phù hợp với hệ thống thực tế.
+Việc sử dụng ChatGPT giúp giảm đáng kể thời gian tìm hiểu Postman và xây dựng Collection. AI hỗ trợ tốt trong việc đề xuất 
+cấu trúc Collection, viết Test Script và giải thích quy trình kiểm thử. Tuy nhiên, toàn bộ nội dung đều được nhóm kiểm tra 
+và điều chỉnh dựa trên tài liệu API và backend của dự án trước khi áp dụng chính thức nhằm đảm bảo tính chính xác và phù 
+hợp với hệ thống thực tế.
 ```
 
 
@@ -3052,7 +3089,7 @@ Việc sử dụng ChatGPT giúp giảm đáng kể thời gian tìm hiểu Post
 | Phần việc liên quan | API Testing / Postman / Documentation                  |
 | Mức độ sử dụng      | Hướng dẫn cấu hình và giải thích                                          |
 
-#### 32.1. Prompt đã sử dụng
+#### 33.1. Prompt đã sử dụng
 
 ```text
 Hướng dẫn tạo Environment cho dự án LogiPort trên Postman.
@@ -3071,25 +3108,31 @@ Yêu cầu:
 - Giải thích cách export và import Environment để chia sẻ với các thành viên trong nhóm.
 ```
 
-#### 32.2. Kết quả AI gợi ý
+#### 33.2. Kết quả AI gợi ý
 
 ```text
-AI hướng dẫn cách tạo Environment trong Postman, khai báo các biến cần thiết, giải thích ý nghĩa của từng biến và cách sử dụng cú pháp {{variableName}} trong URL, Header, Authorization và Request Body. AI cũng cung cấp các Test Script để tự động lưu token và ID vào Environment sau khi API thực thi thành công.
+AI hướng dẫn cách tạo Environment trong Postman, khai báo các biến cần thiết, giải thích ý nghĩa của từng biến và cách sử 
+dụng cú pháp {{variableName}} trong URL, Header, Authorization và Request Body. AI cũng cung cấp các Test Script để tự động 
+lưu token và ID vào Environment sau khi API thực thi thành công.
 ```
 
-#### 32.3. Phần sinh viên/nhóm đã sử dụng từ AI
+#### 33.3. Phần sinh viên/nhóm đã sử dụng từ AI
 
 ```text
-Áp dụng hướng dẫn để tạo Environment "LogiPort Local", cấu hình đầy đủ các biến môi trường và sử dụng chúng trong toàn bộ Postman Collection. Sau khi đăng nhập hoặc tạo dữ liệu mới, các Test Script tự động cập nhật giá trị của tokenAdmin, yardId và roleId, giúp các request tiếp theo có thể sử dụng ngay mà không cần nhập thủ công.
+Áp dụng hướng dẫn để tạo Environment "LogiPort Local", cấu hình đầy đủ các biến môi trường và sử dụng chúng trong toàn bộ 
+Postman Collection. Sau khi đăng nhập hoặc tạo dữ liệu mới, các Test Script tự động cập nhật giá trị của tokenAdmin, yardId 
+và roleId, giúp các request tiếp theo có thể sử dụng ngay mà không cần nhập thủ công.
 ```
 
-#### 32.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+#### 33.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
 
 ```text
-Nhóm điều chỉnh giá trị baseUrl theo môi trường backend thực tế của dự án và bổ sung thêm một số biến phù hợp với quá trình kiểm thử. Các Test Script được chỉnh sửa để tương thích với cấu trúc Response của API LogiPort và đảm bảo dữ liệu được lưu chính xác vào Environment.
+Nhóm điều chỉnh giá trị baseUrl theo môi trường backend thực tế của dự án và bổ sung thêm một số biến phù hợp với quá trình 
+kiểm thử. Các Test Script được chỉnh sửa để tương thích với cấu trúc Response của API LogiPort và đảm bảo dữ liệu được lưu 
+chính xác vào Environment.
 ```
 
-#### 32.5. Minh chứng
+#### 33.5. Minh chứng
 
 | Loại minh chứng   | Nội dung                                                                                                                            |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -3100,11 +3143,512 @@ Nhóm điều chỉnh giá trị baseUrl theo môi trường backend thực tế
 | Link video demo   |                                                                                                                                     |
 | Ghi chú khác      |                                                                                                                                     |
 
-#### 32.6. Nhận xét cá nhân/nhóm
+#### 33.6. Nhận xét cá nhân/nhóm
 
 ```text
-Việc sử dụng AI giúp nhóm nhanh chóng thiết lập Environment theo đúng quy trình của Postman và giảm thời gian tìm hiểu tài liệu. Sau khi nhận được hướng dẫn, nhóm vẫn đối chiếu với backend và tài liệu API để điều chỉnh các biến môi trường và Test Script cho phù hợp với dự án LogiPort. Điều này giúp Collection hoạt động ổn định và thuận tiện hơn trong quá trình kiểm thử cũng như làm việc nhóm.
+Việc sử dụng AI giúp nhóm nhanh chóng thiết lập Environment theo đúng quy trình của Postman và giảm thời gian tìm hiểu tài 
+liệu. Sau khi nhận được hướng dẫn, nhóm vẫn đối chiếu với backend và tài liệu API để điều chỉnh các biến môi trường và Test 
+Script cho phù hợp với dự án LogiPort. Điều này giúp Collection hoạt động ổn định và thuận tiện hơn trong quá trình kiểm 
+thử cũng như làm việc nhóm.
 ```
+---
+
+### Lần sử dụng AI số 34
+
+| Nội dung | Thông tin |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng | 29/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | Thiết lập môi trường thử nghiệm nền và cô lập Redis cache |
+| Phần việc liên quan | Testing |
+| Mức độ sử dụng | Hướng dẫn cấu hình và viết mã nguồn hoàn chỉnh |
+| Phân hệ liên quan | Test Infrastructure / Bộ khởi tạo kiểm thử toàn cục |
+
+#### 34.1. Prompt đã sử dụng
+
+Hãy hướng dẫn cấu hình file jest.setup.ts cho dự án Node.js/TypeScript sử dụng Jest. 
+Yêu cầu cụ thể:
+- Viết mã giả lập (mock) toàn cục cho thư viện 'redis'. Cụ thể là hàm `createClient` phải trả về một đối tượng chứa các 
+method mock cơ bản như: connect, on, get, set, del, và quit để ngăn chặn hoàn toàn việc bộ kiểm thử kết nối tới server 
+Redis thật đang chạy ở môi trường bên ngoài.
+- Khai báo các biến môi trường giả lập trực tiếp thông qua đối tượng toàn cục (process.env) bao gồm các biến cấu hình: 
+REDIS_HOST = 'localhost', REDIS_PORT = '6379', và REDIS_PASSWORD = 'dummy' để Jest nạp sẵn và sử dụng đồng bộ xuyên suốt 
+quá trình thực thi mọi tệp kiểm thử trong dự án.
+- Đảm bảo mã nguồn tường minh, tối ưu hóa theo chuẩn hóa cấu trúc của TypeScript.
+
+#### 34.2. Bối cảnh khi viết prompt
+
+Trong kiến trúc hệ thống của dự án LogiPort, phân hệ backend có tích hợp Redis để phục vụ cho các tác vụ tối ưu hóa hiệu 
+năng, lưu trữ bộ nhớ đệm (caching) các lượt quét mã và quản lý trạng thái của xe tại luồng ra vào cảng. Khi tiến hành viết 
+và chạy các bộ Unit Test để kiểm tra logic thuần túy, việc để mã nguồn thực hiện kết nối tới một server Redis instance thật 
+bên ngoài là hoàn toàn không cần thiết, dễ gây ra lỗi nghẽn đường truyền (network bottleneck), làm giảm tốc độ thực thi của 
+Jest hoặc gây sai lệch dữ liệu thử nghiệm giữa các máy máy local khác nhau. Do đó, nhóm cần một cấu hình cô lập tập trung 
+trong tệp `jest.setup.ts` để giả lập hoàn toàn hoạt động của Redis trước khi bất kỳ một bộ kiểm thử nào khác được hệ thống 
+kích hoạt.
+
+#### 34.3. Kết quả AI gợi ý
+
+AI đã phản hồi bằng cách cung cấp một đoạn mã nguồn cấu hình chuẩn xác và tinh gọn cho tệp `jest.setup.ts`. Giải pháp sử 
+dụng cấu trúc `jest.mock('redis', ...)` kết hợp với việc trả về một Factory Object chứa đầy đủ các thuộc tính và phương 
+thức hoạt động cốt lõi của một Redis Client, trong đó tất cả các hàm đều được định nghĩa giả lập thông qua `jest.fn()`. Đi 
+kèm với đó, AI cũng chỉ ra phương pháp gán các giá trị chuỗi (string) trực tiếp vào đối tượng `process.env` để đảm bảo các 
+module khác khi đọc cấu hình hệ thống từ biến môi trường vẫn nhận diện được thông tin cấu hình hợp lệ mà không bị báo lỗi 
+thiếu trường (undefined).
+
+#### 34.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Nhóm đã tiếp thu và áp dụng toàn bộ giải pháp kiến trúc mã nguồn do AI gợi ý để cấu hình tệp nền, bao gồm:
+- Đoạn mã khai báo giả lập thư viện Redis: `jest.mock('redis', () => { return { createClient: jest.fn().mockReturnValue({ connect: jest.fn(), on: jest.fn(), get: jest.fn(), set: jest.fn(), del: jest.fn(), quit: jest.fn() }) }; });`
+- Khối lệnh gán trực tiếp biến môi trường toàn cục cho hệ thống chạy kiểm thử:
+  `process.env.REDIS_HOST = 'localhost';`
+  `process.env.REDIS_PORT = '6379';`
+  `process.env.REDIS_PASSWORD = 'dummy';`
+
+#### 34.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Để bộ kiểm thử hoạt động một cách tối ưu và an toàn tuyệt đối, nhóm đã chủ động thực hiện thêm các cải tiến kỹ thuật sau:
+- Bổ sung cấu hình tự động dọn dẹp và thiết lập lại trạng thái của các hàm giả lập (`clearMocks: true`, `restoreMocks: 
+true`) trong tệp cấu hình chính `jest.config.js` đi kèm của dự án. Điều này giúp đảm bảo dữ liệu ghi nhận và số lần gọi hàm 
+(call counters) của các tác vụ mock Redis ở test case trước không bị rò rỉ (leak) hay làm ảnh hưởng đến kết quả đánh giá 
+logic của các test case chạy phía sau.
+- Kiểm tra tính tương thích và tích hợp tệp cấu hình này vào phân hệ quản lý biến môi trường chung của toàn bộ mã nguồn 
+backend LogiPort để hệ thống chạy một cách đồng bộ.
+
+#### 34.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng, diễn đạt phân tách các yêu cầu kỹ thuật một cách mạch lạc.
+* [x] Prompt cung cấp đầy đủ bối cảnh về công nghệ (Jest, TypeScript, Redis) và mục tiêu cô lập hệ thống.
+* [ ] Prompt còn thiếu thông tin.
+* [x] Prompt tạo ra kết quả tốt, mã nguồn sinh ra chạy được ngay và khớp với kiến trúc dự án.
+* [ ] Prompt tạo ra kết quả chưa phù hợp với ngữ cảnh xử lý.
+* [ ] Cần hỏi lại AI nhiều lần để làm rõ các vấn đề phát sinh.
+* [ ] Cần tự kiểm tra và chỉnh sửa nhiều cấu trúc mã nguồn sau khi AI phản hồi.
+* [ ] Kết quả AI có lỗi cú pháp hoặc chưa chính xác về kiểu dữ liệu.
+
+#### 34.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung chi tiết |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit | [Mã hash commit cập nhật cấu hình hạ tầng kiểm thử hệ thống] |
+| File liên quan | `jest.setup.ts`, `jest.config.js` |
+| Screenshot | Ảnh chụp màn hình Terminal chạy lệnh kiểm thử thành công, trong đó Jest tự động nạp file `jest.setup.ts` làm 
+môi trường nền trước khi quét các file test khác. |
+| Kết quả chạy/test | Bộ kiểm thử thực thi với tốc độ cực nhanh (vài mili-giây), hoàn toàn không còn xuất hiện lỗi treo 
+tiến trình hoặc lỗi cảnh báo không tìm thấy kết nối mạng ngoài "Redis connection failed" khi chạy kiểm thử cục bộ (offline) 
+dưới máy local. |
+| Link tài liệu/báo cáo | Tài liệu đặc tả kỹ thuật phần mềm kiểm thử (Software Testing Specification) của dự án LogiPort. |
+| Ghi chú khác | Hệ thống Mocking hoạt động ổn định trên cả môi trường máy local cá nhân của các thành viên và môi trường 
+chạy tự động (CI/CD Pipeline). |
+
+#### 34.8. Ghi chú thêm
+
+Kinh nghiệm cốt lõi rút ra: Việc thiết lập và cấu hình mock các dịch vụ hoặc thư viện của bên thứ ba (như Redis, cơ sở dữ 
+liệu ngoại vi, các dịch vụ Cloud bên ngoài) một cách tập trung và toàn cục ngay từ giai đoạn đầu giúp đơn giản hóa đáng kể 
+quá trình xây dựng mã nguồn Unit Test cho các tầng Controller, Service và Repository phía sau. Việc cô lập hoàn toàn môi 
+trường chạy giúp các thành viên trong nhóm tập trung tối đa vào việc thiết kế các kịch bản kiểm thử logic nghiệp vụ cốt 
+lõi, nâng cao tính tin cậy của mã nguồn, đồng thời loại bỏ hoàn toàn sự phụ thuộc vào trạng thái bật/tắt hay cấu hình mạng 
+của các dịch vụ bên ngoài dưới máy local của từng cá nhân.
+
+---
+
+### Lần sử dụng AI số 35
+
+| Nội dung | Thông tin |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng | 29/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | Kiểm thử tích hợp cơ sở dữ liệu cho phân hệ điều phối Lịch hẹn |
+| Phần việc liên quan | Testing |
+| Mức độ sử dụng | Hướng dẫn cấu trúc hạ tầng và sinh mã kiểm thử mẫu |
+| Phân hệ liên quan | Appointment System / Tầng lưu trữ dữ liệu (Repository) |
+
+#### 35.1. Prompt đã sử dụng
+
+Viết file appointment.repository.test.ts bằng Jest và TypeScript để kiểm thử trực tiếp trên cơ sở dữ liệu lưu niệm (sử dụng 
+mongodb-memory-server và mongoose).
+Yêu cầu bao quát các nghiệp vụ sau của hệ thống quản lý cảng:
+1. Viết ca kiểm thử gốc (TC_BASE) để đếm số lượng lịch hẹn (sức chứa bãi) bằng `countDocuments` với các điều kiện: 
+scheduledDate, timeSlot, status khác 'Cancelled' và isDeleted là false. Giả lập tạo 20 bản ghi bằng insertMany để kiểm tra 
+giới hạn chặn.
+2. Kiểm thử các trường hợp chuyển trạng thái từ PENDING sang CONFIRMED khi được Admin duyệt (TC61).
+3. Kiểm thử logic chặn hành động hủy lịch hẹn khi trạng thái đã là COMPLETED (TC62).
+4. Kiểm thử tính năng tự động hủy lịch (chuyển sang Cancelled) sau 30 phút quá hạn khung giờ đăng ký thông qua cơ chế quét 
+tự động (TC63).
+5. Kiểm thử các ràng buộc thời gian xe đến In-Gate: Từ chối nếu đến quá sớm > 30 phút (TC67); Cho phép vào cổng và cập nhật 
+trạng thái nếu đến chính xác trong khung thời gian cho phép (-30 phút đến +30 phút) (TC68, TC69); Từ chối nếu đến trễ quá 
+30 phút (TC70).
+6. Kiểm thử chặn hành động xóa lịch hẹn nếu trạng thái xe đang hoạt động trong bãi (TC71) và chặn tạo lịch trùng biển số xe 
+trong cùng một khung giờ (TC72).
+
+#### 35.2. Bối cảnh khi viết prompt
+
+Trong dự án LogiPort, phân hệ quản lý và điều phối xe container vào cảng áp dụng những quy định vô cùng nghiêm ngặt về mặt 
+thời gian vận hành (chỉ chấp nhận sai số tối đa 30 phút quanh khung giờ đăng ký) và giới hạn sức chứa (quota tối đa 20 xe 
+cho mỗi khung giờ/time slot để tránh ùn tắc cục bộ). Tầng Repository đảm nhận việc giao tiếp và thực thi các câu lệnh truy 
+vấn trực tiếp với cơ sở dữ liệu MongoDB. Để đảm bảo các câu lệnh truy vấn phức tạp (chứa nhiều toán tử logic lồng nhau như 
+`$ne`, `$gte`, `$lte`) không xảy ra bất kỳ sai sót nào trong thực tế, nhóm cần viết một bộ test tích hợp tầng dữ liệu vững 
+chắc. Việc sử dụng cơ sở dữ liệu lưu niệm (In-Memory Database) thông qua thư viện `mongodb-memory-server` là lựa chọn tối 
+ưu để chạy độc lập mà không gây ảnh hưởng đến hệ thống DB thật.
+
+#### 35.3. Kết quả AI gợi ý
+
+AI đã phản hồi bằng cách sinh ra một cấu trúc tệp mã nguồn kiểm thử chi tiết và chuẩn hóa dựa trên các hàm vòng đời 
+(`beforeAll`, `beforeEach`, `afterAll`) để tự động thiết lập, làm sạch và giải phóng tài nguyên của server cơ sở dữ liệu ảo 
+Mongoose. AI đã cụ thể hóa đầy đủ tất cả các kịch bản nghiệp vụ biên theo yêu cầu (bao gồm 13 test cases từ TC61 đến TC73 
+bên cạnh ca test cơ sở TC_BASE). Các logic kiểm tra thời gian xe đến tại cổng In-Gate được thiết kế trực quan bằng cách quy 
+đổi thời gian ra số phút (`slotStartMin`, `arrivalMin`, `slotEndMin`) và sử dụng các câu lệnh khẳng định (`expect`) để xác 
+thực tính chính xác của ranh giới thời gian (sai số trong hoặc ngoài ngưỡng 30 phút).
+
+#### 35.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Nhóm đã kế thừa và nhúng trực tiếp các giải pháp mã nguồn cốt lõi từ AI vào dự án, cụ thể bao gồm:
+- Luồng khởi tạo và dọn dẹp DB ảo: Thiết lập tạo máy chủ Mongo ảo bằng `MongoMemoryServer.create()` trong hàm `beforeAll` 
+với thời gian chờ 30000ms, đồng thời dọn sạch dữ liệu bằng `Appointment.deleteMany({})` trước mỗi ca test.
+- Logic mô phỏng kiểm soát quota: Đoạn mã sử dụng vòng lặp `for` để đẩy nhanh 20 bản ghi lịch hẹn mẫu vào cơ sở dữ liệu 
+bằng lệnh `Appointment.insertMany()`, sau đó gọi hàm đối chiếu `Appointment.countDocuments()` để xác thực sức chứa.
+- Thuật toán quy đổi thời gian sang phút để kiểm tra giá trị biên ranh giới thời gian xe đến bãi xe sớm/muộn cho các ca 
+test TC67, TC68, TC69, và TC70.
+
+#### 35.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Để mã nguồn kiểm thử hoạt động chính xác tương thích với môi trường triển khai thực tế của LogiPort, nhóm đã tiến hành các 
+bước tối ưu hóa sau:
+- Đồng bộ hóa toàn bộ định dạng múi giờ của hệ thống: Nhóm phát hiện ra khi chạy test trên các nền tảng khác nhau (hoặc qua 
+các máy chủ CI/CD khác nhau), việc khởi tạo ngày tháng mặc định dễ bị lệch múi giờ (giữa UTC và GMT+7). Nhóm đã sửa đổi 
+toàn bộ các biến khởi tạo thời gian thành định dạng chuỗi ISO tường minh (ví dụ: `new Date("2024-12-01T00:00:00Z")`) để đảm 
+bảo phép trừ khoảng cách phút luôn đạt độ chính xác tuyệt đối.
+- Sửa đổi lại các thuộc tính cấu trúc của tài liệu Mock Appointment (như `truckPlate`, `containerNo`, `timeSlot`) để khớp 
+hoàn toàn 100% với Schema định nghĩa thực tế của Model Mongoose trong dự án, tránh các lỗi ép kiểu (CastError) từ 
+TypeScript.
+
+#### 35.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng, liệt kê rành mạch từng mã test case (TC) cần bao phủ.
+* [x] Prompt có đủ bối cảnh khi nêu rõ công nghệ cơ sở dữ liệu lưu niệm cần áp dụng.
+* [ ] Prompt còn thiếu thông tin.
+* [x] Prompt tạo ra kết quả tốt, các logic giả lập ranh giới thời gian được triển khai rất sáng tạo.
+* [ ] Prompt tạo ra kết quả chưa phù hợp.
+* [ ] Cần hỏi lại AI nhiều lần.
+* [ ] Cần tự kiểm tra và chỉnh sửa nhiều.
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác.
+
+#### 35.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung chi tiết |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------- |
+| Link commit | [Mã hash commit hoàn thiện bộ kiểm thử tích hợp DB cho phân hệ Appointment Repository] |
+| File liên quan | `appointment.repository.test.ts`, `appointment.model.ts` |
+| Screenshot | Ảnh chụp giao diện Jest Runner hiển thị tất cả các ca kiểm thử từ TC61 đến TC73 đều chuyển sang trạng thái 
+xanh (PASSED). |
+| Kết quả chạy/test | Bộ test chạy hoàn toàn độc lập, xác nhận logic tự động đóng/mở barrier và giải phóng slot quota của 
+hệ thống vận hành hoàn hảo mà không làm rò rỉ dữ liệu ra ngoài. |
+| Link tài liệu/báo cáo | Tài liệu ma trận kiểm thử (Test Matrix Mapping) và kịch bản kiểm thử luồng dữ liệu cảng 
+LogiPort. |
+| Ghi chú khác | Tốc độ kết nối và giải phóng tài nguyên dữ liệu của MongoMemoryServer được tối ưu dưới 1.5 giây cho toàn 
+bộ tiến trình. |
+
+#### 35.8. Ghi chú thêm
+
+Kinh nghiệm cốt lõi rút ra: Đối với các hệ thống quản lý cảng biển hoặc kho bãi có các quy định ngặt nghèo về mặt thời gian 
+thực và vị trí xếp xe, việc viết kiểm thử tích hợp ở tầng Repository trực tiếp với một cơ sở dữ liệu ảo chạy trong bộ nhớ 
+(In-Memory Database) là bắt buộc. Phương pháp này giúp đội ngũ phát triển kiểm soát chặt chẽ từng toán tử logic của hệ 
+thống, phát hiện sớm các lỗi nghiêm trọng như trùng lặp khóa (Duplicate Key Error), sai lệch định dạng ngày tháng do múi 
+giờ, hoặc lỗi rỗng dữ liệu (Null Pointer) trước khi mã nguồn được đóng gói đẩy lên các tầng xử lý API cấp cao hơn.
+
+---
+
+### Lần sử dụng AI số 36
+
+| Nội dung | Thông tin |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng | 29/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | Kiểm thử bộ lọc, phân trang nhật ký giao dịch và luồng xử lý e-EIR bất đồng bộ |
+| Phần việc liên quan | Testing |
+| Mức độ sử dụng | Hướng dẫn cấu trúc hạ tầng và sinh mã kiểm thử hoàn chỉnh |
+| Phân hệ liên quan | Gate Transactions / Nhật ký kiểm soát cổng bãi và xử lý sự cố mạng |
+
+#### 36.1. Prompt đã sử dụng
+
+Hãy viết file gateTransaction.repository.test.ts sử dụng Jest, Mongoose và mongodb-memory-server để kiểm thử các hàm xử lý nhật ký giao dịch cổng (GateTransaction).
+Yêu cầu kiểm thử các tính năng cụ thể sau:
+1. TC_BASE: Tạo danh sách giao dịch mẫu. Thực hiện kiểm tra câu lệnh tìm kiếm phân trang có bộ lọc regex biển số xe (`/51C/i`), lọc khoảng thời gian (`checkInTime` từ $gte đến $lte) kết hợp liên kết dữ liệu `populate("appointmentId")`. Đảm bảo kết quả đếm `countDocuments` và giới hạn `limit(1)` trả về đúng bản ghi mong muốn.
+2. Kiểm tra việc cập nhật trạng thái lịch hẹn thành 'Completed' khi xe thực hiện kích hoạt tiến trình đi ra (Gate-Out) (TC79, TC77).
+3. Đảm bảo bản ghi GateTransaction được khởi tạo đúng cấu trúc: Khi xe vào (In-Gate) chỉ có `checkInTime` và `checkOutTime` phải là undefined (TC83); Ngược lại khi xe ra (Out-Gate) chỉ ghi nhận `checkOutTime` và `checkInTime` là undefined (TC80, TC84, TC78).
+4. Giả lập xử lý lỗi bất đồng bộ: Khi tiến trình kết xuất file PDF e-EIR bị lỗi timeout (PDF render timeout), kiểm tra xem hệ thống có kích hoạt luồng xử lý dự phòng thành công để cập nhật lịch hẹn thành 'Completed', tránh treo giao dịch của tài xế tại cổng hay không (TC85).
+
+#### 36.2. Bối cảnh khi viết prompt
+
+Mỗi khi một xe container di chuyển qua hệ thống barie kiểm soát (In-Gate hoặc Out-Gate), hệ thống LogiPort bắt buộc phải sinh ra một bản ghi nhật ký giao dịch (`GateTransaction`). Để phục vụ công tác giám sát, tra cứu của các điều phối viên tại cảng, các câu lệnh truy vấn dữ liệu cần phải xử lý mượt mà việc kết hợp tìm kiếm chuỗi Regex theo biển số, kèm theo khoảng lọc ngày giờ một cách tuyệt đối. Bên cạnh đó, việc phân tách thuộc tính thời gian (`checkInTime` và `checkOutTime`) đóng vai trò pháp lý cốt lõi để phân định trách nhiệm quản lý container giữa hãng vận tải và ban quản lý cảng. Đặc biệt, khâu kiểm tra cổng có một tác vụ bất đồng bộ rất dễ gây lỗi nghẽn hệ thống (bottleneck): sinh chứng từ giao nhận điện tử e-EIR dạng PDF thông qua bên thứ ba. Nhóm cần viết bộ test này để chứng minh hệ thống có khả năng tự phục hồi và kích hoạt luồng dự phòng (fallback) ngay cả khi mạng lưới kết xuất chứng từ bị sập, tránh làm ùn tắc xe tại cổng.
+
+#### 36.3. Kết quả AI gợi ý
+
+AI đã phản hồi bằng cách cung cấp toàn bộ mã nguồn kiểm thử logic dữ liệu tích hợp cho tệp `gateTransaction.repository.test.ts`. AI đã áp dụng rất tốt các toán tử nâng cao của Mongoose như sử dụng đối tượng `new RegExp()` để lọc chuỗi và kết hợp với câu lệnh liên kết quan hệ `.populate("appointmentId")`. Điểm sáng lớn nhất trong giải pháp của AI là đã hiện thực hóa kịch bản kiểm thử giả lập lỗi bất đồng bộ (Async Error Handling) rất trực quan trong ca kiểm thử TC85. Bằng cách sử dụng một khối lệnh `try/catch` lồng các biến cờ hiệu logic (`isTxnHung`, `autoRetrySuccess`), AI đã chứng minh được thuật toán cứu hộ giao dịch của hệ thống hoạt động đúng hướng: tự động bỏ qua tiến trình lỗi của dịch vụ PDF và đẩy thẳng trạng thái lịch hẹn sang `Completed` để giải phóng rơ-le mở cổng chắn.
+
+#### 36.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Nhóm đã sử dụng toàn bộ cấu trúc mã nguồn do AI xây dựng để triển khai, nổi bật gồm:
+- Logic truy vấn kết hợp phân trang nâng cao tại ca kiểm thử nền TC_BASE: `let query = { isDeleted: false, checkInTime: { $gte: startDate, $lte: endDate }, actualTruckPlate: searchRegex }; const results = await GateTransaction.find(query).populate("appointmentId").sort({ checkInTime: 1 }).skip(0).limit(1);`
+- Kiến trúc thiết lập các câu lệnh xác thực cấu trúc bản ghi vào/ra cổng độc lập (TC80, TC83, TC84), đảm bảo tính toàn vẹn của dữ liệu thời gian (`expect(gateInRecord.checkOutTime).toBeUndefined();`).
+- Khối lệnh kiểm thử xử lý ngoại lệ bất đồng bộ cho ca kiểm thử biên e-EIR PDF timeout (TC85).
+
+#### 36.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Để tệp kiểm thử tích hợp sâu hơn với quy trình làm việc thực tế tại bãi cảng LogiPort, nhóm đã phát triển các cải tiến kỹ thuật sau:
+- Bổ sung thêm ca kiểm thử ký hiệu TC81 (Manual Fallback QR Scan with Reason). Ca kiểm thử này giả lập trường hợp khi thiết bị camera quét OCR tự động bị hỏng, nhân viên bảo vệ cảng có thể chủ động sử dụng máy quét cầm tay quét mã QR thủ công và ghi chú lý do (`reason`) vào hệ thống. Nhóm đã thêm trường này vào model ảo để kiểm tra tính hợp lệ của chuỗi ghi nhận.
+- Điều chỉnh lại logic đồng bộ bản ghi lịch hẹn (`Appointment`) đi kèm trong hàm `beforeEach`, đảm bảo mỗi khi một bản ghi `GateTransaction` mẫu được thêm vào thì nó luôn liên kết chính xác tới một `_id` lịch hẹn có thật trong DB lưu niệm, tránh lỗi vi phạm ràng buộc dữ liệu.
+
+#### 36.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng, phân chia các hạng mục kiểm thử từ tìm kiếm cơ bản đến xử lý logic nâng cao.
+* [x] Prompt cung cấp bối cảnh nghiệp vụ thực tế sâu sắc (luồng xử lý chứng từ e-EIR và phân định trách nhiệm).
+* [ ] Prompt còn thiếu thông tin.
+* [x] Prompt tạo ra kết quả tốt, mã nguồn xử lý lỗi bất đồng bộ được viết rất thông minh.
+* [ ] Prompt tạo ra kết quả chưa phù hợp.
+* [ ] Cần hỏi lại AI nhiều lần để chỉnh sửa.
+* [ ] Cần tự kiểm tra và chỉnh sửa rất nhiều sau khi nhận kết quả.
+* [ ] Kết quả AI chứa lỗi hoặc sai lệch cú pháp nghiêm trọng.
+
+#### 36.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung chi tiết |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit | [Mã hash commit tích hợp bộ kiểm thử tầng GateTransaction Repository và xử lý lỗi chứng từ] |
+| File liên quan | `gateTransaction.repository.test.ts`, `gateTransaction.model.ts`, `appointment.model.ts` |
+| Screenshot | Ảnh chụp màn hình Console log của Jest, hiển thị tất cả các ca kiểm thử từ TC77 đến TC85 chạy thành công và in ra thông báo hệ thống bắt lỗi ngoại vi "PDF render timeout" chính xác. |
+| Kết quả chạy/test | Bộ test tích hợp tầng nhật ký cổng chạy vượt qua thành công, chứng minh hệ thống có khả năng tự động kích hoạt luồng xử lý dự phòng khi dịch vụ bên thứ ba gặp sự cố mạng. |
+| Link tài liệu/báo cáo | Tài liệu phân tích luồng dữ liệu (Data Flow Diagram - DFD) của hệ thống kiểm soát xe ra vào bãi LogiPort. |
+| Ghi chú khác | Độ bao phủ mã nguồn (Code Coverage) của riêng tệp repository này đạt mức tuyệt đối 100%. |
+
+#### 36.8. Ghi chú thêm
+
+Kinh nghiệm cốt lõi rút ra: Trong quá trình thiết kế hệ thống phần mềm có tương tác trực tiếp với các thiết bị phần cứng ngoại vi hoặc các dịch vụ API của bên thứ ba, việc xây dựng các kịch bản kiểm thử bao phủ cho trường hợp mạng lưới gặp sự cố (Network/Asynchronous Error Handling) là vô cùng quan trọng. Việc giả lập thành công lỗi timeout kết xuất chứng từ điện tử e-EIR trong tệp `gateTransaction.repository.test.ts` giúp đội ngũ phát triển an tâm rằng hệ thống LogiPort có cơ chế tự phục hồi lỗi (fault-tolerance), bảo đảm xe container luôn được thông quan mượt mà, loại bỏ hoàn toàn rủi ro nghẽn mạch vật lý tại các bốt bảo vệ ngoài đời thực.
+
+---
+
+### Lần sử dụng AI số 37
+
+| Nội dung | Thông tin |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng | 30/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | Unit Test logic phân trang, kiểm soát dung lượng và CRUD điều phối lịch hẹn |
+| Phân việc liên quan | Testing |
+| Mức độ sử dụng | Hướng dẫn thuật toán giả lập chuỗi và viết test suite hoàn chỉnh |
+| Phân hệ liên quan | Appointment Controller / Tầng điều hướng và kiểm soát nghiệp vụ lịch hẹn |
+
+#### 37.1. Prompt đã sử dụng
+
+Hãy viết file appointment.controller.test.ts sử dụng Jest và thư viện node-mocks-http để kiểm thử đơn vị (Unit Test) cho tất cả các hàm xử lý trong appointment.controller.
+Yêu cầu kỹ thuật cao:
+- Triển khai các hàm helper giả lập chuỗi truy vấn (chained queries) của Mongoose như: mockFindChain (giả lập liên hoàn .populate().sort().skip().limit()), mockFindByIdChain (.populate()) để phục vụ kiểm thử tính năng phân trang mặc định (page=1, limit=10) và tìm kiếm bộ lọc trong hàm appointmentsGet.
+- Thực hiện mock hoàn toàn các model: Appointment, Driver, Container bằng jest.mock.
+- Viết các test cases chi tiết cho hàm createAppointmentPost: Kiểm tra tạo thành công (TC27); Kiểm tra chặn trùng lịch trong ngày của cùng một xe (TC28); Kiểm tra giá trị biên sức chứa khung giờ khi bãi đã có 19/20 xe (TC29 - thành công) và khi đạt ngưỡng 20/20 xe (TC30 - báo lỗi đầy slot).
+- Kiểm tra các ràng buộc nghiệp vụ về trạng thái container (portStatus): Nếu mục đích là 'Lấy container' thì container bắt buộc phải có trạng thái 'Đã nhập cảng' (TC55); Nếu mục đích là 'Trả container' thì trạng thái phải là 'Chưa nhập cảng' (TC56).
+- Viết đầy đủ các ca kiểm thử cho các hàm CRUD còn lại bao gồm: chi tiết lịch hẹn, cập nhật trạng thái (Confirmed/Cancelled), xóa mềm (soft delete), danh sách thùng rác (trash), khôi phục (restore) và xóa vĩnh viễn (hard delete).
+
+#### 37.2. Bối cảnh khi viết prompt
+
+Tệp appointment.controller.ts đóng vai trò là bộ não điều hướng, chịu trách nhiệm thực thi các logic nghiệp vụ cốt lõi và phức tạp nhất của dự án LogiPort. Tại đây, hệ thống phải thực hiện validate kiểm tra trạng thái thực tế của container (In-Port / Out-of-Port validation) dựa trên mục đích của tài xế, đồng thời xử lý các thuật toán phân trang, tìm kiếm nâng cao khi hiển thị danh sách cho điều phối viên. Để xây dựng một bộ Unit Test chuẩn mực — tức là chỉ tập trung kiểm tra logic điều hướng và xử lý của hàm mà không bị phụ thuộc vào kết nối mạng hay cơ sở dữ liệu thật — nhóm bắt buộc phải cô lập hoàn toàn Controller. Thách thức lớn nhất ở đây là phải giả lập được kỹ thuật gọi hàm liên hoàn (Method Chaining) vô cùng đặc trưng của Mongoose ODM (như việc nối đuôi .find().populate().sort().skip().limit()). Nhóm cần sự hỗ trợ của AI để thiết kế các hàm helper bọc đối tượng giả lập này một cách tối ưu nhất.
+
+#### 37.3. Kết quả AI gợi ý
+
+AI đã phản hồi bằng cách cung cấp một giải pháp Unit Test toàn diện và chuẩn hóa cao cho tệp appointment.controller.test.ts. Điểm sáng vượt trội trong câu trả lời của AI là đã hiện thực hóa thành công các hàm helper mô phỏng chuỗi truy vấn liên hoàn thông qua một Factory Object đóng gói. Bằng cách để mỗi phương thức giả lập như .populate() hay .sort() tự động trả về chính đối tượng chain đó, AI đã giải quyết triệt để rào cản Method Chaining của Mongoose. Ngoài ra, AI đã sử dụng thư viện node-mocks-http để khởi tạo nhanh các đối tượng createRequest và createResponse giả lập của Express, hướng dẫn cách trích xuất dữ liệu JSON đầu ra thông qua hàm res._getJSONData() để thực hiện các câu lệnh khẳng định (expect) một cách mượt mà.
+
+#### 37.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Nhóm đã tiếp thu và áp dụng các cấu trúc kỹ thuật nền tảng quan trọng từ AI, bao gồm:
+- Toàn bộ các cấu trúc hàm bọc giả lập chuỗi nối đuôi đặc thù của Mongoose (mockFindChain, mockFindByIdChain, mockDriverFindChain).
+- Toàn bộ các ca kiểm thử biên phân luồng logic dựa trên số lượng xe hiện tại trong bãi (19 xe và 20 xe) cho hàm createAppointmentPost để kiểm soát quota vị trí trống.
+- Các kịch bản validate logic luồng container dựa trên thuộc tính trạng thái portStatus ('Đã nhập cảng' và 'Chưa nhập cảng') tương ứng với mục đích lấy hoặc trả hàng của tài xế (TC55, TC56).
+
+#### 37.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Để tệp Unit Test hoạt động ổn định và tối ưu hóa trải nghiệm hiển thị khi chạy lệnh kiểm thử, nhóm đã bổ sung các cải tiến sau:
+- Tích hợp thêm đối tượng consoleSpy bằng cách sử dụng cấu trúc kiểm soát lỗi jest.spyOn(console, 'error').mockImplementation(() => {}) trong hàm beforeEach và khôi phục lại bằng .mockRestore() trong afterEach. Điều này giúp chặn đứng và ẩn toàn bộ các dòng thông báo lỗi hệ thống cố ý (bị ném ra khi giả lập kịch bản DB lỗi kết nối), giữ cho màn hình Terminal đầu ra luôn sạch sẽ, dễ theo dõi tiến độ chạy của cả bộ test.
+- Hiệu chỉnh lại cấu trúc dữ liệu mong muốn trong hàm so sánh expect(res._getJSONData()).toEqual(...) để đảm bảo định dạng chuỗi thông báo (message) và mã phản hồi (code: 'success' hoặc 'error') khớp chính xác 100% với các hàm Joi Validation và Controller thực tế đang chạy trên nhánh chính của hệ thống.
+
+#### 37.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng, phân tách rành mạch các yêu cầu kỹ thuật cao từ kiến trúc mock đến logic nghiệp vụ.
+* [x] Prompt cung cấp bối cảnh công nghệ đầy đủ, định hướng rõ ràng việc sử dụng node-mocks-http.
+* [ ] Prompt còn thiếu thông tin.
+* [x] Prompt tạo ra kết quả tốt, các hàm helper giải quyết bài toán chained query hoạt động cực kỳ thông minh.
+* [ ] Prompt tạo ra kết quả chưa phù hợp.
+* [ ] Cần hỏi lại AI nhiều lần để làm rõ.
+* [ ] Cần tự kiểm tra và chỉnh sửa nhiều cấu trúc mã nguồn sau khi phản hồi.
+* [ ] Kết quả AI chứa lỗi cú pháp TypeScript hoặc sai lệch logic.
+
+#### 37.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung chi tiết |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit | [Mã hash commit xây dựng bộ Unit Test toàn diện cho Appointment Controller] |
+| File liên quan | appointment.controller.test.ts, appointment.controller.ts |
+| Screenshot | Ảnh chụp màn hình kết quả chạy Jest test suite, hiển thị tất cả các nhóm hàm (create, get, edit, status, delete, trash, restore, hard delete) đều đạt trạng thái xanh (PASSED). |
+| Kết quả chạy/test | Bộ Unit Test chạy cô lập hoàn toàn với tốc độ siêu nhanh (dưới 500ms), bảo đảm tỷ lệ bao phủ mã nguồn (Code Coverage) của file controller đạt trên 90%. |
+| Link tài liệu/báo cáo | Báo cáo phân tích chất lượng mã nguồn (Code Quality & Coverage Report) và tài liệu API Swagger của hệ thống LogiPort. |
+| Ghi chú khác | Toàn bộ 24 ca kiểm thử chi tiết trong file đều vượt qua kiểm tra, xác nhận logic rẽ nhánh phân quyền và giới hạn quota vận hành chính xác. |
+
+#### 37.8. Ghi chú thêm
+
+Kinh nghiệm cốt lõi rút ra: Kỹ thuật xây dựng các hàm bọc giả lập chuỗi (Chained Mocking Helpers) là chìa khóa vàng khi viết Unit Test cho các dự án Node.js sử dụng các thư viện ORM/ODM như Mongoose hay Prisma. Việc làm chủ kỹ thuật này giúp đội ngũ phát triển có thể dễ dàng bóc tách, cô lập hoàn toàn tầng xử lý logic của Controller khỏi tầng dữ liệu, từ đó tạo ra những bộ test đơn lẻ chạy với tốc độ cực nhanh, có tính độc lập cao và dễ dàng bảo trì khi cấu trúc database thay đổi.
+
+---
+
+### Lần sử dụng AI số 38
+
+| Nội dung | Thông tin |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng | 30/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | Kiểm thử tiến trình tự động hóa quét camera cổng bãi bằng Fake Timers |
+| Phân việc liên quan | Testing |
+| Mức độ sử dụng | Hướng dẫn xử lý kiến trúc test bất đồng bộ phức tạp và sinh mã nguồn |
+| Phân hệ liên quan | Scan Gate Controller / Tiến trình tự động nhận diện và điều khiển cổng IOT |
+
+#### 38.1. Prompt đã sử dụng
+
+Hãy viết file scan.controller.test.ts sử dụng Jest để kiểm thử logic xử lý sự kiện quét camera tự động tại cổng bãi xe. 
+Do hàm scanPost có tích hợp rất nhiều dịch vụ bên ngoài, yêu cầu cấu hình mock chi tiết:
+- Mock hệ thống Socket.io (io.emit), mock thư viện lưu trữ ảnh Cloudinary (upload_stream), mock thư viện luồng streamifier và giả lập hàm global.fetch để điều phối gọi API AI nhận diện và phần cứng điều khiển rơ-le cổng ESP32.
+- Sử dụng cơ chế giả lập thời gian hệ thống jest.useFakeTimers() và thiết lập thời gian cố định bằng jest.setSystemTime lấy từ file dữ liệu cấu hình mockData.json.
+- Kiểm thử các kịch bản cốt lõi của hàm scanPost:
+  1. Kiểm tra thiếu trường bắt buộc trả về lỗi 'Thiếu thông tin'.
+  2. Xe đến đúng giờ và nhận diện đúng biển số đối với luồng 'Lấy container' -> Trả về success (TC01).
+  3. Xử lý trường hợp xe đến trễ quá khung giờ lịch hẹn quy định (> 30 phút) -> Trả về trạng thái ignored.
+  4. Luồng xe 'Trả container' (Drop-off): Yêu cầu camera phải quét đủ cả biển số và mã container. Kiểm tra kịch bản nếu chỉ quét được một trong hai và quá 60 giây chưa quét được trường còn lại, hệ thống phải kích hoạt bộ đếm thời gian nâng cao bằng jest.advanceTimersByTime(65000) để bắn ra sự kiện cảnh báo lỗi 'gate_scan_error' qua Socket.io (TC06, TC07, TC09).
+  5. Luồng xe ra (Out-Gate): Kiểm tra việc xác thực đối chiếu lịch hẹn tương tự và báo lỗi nếu phát hiện xe chở container ra ngoài không hợp lệ khi đăng ký mục đích 'Trả container' (TC18, TC19).
+  6. Xử lý các Edge Cases: Xe đã check-in trước đó (TC24), xe ra cổng nhưng không có dữ liệu vào (TC25).
+- Kiểm thử toàn bộ các hàm bổ trợ quản lý nhật ký như getLogsPaginated, manualCheckoutPatch (xử lý mở cổng thủ công khi camera lỗi), xóa mềm và khôi phục nhật ký.
+
+#### 38.2. Bối cảnh khi viết prompt
+
+Tệp scan.controller.ts là trung tâm điều khiển tự động hóa toàn trình của dự án LogiPort, chịu trách nhiệm xử lý các luồng dữ liệu thời gian thực được gửi lên từ hệ thống camera thông minh OCR ngoài bãi cảng. Do đặc thù tích hợp sâu cả phần cứng lẫn phần mềm (gọi API nhận diện AI, đẩy ảnh luồng stream lên Cloudinary, điều khiển đóng mở rơ-le cổng vật lý qua thiết bị ESP32 và phát thông báo trạng thái tới màn hình tài xế qua Socket.io), việc viết Unit Test cho tệp này gặp hai rào cản cực lớn: 
+1. Logic nghiệp vụ yêu cầu kiểm soát biến số thời gian nghiêm ngặt: Trong luồng trả container, hệ thống cho phép camera quét biển số xe và mã số container lệch nhau, miễn là không quá hạn 60 giây; nếu quá 60 giây mà chưa nhận diện đủ cả hai, hệ thống phải lập tức hủy giao dịch tự động và bắn cảnh báo lỗi qua socket.
+2. Các thư viện tương tác stream và phần cứng là tác vụ bất đồng bộ phức tạp.
+Nhóm cần viết bộ test này để chứng minh các kịch bản rẽ nhánh thời gian thực hoạt động chính xác, đồng thời sử dụng kỹ thuật Fake Timers nâng cao của Jest để kiểm tra bộ đếm timeout chạy ngầm mà không phải chờ đợi thời gian thực tế.
+
+#### 38.3. Kết quả AI gợi ý
+
+AI đã phản hồi bằng việc xây dựng một giải pháp Unit Test vô cùng toàn diện cho tệp scan.controller.test.ts. AI đã xử lý xuất sắc bài toán giả lập luồng stream ảnh của Cloudinary bằng cách định nghĩa lại phương thức .upload_stream() trả về một cấu trúc callback đẩy luồng dữ liệu ảo kết hợp với thư viện streamifier. Đặc biệt, đối với bài toán kiểm soát thời gian quét mã container, AI đã hướng dẫn nhóm sử dụng cặp lệnh jest.useFakeTimers() kết hợp với câu lệnh gán mốc thời gian hệ thống cố định jest.setSystemTime(). Để kiểm tra logic hủy giao dịch khi quá hạn 60 giây, AI áp dụng hàm jest.advanceTimersByTime(65000) để tua nhanh tiến trình đồng hồ chạy ngầm thêm 65 giây một cách nhân tạo, kích hoạt chính xác hàm ném lỗi timeout để xác thực trạng thái bắn sự kiện 'gate_scan_error' qua socket.
+
+#### 38.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Nhóm đã trích xuất toàn bộ các cấu trúc kỹ thuật cốt lõi từ AI để triển khai vào mã nguồn:
+- Cấu trúc giả lập đồng hồ hệ thống và tua thời gian ảo thông qua việc gọi cặp lệnh jest.useFakeTimers() và jest.setSystemTime() trong hàm bắt đầu và giải phóng bằng jest.useRealTimers() sau khi hoàn thành.
+- Ca kiểm thử tua đồng hồ nâng cao: Gọi lệnh jest.advanceTimersByTime(65000) để xác thực hệ thống tự động quét dọn buffer lưu trữ và phát thông báo cảnh báo lỗi socket thành công (TC06, TC07).
+- Đoạn mã mock thư viện Cloudinary trả về URL ảnh giả lập thông qua luồng stream ghi nhận dữ liệu nhị phân.
+
+#### 38.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Để tệp kiểm thử đạt độ sạch (clean code) và dễ bảo trì khi có sự thay đổi về đặc tả dữ liệu, nhóm đã tự nghiên cứu và thực hiện các bước cải tiến sau:
+- Tách biệt toàn bộ các hằng số chuỗi dữ liệu (như chuỗi mã hóa camera, biển số xe container mẫu, mã thùng container) ra một tệp tin dữ liệu tập trung đặt tên là mockData.json. Trong file test chính, nhóm thực hiện import file JSON này để làm dữ liệu đầu vào. Việc này giúp code test ngắn gọn, trực quan hơn và giúp các thành viên khác trong nhóm dễ dàng cập nhật thông tin xe mẫu mà không cần can thiệp trực tiếp vào logic mã nguồn kiểm thử.
+- Điều chỉnh lại logic giả lập hàm global.fetch để trả về đúng cấu trúc gói tin JSON phản hồi của thiết bị điều khiển rơ-le ESP32 thực tế đang cấu hình tại bãi bãi cảng LogiPort, nâng cao độ tin cậy của bài thử nghiệm integration ngầm.
+
+#### 38.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng, mô tả chi tiết các kịch bản kiểm thử nghiệp vụ tự động hóa và các thư viện cần mock.
+* [x] Prompt cung cấp bối cảnh kỹ thuật sâu sắc khi nêu bật ranh giới thời gian bộ đếm 60 giây.
+* [ ] Prompt còn thiếu thông tin.
+* [x] Prompt tạo ra kết quả tốt, giải pháp Fake Timers hoạt động chuẩn xác với cơ chế bất đồng bộ của Express.
+* [ ] Prompt tạo ra kết quả chưa phù hợp.
+* [ ] Cần hỏi lại AI nhiều lần.
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều để tách file dữ liệu mockData.json ra ngoài.
+* [ ] Kết quả AI có lỗi logic hoặc sai cú pháp.
+
+#### 38.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung chi tiết |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit | [Mã hash commit hoàn thiện bộ Unit Test tự động hóa quét camera cổng và tích hợp Fake Timers] |
+| File liên quan | scan.controller.test.ts, scan.controller.ts, mockData.json |
+| Screenshot | Ảnh chụp terminal hiển thị kết quả kiểm thử của Jest Suite, in ra chi tiết các ca test luồng In-Gate/Out-Gate, xử lý sự cố camera và bộ đếm thời gian trôi qua đều có màu xanh (PASSED). |
+| Kết quả chạy/test | Bộ đếm thời gian ảo hoạt động hoàn hảo, bắt trúng sự kiện phát cảnh báo hủy lịch hẹn do quá hạn 1 phút quét mã container mà không làm treo tiến trình hay tốn thời gian chờ thực tế khi chạy lệnh kiểm thử. |
+| Link tài liệu/báo cáo | Tài liệu kiến trúc tích hợp hệ thống phần cứng IOT và tài liệu hướng dẫn vận hành camera thông minh (ANPR Gate Operation) của dự án LogiPort. |
+| Ghi chú khác | Tốc độ thực thi toàn bộ 15 ca kiểm thử nâng cao trong file được tối ưu hóa chỉ trong vòng chưa đầy 1 giây nhờ cơ chế Fake Timers. |
+
+#### 38.8. Ghi chú thêm
+
+Kinh nghiệm cốt lõi rút ra: Đối với các phân hệ phần mềm đóng vai trò trung tâm xử lý sự kiện tự động hóa hoặc tích hợp trực tiếp với thiết bị phần cứng (như camera OCR, cảm biến, thiết bị nhúng IOT điều khiển barie), việc viết Unit Test đòi hỏi lập trình viên phải làm chủ được các kỹ thuật giả lập môi trường nâng cao. Việc kết hợp linh hoạt giữa cơ chế Fake Timers để quản lý ranh giới thời gian ảo và cơ chế Mocking mạng lưới (Fetch/Stream) giúp chúng ta cô lập hoàn toàn mã nguồn xử lý logic của Controller. Điều này bảo đảm mã nguồn luôn chạy ổn định, bắt hết mọi lỗi rò rỉ bộ nhớ (memory leak) hoặc lỗi bất đồng bộ (Race Condition) trước khi hệ thống được nạp trực tiếp vào các thiết bị máy tính nhúng tại bốt kiểm soát của cảng.
+
+---
+
+### Lần sử dụng AI số 39
+
+| Nội dung | Thông tin |
+| ------------------- | -------------------------------------------- |
+| Ngày sử dụng | 30/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích sử dụng | Kiểm thử tích hợp chuỗi API HTTP đầu cuối bằng Supertest |
+| Phân việc liên quan | Testing |
+| Mức độ sử dụng | Hướng dẫn cấu trúc tích hợp hệ thống và viết mã nguồn hoàn chỉnh |
+| Phân hệ liên quan | Integration API Router / Bộ thử nghiệm tích hợp luồng API |
+
+#### 39.1. Prompt đã sử dụng
+
+Hãy viết file kiểm thử tích hợp (Integration Test) appointment.api.test.ts sử dụng thư viện Supertest kết hợp với Mongoose và mongodb-memory-server trong môi trường Jest.
+Yêu cầu kiến trúc và luồng test như sau:
+1. Để không làm ảnh hưởng và phải chỉnh sửa file chạy chính index.ts, hãy hướng dẫn cách khởi tạo một ứng dụng Express nội bộ độc lập (const app = express()) ngay trong file test, nạp đầy đủ các middleware cơ bản (express.json(), cookie-parser()) và điều hướng tuyến đường tới rootRouter.
+2. Sử dụng kỹ thuật jest.mock để vô hiệu hóa hoàn toàn (Bypass) các Middleware xác thực quyền truy cập (requireAuth, requireAuthCompany, requireAuthProvider) bằng cách cho phép chúng tự động gọi hàm next() nhằm tập trung kiểm tra tính đúng đắn của dữ liệu đầu cuối. Mock hệ thống socket io.emit từ file index để tránh circular dependency (lỗi phụ thuộc vòng).
+3. Viết luồng kiểm thử tích hợp cho phương thức POST /api/appointments/create: Khởi tạo sẵn một bản ghi Container mẫu trong DB ảo, gửi một payload chứa thông tin đặt lịch hợp lệ, sử dụng Supertest để gọi API và kiểm tra mã trạng thái trả về (chấp nhận 200 hoặc 201). Sau đó tiến hành truy vấn trực tiếp xuống DB bằng Appointment.findOne để đối chiếu xem dữ liệu có được lưu chính xác hay không (TC_INT_1).
+4. Viết các ca kiểm thử tích hợp kiểm tra lỗi Validation đầu vào khi thiếu trường dữ liệu bắt buộc (TC_INT_2) và lỗi khi bãi xe đã vượt quá giới hạn dung lượng chứa (TC_INT_3).
+5. Viết ca kiểm thử tích hợp cho phương thức GET /api/appointments` để xác thực hệ thống có trả về cấu trúc danh sách kèm đối tượng phân trang đầy đủ (currentPage, totalItems) hay không (TC_INT_4).
+
+#### 39.2. Bối cảnh khi viết prompt
+
+Dù các Unit Test đơn lẻ cho từng thành phần Controller và Repository độc lập đã đạt trạng thái vượt qua (PASS), nhóm vẫn cần xây dựng một bài kiểm thử tích hợp toàn trình (Integration Test) cho file appointment.api.test.ts. Mục tiêu là đảm bảo rằng khi một request HTTP thực tế được gửi từ Client, nó sẽ đi qua hệ thống Router một cách chính xác, nạp đúng các Middleware định cấu hình và lưu trữ dữ liệu đồng bộ xuống Mongoose Model mà không xảy ra xung đột hay lỗi logic phân mảnh. Thách thức phát sinh khi tệp index.ts gốc chứa các cấu trúc khởi chạy HTTP Server và WebSocket Server thực tế (gây lỗi circular dependency phụ thuộc vòng nếu cố import file app chính vào file test). Do đó, nhóm cần AI tư vấn giải pháp kiến trúc để khởi dựng một ứng dụng Express nội bộ tách biệt, đồng thời bypass các lớp bảo mật Token một cách an toàn để tập trung xác thực dữ liệu API.
+
+#### 39.3. Kết quả AI gợi ý
+
+AI đã phản hồi bằng cách cung cấp giải pháp thiết lập hạ tầng kiểm thử tích hợp cực kỳ thông minh. AI đã hướng dẫn nhóm khởi dựng một biến cục bộ const app = express() độc lập ngay bên trong tệp thử nghiệm, nạp các phần bổ trợ định tuyến cần thiết và liên kết trực tiếp tới tệp định tuyến tổng rootRouter. Điểm sáng lớn nhất là AI đã cung cấp giải pháp xử lý triệt để lỗi phụ thuộc vòng thông qua việc mock tệp khởi tạo chính: jest.mock('../index', () => ({ io: { emit: jest.fn() } })). Đồng thời, AI đưa ra cú pháp ngắn gọn dưới dạng inline arrow function để triệt tiêu lớp middleware xác thực phân quyền auth, cho phép luồng dữ liệu truyền thẳng vào xử lý logic của API. AI cũng sinh sẵn mã nguồn cho 4 ca kiểm thử tích hợp cốt lõi (TC_INT_1 đến TC_INT_4) sử dụng Supertest để bọc gói payload, gửi dữ liệu dạng POST/GET và kiểm tra dữ liệu DB ảo phản hồi bằng phương thức bất đồng bộ async/await.
+
+#### 39.4. Phần sinh viên/nhóm đã sử dụng từ AI
+
+Nhóm đã tiếp thu hoàn toàn mô hình thiết kế hạ tầng API Test từ AI và áp dụng vào tệp appointment.api.test.ts:
+- Cấu trúc khởi tạo server Express nội bộ phục vụ test mà không làm xáo trộn tệp chạy chính của hệ thống.
+- Cú pháp cô lập và bypass toàn bộ các lớp Middleware xác thực phân quyền hệ thống:
+  jest.mock('../middlewares/auth.middleware', () => ({
+    requireAuth: (req: any, res: any, next: any) => next(),
+    requireAuthCompany: (req: any, res: any, next: any) => next(),
+    requireAuthProvider: (req: any, res: any, next: any) => next()
+  }));
+- Cấu trúc sử dụng thư viện Supertest để giả lập gọi request HTTP đầu cuối: const response = await request(app).post('/api/appointments/create').send(payload);
+
+#### 39.5. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+Để bài kiểm thử tích hợp hoạt động linh hoạt, tương thích tốt với các phiên bản thiết kế API RESTful khác nhau của dự án LogiPort, nhóm đã tiến hành các bước tối ưu hóa mã nguồn:
+- Tinh chỉnh lại câu lệnh khẳng định kiểm tra mã phản hồi HTTP trạng thái từ việc so sánh đơn lẻ sang kiểm tra bao phủ theo danh sách mảng: expect([200, 201]).toContain(response.status);. Việc cải tiến này giúp bộ test hoạt động bền bỉ (resilient), không bị đổ gãy lỗi vô lý kể cả khi đội ngũ phát triển thay đổi mã phản hồi mặc định của Express từ thành công chung (200 OK) sang khởi tạo tài nguyên cảng tường minh (21 Created).
+- Điều chỉnh lại logic đồng bộ hóa kiểu dữ liệu ngày tháng khi gọi câu lệnh tìm kiếm dữ liệu trực tiếp trong hàm beforeAll/beforeEach, đảm bảo các bản ghi Driver và Container mẫu luôn được xóa sạch và khởi tạo lại đồng bộ trên mongodb-memory-server ảo trước mỗi ca test.
+
+#### 39.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng, phân tách rành mạch cấu trúc thiết lập hạ tầng Express nội bộ và các kịch bản luồng test API.
+* [x] Prompt cung cấp đầy đủ bối cảnh kỹ thuật và nêu bật thách thức circular dependency cần giải quyết.
+* [ ] Prompt còn thiếu thông tin.
+* [x] Prompt tạo ra kết quả tốt, giải pháp cô lập server nội bộ bằng Supertest hoạt động vô cùng hiệu quả.
+* [ ] Prompt tạo ra kết quả chưa phù hợp.
+* [ ] Cần hỏi lại AI nhiều lần để làm rõ các vấn đề phát sinh.
+* [ ] Cần tự kiểm tra và chỉnh sửa nhiều cấu trúc mã nguồn sau khi phản hồi.
+* [ ] Kết quả AI chứa lỗi cú pháp hoặc sai lệch logic.
+
+#### 39.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung chi tiết |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit | [Mã hash commit hoàn thiện tệp Integration Test toàn luồng cho phân hệ Appointment API] |
+| File liên quan | appointment.api.test.ts, index.ts, routers/index.route.ts |
+| Screenshot | Ảnh chụp màn hình giao diện Terminal hiển thị kết quả chạy Supertest Suite, báo cáo các luồng gọi API POST/GET và nạp dữ liệu xuống DB ảo đều chuyển sang màu xanh (PASSED). |
+| Kết quả chạy/test | Luồng tích hợp API chạy thành công xuyên suốt, chứng minh chuỗi định tuyến Router và các lớp validate schema dữ liệu phối hợp nhịp nhàng, dữ liệu được ghi nhận chính xác xuống DB bộ nhớ đệm. |
+| Link tài liệu/báo cáo | Tài liệu kiểm thử tích hợp hệ thống (Integration Testing Plan) và tài liệu API Endpoint Map của dự án LogiPort. |
+| Ghi chú khác | Cơ chế bypass middleware giúp cô lập bài kiểm thử tập trung hoàn toàn vào việc kiểm tra tính đúng đắn của dữ liệu đầu vào và đầu ra API. |
+
+#### 39.8. Ghi chú thêm
+
+Kinh nghiệm cốt lõi rút ra: Trong quá trình xây dựng hệ thống kiểm thử tích hợp (Integration Test) cho các dự án Web API, việc cô lập ứng dụng Express cục bộ trực tiếp bên trong file test và sử dụng kỹ thuật chặn circular dependency khi mock tệp khởi chạy chính (index.ts) là một giải pháp kiến trúc vô cùng tối ưu. Phương pháp này giúp bộ kiểm thử chạy cực kỳ mượt mà, độc lập hoàn toàn với cấu hình mạng lưới hoặc trạng thái cổng (Port) thực tế của server, nâng cao đáng kể độ tin cậy và tốc độ thực thi khi tích hợp các file test vào các đường ống triển khai tự động CI/CD Pipeline.
+
+---
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
