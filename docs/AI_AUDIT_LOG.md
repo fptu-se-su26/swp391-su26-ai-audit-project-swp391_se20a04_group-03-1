@@ -458,7 +458,7 @@ Tính năng Đăng ký tài khoản (Register) đã được triển khai hoàn 
 
 ---
 
-## 🌟 Các thay đổi chính đã thực hiện
+## Các thay đổi chính đã thực hiện
 
 ### 1. Nâng cấp Frontend với `Just-Validate`
 - Đã cài đặt thư viện `just-validate` (`v4.3.0`) thay thế hoàn toàn cơ chế tự viết validate bằng `useState` thủ công.
@@ -491,7 +491,7 @@ Hệ thống backend đã được thiết lập cấu trúc MVC hoàn chỉnh t
 
 ---
 
-## 🛡️ Kết quả chạy kiểm thử hệ thống
+## Kết quả chạy kiểm thử hệ thống
 
 > [!TIP]
 > Backend đã biên dịch và khởi động thành công trên cổng 4000. Dữ liệu khi đăng ký ngoài frontend sẽ đi qua quá trình chặn lỗi nghiêm ngặt của Just-Validate, sau đó được gửi lên Backend Joi kiểm chứng lần hai, mã hóa an toàn và ghi nhận vĩnh viễn vào hệ cơ sở dữ liệu MongoDB.
@@ -1865,6 +1865,562 @@ Kinh nghiệm rút ra: Việc tái sử dụng kiến trúc và giao diện từ
 
 ---
 
+### Lần sử dụng AI số 17
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Khởi tạo cấu trúc phần cứng và logic lõi ESP32       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 17.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Chuyên gia lập trình hệ thống nhúng (Embedded Systems Engineer) chuyên về ESP32.
+
+**Ngữ cảnh:** Tôi đang phát triển dự án `LoaESP32smartAI` chạy trên PlatformIO. Dự án sử dụng màn hình LCD I2C, module khuếch đại âm thanh MAX98357A (I2S) và động cơ Servo (SG90/MG996R).
+
+**Nhiệm vụ:** Viết mã C++ cho ESP32 tích hợp các thành phần cứng trên.
+
+**Yêu cầu:** 
+- Cứ mỗi 5 giây, điều khiển servo xoay 90 độ để mở cổng.
+- Khi cổng mở, in dòng chữ "WELCOME" ra màn hình LCD, đồng thời phát ra 3 tiếng "tinh tinh tinh" qua loa bằng I2S.
+- Sau 2 giây mở cổng, điều khiển servo trở về trạng thái 0 độ.
+
+**Định dạng đầu ra:** Toàn bộ source code `main.cpp` đầy đủ cho môi trường PlatformIO, kèm chú thích cấu hình chân (pinout) chi tiết.
+```
+
+#### 17.2. Kết quả AI gợi ý
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 17.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 17.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 17.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 17.6. Nhận xét cá nhân/nhóm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt
+```
+
+---
+### Lần sử dụng AI số 18
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Cải tiến Logic Hoạt Động & Thêm Cảm Biến Hồng Ngoại       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 18.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Kỹ sư hệ thống IoT.
+
+**Ngữ cảnh:** Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
+
+**Nhiệm vụ:** Cập nhật luồng hoạt động tự động của hệ thống.
+
+**Yêu cầu:**
+- Trạng thái đóng: LCD hiện "Dang dong cong..." và đợi 5 giây (servo 0 độ).
+- Trạng thái đón khách: LCD hiện "WELCOME!", phát 3 tiếng bíp, servo xoay 90 độ. Sau đó chuyển sang trạng thái chờ "Cho xe di qua..." và giữ cổng mở vô thời hạn.
+- Khi xe cắt ngang cảm biến hồng ngoại: LCD chuyển sang in dòng chữ "Dang qua cong...".
+- Thoát trạng thái: Sau khi xe đi qua hoàn toàn (tín hiệu cảm biến trở về HIGH), đợi 1 giây an toàn, hạ cổng xuống và quay lại từ đầu.
+
+**Định dạng đầu ra:** Mã nguồn C++ hoàn chỉnh và các bước nối dây bổ sung.
+```
+
+#### 18.2. Kết quả AI gợi ý
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 18.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 18.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 18.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 18.6. Nhận xét cá nhân/nhóm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt
+```
+
+---
+### Lần sử dụng AI số 19
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Xử lý lỗi giao tiếp HTTP (ESP32 và Server)       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 19.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Kỹ sư phần mềm mạng (Network Software Engineer).
+
+**Ngữ cảnh:** Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
+
+**Nhiệm vụ:** Gỡ lỗi quá trình ESP32 tải file âm thanh từ server HTTP.
+
+**Yêu cầu:** Phân tích nguyên nhân tại sao ESP32 báo lỗi "Không nhận được file" dù file đã thực sự tồn tại trên server. Hãy kiểm tra các khía cạnh: cấu hình tường lửa Windows (Firewall), khác biệt dải IP tĩnh/động, hoặc lỗi phân tích cú pháp URL trên mạch.
+
+**Định dạng đầu ra:** Danh sách các bước kiểm tra (check-list) mạng và đoạn code HTTP Client (sử dụng thư viện HTTPClient) đã được tinh chỉnh để tải file an toàn.
+```
+
+#### 19.2. Kết quả AI gợi ý
+
+```text
+AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+```
+
+#### 19.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+```
+
+#### 19.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+```
+
+#### 19.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 19.6. Nhận xét cá nhân/nhóm
+
+```text
+Sử dụng Prompt Engineering mang lại hiệu quả rất tốt
+```
+
+
+---
+### Lần sử dụng AI số 20
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Gỡ lỗi kết nối Mạng và IP       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 20.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Chuyên gia mạng nhúng (Embedded Network Expert).
+
+**Ngữ cảnh:** Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
+
+**Nhiệm vụ:** Khắc phục lỗi ESP32 không chịu kết nối WiFi mới và không phát ra âm thanh.
+
+**Yêu cầu:** Liệt kê các khả năng gây ra lỗi mạng (như băng tần 5GHz không được hỗ trợ trên ESP32) và đưa ra kỹ thuật chẩn đoán lỗi vòng lặp `WiFi.begin()`.
+
+**Định dạng đầu ra:** Đoạn mã bổ sung hàm in log kết nối WiFi ra Serial Monitor để chẩn đoán trạng thái `WiFi.status()`.
+```
+
+#### 20.2. Kết quả AI gợi ý
+
+```text
+AI phân tích các nguyên nhân phổ biến khiến ESP32 không kết nối được WiFi như sai cấu hình mạng, sử dụng băng tần không được hỗ trợ, tín hiệu yếu hoặc lỗi trong quá trình khởi tạo kết nối. Đồng thời AI cung cấp đoạn mã ghi log trạng thái WiFi thông qua Serial Monitor và hướng dẫn cách kiểm tra giá trị trả về của WiFi.status() để xác định nguyên nhân lỗi.
+```
+
+#### 20.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm bổ sung đoạn mã ghi log vào chương trình ESP32, theo dõi trạng thái kết nối trong từng giai đoạn và kiểm tra kết quả trên Serial Monitor. Dựa trên thông tin thu được, nhóm điều chỉnh lại cấu hình mạng để thiết bị kết nối thành công với WiFi và tiếp tục giao tiếp với backend.
+```
+
+#### 20.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm điều chỉnh thời gian chờ khi kết nối, bổ sung cơ chế thử kết nối lại khi thất bại và thay đổi một số thông số cấu hình mạng để phù hợp với môi trường triển khai thực tế. Ngoài ra, các thông báo ghi log được sắp xếp lại giúp việc theo dõi và xử lý lỗi dễ dàng hơn.
+```
+
+#### 20.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 20.6. Nhận xét cá nhân/nhóm
+
+```text
+Prompt giúp nhóm nhanh chóng xác định hướng xử lý và xây dựng cơ chế ghi log phục vụ việc chẩn đoán lỗi. Tuy nhiên, các giải pháp do AI đề xuất vẫn cần được kiểm chứng trên thiết bị thật và điều chỉnh theo điều kiện mạng của môi trường triển khai.
+```
+
+---
+### Lần sử dụng AI số 21
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Khắc phục lỗi Nguồn cho Servo       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 21.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Kỹ sư Điện tử (Electronics Engineer).
+
+**Ngữ cảnh:** Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
+
+**Nhiệm vụ:** Tìm và khắc phục lỗi phần cứng kết nối nguồn.
+
+**Yêu cầu:** Phân tích lỗi kỹ thuật về "Nối chung mass/GND" giữa các bộ nguồn độc lập. Giải thích ngắn gọn cơ chế băm xung PWM cần mạch tham chiếu điện áp.
+
+**Định dạng đầu ra:** Giải thích kỹ thuật và hướng dẫn sửa lại dây nối (sơ đồ kết nối lại).
+```
+
+#### 21.2. Kết quả AI gợi ý
+
+```text
+AI giải thích nguyên lý hoạt động của Servo khi sử dụng nguồn cấp riêng, nhấn mạnh vai trò của việc nối chung chân GND giữa ESP32 và nguồn ngoài để tạo mốc điện áp tham chiếu cho tín hiệu PWM. Ngoài ra, AI cung cấp sơ đồ đấu nối minh họa và đưa ra các bước kiểm tra phần cứng nhằm xác định nguyên nhân khiến Servo không nhận được tín hiệu điều khiển.
+```
+
+#### 21.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm áp dụng hướng dẫn để kiểm tra lại toàn bộ sơ đồ đấu nối, thực hiện nối chung chân GND giữa ESP32 và nguồn cấp ngoài, đồng thời kiểm tra lại dây tín hiệu PWM của Servo. Sau khi điều chỉnh, Servo nhận tín hiệu ổn định và thực hiện đúng các thao tác điều khiển theo chương trình.
+```
+
+#### 21.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm sắp xếp lại hệ thống dây nguồn nhằm hạn chế nhiễu tín hiệu, kiểm tra điện áp đầu ra của adapter và lựa chọn chân GPIO phù hợp để điều khiển Servo. Đồng thời tiến hành thử nghiệm nhiều lần với các góc quay khác nhau để đánh giá tính ổn định của hệ thống sau khi hoàn thiện.
+```
+
+#### 21.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 21.6. Nhận xét cá nhân/nhóm
+
+```text
+Prompt giúp nhóm nhanh chóng xác định nguyên nhân liên quan đến cách đấu nối nguồn và tín hiệu điều khiển Servo. Tuy nhiên, các hướng dẫn từ AI vẫn được kiểm chứng trực tiếp trên phần cứng và điều chỉnh theo cấu hình thực tế của hệ thống trước khi áp dụng vào sản phẩm.
+```
+
+
+---
+### Lần sử dụng AI số 22
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Hiệu chỉnh góc xoay Servo       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 22.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Kỹ sư Hệ thống Điều khiển (Control Systems Engineer).
+
+**Ngữ cảnh:** Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
+
+**Nhiệm vụ:** Tinh chỉnh các thông số cấp xung PWM.
+
+**Yêu cầu:** Cung cấp kỹ thuật sử dụng giới hạn min/max pulse (microsecond) thay thế cho việc gọi độ thẳng. Giúp tôi căn chỉnh lại điểm 0 thực tế và góc vuông 90 độ thực tế.
+
+**Định dạng đầu ra:** Đoạn mã cấu hình `gateServo.attach(pin, minPulse, maxPulse)` kèm chú thích cách thay đổi thông số pulse.
+```
+
+#### 22.2. Kết quả AI gợi ý
+
+```text
+AI giải thích nguyên nhân gây sai lệch góc quay của Servo do sự khác biệt giữa từng thiết bị và giới hạn xung PWM mặc định của thư viện. AI đề xuất sử dụng hàm attach() với tham số minPulse và maxPulse để hiệu chỉnh dải xung điều khiển, đồng thời cung cấp ví dụ minh họa và hướng dẫn thay đổi giá trị microsecond nhằm đưa Servo về đúng vị trí mong muốn.
+```
+
+#### 22.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm áp dụng cấu hình PWM mới vào chương trình điều khiển Servo, thử nghiệm nhiều mức giá trị minPulse và maxPulse để tìm được thông số phù hợp với thiết bị thực tế. Sau khi hiệu chỉnh, các góc quay quan trọng như 0°, 90° và 180° có độ chính xác cao hơn, giúp cơ cấu cơ khí hoạt động đúng theo yêu cầu của hệ thống.
+```
+
+#### 22.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm điều chỉnh các giá trị xung PWM dựa trên kết quả thử nghiệm thực tế thay vì sử dụng trực tiếp các giá trị AI đề xuất. Đồng thời bổ sung quy trình kiểm tra nhiều lần ở các góc khác nhau để đánh giá độ ổn định của Servo và lựa chọn bộ thông số phù hợp nhất với phần cứng đang sử dụng.
+```
+
+#### 22.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 22.6. Nhận xét cá nhân/nhóm
+
+```text
+Prompt hỗ trợ nhóm hiểu rõ hơn về nguyên lý điều khiển Servo bằng xung PWM và cách hiệu chỉnh thông số để tăng độ chính xác của góc quay. Tuy nhiên, các giá trị minPulse và maxPulse vẫn cần được thử nghiệm trực tiếp trên từng Servo vì mỗi thiết bị có sai số cơ khí và đặc tính hoạt động khác nhau.
+```
+
+---
+### Lần sử dụng AI số 23
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Sửa lỗi hiển thị dữ liệu LCD       |
+| Phần việc liên quan | ESP32 / Backend / AI                  |
+| Mức độ sử dụng      | Tạo code và gỡ lỗi                                          |
+
+#### 23.1. Prompt đã sử dụng
+
+```text
+**Vai trò:** Kỹ sư Nhúng.
+
+**Ngữ cảnh:** Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
+
+**Nhiệm vụ:** Chẩn đoán và sửa lỗi đường truyền tín hiệu I2C.
+
+**Yêu cầu:** Nêu ra các nguyên nhân khả dĩ nhất (như xung nhiễu dây điện dài, sai địa chỉ 0x27/0x3F, hoặc nguồn điện vào 3.3V thay vì 5V không đủ độ tương phản).
+
+**Định dạng đầu ra:** Cung cấp một đoạn mã "I2C Scanner" chuẩn của Arduino để giúp tôi tìm đúng địa chỉ phần cứng của màn hình.
+```
+
+#### 23.2. Kết quả AI gợi ý
+
+```text
+AI phân tích các nguyên nhân thường gặp dẫn đến lỗi hiển thị trên LCD I2C như sai địa chỉ I2C, kết nối SDA/SCL không đúng, nguồn cấp không ổn định hoặc biến trở điều chỉnh độ tương phản chưa phù hợp. AI cũng cung cấp chương trình I2C Scanner để quét địa chỉ của thiết bị, hướng dẫn kiểm tra phần cứng và các bước xử lý khi không phát hiện được LCD.
+```
+
+#### 23.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Nhóm sử dụng chương trình I2C Scanner để xác định đúng địa chỉ của màn hình LCD, kiểm tra lại dây SDA, SCL và nguồn cấp trước khi cập nhật chương trình chính. Sau khi điều chỉnh cấu hình và địa chỉ I2C phù hợp, màn hình hiển thị chính xác các thông tin trạng thái của hệ thống và hoạt động ổn định trong quá trình kiểm thử.
+```
+
+#### 23.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm điều chỉnh lại địa chỉ I2C theo kết quả quét thực tế, tối ưu cách khởi tạo màn hình trong chương trình và bổ sung kiểm tra kết nối trước khi hiển thị dữ liệu. Ngoài ra, các nội dung hiển thị cũng được sắp xếp lại để phù hợp với kích thước LCD 16x2 và giúp người dùng dễ quan sát hơn.
+```
+
+#### 23.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    |                                                                                                                        |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |                                                                                                                                    |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 23.6. Nhận xét cá nhân/nhóm
+
+```text
+Prompt giúp nhóm nhanh chóng xác định hướng xử lý đối với lỗi giao tiếp I2C và cung cấp công cụ hỗ trợ kiểm tra địa chỉ phần cứng của màn hình LCD. Tuy nhiên, kết quả vẫn cần được xác minh trực tiếp trên thiết bị vì mỗi module LCD có thể sử dụng địa chỉ I2C khác nhau và chịu ảnh hưởng bởi chất lượng kết nối phần cứng.
+```
+
+
+---
+### Lần sử dụng AI số 32
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 28/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Hỗ trợ xây dựng Postman Collection và kiểm thử API Happy Path cho dự án LogiPort       |
+| Phần việc liên quan | API Testing / Postman / Documentation                  |
+| Mức độ sử dụng      | Hướng dẫn, tạo test script và rà soát cấu hình                                          |
+
+#### 32.1. Prompt đã sử dụng
+
+```text
+Mô tả tính năng
+
+Khởi tạo cấu trúc dự án kiểm thử trên Postman. Tạo Postman Collection, setup folder và import các API request cơ bản cho luồng thao tác đúng (Happy Path).
+
+Yêu cầu chi tiết
+
+- Tạo mới Collection LogiPort.postman_collection.json.
+- Phân chia cấu trúc thành các Folder hợp lý: Auth, Client Roles, Yards.
+- Thêm các request với Body và Parameters hợp lệ dựa trên API.
+- Setup script tự động lưu biến môi trường (tokenAdmin, yardId, roleId).
+- Hướng dẫn test các API Register, Login, Logout, Client Roles, Get Yards, Create Yard và Get Yard Detail trên Postman.
+```
+
+#### 32.2. Kết quả AI gợi ý
+
+```text
+AI hướng dẫn chi tiết cách tạo Postman Collection, phân chia folder theo từng module, cấu hình Environment Variables, thiết lập Authorization, viết các Test Script kiểm tra HTTP Status Code và lưu các biến môi trường như tokenAdmin, roleId và yardId. Đồng thời AI cũng hướng dẫn quy trình chạy Collection Runner và cách xử lý một số lỗi thường gặp như 401 Unauthorized và 404 Not Found.
+```
+
+#### 32.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng hướng dẫn của AI để tạo LogiPort-API.postman_collection.json, bổ sung đầy đủ các request Happy Path, cấu hình Environment Variables và Test Scripts. Collection sau khi hoàn thiện được import vào Postman để kiểm thử và export vào thư mục của dự án phục vụ quản lý bằng Git.
+```
+
+#### 32.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm đã đối chiếu lại hướng dẫn của AI với tài liệu API và backend thực tế của dự án. Một số endpoint, Request Body và phương thức xác thực được điều chỉnh để phù hợp với hệ thống. Đồng thời cập nhật lại các Test Script và Environment Variables theo cấu trúc backend hiện tại, đảm bảo Collection hoạt động đúng trước khi commit vào repository.
+```
+
+#### 32.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    | LogiPort-API.postman_collection.json                                                                                                                       |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |  Các API Happy Path thực hiện thành công và trả về HTTP Status Code 200/201 theo mong đợi                                                                                                                                  |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 32.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc sử dụng ChatGPT giúp giảm đáng kể thời gian tìm hiểu Postman và xây dựng Collection. AI hỗ trợ tốt trong việc đề xuất cấu trúc Collection, viết Test Script và giải thích quy trình kiểm thử. Tuy nhiên, toàn bộ nội dung đều được nhóm kiểm tra và điều chỉnh dựa trên tài liệu API và backend của dự án trước khi áp dụng chính thức nhằm đảm bảo tính chính xác và phù hợp với hệ thống thực tế.
+```
+
+
+---
+### Lần sử dụng AI số 33
+
+| Nội dung            | Thông tin                                               |
+| ------------------- | ------------------------------------------------------- |
+| Ngày sử dụng        | 28/06/2026                                              |
+| Công cụ AI          | Gemini |
+| Mục đích sử dụng    | Hỗ trợ tạo và cấu hình Environment trong Postman cho dự án LogiPort để quản lý các biến dùng chung khi kiểm thử API.       |
+| Phần việc liên quan | API Testing / Postman / Documentation                  |
+| Mức độ sử dụng      | Hướng dẫn cấu hình và giải thích                                          |
+
+#### 32.1. Prompt đã sử dụng
+
+```text
+Hướng dẫn tạo Environment cho dự án LogiPort trên Postman.
+
+Yêu cầu:
+- Tạo Environment tên "LogiPort Local".
+- Khai báo các biến môi trường như:
+  + baseUrl
+  + tokenAdmin
+  + tokenUser
+  + yardId
+  + roleId
+  + appointmentId
+- Hướng dẫn sử dụng các biến trong URL, Authorization và Body của request.
+- Viết Test Script tự động lưu token và các ID sau khi gọi API thành công.
+- Giải thích cách export và import Environment để chia sẻ với các thành viên trong nhóm.
+```
+
+#### 32.2. Kết quả AI gợi ý
+
+```text
+AI hướng dẫn cách tạo Environment trong Postman, khai báo các biến cần thiết, giải thích ý nghĩa của từng biến và cách sử dụng cú pháp {{variableName}} trong URL, Header, Authorization và Request Body. AI cũng cung cấp các Test Script để tự động lưu token và ID vào Environment sau khi API thực thi thành công.
+```
+
+#### 32.3. Phần sinh viên/nhóm đã sử dụng từ AI
+
+```text
+Áp dụng hướng dẫn để tạo Environment "LogiPort Local", cấu hình đầy đủ các biến môi trường và sử dụng chúng trong toàn bộ Postman Collection. Sau khi đăng nhập hoặc tạo dữ liệu mới, các Test Script tự động cập nhật giá trị của tokenAdmin, yardId và roleId, giúp các request tiếp theo có thể sử dụng ngay mà không cần nhập thủ công.
+```
+
+#### 32.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm điều chỉnh giá trị baseUrl theo môi trường backend thực tế của dự án và bổ sung thêm một số biến phù hợp với quá trình kiểm thử. Các Test Script được chỉnh sửa để tương thích với cấu trúc Response của API LogiPort và đảm bảo dữ liệu được lưu chính xác vào Environment.
+```
+
+#### 32.5. Minh chứng
+
+| Loại minh chứng   | Nội dung                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Link commit       | |
+| File liên quan    | LogiPort.postman_environment.json                                                                                                                       |
+| Screenshot        |                                                                                                                                   |
+| Kết quả chạy/test |  Environment hoạt động đúng, các request sử dụng được biến môi trường và Test Script tự động cập nhật giá trị                                                                                                                                  |
+| Link video demo   |                                                                                                                                     |
+| Ghi chú khác      |                                                                                                                                     |
+
+#### 32.6. Nhận xét cá nhân/nhóm
+
+```text
+Việc sử dụng AI giúp nhóm nhanh chóng thiết lập Environment theo đúng quy trình của Postman và giảm thời gian tìm hiểu tài liệu. Sau khi nhận được hướng dẫn, nhóm vẫn đối chiếu với backend và tài liệu API để điều chỉnh các biến môi trường và Test Script cho phù hợp với dự án LogiPort. Điều này giúp Collection hoạt động ổn định và thuận tiện hơn trong quá trình kiểm thử cũng như làm việc nhóm.
+```
 
 ## 5. Bảng tổng hợp mức độ sử dụng AI
 
