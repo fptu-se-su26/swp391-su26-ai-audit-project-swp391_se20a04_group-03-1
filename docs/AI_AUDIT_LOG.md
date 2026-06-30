@@ -2292,8 +2292,692 @@ Nhóm điều chỉnh lại địa chỉ I2C theo kết quả quét thực tế,
 ```text
 Prompt giúp nhóm nhanh chóng xác định hướng xử lý đối với lỗi giao tiếp I2C và cung cấp công cụ hỗ trợ kiểm tra địa chỉ phần cứng của màn hình LCD. Tuy nhiên, kết quả vẫn cần được xác minh trực tiếp trên thiết bị vì mỗi module LCD có thể sử dụng địa chỉ I2C khác nhau và chịu ảnh hưởng bởi chất lượng kết nối phần cứng.
 ```
+---
+### Prompt số 24
 
+| Nội dung            | Thông tin                                             |
+| ------------------- | ----------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                            |
+| Công cụ AI          | Gemini                                                |
+| Mục đích            | Thiết lập môi trường Server AI (Python)               |
+| Phần việc liên quan | ESP32 / Backend / AI                                  |
+| Mức độ sử dụng      | Phân tích lỗi, hướng dẫn cài đặt và gỡ lỗi môi trường |
 
+#### 24.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên gia Python và Trí tuệ nhân tạo (AI Expert).
+
+**Ngữ cảnh:** Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi:
+
+ModuleNotFoundError: No module named 'torch'
+
+Điều này khiến server AI không thể khởi động mặc dù Python đã được cài đặt trước đó.
+
+**Nhiệm vụ:** Phân tích nguyên nhân gây ra lỗi môi trường Python và hướng dẫn cách khắc phục triệt để.
+
+**Yêu cầu:**
+- Giải thích nguyên nhân vì sao môi trường ảo (venv) không nhận các thư viện đã cài ở Python gốc.
+- Hướng dẫn kiểm tra Python, pip và môi trường đang được kích hoạt.
+- Cung cấp lệnh cài đặt PyTorch phù hợp với Windows (CPU hoặc GPU).
+- Hướng dẫn kiểm tra sau khi cài đặt để xác nhận thư viện đã hoạt động.
+- Đề xuất cách xử lý nếu tiếp tục phát sinh lỗi thiếu package khác.
+
+**Định dạng đầu ra:** Giải thích nguyên nhân, các bước xử lý và toàn bộ câu lệnh cài đặt trong Windows Terminal.
+```
+
+#### 24.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình triển khai server AI phục vụ chức năng chuyển văn bản thành giọng nói (Text-to-Speech), nhóm sử dụng môi trường ảo Python (venv) nhằm tách biệt các thư viện của dự án với môi trường Python toàn cục. Tuy nhiên, sau khi hoàn thành việc tạo môi trường và kích hoạt venv, chương trình không thể khởi động do thiếu thư viện PyTorch mặc dù thư viện này đã tồn tại trên máy tính.
+
+Nhóm cần xác định nguyên nhân của lỗi, hiểu rõ cơ chế hoạt động của môi trường ảo Python và lựa chọn đúng phiên bản PyTorch tương thích với cấu hình máy nhằm đảm bảo server AI hoạt động ổn định.
+```
+
+#### 24.3. Kết quả AI trả về
+
+```text
+AI phân tích rằng lỗi phát sinh do môi trường ảo Python hoạt động hoàn toàn độc lập với môi trường Python toàn cục, vì vậy tất cả thư viện cần được cài đặt lại bên trong venv.
+
+AI hướng dẫn cách:
+- Kiểm tra phiên bản Python đang sử dụng.
+- Kiểm tra pip và môi trường ảo đã được kích hoạt đúng hay chưa.
+- Xác định phiên bản PyTorch phù hợp với CPU hoặc GPU.
+- Thực hiện lệnh pip install theo đúng cấu hình phần cứng.
+- Kiểm tra việc cài đặt bằng cách import torch trong Python và xem phiên bản đã được nhận diện hay chưa.
+
+Ngoài ra AI còn giải thích nguyên lý hoạt động của môi trường ảo, lý do các thư viện trong Python gốc không được kế thừa sang venv và đưa ra các bước xử lý nếu tiếp tục gặp lỗi thiếu package như numpy, transformers hoặc các thư viện AI khác.
+```
+
+#### 24.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm thực hiện lần lượt các bước theo hướng dẫn của AI để kiểm tra môi trường Python, kích hoạt đúng venv và cài đặt lại PyTorch cùng các thư viện phụ thuộc.
+
+Sau khi hoàn thành việc cài đặt, chương trình AI có thể khởi động thành công, không còn xuất hiện lỗi ModuleNotFoundError và server Text-to-Speech hoạt động bình thường. Kết quả này cũng được áp dụng để thiết lập môi trường trên các máy phát triển khác của nhóm nhằm đảm bảo tính thống nhất.
+```
+
+#### 24.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi nhận hướng dẫn từ AI, nhóm chủ động lựa chọn phiên bản PyTorch phù hợp với cấu hình máy tính đang sử dụng thay vì cài đặt mặc định.
+
+Nhóm bổ sung các thư viện còn thiếu vào file requirements.txt, kiểm tra khả năng tương thích giữa các package, đồng thời cập nhật tài liệu hướng dẫn cài đặt môi trường để các thành viên khác có thể thiết lập nhanh chóng và hạn chế phát sinh lỗi trong quá trình phát triển.
+```
+
+#### 24.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 24.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                                     |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| Link commit           |                                                                                              |
+| File liên quan        | `MeloTTS_Vietnamese-main`, `requirements.txt`, `chay_thu.py`                                 |
+| Screenshot            | Kết quả cài đặt PyTorch và chạy server AI thành công                                         |
+| Kết quả chạy/test     | Server AI khởi động thành công, không còn lỗi `ModuleNotFoundError: No module named 'torch'` |
+| Link tài liệu/báo cáo |                                                                                              |
+| Ghi chú khác          | Áp dụng quy trình cài đặt cho toàn bộ thành viên trong nhóm                                  |
+
+#### 24.8. Ghi chú thêm
+
+```text
+Prompt được xây dựng với đầy đủ bối cảnh, nguyên nhân lỗi và yêu cầu đầu ra cụ thể nên AI có thể nhanh chóng xác định đúng vấn đề nằm ở môi trường ảo Python thay vì mã nguồn chương trình. Các hướng dẫn của AI giúp nhóm rút ngắn đáng kể thời gian xử lý lỗi, đồng thời hiểu rõ hơn về cơ chế hoạt động của venv và quy trình quản lý thư viện trong các dự án AI.
+
+Mặc dù AI cung cấp các lệnh cài đặt phù hợp, nhóm vẫn chủ động kiểm tra phiên bản Python, pip, khả năng tương thích của từng package và thử nghiệm trực tiếp trên môi trường thực tế trước khi áp dụng vào hệ thống chính thức.
+```
+---
+### Prompt số 25
+
+| Nội dung            | Thông tin                                                     |
+| ------------------- | ------------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                                    |
+| Công cụ AI          | Gemini                                                        |
+| Mục đích            | Quản lý tài liệu dự án                                        |
+| Phần việc liên quan | ESP32 / Backend / AI                                          |
+| Mức độ sử dụng      | Soạn thảo tài liệu kỹ thuật và chuẩn hóa quy trình triển khai |
+
+#### 25.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên viên viết tài liệu kỹ thuật (Technical Writer).
+
+**Ngữ cảnh:** Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
+
+**Nhiệm vụ:** Soạn thảo thêm mục "Hướng dẫn khởi động và chạy server ảo".
+
+**Yêu cầu:** Viết một cách bài bản, rõ ràng từ các bước căn bản nhất (mở terminal ở đâu, tạo venv thế nào, chạy requirements.txt, cho đến lệnh start server).
+
+**Định dạng đầu ra:** Đoạn văn bản định dạng Markdown (.md) chuẩn, sử dụng các khối code-block cho mọi lệnh terminal để người đọc dễ dàng copy/paste.
+```
+
+#### 25.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình hoàn thiện dự án, nhóm nhận thấy tài liệu hướng dẫn cài đặt và chạy AI Server chưa đầy đủ, đặc biệt đối với các thành viên mới hoặc người tiếp nhận dự án. Nhiều bước như tạo môi trường ảo, cài đặt thư viện, kích hoạt môi trường và khởi động server chưa được mô tả chi tiết, dẫn đến việc thiết lập môi trường mất nhiều thời gian và dễ phát sinh lỗi.
+
+Nhóm cần xây dựng một tài liệu hướng dẫn chuẩn theo định dạng Markdown, trình bày tuần tự từ các bước cơ bản đến khi AI Server hoạt động thành công, giúp chuẩn hóa quy trình triển khai trên nhiều máy tính khác nhau.
+```
+
+#### 25.3. Kết quả AI trả về
+
+```text
+AI đề xuất một tài liệu hướng dẫn được tổ chức theo từng mục rõ ràng và logic, bao gồm toàn bộ quy trình thiết lập môi trường AI.
+
+Nội dung AI cung cấp gồm:
+- Chuẩn bị môi trường và kiểm tra phiên bản Python.
+- Mở đúng thư mục dự án bằng Terminal hoặc Command Prompt.
+- Tạo và kích hoạt môi trường ảo (venv).
+- Cài đặt toàn bộ thư viện từ file requirements.txt.
+- Kiểm tra các package đã được cài đặt thành công.
+- Khởi động AI Server bằng các lệnh tương ứng.
+- Kiểm tra trạng thái hoạt động của server sau khi khởi động.
+- Bổ sung các lưu ý và cách xử lý một số lỗi thường gặp trong quá trình cài đặt.
+
+Toàn bộ hướng dẫn được trình bày dưới định dạng Markdown với các khối code (code block) cho từng lệnh, giúp người đọc dễ dàng sao chép và thực hiện.
+```
+
+#### 25.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm sử dụng nội dung AI đề xuất làm cơ sở để xây dựng tài liệu hướng dẫn chạy dự án. Sau khi đối chiếu với cấu trúc thư mục và môi trường thực tế, nhóm chỉnh sửa lại các đường dẫn, tên file thực thi và các lệnh khởi động phù hợp với phiên bản cuối cùng của hệ thống.
+
+Tài liệu hoàn chỉnh được bổ sung vào file `huong_dan_chay_du_an.md` và sử dụng làm tài liệu chính thức để các thành viên trong nhóm cũng như người tiếp nhận dự án có thể nhanh chóng thiết lập môi trường và khởi động AI Server mà không cần hỗ trợ trực tiếp.
+```
+
+#### 25.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm rà soát lại toàn bộ nội dung do AI đề xuất, cập nhật đường dẫn thư mục, tên chương trình khởi động, phiên bản Python khuyến nghị và các thư viện phù hợp với môi trường phát triển của dự án.
+
+Ngoài ra, nhóm bổ sung thêm các lưu ý về việc kích hoạt môi trường ảo, cách kiểm tra phiên bản pip, hướng dẫn xử lý các lỗi phổ biến như thiếu package hoặc sai đường dẫn, đồng thời tối ưu bố cục tài liệu để người đọc dễ theo dõi và thực hiện từng bước.
+```
+
+#### 25.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 25.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                   |
+| --------------------- | -------------------------------------------------------------------------- |
+| Link commit           |                                                                            |
+| File liên quan        | `huong_dan_chay_du_an.md`, `requirements.txt`                              |
+| Screenshot            | Tài liệu hướng dẫn và kết quả chạy AI Server                               |
+| Kết quả chạy/test     | AI Server khởi động thành công theo hướng dẫn trong tài liệu               |
+| Link tài liệu/báo cáo |                                                                            |
+| Ghi chú khác          | Tài liệu được sử dụng làm hướng dẫn triển khai cho toàn bộ thành viên nhóm |
+
+#### 25.8. Ghi chú thêm
+
+```text
+Prompt được xây dựng với mục tiêu tạo ra một tài liệu hướng dẫn kỹ thuật đầy đủ và có thể sử dụng trực tiếp trong quá trình triển khai dự án. AI hỗ trợ tốt trong việc tổ chức nội dung, trình bày các bước theo trình tự hợp lý và chuẩn hóa định dạng Markdown, giúp giảm đáng kể thời gian soạn thảo tài liệu.
+
+Sau khi nhận kết quả từ AI, nhóm vẫn tiến hành kiểm tra, chỉnh sửa và thử nghiệm toàn bộ hướng dẫn trên nhiều môi trường phát triển khác nhau nhằm đảm bảo tính chính xác, khả năng tái sử dụng và phù hợp với cấu hình thực tế của dự án trước khi đưa vào tài liệu chính thức.
+```
+---
+### Prompt số 26
+
+| Nội dung            | Thông tin                                                           |
+| ------------------- | ------------------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                                          |
+| Công cụ AI          | Gemini                                                              |
+| Mục đích            | Dọn dẹp và quản lý mã nguồn                                         |
+| Phần việc liên quan | ESP32 / Backend / AI                                                |
+| Mức độ sử dụng      | Phân tích, xây dựng quy tắc quản lý mã nguồn và hỗ trợ cấu hình Git |
+
+#### 26.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư DevOps và chuyên gia quản lý Git.
+
+**Ngữ cảnh:** Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
+
+**Nhiệm vụ:** Thiết lập các bộ quy tắc loại trừ file (gitignore) cho dự án monorepo này.
+
+**Yêu cầu:**
+- Tạo file `.gitignore` tiêu chuẩn nhằm loại bỏ: thư mục build `.pio/`, file biên dịch `*.elf`, cache của Python `__pycache__/`, môi trường ảo `venv/` và thông tin lưu trữ VS Code.
+- Đảm bảo các mô hình nặng (file `.pth`) hoặc dữ liệu nhạy cảm không bị đưa lên Git nhưng các file cấu hình thiết yếu vẫn được giữ lại.
+
+**Định dạng đầu ra:** Nội dung hoàn chỉnh của các file `.gitignore` để áp dụng cho từng thư mục tương ứng trong dự án.
+```
+
+#### 26.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình phát triển, dự án được tổ chức theo mô hình monorepo, bao gồm nhiều thành phần như firmware ESP32 sử dụng PlatformIO, Backend, AI Server bằng Python và các mô hình học máy có dung lượng lớn. Do nhiều thành viên cùng làm việc trên repository nên xuất hiện nhiều tệp phát sinh như thư mục build, file biên dịch, cache Python, môi trường ảo, log, cấu hình IDE và các mô hình AI không cần đưa lên hệ thống quản lý phiên bản.
+
+Nhóm cần xây dựng các quy tắc `.gitignore` phù hợp với từng thành phần của dự án nhằm giảm dung lượng repository, tránh xung đột khi cộng tác, bảo vệ các dữ liệu nhạy cảm và đảm bảo chỉ những mã nguồn, tài nguyên và tệp cấu hình cần thiết mới được theo dõi bởi Git.
+```
+
+#### 26.3. Kết quả AI trả về
+
+```text
+AI phân tích cấu trúc của dự án kết hợp giữa PlatformIO và Python, sau đó đề xuất nội dung cho file `.gitignore` phù hợp với mô hình monorepo.
+
+Các quy tắc AI đề xuất bao gồm:
+- Loại bỏ thư mục build của PlatformIO (`.pio/`).
+- Loại bỏ các file thực thi và file sinh ra trong quá trình biên dịch như `.elf`, `.bin` và các file tạm khác.
+- Bỏ qua cache của Python (`__pycache__/`, `*.pyc`) và môi trường ảo (`venv/`, `.venv/`).
+- Loại bỏ các thư mục cấu hình của Visual Studio Code và các IDE khác.
+- Bỏ qua file log, file cache và dữ liệu sinh ra trong quá trình chạy AI.
+- Không đưa các mô hình AI có dung lượng lớn (`*.pth`, `*.pt`) hoặc dữ liệu nhạy cảm lên Git.
+- Giữ lại các file cấu hình cần thiết như `requirements.txt`, `platformio.ini`, tài liệu hướng dẫn và các tệp cấu hình phục vụ triển khai.
+
+Ngoài việc sinh nội dung `.gitignore`, AI còn giải thích ý nghĩa của từng nhóm quy tắc và đưa ra khuyến nghị về cách tổ chức repository để thuận tiện cho việc cộng tác và bảo trì lâu dài.
+```
+
+#### 26.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm sử dụng nội dung AI đề xuất làm cơ sở để xây dựng các file `.gitignore` cho từng phần của dự án. Sau khi rà soát cấu trúc thư mục thực tế, nhóm điều chỉnh lại một số quy tắc để phù hợp với cách tổ chức mã nguồn và quy trình phát triển hiện tại.
+
+Sau khi áp dụng, repository không còn theo dõi các thư mục build, môi trường ảo, cache, file log và các mô hình AI có dung lượng lớn. Điều này giúp giảm đáng kể dung lượng repository, tăng tốc độ đồng bộ mã nguồn và hạn chế phát sinh xung đột trong quá trình làm việc nhóm.
+```
+
+#### 26.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi tham khảo nội dung AI đề xuất, nhóm bổ sung thêm các quy tắc loại trừ đối với các file tạm của hệ điều hành, các thư mục cache phát sinh trong quá trình phát triển và một số dữ liệu trung gian của AI Server.
+
+Nhóm cũng kiểm tra lại toàn bộ repository để loại bỏ những tệp đã được Git theo dõi trước khi cập nhật `.gitignore`, đồng thời đảm bảo các file cấu hình quan trọng, tài liệu dự án và mã nguồn chính vẫn được quản lý đầy đủ.
+```
+
+#### 26.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 26.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                |
+| --------------------- | ------------------------------------------------------- |
+| Link commit           |                                                         |
+| File liên quan        | `.gitignore`, `platformio.ini`, `requirements.txt`      |
+| Screenshot            | Repository sau khi loại bỏ các tệp không cần thiết      |
+| Kết quả chạy/test     | Git chỉ theo dõi các tệp mã nguồn và cấu hình cần thiết |
+| Link tài liệu/báo cáo |                                                         |
+| Ghi chú khác          | Áp dụng thống nhất cho toàn bộ repository của dự án     |
+
+#### 26.8. Ghi chú thêm
+
+```text
+Prompt giúp nhóm nhanh chóng xây dựng bộ quy tắc quản lý mã nguồn phù hợp với dự án kết hợp nhiều công nghệ như PlatformIO, Python và AI. AI hỗ trợ tốt trong việc đề xuất các quy tắc `.gitignore` theo thông lệ phát triển phần mềm và giải thích ý nghĩa của từng nhóm cấu hình.
+
+Tuy nhiên, trước khi áp dụng vào repository chính thức, nhóm vẫn tiến hành rà soát toàn bộ cấu trúc thư mục, kiểm tra các tệp đang được Git theo dõi và điều chỉnh một số quy tắc để phù hợp với quy trình phát triển thực tế. Nhờ đó, repository được tối ưu về dung lượng, dễ quản lý hơn và thuận lợi cho việc cộng tác giữa các thành viên trong nhóm.
+```
+---
+### Prompt số 27
+
+| Nội dung            | Thông tin                                                 |
+| ------------------- | --------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                                |
+| Công cụ AI          | Gemini                                                    |
+| Mục đích            | Xử lý lỗi cài đặt thư viện bằng Pip (Virtual Environment) |
+| Phần việc liên quan | ESP32 / Backend / AI                                      |
+| Mức độ sử dụng      | Phân tích lỗi, hướng dẫn cấu hình môi trường và gỡ lỗi    |
+
+#### 27.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Chuyên gia Môi trường Python (Python Environment Specialist).
+
+**Ngữ cảnh:** Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi:
+
+Fatal error in launcher: Unable to create process using ... pip.exe
+
+Điều này khiến việc cài đặt các thư viện bị gián đoạn và AI Server không thể tiếp tục được thiết lập.
+
+**Nhiệm vụ:** Phân tích nguyên nhân gây lỗi và hướng dẫn cách khắc phục triệt để.
+
+**Yêu cầu:**
+- Giải thích nguyên nhân lỗi (đặc biệt trường hợp di chuyển thư mục chứa venv làm sai đường dẫn tuyệt đối của pip).
+- Hướng dẫn sử dụng `python -m pip` thay cho lệnh `pip`.
+- Hướng dẫn tạo lại môi trường ảo khi cần thiết.
+- Đề xuất quy trình kiểm tra để đảm bảo môi trường hoạt động ổn định sau khi sửa lỗi.
+
+**Định dạng đầu ra:** Các câu lệnh có thể chạy trực tiếp trong Windows Terminal kèm giải thích ngắn gọn.
+```
+
+#### 27.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình thiết lập môi trường phát triển cho AI Server, nhóm gặp lỗi khi cài đặt các thư viện từ file `requirements.txt`. Mặc dù môi trường ảo đã được kích hoạt thành công, lệnh `pip` không thể thực thi và hiển thị thông báo lỗi liên quan đến `pip.exe`, khiến toàn bộ quá trình cài đặt thư viện bị dừng lại.
+
+Sau khi kiểm tra ban đầu, nhóm nghi ngờ nguyên nhân liên quan đến việc thay đổi vị trí thư mục dự án hoặc môi trường ảo, dẫn đến đường dẫn nội bộ của `pip` không còn hợp lệ. Vì lỗi này ảnh hưởng trực tiếp đến việc triển khai các module AI, nhóm cần xác định chính xác nguyên nhân và lựa chọn phương án khắc phục an toàn để tiếp tục thiết lập môi trường phát triển.
+```
+
+#### 27.3. Kết quả AI trả về
+
+```text
+AI phân tích nguyên nhân của lỗi xuất phát từ cơ chế hoạt động của môi trường ảo Python, trong đó các tệp thực thi như `pip.exe` lưu đường dẫn tuyệt đối đến trình thông dịch Python tại thời điểm tạo venv. Khi thư mục dự án hoặc môi trường ảo bị di chuyển sang vị trí khác, các đường dẫn này không còn chính xác, dẫn đến lỗi `Fatal error in launcher`.
+
+AI đề xuất nhiều phương án xử lý, bao gồm:
+- Sử dụng `python -m pip` thay cho lệnh `pip` để gọi trực tiếp module pip thông qua Python hiện tại.
+- Kiểm tra lại phiên bản Python và môi trường ảo đang được kích hoạt.
+- Xóa và tạo lại môi trường ảo nếu cấu trúc thư mục đã thay đổi.
+- Cài đặt lại toàn bộ thư viện từ file `requirements.txt`.
+- Kiểm tra kết quả sau khi cài đặt bằng cách liệt kê các package đã được cài hoặc thử import các thư viện quan trọng.
+
+Ngoài ra, AI còn giải thích ưu điểm của việc sử dụng `python -m pip`, giúp giảm phụ thuộc vào đường dẫn của `pip.exe` và tăng tính ổn định khi làm việc trên nhiều môi trường khác nhau.
+```
+
+#### 27.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm thực hiện theo các bước AI đề xuất bằng cách kiểm tra lại môi trường Python, sử dụng `python -m pip` để cài đặt các thư viện và tạo mới môi trường ảo đối với các máy gặp lỗi đường dẫn.
+
+Sau khi hoàn tất quá trình cài đặt, toàn bộ package được nhận diện chính xác, AI Server có thể khởi động bình thường và không còn xuất hiện lỗi liên quan đến `pip.exe`. Quy trình này cũng được áp dụng trên các máy tính khác trong nhóm nhằm đảm bảo việc thiết lập môi trường diễn ra thống nhất và ổn định.
+```
+
+#### 27.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi áp dụng hướng dẫn của AI, nhóm thống nhất sử dụng lệnh `python -m pip` trong toàn bộ tài liệu hướng dẫn cài đặt thay cho lệnh `pip` nhằm hạn chế các lỗi liên quan đến môi trường.
+
+Bên cạnh đó, nhóm bổ sung quy trình kiểm tra phiên bản Python, pip và trạng thái của môi trường ảo trước khi cài đặt thư viện. Tài liệu hướng dẫn cũng được cập nhật thêm các bước tạo mới môi trường ảo và xử lý những lỗi phổ biến để hỗ trợ các thành viên mới cũng như quá trình triển khai trên các máy tính khác.
+```
+
+#### 27.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 27.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                                    |
+| --------------------- | --------------------------------------------------------------------------- |
+| Link commit           |                                                                             |
+| File liên quan        | `requirements.txt`, `venv/`, tài liệu cài đặt môi trường                    |
+| Screenshot            | Lỗi `Fatal error in launcher` và kết quả cài đặt thành công sau khi sửa     |
+| Kết quả chạy/test     | Toàn bộ thư viện được cài đặt thành công và AI Server khởi động bình thường |
+| Link tài liệu/báo cáo |                                                                             |
+| Ghi chú khác          | Áp dụng thống nhất quy trình cài đặt trên các máy phát triển                |
+
+#### 27.8. Ghi chú thêm
+
+```text
+Prompt được xây dựng với đầy đủ bối cảnh và mô tả chi tiết lỗi phát sinh nên AI có thể nhanh chóng xác định nguyên nhân nằm ở môi trường ảo Python thay vì mã nguồn của dự án. Các giải pháp AI đề xuất không chỉ giúp khắc phục lỗi hiện tại mà còn cung cấp quy trình thiết lập môi trường ổn định và dễ tái sử dụng cho các lần triển khai sau.
+
+Trước khi áp dụng vào dự án chính thức, nhóm đã kiểm tra lại toàn bộ môi trường phát triển trên nhiều máy tính khác nhau, đối chiếu với cấu trúc thư mục thực tế và cập nhật tài liệu hướng dẫn cài đặt nhằm đảm bảo các bước triển khai luôn chính xác, nhất quán và thuận tiện cho việc cộng tác trong nhóm.
+```
+---
+### Prompt số 28
+
+| Nội dung            | Thông tin                                                           |
+| ------------------- | ------------------------------------------------------------------- |
+| Ngày sử dụng        | 15/06/2026                                                          |
+| Công cụ AI          | Gemini                                                              |
+| Mục đích            | Gỡ bỏ công cụ giả lập Linux (MSYS2) gây xung đột môi trường Python  |
+| Phần việc liên quan | ESP32 / Backend / AI                                                |
+| Mức độ sử dụng      | Phân tích lỗi môi trường, hướng dẫn cấu hình hệ điều hành và gỡ lỗi |
+
+#### 28.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Quản trị viên Hệ thống Windows (Windows System Administrator).
+
+**Ngữ cảnh:** Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
+
+**Nhiệm vụ:** Hướng dẫn loại bỏ sự cản trở của MSYS2 đối với môi trường lập trình Python.
+
+**Yêu cầu:**
+- Giải thích nguyên nhân Windows ưu tiên sử dụng Python của MSYS2.
+- Hướng dẫn mở cửa sổ Environment Variables.
+- Xác định và loại bỏ các đường dẫn liên quan đến MSYS2 trong biến PATH.
+- Hướng dẫn kiểm tra lại sau khi chỉnh sửa bằng các lệnh Terminal.
+
+**Định dạng đầu ra:** Danh sách hướng dẫn từng bước (step-by-step) trên giao diện đồ họa Windows.
+```
+
+#### 28.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình thiết lập môi trường phát triển AI trên Windows, nhóm phát hiện chương trình luôn sử dụng trình thông dịch Python của MSYS2 thay vì phiên bản Python được cài đặt để phát triển dự án. Điều này khiến các thư viện đã cài đặt trong môi trường Python chính hoặc môi trường ảo không được nhận diện, dẫn đến nhiều lỗi khi chạy AI Server.
+
+Qua quá trình kiểm tra, nhóm xác định nguyên nhân có thể xuất phát từ thứ tự ưu tiên của các đường dẫn trong biến môi trường PATH. Vì vậy, cần tìm giải pháp điều chỉnh cấu hình hệ thống để Windows luôn sử dụng đúng phiên bản Python phục vụ cho việc phát triển và triển khai dự án.
+```
+
+#### 28.3. Kết quả AI trả về
+
+```text
+AI phân tích cơ chế hoạt động của biến môi trường PATH trên Windows và giải thích rằng hệ điều hành sẽ ưu tiên thực thi chương trình xuất hiện trước trong danh sách PATH. Do các đường dẫn của MSYS2 được đặt ở vị trí ưu tiên cao hơn, Windows luôn sử dụng Python của MSYS2 thay vì Python chính thức đã cài đặt.
+
+AI hướng dẫn chi tiết các bước:
+- Mở cửa sổ Environment Variables trong Windows.
+- Truy cập và chỉnh sửa biến PATH của người dùng hoặc hệ thống.
+- Xác định các đường dẫn thuộc MSYS2 như `C:\msys64\usr\bin`, `C:\msys64\mingw64\bin` và các thư mục liên quan.
+- Xóa hoặc chuyển các đường dẫn này xuống dưới nếu không còn cần sử dụng.
+- Khởi động lại Terminal hoặc máy tính để áp dụng thay đổi.
+- Kiểm tra lại bằng các lệnh như `where python`, `python --version` và `python -m pip --version` để xác nhận hệ thống đã sử dụng đúng trình thông dịch Python.
+
+Ngoài ra, AI còn đưa ra các khuyến nghị về cách quản lý nhiều phiên bản Python trên cùng một máy nhằm hạn chế các xung đột tương tự trong tương lai.
+```
+
+#### 28.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm thực hiện chỉnh sửa biến môi trường PATH theo hướng dẫn của AI, loại bỏ các đường dẫn không cần thiết của MSYS2 và khởi động lại Terminal để hệ thống cập nhật cấu hình mới.
+
+Sau khi hoàn tất, Windows đã sử dụng đúng phiên bản Python phục vụ cho dự án. Các thư viện được cài đặt trong môi trường ảo được nhận diện chính xác, AI Server khởi động thành công và không còn xảy ra lỗi do xung đột giữa nhiều trình thông dịch Python.
+```
+
+#### 28.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi áp dụng hướng dẫn của AI, nhóm kiểm tra lại cấu hình PATH trên toàn bộ máy tính của các thành viên nhằm đảm bảo sử dụng thống nhất một phiên bản Python trong quá trình phát triển.
+
+Bên cạnh đó, nhóm cập nhật tài liệu hướng dẫn cài đặt môi trường với các bước kiểm tra nhanh như `where python`, `python --version` và `python -m pip --version` để dễ dàng phát hiện các xung đột môi trường khi triển khai dự án trên máy mới.
+```
+
+#### 28.6. Đánh giá chất lượng prompt
+
+* [x] Prompt rõ ràng
+* [x] Prompt có đủ bối cảnh
+* [ ] Prompt còn thiếu thông tin
+* [x] Prompt tạo ra kết quả tốt
+* [ ] Prompt tạo ra kết quả chưa phù hợp
+* [ ] Cần hỏi lại AI nhiều lần
+* [x] Cần tự kiểm tra và chỉnh sửa nhiều
+* [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 28.7. Minh chứng liên quan
+
+| Loại minh chứng       | Nội dung                                                              |
+| --------------------- | --------------------------------------------------------------------- |
+| Link commit           |                                                                       |
+| File liên quan        | Tài liệu hướng dẫn cài đặt môi trường, cấu hình Python                |
+| Screenshot            | Cấu hình PATH trước và sau khi chỉnh sửa, kết quả lệnh `where python` |
+| Kết quả chạy/test     | Windows nhận đúng Python của dự án, AI Server hoạt động bình thường   |
+| Link tài liệu/báo cáo |                                                                       |
+| Ghi chú khác          | Áp dụng cấu hình thống nhất cho các máy phát triển trong nhóm         |
+
+#### 28.8. Ghi chú thêm
+
+```text  
+Prompt được xây dựng với đầy đủ bối cảnh và mô tả chính xác hiện tượng xung đột giữa nhiều môi trường Python trên Windows, giúp AI nhanh chóng xác định nguyên nhân và đề xuất quy trình xử lý phù hợp. Các hướng dẫn của AI không chỉ giải quyết được lỗi hiện tại mà còn giúp nhóm hiểu rõ hơn về cơ chế hoạt động của biến môi trường PATH và cách Windows lựa chọn chương trình thực thi.
+
+Trước khi áp dụng vào hệ thống chính thức, nhóm đã kiểm tra lại toàn bộ cấu hình trên nhiều máy tính, xác nhận kết quả bằng các lệnh kiểm tra môi trường và cập nhật tài liệu triển khai để hạn chế các lỗi tương tự trong quá trình phát triển cũng như bàn giao dự án.
+```
+---
+### Prompt số 30
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Đánh giá và tái cấu trúc tài liệu kỹ thuật (Docs) |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Phân tích tài liệu, đề xuất chỉnh sửa và hỗ trợ cập nhật tài liệu kỹ thuật |
+
+#### 30.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Người kiểm duyệt tài liệu (Technical Reviewer).
+
+**Ngữ cảnh:** Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
+
+**Nhiệm vụ:** Rà soát và cập nhật nội dung tài liệu.
+
+**Yêu cầu:** Hãy đọc toàn bộ nội dung file tài liệu hiện tại, đối chiếu với những thay đổi kỹ thuật ta vừa làm (như sử dụng IP tĩnh mới, lệnh `python -m pip`, cấu hình ESP32). Đề xuất những thông tin bị lỗi thời cần xóa đi và viết bổ sung những thông tin mới.
+
+**Định dạng đầu ra:** Danh sách các điểm cần chỉnh sửa (bullet points) và đoạn văn bản nháp Markdown để thay thế.
+```
+
+#### 30.2. Bối cảnh khi viết prompt
+
+```text
+Sau nhiều lần cập nhật hệ thống, tài liệu hướng dẫn của dự án không còn phản ánh đầy đủ quy trình triển khai hiện tại. Trong quá trình phát triển, nhóm đã thay đổi nhiều thành phần như cách thiết lập môi trường Python, phương pháp cài đặt thư viện bằng `python -m pip`, địa chỉ IP của AI Server, cấu hình ESP32 cũng như một số bước khởi động hệ thống.
+
+Nếu tiếp tục sử dụng tài liệu cũ, các thành viên mới hoặc người tiếp nhận dự án có thể gặp khó khăn khi cài đặt và vận hành hệ thống. Vì vậy, nhóm cần rà soát toàn bộ tài liệu, xác định những nội dung đã lỗi thời và cập nhật lại theo đúng trạng thái hiện tại của dự án nhằm đảm bảo tài liệu luôn đồng bộ với mã nguồn và môi trường triển khai thực tế.
+```
+
+#### 30.3. Kết quả AI trả về
+
+```text
+AI phân tích cấu trúc của tài liệu hiện có và đối chiếu với các thay đổi kỹ thuật đã được thực hiện trong quá trình phát triển dự án.
+
+AI đề xuất:
+- Xác định các nội dung đã lỗi thời cần loại bỏ.
+- Bổ sung các bước thiết lập môi trường Python theo quy trình mới.
+- Cập nhật hướng dẫn sử dụng `python -m pip` thay cho lệnh `pip`.
+- Chỉnh sửa thông tin về địa chỉ IP và cấu hình AI Server.
+- Cập nhật các bước cấu hình ESP32 để phù hợp với phiên bản hiện tại.
+- Đề xuất bổ sung mục kiểm tra môi trường trước khi chạy hệ thống.
+- Bổ sung hướng dẫn xử lý một số lỗi phổ biến trong quá trình cài đặt và khởi động.
+
+Ngoài việc liệt kê các nội dung cần chỉnh sửa, AI còn cung cấp bản nháp theo định dạng Markdown với bố cục rõ ràng để nhóm có thể chỉnh sửa và đưa trực tiếp vào tài liệu của dự án.
+```
+
+#### 30.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm sử dụng các đề xuất của AI làm cơ sở để cập nhật tài liệu kỹ thuật của dự án. Sau khi đối chiếu với cấu trúc thư mục, mã nguồn và môi trường triển khai thực tế, các nội dung được chỉnh sửa, bổ sung và sắp xếp lại theo trình tự hợp lý.
+
+Tài liệu sau khi hoàn thiện phản ánh đúng quy trình triển khai của phiên bản hiện tại, giúp các thành viên trong nhóm cũng như người tiếp nhận dự án có thể dễ dàng thiết lập môi trường, cấu hình hệ thống và vận hành AI Server mà không cần tham khảo thêm các tài liệu cũ.
+```
+
+#### 30.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi tham khảo các đề xuất của AI, nhóm rà soát lại toàn bộ tài liệu và điều chỉnh các thông tin cho phù hợp với dự án thực tế. Các đường dẫn thư mục, câu lệnh Terminal, cấu hình ESP32, địa chỉ IP và quy trình khởi động AI Server được cập nhật theo phiên bản mới nhất.
+
+Ngoài ra, nhóm bổ sung thêm phần lưu ý về các lỗi thường gặp trong quá trình thiết lập môi trường, hướng dẫn kiểm tra môi trường Python trước khi chạy chương trình và quy trình xác minh hệ thống sau khi hoàn tất cài đặt nhằm giúp tài liệu đầy đủ, dễ hiểu và thuận tiện cho việc triển khai trên nhiều máy tính khác nhau.
+```
+
+#### 30.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 30.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | `docs/huong_dan_chay_du_an.md` |
+| Screenshot | Tài liệu trước và sau khi cập nhật |
+| Kết quả chạy/test | Thực hiện thành công quy trình cài đặt và khởi động hệ thống theo tài liệu mới |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | Tài liệu được cập nhật đồng bộ với phiên bản mã nguồn hiện tại |
+
+#### 30.8. Ghi chú thêm
+
+```text
+Prompt giúp nhóm tiết kiệm đáng kể thời gian trong quá trình rà soát và cập nhật tài liệu kỹ thuật sau nhiều lần thay đổi của hệ thống. AI hỗ trợ xác định nhanh những nội dung đã lỗi thời, đề xuất các phần cần bổ sung và tổ chức lại tài liệu theo trình tự logic, giúp việc chỉnh sửa trở nên thuận tiện hơn.
+
+Tuy nhiên, toàn bộ nội dung do AI đề xuất đều được nhóm đối chiếu với mã nguồn, cấu trúc thư mục và môi trường triển khai thực tế trước khi đưa vào tài liệu chính thức. Quá trình kiểm tra này giúp đảm bảo tính chính xác, thống nhất và khả năng sử dụng của tài liệu trong quá trình phát triển cũng như bàn giao dự án.
+```
+---
+### Prompt số 31
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 15/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Tinh chỉnh Server API trả về luồng âm thanh |
+| Phần việc liên quan | ESP32 / Backend / AI |
+| Mức độ sử dụng | Thiết kế kiến trúc API, sinh mã nguồn và hỗ trợ gỡ lỗi |
+
+#### 31.1. Prompt nguyên văn
+
+```text
+**Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
+
+**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+
+**Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
+
+**Yêu cầu:**
+- Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
+- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
+
+**Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
+```
+
+#### 31.2. Bối cảnh khi viết prompt
+
+```text
+Sau khi mô hình MeloTTS có thể tạo thành công file âm thanh từ văn bản, nhóm cần tích hợp chức năng này với hệ thống ESP32 thông qua giao tiếp mạng. Việc chỉ sinh file WAV trên máy tính không còn đáp ứng yêu cầu của hệ thống vì thiết bị ESP32 cần nhận trực tiếp dữ liệu âm thanh để phát theo thời gian thực.
+
+Nhóm mong muốn xây dựng một Web API đóng vai trò trung gian giữa ESP32 và mô hình AI. API sẽ tiếp nhận nội dung văn bản từ thiết bị, gọi mô hình MeloTTS để tổng hợp giọng nói, sau đó trả trực tiếp dữ liệu âm thanh về dưới dạng HTTP Response. Điều này giúp giảm thao tác thủ công, tăng tính tự động hóa và tạo nền tảng cho việc tích hợp AI vào hệ thống IoT của dự án.
+```
+
+#### 31.3. Kết quả AI trả về
+
+```text
+AI đề xuất xây dựng Web API sử dụng Flask hoặc FastAPI để cung cấp dịch vụ tổng hợp giọng nói thông qua giao thức HTTP.
+
+Giải pháp AI đưa ra bao gồm:
+- Xây dựng endpoint nhận nội dung văn bản từ phương thức GET hoặc POST.
+- Tiếp nhận tham số văn bản từ ESP32.
+- Gọi mô hình MeloTTS để sinh file âm thanh tương ứng.
+- Đọc file WAV vừa tạo và trả trực tiếp về client dưới dạng HTTP Response với MIME type `audio/wav`.
+- Bổ sung xử lý ngoại lệ khi nội dung đầu vào rỗng hoặc mô hình phát sinh lỗi.
+- Hướng dẫn cấu hình địa chỉ IP và cổng của Web Server.
+- Cung cấp ví dụ gọi API từ phía ESP32 và công cụ Postman để kiểm thử.
+
+Ngoài việc sinh mã nguồn, AI còn giải thích luồng xử lý dữ liệu giữa ESP32, AI Server và mô hình TTS, giúp nhóm hiểu rõ cách tích hợp các thành phần trong hệ thống.
+```
+
+#### 31.4. Kết quả đã áp dụng vào bài
+
+```text
+Nhóm sử dụng kiến trúc API do AI đề xuất để xây dựng máy chủ phục vụ mô hình MeloTTS. Sau khi điều chỉnh đường dẫn model, cấu trúc thư mục lưu trữ, địa chỉ IP của máy chủ và các thông số cấu hình phù hợp với môi trường triển khai thực tế, API có thể hoạt động ổn định.
+
+Quá trình kiểm thử cho thấy ESP32 gửi yêu cầu đến API thành công, máy chủ thực hiện tổng hợp giọng nói bằng mô hình AI và trả về dữ liệu âm thanh đúng định dạng. Thiết bị nhận được dữ liệu và phát thành công theo nội dung văn bản được gửi lên, đáp ứng yêu cầu tích hợp giữa AI Server và hệ thống IoT.
+```
+
+#### 31.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Sau khi tham khảo mã nguồn do AI đề xuất, nhóm điều chỉnh lại cấu trúc thư mục chứa model, thư mục sinh file âm thanh và cách quản lý các tài nguyên của AI Server để phù hợp với kiến trúc dự án.
+
+Ngoài ra, nhóm bổ sung xử lý ngoại lệ cho các trường hợp đầu vào không hợp lệ, tối ưu quá trình tạo và trả dữ liệu âm thanh nhằm giảm thời gian phản hồi của API. Đồng thời cập nhật tài liệu hướng dẫn khởi động AI Server, hướng dẫn kiểm thử endpoint bằng Postman và bổ sung quy trình kiểm tra kết nối trước khi ESP32 gửi yêu cầu thực tế.
+```
+
+#### 31.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 31.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan | `server.py`, `chay_thu.py`, `requirements.txt`, tài liệu API |
+| Screenshot | Kết quả gọi API bằng Postman và phản hồi tệp âm thanh |
+| Kết quả chạy/test | ESP32 gửi request thành công và phát được âm thanh từ dữ liệu trả về |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | API được sử dụng làm cầu nối giữa ESP32 và mô hình MeloTTS trong hệ thống |
+
+#### 31.8. Ghi chú thêm
+
+```text
+Prompt giúp nhóm nhanh chóng xây dựng kiến trúc Web API để tích hợp mô hình MeloTTS với thiết bị ESP32 mà không phải thiết kế từ đầu. AI hỗ trợ đề xuất kiến trúc tổng thể, sinh mã nguồn mẫu, hướng dẫn cấu hình HTTP Server và giải thích luồng xử lý giữa AI Server với thiết bị nhúng.
+
+Toàn bộ mã nguồn và cấu hình do AI đề xuất đều được nhóm kiểm tra, chỉnh sửa và thử nghiệm trên môi trường triển khai thực tế trước khi tích hợp vào hệ thống. Nhóm cũng tối ưu thêm cấu trúc dự án, xử lý ngoại lệ và cập nhật tài liệu kỹ thuật nhằm đảm bảo API hoạt động ổn định, dễ bảo trì và thuận tiện cho việc phát triển trong các giai đoạn tiếp theo.
+```
 ---
 ### Lần sử dụng AI số 32
 
@@ -2559,1195 +3243,3 @@ Sinh viên/nhóm cam kết rằng:
 
 ---
 
-### Lần sử dụng AI số 17
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Khởi tạo cấu trúc phần cứng và logic lõi ESP32 |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 17.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Chuyên gia lập trình hệ thống nhúng (Embedded Systems Engineer) chuyên về ESP32.
-
-**Ngữ cảnh:** Tôi đang phát triển dự án `LoaESP32smartAI` chạy trên PlatformIO. Dự án sử dụng màn hình LCD I2C, module khuếch đại âm thanh MAX98357A (I2S) và động cơ Servo (SG90/MG996R).
-
-**Nhiệm vụ:** Viết mã C++ cho ESP32 tích hợp các thành phần cứng trên.
-
-**Yêu cầu:** 
-- Cứ mỗi 5 giây, điều khiển servo xoay 90 độ để mở cổng.
-- Khi cổng mở, in dòng chữ "WELCOME" ra màn hình LCD, đồng thời phát ra 3 tiếng "tinh tinh tinh" qua loa bằng I2S.
-- Sau 2 giây mở cổng, điều khiển servo trở về trạng thái 0 độ.
-
-**Định dạng đầu ra:** Toàn bộ source code `main.cpp` đầy đủ cho môi trường PlatformIO, kèm chú thích cấu hình chân (pinout) chi tiết.
-```
-
-#### 17.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 17.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 17.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 17.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 17.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 18
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Cải tiến Logic Hoạt Động & Thêm Cảm Biến Hồng Ngoại |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 18.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư hệ thống IoT.
-
-**Ngữ cảnh:** Dự án hiện tại đã có LCD, Loa I2S và Servo hoạt động. Bây giờ tôi muốn tích hợp thêm cảm biến vật cản hồng ngoại (module LM393) nối vào GPIO 32.
-
-**Nhiệm vụ:** Cập nhật luồng hoạt động tự động của hệ thống.
-
-**Yêu cầu:**
-- Trạng thái đóng: LCD hiện "Dang dong cong..." và đợi 5 giây (servo 0 độ).
-- Trạng thái đón khách: LCD hiện "WELCOME!", phát 3 tiếng bíp, servo xoay 90 độ. Sau đó chuyển sang trạng thái chờ "Cho xe di qua..." và giữ cổng mở vô thời hạn.
-- Khi xe cắt ngang cảm biến hồng ngoại: LCD chuyển sang in dòng chữ "Dang qua cong...".
-- Thoát trạng thái: Sau khi xe đi qua hoàn toàn (tín hiệu cảm biến trở về HIGH), đợi 1 giây an toàn, hạ cổng xuống và quay lại từ đầu.
-
-**Định dạng đầu ra:** Mã nguồn C++ hoàn chỉnh và các bước nối dây bổ sung.
-```
-
-#### 18.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 18.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 18.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 18.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 18.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 19
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Xử lý lỗi giao tiếp HTTP (ESP32 và Server) |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 19.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư phần mềm mạng (Network Software Engineer).
-
-**Ngữ cảnh:** Hệ thống gồm 1 server ảo (chạy Python ở Localhost) đã tạo sẵn file `ket_qua.wav` và 1 mạch ESP32 kết nối chung WiFi.
-
-**Nhiệm vụ:** Gỡ lỗi quá trình ESP32 tải file âm thanh từ server HTTP.
-
-**Yêu cầu:** Phân tích nguyên nhân tại sao ESP32 báo lỗi "Không nhận được file" dù file đã thực sự tồn tại trên server. Hãy kiểm tra các khía cạnh: cấu hình tường lửa Windows (Firewall), khác biệt dải IP tĩnh/động, hoặc lỗi phân tích cú pháp URL trên mạch.
-
-**Định dạng đầu ra:** Danh sách các bước kiểm tra (check-list) mạng và đoạn code HTTP Client (sử dụng thư viện HTTPClient) đã được tinh chỉnh để tải file an toàn.
-```
-
-#### 19.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 19.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 19.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 19.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 19.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 20
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Gỡ lỗi kết nối Mạng và IP |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 20.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Chuyên gia mạng nhúng (Embedded Network Expert).
-
-**Ngữ cảnh:** Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
-
-**Nhiệm vụ:** Khắc phục lỗi ESP32 không chịu kết nối WiFi mới và không phát ra âm thanh.
-
-**Yêu cầu:** Liệt kê các khả năng gây ra lỗi mạng (như băng tần 5GHz không được hỗ trợ trên ESP32) và đưa ra kỹ thuật chẩn đoán lỗi vòng lặp `WiFi.begin()`.
-
-**Định dạng đầu ra:** Đoạn mã bổ sung hàm in log kết nối WiFi ra Serial Monitor để chẩn đoán trạng thái `WiFi.status()`.
-```
-
-#### 20.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 20.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 20.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 20.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 20.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 21
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Khắc phục lỗi Nguồn cho Servo |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 21.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư Điện tử (Electronics Engineer).
-
-**Ngữ cảnh:** Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
-
-**Nhiệm vụ:** Tìm và khắc phục lỗi phần cứng kết nối nguồn.
-
-**Yêu cầu:** Phân tích lỗi kỹ thuật về "Nối chung mass/GND" giữa các bộ nguồn độc lập. Giải thích ngắn gọn cơ chế băm xung PWM cần mạch tham chiếu điện áp.
-
-**Định dạng đầu ra:** Giải thích kỹ thuật và hướng dẫn sửa lại dây nối (sơ đồ kết nối lại).
-```
-
-#### 21.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 21.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 21.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 21.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 21.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 22
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Hiệu chỉnh góc xoay Servo |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 22.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư Hệ thống Điều khiển (Control Systems Engineer).
-
-**Ngữ cảnh:** Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
-
-**Nhiệm vụ:** Tinh chỉnh các thông số cấp xung PWM.
-
-**Yêu cầu:** Cung cấp kỹ thuật sử dụng giới hạn min/max pulse (microsecond) thay thế cho việc gọi độ thẳng. Giúp tôi căn chỉnh lại điểm 0 thực tế và góc vuông 90 độ thực tế.
-
-**Định dạng đầu ra:** Đoạn mã cấu hình `gateServo.attach(pin, minPulse, maxPulse)` kèm chú thích cách thay đổi thông số pulse.
-```
-
-#### 22.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 22.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 22.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 22.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 22.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 23
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Sửa lỗi hiển thị dữ liệu LCD |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 23.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư Nhúng.
-
-**Ngữ cảnh:** Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
-
-**Nhiệm vụ:** Chẩn đoán và sửa lỗi đường truyền tín hiệu I2C.
-
-**Yêu cầu:** Nêu ra các nguyên nhân khả dĩ nhất (như xung nhiễu dây điện dài, sai địa chỉ 0x27/0x3F, hoặc nguồn điện vào 3.3V thay vì 5V không đủ độ tương phản).
-
-**Định dạng đầu ra:** Cung cấp một đoạn mã "I2C Scanner" chuẩn của Arduino để giúp tôi tìm đúng địa chỉ phần cứng của màn hình.
-```
-
-#### 23.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 23.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 23.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 23.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 23.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 24
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Thiết lập môi trường Server AI (Python) |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 24.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Chuyên gia Python và Trí tuệ nhân tạo (AI Expert).
-
-**Ngữ cảnh:** Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
-
-**Nhiệm vụ:** Xử lý triệt để lỗi môi trường thư viện.
-
-**Yêu cầu:** Hướng dẫn chính xác câu lệnh cài đặt thư viện `PyTorch` hỗ trợ cho CPU/GPU trên Windows. Giải thích vì sao khi dùng venv cần phải cài lại thư viện thay vì dùng chung với Python gốc.
-
-**Định dạng đầu ra:** Lệnh cài đặt cụ thể trong terminal Windows (ví dụ: pip install).
-```
-
-#### 24.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 24.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 24.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 24.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 24.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 25
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Quản lý Tài liệu Dự án |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 25.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Chuyên viên viết tài liệu kỹ thuật (Technical Writer).
-
-**Ngữ cảnh:** Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
-
-**Nhiệm vụ:** Soạn thảo thêm mục "Hướng dẫn khởi động và chạy server ảo".
-
-**Yêu cầu:** Viết một cách bài bản, rõ ràng từ các bước căn bản nhất (mở terminal ở đâu, tạo venv thế nào, chạy requirements.txt, cho đến lệnh start server).
-
-**Định dạng đầu ra:** Đoạn văn bản định dạng Markdown (.md) chuẩn, sử dụng các khối code-block cho mọi lệnh terminal để người đọc dễ dàng copy/paste.
-```
-
-#### 25.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 25.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 25.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 25.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 25.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 26
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Dọn dẹp & Quản lý Mã Nguồn |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 26.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư DevOps và chuyên gia quản lý Git.
-
-**Ngữ cảnh:** Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
-
-**Nhiệm vụ:** Thiết lập các bộ quy tắc loại trừ file (gitignore) cho dự án monorepo này.
-
-**Yêu cầu:** 
-- Tạo file `.gitignore` tiêu chuẩn nhằm loại bỏ: thư mục build `.pio/`, file biên dịch `*.elf`, cache của Python `__pycache__/`, môi trường ảo `venv/` và thông tin lưu trữ VS Code.
-- Đảm bảo các mô hình nặng (file .pth) hoặc data nhạy cảm không bị đưa lên Git nhưng các config thiết yếu vẫn được giữ.
-
-**Định dạng đầu ra:** Nội dung nguyên văn cho các file `.gitignore` để gán vào các thư mục tương ứng.
-```
-
-#### 26.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 26.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 26.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 26.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 26.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 27
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Xử lý Lỗi Cài đặt Thư viện bằng Pip (Virtual Environment) |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 27.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Chuyên gia Môi trường Python (Python Environment Specialist).
-
-**Ngữ cảnh:** Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
-
-**Nhiệm vụ:** Khắc phục lỗi đường dẫn môi trường của trình quản lý gói pip.
-
-**Yêu cầu:** Giải thích nguyên nhân (thường do di chuyển thư mục chứa venv làm sai lệch đường dẫn tuyệt đối của pip). Cung cấp giải pháp dùng `python -m pip install` thay vì gọi trực tiếp `pip`, hoặc hướng dẫn xóa và tạo lại venv một cách an toàn.
-
-**Định dạng đầu ra:** Câu lệnh khắc phục lỗi có thể chạy ngay trong Terminal.
-```
-
-#### 27.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 27.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 27.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 27.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 27.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 28
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Gỡ bỏ Công cụ Giả lập Linux (MSYS2) Gây Xung Đột |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 28.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Quản trị viên Hệ thống Windows (Windows System Administrator).
-
-**Ngữ cảnh:** Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
-
-**Nhiệm vụ:** Hướng dẫn loại bỏ sự cản trở của MSYS2 đối với môi trường lập trình Python.
-
-**Yêu cầu:** Liệt kê các bước cụ thể để mở "Environment Variables" (Biến môi trường) trên Windows, tìm và xóa đường dẫn của MSYS2 ra khỏi biến PATH.
-
-**Định dạng đầu ra:** Danh sách hướng dẫn từng bước (step-by-step) trên giao diện đồ họa Windows.
-```
-
-#### 28.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 28.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 28.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 28.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 28.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 29
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Tự Động Hóa Thực Thi Lệnh Terminal |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 29.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Trợ lý lập trình AI tự động (Agentic AI Assistant).
-
-**Ngữ cảnh:** Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
-
-**Nhiệm vụ:** Chạy trực tiếp các lệnh Terminal để sửa lỗi môi trường Python trên thiết bị của tôi.
-
-**Yêu cầu:** Hãy sử dụng khả năng thực thi mã lệnh/terminal tự động của bạn để xóa thư mục `venv` cũ bị lỗi, tạo lại `venv` mới và kích hoạt, sau đó cài đặt `requirements.txt` mà không cần tôi phải tự gõ bất kỳ phím nào.
-
-**Định dạng đầu ra:** Kết quả thực thi từ hệ thống (Log/Output) xác nhận môi trường đã sẵn sàng.
-```
-
-#### 29.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 29.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 29.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 29.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 29.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 30
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Đánh Giá và Tái Cấu Trúc Tài Liệu Kỹ Thuật (Docs) |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 30.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Người kiểm duyệt tài liệu (Technical Reviewer).
-
-**Ngữ cảnh:** Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
-
-**Nhiệm vụ:** Rà soát và cập nhật nội dung tài liệu.
-
-**Yêu cầu:** Hãy đọc toàn bộ nội dung file tài liệu hiện tại, đối chiếu với những thay đổi kỹ thuật ta vừa làm (như sử dụng IP tĩnh mới, lệnh `python -m pip`, cấu hình ESP32). Đề xuất những thông tin bị lỗi thời cần xóa đi và viết bổ sung những thông tin mới.
-
-**Định dạng đầu ra:** Danh sách các điểm cần chỉnh sửa (bullet points) và đoạn văn bản nháp Markdown để thay thế.
-```
-
-#### 30.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 30.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 30.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 30.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 30.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
----
-
-### Lần sử dụng AI số 31
-
-| Nội dung | Thông tin |
-|---|---|
-| Ngày sử dụng | 15/06/2026 |
-| Công cụ AI | Gemini |
-| Mục đích | Tinh chỉnh Server API Trả Về Luồng Âm Thanh |
-| Phần việc liên quan | ESP32 |
-| Mức độ sử dụng | Tạo code và gỡ lỗi |
-
-#### 31.1. Prompt đã sử dụng
-
-```text
-**Vai trò:** Kỹ sư Kỹ thuật Trí tuệ Nhân tạo (AI/ML Engineer).
-
-**Ngữ cảnh:** Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
-
-**Nhiệm vụ:** Xây dựng một Web API server nội bộ để phục vụ file âm thanh.
-
-**Yêu cầu:** 
-- Viết một endpoint HTTP (sử dụng thư viện như Flask, FastAPI hoặc HTTP module tiêu chuẩn).
-- Khi ESP32 gọi phương thức GET tới endpoint này kèm nội dung văn bản, server sẽ gọi mô hình TTS sinh ra file và trả trực tiếp file .wav về dưới dạng HTTP Response (MIME type: `audio/wav`).
-
-**Định dạng đầu ra:** Source code hoàn chỉnh của server Python và ví dụ gọi API.
-```
-
-#### 31.2. Kết quả AI gợi ý
-
-Tóm tắt nội dung AI đã trả lời hoặc gợi ý.
-
-```text
-AI đã phân tích ngữ cảnh, yêu cầu và định dạng đầu ra, cung cấp hướng dẫn và mã code tương ứng cho bài toán.
-```
-
-#### 31.3. Phần sinh viên/nhóm đã sử dụng từ AI
-
-Mô tả rõ phần nào được sử dụng lại từ gợi ý của AI.
-
-```text
-Áp dụng mã nguồn và giải pháp kỹ thuật do AI cung cấp vào module ESP32 của dự án.
-```
-
-#### 31.4. Phần sinh viên/nhóm tự chỉnh sửa hoặc cải tiến
-
-Mô tả sinh viên/nhóm đã thay đổi, kiểm tra, sửa lỗi hoặc cải tiến gì so với gợi ý ban đầu của AI.
-
-```text
-Kiểm tra thực tế với phần cứng và tinh chỉnh cấu hình cho phù hợp với mạch ESP32.
-```
-
-#### 31.5. Minh chứng
-
-| Loại minh chứng | Nội dung |
-| --- | --- |
-| Link commit |  |
-| File liên quan | |
-| Screenshot | |
-| Kết quả chạy/test | Thành công |
-| Link video demo | |
-| Ghi chú khác | |
-
-#### 31.6. Nhận xét cá nhân/nhóm
-
-Sinh viên/nhóm học được gì sau lần sử dụng AI này?
-
-```text
-Sử dụng Prompt Engineering chuyên nghiệp (Vai trò, Ngữ cảnh, Nhiệm vụ) giúp AI hiểu sâu hơn và cung cấp code chính xác.
-```
-
-
-## 5. Bảng tổng hợp mức độ sử dụng AI
-
-Đánh dấu mức độ AI hỗ trợ ở từng hạng mục.
-
-| Hạng mục                    | Không dùng AI | AI hỗ trợ ít | AI hỗ trợ nhiều | AI sinh chính | Ghi chú |
-| --------------------------- | :-----------: | :----------: | :-------------: | :-----------: | ------- |
-| Phân tích yêu cầu           |               |              |                 |               |         |
-| Viết user story/use case    |               |              |                 |               |         |
-| Thiết kế database           |               |              |                 |               |         |
-| Thiết kế kiến trúc hệ thống |               |              |                 |               |         |
-| Thiết kế giao diện          |               |              |                 |               |         |
-| Code frontend               |               |              |                 |               |         |
-| Code backend                |               |              |                 |               |         |
-| Debug lỗi                   |               |              |                 |               |         |
-| Viết test case              |               |              |                 |               |         |
-| Kiểm thử sản phẩm           |               |              |                 |               |         |
-| Tối ưu code                 |               |              |                 |               |         |
-| Viết báo cáo                |               |              |                 |               |         |
-| Làm slide thuyết trình      |               |              |                 |               |         |
-
----
-
-## 6. Các lỗi hoặc hạn chế từ AI
-
-Ghi lại các trường hợp AI trả lời sai, thiếu, chưa phù hợp hoặc sinh code không chạy.
-
-| STT | Lỗi/hạn chế từ AI | Cách phát hiện | Cách xử lý/cải tiến |
-| --: | ----------------- | -------------- | ------------------- |
-|   1 |                   |                |                     |
-|   2 |                   |                |                     |
-|   3 |                   |                |                     |
-
----
-
-## 7. Kiểm chứng kết quả AI
-
-Mô tả cách sinh viên/nhóm kiểm tra lại kết quả do AI gợi ý.
-
-Có thể bao gồm:
-
-- Chạy thử chương trình
-- Viết test case
-- So sánh với yêu cầu đề bài
-- Kiểm tra output
-- Đối chiếu tài liệu môn học
-- Hỏi lại giảng viên
-- Review cùng thành viên nhóm
-- Kiểm tra lỗi bảo mật
-- Kiểm tra bằng dữ liệu mẫu
-- So sánh trước và sau khi dùng AI
-
-### Nội dung kiểm chứng
-
-```text
-Viết tại đây...
-```
-
----
-
-## 8. Đóng góp cá nhân hoặc đóng góp nhóm
-
-### 8.1. Đối với bài cá nhân
-
-Mô tả phần sinh viên tự làm, phần AI hỗ trợ và phần đã tự cải tiến.
-
-```text
-Viết tại đây...
-```
-
-### 8.2. Đối với bài nhóm
-
-| Thành viên | MSSV | Nhiệm vụ chính | Có sử dụng AI không? | Minh chứng đóng góp |
-| ---------- | ---- | -------------- | -------------------- | ------------------- |
-|            |      |                | Có / Không           |                     |
-|            |      |                | Có / Không           |                     |
-|            |      |                | Có / Không           |                     |
-|            |      |                | Có / Không           |                     |
-
----
-
-## 9. Reflection cuối bài
-
-### 9.1. AI đã hỗ trợ em/nhóm ở điểm nào?
-
-```text
-Viết tại đây...
-```
-
-### 9.2. Phần nào em/nhóm không sử dụng theo gợi ý của AI? Vì sao?
-
-```text
-Viết tại đây...
-```
-
-### 9.3. Em/nhóm đã kiểm tra tính đúng đắn của kết quả AI như thế nào?
-
-```text
-Viết tại đây...
-```
-
-### 9.4. Nếu không có AI, phần nào sẽ khó khăn nhất?
-
-```text
-Viết tại đây...
-```
-
-### 9.5. Sau bài tập/project này, em/nhóm học được gì về môn học?
-
-```text
-Viết tại đây...
-```
-
-### 9.6. Sau bài tập/project này, em/nhóm học được gì về cách sử dụng AI có trách nhiệm?
-
-```text
-Viết tại đây...
-```
-
----
-
-## 10. Cam kết học thuật
-
-Sinh viên/nhóm cam kết rằng:
-
-- Nội dung AI hỗ trợ đã được ghi nhận trung thực.
-- Không nộp nguyên văn kết quả AI mà không kiểm tra.
-- Có khả năng giải thích các phần đã nộp.
-- Chịu trách nhiệm về tính đúng đắn của sản phẩm cuối cùng.
-- Hiểu rằng việc sử dụng AI không khai báo có thể ảnh hưởng đến kết quả đánh giá.
-
-| Đại diện sinh viên/nhóm | Ngày xác nhận |
-| ----------------------- | ------------- |
-|                         |               |
