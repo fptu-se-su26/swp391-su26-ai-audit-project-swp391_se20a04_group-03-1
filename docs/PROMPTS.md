@@ -2183,25 +2183,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 20.2. Bối cảnh khi viết prompt
 
 ```text
-Tôi vừa thay đổi điểm phát WiFi sang mạng mới, đã đổi đúng SSID/Password và cập nhật lại IP tĩnh trong mã nguồn.
+Sau khi chuyển hệ thống sang môi trường mạng mới, thiết bị ESP32 không còn kết nối được với WiFi mặc dù đã cập nhật lại thông tin cấu hình. Vì không thiết lập được kết nối mạng nên thiết bị cũng không thể gửi yêu cầu đến backend để lấy dữ liệu âm thanh. Nhóm cần xác định nguyên nhân và bổ sung cơ chế ghi log để theo dõi quá trình kết nối.
 ```
 
 #### 20.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI phân tích các nguyên nhân phổ biến khiến ESP32 không kết nối được WiFi như sai cấu hình mạng, sử dụng băng tần không được hỗ trợ, tín hiệu yếu hoặc lỗi trong quá trình khởi tạo kết nối. Đồng thời AI cung cấp đoạn mã ghi log trạng thái WiFi thông qua Serial Monitor và hướng dẫn cách kiểm tra giá trị trả về của WiFi.status() để xác định nguyên nhân lỗi.
 ```
 
 #### 20.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm bổ sung đoạn mã ghi log vào chương trình ESP32, theo dõi trạng thái kết nối trong từng giai đoạn và kiểm tra kết quả trên Serial Monitor. Dựa trên thông tin thu được, nhóm điều chỉnh lại cấu hình mạng để thiết bị kết nối thành công với WiFi và tiếp tục giao tiếp với backend.
 ```
 
 #### 20.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm điều chỉnh thời gian chờ khi kết nối, bổ sung cơ chế thử kết nối lại khi thất bại và thay đổi một số thông số cấu hình mạng để phù hợp với môi trường triển khai thực tế. Ngoài ra, các thông báo ghi log được sắp xếp lại giúp việc theo dõi và xử lý lỗi dễ dàng hơn.
 ```
 
 #### 20.6. Đánh giá chất lượng prompt
@@ -2212,7 +2212,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 20.7. Minh chứng liên quan
@@ -2229,7 +2229,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 20.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xác định hướng xử lý và xây dựng cơ chế ghi log phục vụ việc chẩn đoán lỗi. Tuy nhiên, các giải pháp do AI đề xuất vẫn cần được kiểm chứng trên thiết bị thật và điều chỉnh theo điều kiện mạng của môi trường triển khai.
 ```
 
 
@@ -2262,25 +2262,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 21.2. Bối cảnh khi viết prompt
 
 ```text
-Tôi đang sử dụng một nguồn điện bên ngoài (5V adapter) để cấp điện riêng cho Servo, LCD, và Loa. Mạch ESP32 chỉ đóng vai trò cấp tín hiệu. Khi nạp code, mạch vẫn chạy logic bình thường nhưng Servo bị đơ, không xoay.
+Trong quá trình tích hợp phần cứng, ESP32 điều khiển Servo thông qua tín hiệu PWM trong khi Servo được cấp nguồn từ adapter 5V riêng. Chương trình được nạp thành công và các chức năng khác vẫn hoạt động bình thường, tuy nhiên Servo không phản hồi hoặc chỉ rung nhẹ khi nhận tín hiệu. Nhóm cần xác định nguyên nhân đến từ cách đấu nối nguồn hay tín hiệu điều khiển để đảm bảo Servo hoạt động ổn định.
 ```
 
 #### 21.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI giải thích nguyên lý hoạt động của Servo khi sử dụng nguồn cấp riêng, nhấn mạnh vai trò của việc nối chung chân GND giữa ESP32 và nguồn ngoài để tạo mốc điện áp tham chiếu cho tín hiệu PWM. Ngoài ra, AI cung cấp sơ đồ đấu nối minh họa và đưa ra các bước kiểm tra phần cứng nhằm xác định nguyên nhân khiến Servo không nhận được tín hiệu điều khiển.
 ```
 
 #### 21.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm áp dụng hướng dẫn để kiểm tra lại toàn bộ sơ đồ đấu nối, thực hiện nối chung chân GND giữa ESP32 và nguồn cấp ngoài, đồng thời kiểm tra lại dây tín hiệu PWM của Servo. Sau khi điều chỉnh, Servo nhận tín hiệu ổn định và thực hiện đúng các thao tác điều khiển theo chương trình.
 ```
 
 #### 21.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm sắp xếp lại hệ thống dây nguồn nhằm hạn chế nhiễu tín hiệu, kiểm tra điện áp đầu ra của adapter và lựa chọn chân GPIO phù hợp để điều khiển Servo. Đồng thời tiến hành thử nghiệm nhiều lần với các góc quay khác nhau để đánh giá tính ổn định của hệ thống sau khi hoàn thiện.
 ```
 
 #### 21.6. Đánh giá chất lượng prompt
@@ -2308,7 +2308,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 21.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xác định nguyên nhân liên quan đến cách đấu nối nguồn và tín hiệu điều khiển Servo. Tuy nhiên, các hướng dẫn từ AI vẫn được kiểm chứng trực tiếp trên phần cứng và điều chỉnh theo cấu hình thực tế của hệ thống trước khi áp dụng vào sản phẩm.
 ```
 
 
@@ -2341,25 +2341,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 22.2. Bối cảnh khi viết prompt
 
 ```text
-Servo MG996R sử dụng thư viện `ESP32Servo.h` nhưng khi ra lệnh `write(0)` và `write(90)`, góc quay vật lý thực tế của động cơ đang bị lệch, không thẳng chuẩn xác.
+Trong quá trình kiểm thử hệ thống, nhóm nhận thấy Servo MG996R không dừng đúng vị trí mong muốn khi nhận lệnh điều khiển từ ESP32. Mặc dù chương trình sử dụng hàm write() với các góc tiêu chuẩn, góc quay thực tế vẫn bị sai lệch so với thiết kế. Nhóm cần tìm phương pháp hiệu chỉnh xung PWM để đồng bộ giữa góc điều khiển trong chương trình và chuyển động thực tế của Servo.
 ```
 
 #### 22.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI giải thích nguyên nhân gây sai lệch góc quay của Servo do sự khác biệt giữa từng thiết bị và giới hạn xung PWM mặc định của thư viện. AI đề xuất sử dụng hàm attach() với tham số minPulse và maxPulse để hiệu chỉnh dải xung điều khiển, đồng thời cung cấp ví dụ minh họa và hướng dẫn thay đổi giá trị microsecond nhằm đưa Servo về đúng vị trí mong muốn.
 ```
 
 #### 22.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm áp dụng cấu hình PWM mới vào chương trình điều khiển Servo, thử nghiệm nhiều mức giá trị minPulse và maxPulse để tìm được thông số phù hợp với thiết bị thực tế. Sau khi hiệu chỉnh, các góc quay quan trọng như 0°, 90° và 180° có độ chính xác cao hơn, giúp cơ cấu cơ khí hoạt động đúng theo yêu cầu của hệ thống.
 ```
 
 #### 22.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm điều chỉnh các giá trị xung PWM dựa trên kết quả thử nghiệm thực tế thay vì sử dụng trực tiếp các giá trị AI đề xuất. Đồng thời bổ sung quy trình kiểm tra nhiều lần ở các góc khác nhau để đánh giá độ ổn định của Servo và lựa chọn bộ thông số phù hợp nhất với phần cứng đang sử dụng.
 ```
 
 #### 22.6. Đánh giá chất lượng prompt
@@ -2370,7 +2370,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 22.7. Minh chứng liên quan
@@ -2387,7 +2387,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 22.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt hỗ trợ nhóm hiểu rõ hơn về nguyên lý điều khiển Servo bằng xung PWM và cách hiệu chỉnh thông số để tăng độ chính xác của góc quay. Tuy nhiên, các giá trị minPulse và maxPulse vẫn cần được thử nghiệm trực tiếp trên từng Servo vì mỗi thiết bị có sai số cơ khí và đặc tính hoạt động khác nhau.
 ```
 
 
@@ -2420,25 +2420,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 23.2. Bối cảnh khi viết prompt
 
 ```text
-Màn hình hiển thị LCD 16x2 sử dụng module mở rộng I2C đang hiển thị ra toàn các ký tự nhiễu, rác, không đọc được tiếng Anh/Việt.
+Trong quá trình tích hợp phần cứng, màn hình LCD 16x2 giao tiếp qua I2C không hiển thị đúng nội dung mà xuất hiện các ký tự lạ hoặc ô vuông, gây khó khăn cho việc theo dõi trạng thái của hệ thống. Nhóm cần xác định nguyên nhân liên quan đến kết nối I2C, địa chỉ thiết bị hoặc nguồn cấp để khắc phục lỗi và đảm bảo màn hình hiển thị ổn định.
 ```
 
 #### 23.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI phân tích các nguyên nhân thường gặp dẫn đến lỗi hiển thị trên LCD I2C như sai địa chỉ I2C, kết nối SDA/SCL không đúng, nguồn cấp không ổn định hoặc biến trở điều chỉnh độ tương phản chưa phù hợp. AI cũng cung cấp chương trình I2C Scanner để quét địa chỉ của thiết bị, hướng dẫn kiểm tra phần cứng và các bước xử lý khi không phát hiện được LCD.
 ```
 
 #### 23.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm sử dụng chương trình I2C Scanner để xác định đúng địa chỉ của màn hình LCD, kiểm tra lại dây SDA, SCL và nguồn cấp trước khi cập nhật chương trình chính. Sau khi điều chỉnh cấu hình và địa chỉ I2C phù hợp, màn hình hiển thị chính xác các thông tin trạng thái của hệ thống và hoạt động ổn định trong quá trình kiểm thử.
 ```
 
 #### 23.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm điều chỉnh lại địa chỉ I2C theo kết quả quét thực tế, tối ưu cách khởi tạo màn hình trong chương trình và bổ sung kiểm tra kết nối trước khi hiển thị dữ liệu. Ngoài ra, các nội dung hiển thị cũng được sắp xếp lại để phù hợp với kích thước LCD 16x2 và giúp người dùng dễ quan sát hơn.
 ```
 
 #### 23.6. Đánh giá chất lượng prompt
@@ -2449,7 +2449,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 23.7. Minh chứng liên quan
@@ -2466,7 +2466,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 23.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xác định hướng xử lý đối với lỗi giao tiếp I2C và cung cấp công cụ hỗ trợ kiểm tra địa chỉ phần cứng của màn hình LCD. Tuy nhiên, kết quả vẫn cần được xác minh trực tiếp trên thiết bị vì mỗi module LCD có thể sử dụng địa chỉ I2C khác nhau và chịu ảnh hưởng bởi chất lượng kết nối phần cứng.
 ```
 
 
@@ -2499,25 +2499,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 24.2. Bối cảnh khi viết prompt
 
 ```text
-Trong thư mục `MeloTTS_Vietnamese-main`, tôi đã kích hoạt môi trường ảo (venv) và chạy `python chay_thu.py` nhưng liên tục gặp thông báo lỗi: `ModuleNotFoundError: No module named 'torch'`.
+Trong quá trình thiết lập môi trường chạy AI cho dự án, nhóm tạo môi trường ảo Python (venv) để quản lý các thư viện độc lập. Tuy nhiên, khi thực thi chương trình TTS, hệ thống báo thiếu thư viện PyTorch và một số package liên quan, khiến chương trình không thể khởi động. Nhóm cần hướng dẫn cài đặt đúng phiên bản thư viện và hiểu rõ cách hoạt động của môi trường ảo để tránh xung đột giữa các dự án.
 ```
 
 #### 24.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI giải thích nguyên nhân phát sinh lỗi do môi trường ảo chưa được cài đặt đầy đủ các thư viện cần thiết. Đồng thời AI cung cấp các lệnh cài đặt PyTorch phù hợp với từng cấu hình (CPU hoặc GPU), hướng dẫn kiểm tra phiên bản Python, pip và cách xác nhận thư viện đã được cài đặt thành công. AI cũng giải thích cơ chế hoạt động của venv và lý do các thư viện trong Python gốc không được sử dụng trực tiếp trong môi trường ảo.
 ```
 
 #### 24.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm thực hiện cài đặt các thư viện theo hướng dẫn, kiểm tra lại môi trường ảo và xác nhận PyTorch đã được nhận diện chính xác. Sau khi hoàn tất việc cài đặt, chương trình AI có thể khởi động bình thường và tiếp tục thực hiện các bước xử lý giọng nói mà không còn xuất hiện lỗi thiếu thư viện.
 ```
 
 #### 24.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm lựa chọn phiên bản PyTorch phù hợp với cấu hình máy tính đang sử dụng và bổ sung thêm các thư viện còn thiếu trong file requirements. Đồng thời cập nhật lại tài liệu hướng dẫn cài đặt môi trường để các thành viên khác có thể thiết lập nhanh chóng và thống nhất giữa các máy phát triển.
 ```
 
 #### 24.6. Đánh giá chất lượng prompt
@@ -2528,7 +2528,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 24.7. Minh chứng liên quan
@@ -2545,7 +2545,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 24.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xác định nguyên nhân của lỗi môi trường Python và lựa chọn đúng cách cài đặt PyTorch trong môi trường ảo. Mặc dù AI cung cấp hướng dẫn đầy đủ, nhóm vẫn kiểm tra lại phiên bản Python, pip và khả năng tương thích của các thư viện trước khi áp dụng vào hệ thống để đảm bảo môi trường hoạt động ổn định.
 ```
 
 
@@ -2578,25 +2578,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 25.2. Bối cảnh khi viết prompt
 
 ```text
-Dự án đang thiếu bước hướng dẫn rõ ràng trong file `huong_dan_chay_du_an.md` để chạy được server AI.
+Trong quá trình bàn giao dự án, nhóm nhận thấy tài liệu hướng dẫn cài đặt và chạy hệ thống AI còn thiếu nhiều bước quan trọng. Các thành viên mới gặp khó khăn khi thiết lập môi trường, cài đặt thư viện và khởi động server do chưa có hướng dẫn chi tiết. Vì vậy, nhóm cần xây dựng một tài liệu Markdown đầy đủ để chuẩn hóa quy trình cài đặt và vận hành hệ thống AI trên các máy tính khác nhau.
 ```
 
 #### 25.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI đề xuất một tài liệu hướng dẫn được trình bày theo định dạng Markdown với cấu trúc rõ ràng, bao gồm các bước chuẩn bị môi trường, tạo và kích hoạt môi trường ảo (venv), cài đặt các thư viện từ requirements.txt, kiểm tra quá trình cài đặt và khởi động AI Server. Ngoài ra, AI còn bổ sung các khối lệnh terminal và giải thích ngắn gọn cho từng bước để người dùng dễ thực hiện.
 ```
 
 #### 25.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm sử dụng nội dung AI đề xuất làm cơ sở để xây dựng tài liệu hướng dẫn chạy dự án. Sau khi rà soát lại theo cấu trúc thư mục và môi trường thực tế, tài liệu được cập nhật vào file hướng dẫn của dự án nhằm hỗ trợ các thành viên mới thiết lập môi trường và khởi động AI Server một cách nhanh chóng.
 ```
 
 #### 25.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm điều chỉnh lại đường dẫn thư mục, tên file thực thi và các lệnh cài đặt cho phù hợp với cấu trúc dự án. Đồng thời bổ sung phần lưu ý về phiên bản Python, cách xử lý một số lỗi thường gặp trong quá trình cài đặt thư viện và kiểm tra môi trường trước khi chạy hệ thống AI.
 ```
 
 #### 25.6. Đánh giá chất lượng prompt
@@ -2607,7 +2607,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 25.7. Minh chứng liên quan
@@ -2624,7 +2624,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 25.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm tiết kiệm thời gian trong việc xây dựng tài liệu kỹ thuật và chuẩn hóa quy trình cài đặt môi trường AI. Tuy nhiên, toàn bộ nội dung do AI tạo ra đều được nhóm kiểm tra, chỉnh sửa và thử nghiệm trên nhiều máy tính khác nhau để đảm bảo hướng dẫn chính xác, dễ hiểu và phù hợp với môi trường triển khai thực tế của dự án.
 ```
 
 
@@ -2659,25 +2659,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 26.2. Bối cảnh khi viết prompt
 
 ```text
-Toàn bộ thư mục dự án hiện chứa trộn lẫn giữa code C++ (PlatformIO) và mã Python (chứa các model AI nặng, log, venv).
+Trong quá trình phát triển, dự án bao gồm nhiều thành phần như firmware ESP32, chương trình AI bằng Python và các tài nguyên phục vụ huấn luyện mô hình. Do chưa có quy tắc quản lý file phù hợp, repository xuất hiện nhiều tệp không cần thiết như thư mục build, cache, môi trường ảo và các mô hình có dung lượng lớn. Nhóm cần xây dựng quy tắc `.gitignore` thống nhất để giữ repository gọn gàng, giảm dung lượng lưu trữ và tránh đưa các dữ liệu không cần thiết lên Git.
 ```
 
 #### 26.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI đề xuất nội dung cho file `.gitignore` phù hợp với dự án kết hợp PlatformIO và Python. Các quy tắc bao gồm loại bỏ thư mục build, file thực thi, cache của Python, thư mục môi trường ảo, cấu hình của Visual Studio Code, các file log và các mô hình AI có dung lượng lớn. AI cũng giải thích ý nghĩa của từng nhóm quy tắc và lưu ý những tệp cấu hình cần giữ lại để dự án vẫn có thể hoạt động bình thường sau khi clone từ Git.
 ```
 
 #### 26.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm sử dụng nội dung AI đề xuất làm cơ sở để xây dựng file `.gitignore` cho dự án. Sau khi rà soát cấu trúc thư mục thực tế, các quy tắc được điều chỉnh nhằm loại bỏ đúng những tệp sinh ra trong quá trình phát triển nhưng vẫn giữ lại các file cấu hình và mã nguồn cần thiết. Repository sau khi cập nhật trở nên gọn gàng hơn và thuận tiện cho việc quản lý phiên bản.
 ```
 
 #### 26.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm bổ sung thêm một số quy tắc loại trừ phù hợp với môi trường làm việc thực tế như file tạm của hệ điều hành, log sinh ra khi chạy chương trình và các thư mục dữ liệu trung gian. Đồng thời kiểm tra lại toàn bộ repository để đảm bảo không còn các tệp dung lượng lớn hoặc dữ liệu không cần thiết được theo dõi bởi Git.
 ```
 
 #### 26.6. Đánh giá chất lượng prompt
@@ -2688,7 +2688,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 26.7. Minh chứng liên quan
@@ -2705,7 +2705,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 26.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt hỗ trợ nhóm xây dựng quy tắc quản lý mã nguồn một cách nhanh chóng và có hệ thống. Tuy nhiên, các nội dung do AI đề xuất vẫn được đối chiếu với cấu trúc thư mục của dự án để điều chỉnh cho phù hợp, đảm bảo repository chỉ chứa những thành phần cần thiết và thuận tiện cho việc cộng tác giữa các thành viên trong nhóm.
 ```
 
 
@@ -2738,25 +2738,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 27.2. Bối cảnh khi viết prompt
 
 ```text
-Khi kích hoạt môi trường ảo (venv) để thiết lập dự án MeloTTS và chạy lệnh `pip install -r requirements.txt`, terminal báo lỗi: `Fatal error in launcher: Unable to create process using ... pip.exe`.
+Trong quá trình thiết lập môi trường phát triển cho dự án AI, nhóm gặp lỗi khi cài đặt các thư viện từ file `requirements.txt`. Mặc dù môi trường ảo đã được kích hoạt, lệnh `pip` không thể thực thi và thông báo lỗi liên quan đến `pip.exe`. Điều này khiến quá trình cài đặt thư viện bị gián đoạn và ảnh hưởng đến việc triển khai các module AI. Nhóm cần xác định nguyên nhân và tìm phương án khắc phục để tiếp tục thiết lập môi trường làm việc.
 ```
 
 #### 27.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI phân tích nguyên nhân lỗi có thể xuất phát từ việc môi trường ảo bị thay đổi vị trí, đường dẫn đến `pip.exe` không còn hợp lệ hoặc cấu hình Python trong hệ thống bị sai. AI hướng dẫn sử dụng lệnh `python -m pip` để thay thế cho `pip`, đồng thời cung cấp quy trình tạo lại môi trường ảo và cài đặt lại các thư viện nhằm đảm bảo hệ thống hoạt động ổn định.
 ```
 
 #### 27.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm thực hiện theo hướng dẫn của AI bằng cách kiểm tra lại môi trường Python, sử dụng `python -m pip` để cài đặt thư viện và tạo lại môi trường ảo khi cần thiết. Sau khi hoàn thành, toàn bộ các package được cài đặt thành công và chương trình AI có thể chạy mà không còn gặp lỗi liên quan đến pip.
 ```
 
 #### 27.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm cập nhật lại tài liệu hướng dẫn cài đặt môi trường để sử dụng thống nhất lệnh `python -m pip` trong các bước thiết lập. Đồng thời bổ sung quy trình kiểm tra phiên bản Python, pip và hướng dẫn tạo mới môi trường ảo nhằm hạn chế các lỗi tương tự khi triển khai trên các máy tính khác.
 ```
 
 #### 27.6. Đánh giá chất lượng prompt
@@ -2767,7 +2767,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 27.7. Minh chứng liên quan
@@ -2784,7 +2784,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 27.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xác định nguyên nhân gây lỗi trong quá trình cài đặt thư viện Python và lựa chọn phương án xử lý phù hợp. Sau khi áp dụng hướng dẫn, nhóm vẫn kiểm tra lại toàn bộ môi trường và cập nhật tài liệu cài đặt để giảm thiểu các lỗi tương tự trong quá trình phát triển và bàn giao dự án.
 ```
 
 
@@ -2817,25 +2817,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 28.2. Bối cảnh khi viết prompt
 
 ```text
-Máy tính của tôi có cài đặt bộ công cụ MSYS2. Điều này làm cho biến môi trường PATH ưu tiên gọi Python của MSYS2 (`C:\msys64\...`) thay vì Python chuẩn của Windows, khiến dự án AI TTS không nhận diện được thư viện.
+Trong quá trình cấu hình môi trường phát triển AI trên Windows, nhóm phát hiện Python được gọi trong Terminal không phải là phiên bản đã cài đặt cho dự án mà đến từ bộ công cụ MSYS2. Điều này dẫn đến việc nhiều thư viện đã cài trong môi trường Python chính không được nhận diện, gây lỗi khi chạy chương trình AI. Nhóm cần xác định nguyên nhân xung đột và điều chỉnh biến môi trường PATH để hệ thống sử dụng đúng phiên bản Python.
 ```
 
 #### 28.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI giải thích nguyên nhân khiến Windows ưu tiên sử dụng Python của MSYS2 do thứ tự các đường dẫn trong biến PATH. Đồng thời AI hướng dẫn từng bước mở cửa sổ Environment Variables, xác định các đường dẫn liên quan đến MSYS2, chỉnh sửa hoặc loại bỏ chúng khỏi PATH và kiểm tra lại bằng các lệnh như `where python` và `python --version` để xác nhận hệ thống đã sử dụng đúng trình thông dịch Python.
 ```
 
 #### 28.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm thực hiện chỉnh sửa biến môi trường PATH theo hướng dẫn của AI, loại bỏ các đường dẫn không cần thiết của MSYS2 và khởi động lại Terminal để áp dụng thay đổi. Sau khi cấu hình lại, hệ thống nhận đúng phiên bản Python được cài đặt cho dự án và các thư viện AI được tải thành công khi chạy chương trình.
 ```
 
 #### 28.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm kiểm tra toàn bộ cấu hình PATH trên các máy của thành viên, thống nhất sử dụng cùng một phiên bản Python và cập nhật tài liệu hướng dẫn cài đặt môi trường. Ngoài việc điều chỉnh PATH, nhóm cũng bổ sung các bước kiểm tra nhanh bằng lệnh Terminal để dễ dàng phát hiện xung đột môi trường trong những lần thiết lập sau.
 ```
 
 #### 28.6. Đánh giá chất lượng prompt
@@ -2846,7 +2846,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 28.7. Minh chứng liên quan
@@ -2863,7 +2863,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 28.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xác định nguyên nhân gây xung đột giữa nhiều môi trường Python trên Windows và đưa ra quy trình xử lý rõ ràng. Sau khi áp dụng hướng dẫn, nhóm tiếp tục kiểm tra lại toàn bộ cấu hình hệ thống và cập nhật tài liệu cài đặt để hạn chế các lỗi tương tự trong quá trình phát triển và triển khai dự án.
 ```
 
 
@@ -2896,25 +2896,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 29.2. Bối cảnh khi viết prompt
 
 ```text
-Tôi đang gặp khó khăn khi cài đặt môi trường ảo cho mô hình AI. Bạn vừa hướng dẫn các dòng lệnh khắc phục lỗi, nhưng tôi muốn bạn trực tiếp can thiệp.
+Trong quá trình thiết lập môi trường AI, nhóm phải thực hiện nhiều lệnh Terminal để tạo lại môi trường ảo, cài đặt thư viện và khắc phục các lỗi phát sinh. Việc nhập thủ công từng lệnh vừa mất thời gian vừa dễ xảy ra sai sót. Nhóm mong muốn AI có thể hỗ trợ tự động hóa quá trình này hoặc ít nhất cung cấp một quy trình thực hiện liên tục để giảm thao tác thủ công và hạn chế lỗi cấu hình.
 ```
 
 #### 29.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI giải thích rằng không thể trực tiếp truy cập hoặc thực thi lệnh trên máy tính của người dùng. Tuy nhiên, AI đã cung cấp đầy đủ các lệnh Terminal theo đúng thứ tự để xóa môi trường ảo cũ, tạo mới môi trường venv, kích hoạt môi trường, nâng cấp pip và cài đặt toàn bộ thư viện từ file requirements.txt. Đồng thời AI hướng dẫn cách kiểm tra kết quả sau mỗi bước và cách xử lý nếu quá trình cài đặt gặp lỗi.
 ```
 
 #### 29.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm thực hiện lần lượt các lệnh do AI đề xuất trên Terminal Windows. Sau khi tạo lại môi trường ảo và cài đặt đầy đủ các thư viện cần thiết, chương trình AI có thể khởi động bình thường và không còn gặp các lỗi liên quan đến môi trường Python hoặc thiếu package.
 ```
 
 #### 29.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm tổng hợp các lệnh cài đặt thành một quy trình chuẩn và bổ sung vào tài liệu hướng dẫn của dự án để các thành viên có thể thực hiện nhanh chóng. Ngoài ra, nhóm kiểm tra lại tên thư mục, đường dẫn dự án và phiên bản Python trên từng máy để đảm bảo các lệnh hoạt động đúng trong môi trường thực tế.
 ```
 
 #### 29.6. Đánh giá chất lượng prompt
@@ -2925,7 +2925,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 29.7. Minh chứng liên quan
@@ -2942,7 +2942,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 29.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm xây dựng quy trình thiết lập môi trường Python một cách có hệ thống và dễ thực hiện. Mặc dù AI không thể trực tiếp chạy lệnh trên máy tính của người dùng, các hướng dẫn và câu lệnh được cung cấp đầy đủ, giúp nhóm rút ngắn thời gian cấu hình và giảm đáng kể các lỗi phát sinh trong quá trình cài đặt môi trường phát triển.
 ```
 
 
@@ -2975,25 +2975,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 30.2. Bối cảnh khi viết prompt
 
 ```text
-Tôi đang xem xét file `docs\huong_dan_chay_du_an.md` thuộc thư mục TTS AI sau khi chúng ta đã khắc phục hàng loạt lỗi phần cứng và môi trường.
+Sau nhiều lần cập nhật hệ thống, tài liệu hướng dẫn của dự án không còn phản ánh đúng quy trình triển khai hiện tại. Một số bước cài đặt, cấu hình môi trường Python, địa chỉ IP và hướng dẫn khởi động AI Server đã thay đổi trong quá trình phát triển nhưng chưa được cập nhật vào tài liệu. Nhóm cần rà soát toàn bộ nội dung để đảm bảo tài liệu luôn đồng bộ với phiên bản mới nhất của hệ thống và có thể sử dụng cho việc triển khai hoặc bàn giao dự án.
 ```
 
 #### 30.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI phân tích cấu trúc của tài liệu hiện tại, xác định các nội dung không còn phù hợp và đề xuất các phần cần chỉnh sửa hoặc bổ sung. Đồng thời AI cung cấp bản nháp theo định dạng Markdown, bao gồm hướng dẫn cài đặt môi trường Python, cấu hình AI Server, cập nhật các lệnh Terminal mới, lưu ý về địa chỉ IP và quy trình kiểm tra sau khi hoàn tất cài đặt.
 ```
 
 #### 30.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm sử dụng các đề xuất của AI làm cơ sở để cập nhật tài liệu kỹ thuật của dự án. Sau khi đối chiếu với cấu trúc thư mục và môi trường triển khai thực tế, các nội dung được chỉnh sửa, bổ sung và sắp xếp lại theo trình tự hợp lý nhằm giúp người dùng dễ dàng cài đặt, cấu hình và vận hành hệ thống.
 ```
 
 #### 30.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm cập nhật lại các đường dẫn thư mục, câu lệnh Terminal và thông tin cấu hình theo phiên bản mới nhất của dự án. Ngoài ra, tài liệu được bổ sung thêm các lưu ý về xử lý lỗi thường gặp, kiểm tra môi trường trước khi chạy chương trình và hướng dẫn xác minh hệ thống sau khi hoàn tất quá trình cài đặt.
 ```
 
 #### 30.6. Đánh giá chất lượng prompt
@@ -3004,7 +3004,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 30.7. Minh chứng liên quan
@@ -3021,7 +3021,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 30.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm tiết kiệm thời gian trong việc rà soát và cập nhật tài liệu kỹ thuật sau nhiều lần thay đổi của hệ thống. Tuy nhiên, toàn bộ nội dung do AI đề xuất đều được nhóm kiểm tra, chỉnh sửa và xác nhận dựa trên phiên bản mã nguồn và môi trường triển khai thực tế trước khi đưa vào tài liệu chính thức của dự án.
 ```
 
 
@@ -3056,25 +3056,25 @@ Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
 #### 31.2. Bối cảnh khi viết prompt
 
 ```text
-Hệ thống MeloTTS hiện tại chạy script `chay_thu.py` thành công và sinh ra file `ket_qua.wav` tĩnh trên ổ cứng dựa theo model ngôn ngữ Việt (`vie-n.tsv`). Tuy nhiên, ESP32 cần kéo luồng dữ liệu này qua mạng.
+Sau khi mô hình MeloTTS có thể tạo thành công file âm thanh từ văn bản, nhóm cần tích hợp chức năng này với hệ thống ESP32 thông qua giao tiếp mạng. Việc lưu file WAV trên máy tính không còn đáp ứng được yêu cầu vì thiết bị nhúng cần nhận trực tiếp dữ liệu âm thanh từ máy chủ. Do đó, nhóm cần xây dựng một Web API có khả năng tiếp nhận yêu cầu từ ESP32, xử lý văn bản bằng mô hình TTS và trả về luồng âm thanh để thiết bị phát ngay mà không cần thao tác thủ công.
 ```
 
 #### 31.3. Kết quả AI trả về
 
 ```text
-AI trả về mã code C++/Python/Markdown chi tiết dựa trên yêu cầu từ prompt.
+AI đề xuất xây dựng một Web API bằng Flask hoặc FastAPI với endpoint nhận nội dung văn bản từ yêu cầu HTTP. Khi có request gửi đến, server sẽ gọi mô hình MeloTTS để tạo file âm thanh, sau đó trả trực tiếp dữ liệu WAV trong HTTP Response với MIME type phù hợp. Ngoài ra, AI còn cung cấp ví dụ cách gọi API từ phía client và hướng dẫn xử lý phản hồi để ESP32 có thể phát âm thanh sau khi nhận dữ liệu.
 ```
 
 #### 31.4. Kết quả đã áp dụng vào bài
 
 ```text
-Áp dụng mã vào các file của module tương ứng để chạy thực tế.
+Nhóm sử dụng cấu trúc API do AI đề xuất để xây dựng máy chủ phục vụ mô hình TTS. Sau khi điều chỉnh đường dẫn model, thư mục lưu file và cấu hình mạng nội bộ, API hoạt động ổn định và có thể tiếp nhận yêu cầu từ thiết bị ESP32. Kết quả kiểm tra cho thấy thiết bị nhận được dữ liệu âm thanh và phát thành công theo nội dung văn bản gửi lên.
 ```
 
 #### 31.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
 
 ```text
-Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm để tương thích.
+Nhóm điều chỉnh lại cấu trúc thư mục chứa model và file âm thanh để phù hợp với dự án thực tế. Đồng thời bổ sung xử lý ngoại lệ khi văn bản đầu vào không hợp lệ, tối ưu thời gian phản hồi của API và cập nhật tài liệu hướng dẫn cách khởi động server cũng như kiểm tra endpoint bằng công cụ Postman trước khi kết nối với ESP32.
 ```
 
 #### 31.6. Đánh giá chất lượng prompt
@@ -3085,7 +3085,7 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 - [x] Prompt tạo ra kết quả tốt
 - [ ] Prompt tạo ra kết quả chưa phù hợp
 - [ ] Cần hỏi lại AI nhiều lần
-- [ ] Cần tự kiểm tra và chỉnh sửa nhiều
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
 - [ ] Kết quả AI có lỗi hoặc chưa chính xác
 
 #### 31.7. Minh chứng liên quan
@@ -3102,7 +3102,170 @@ Tinh chỉnh thông số cứng/đường dẫn, kết nối thử nghiệm đ�
 #### 31.8. Ghi chú thêm
 
 ```text
-Sử dụng Prompt Engineering mang lại hiệu quả rất tốt.
+Prompt giúp nhóm nhanh chóng xây dựng kiến trúc Web API để kết nối mô hình MeloTTS với thiết bị ESP32 mà không phải thiết kế từ đầu. Các đoạn mã và hướng dẫn do AI cung cấp được sử dụng làm nền tảng, sau đó nhóm chủ động điều chỉnh, kiểm thử và tối ưu theo cấu trúc dự án cũng như môi trường triển khai thực tế trước khi đưa vào sử dụng.
+```
+
+---
+
+### Prompt số 32
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 28/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Hỗ trợ xây dựng Postman Collection và kiểm thử API Happy Path cho dự án LogiPort |
+| Phần việc liên quan | API Testing / Postman / Documentation |
+| Mức độ sử dụng | Hướng dẫn, tạo test script và rà soát cấu hình |
+
+#### 32.1. Prompt nguyên văn
+
+```text
+Mô tả tính năng
+
+Khởi tạo cấu trúc dự án kiểm thử trên Postman. Tạo Postman Collection, setup folder và import các API request cơ bản cho luồng thao tác đúng (Happy Path).
+
+Yêu cầu chi tiết
+
+- Tạo mới Collection LogiPort.postman_collection.json.
+- Phân chia cấu trúc thành các Folder hợp lý: Auth, Client Roles, Yards.
+- Thêm các request với Body và Parameters hợp lệ dựa trên API.
+- Setup script tự động lưu biến môi trường (tokenAdmin, yardId, roleId).
+- Hướng dẫn test các API Register, Login, Logout, Client Roles, Get Yards, Create Yard và Get Yard Detail trên Postman.
+```
+
+#### 32.2. Bối cảnh khi viết prompt
+
+```text
+Nhóm được giao nhiệm vụ xây dựng bộ kiểm thử API bằng Postman cho dự án LogiPort. Công việc yêu cầu tạo Postman Collection theo cấu trúc rõ ràng, cấu hình Environment Variables, bổ sung các API Happy Path và viết Test Script để phục vụ việc kiểm thử tự động. Ngoài ra cần kiểm tra các API trả về đúng mã trạng thái thành công và đảm bảo Collection có thể export để quản lý cùng source code của dự án.
+```
+
+#### 32.3. Kết quả AI trả về
+
+```text
+AI hướng dẫn chi tiết cách tạo Postman Collection, phân chia folder theo từng module, cấu hình Environment Variables, thiết lập Authorization, viết các Test Script kiểm tra HTTP Status Code và lưu các biến môi trường như tokenAdmin, roleId và yardId. Đồng thời AI cũng hướng dẫn quy trình chạy Collection Runner và cách xử lý một số lỗi thường gặp như 401 Unauthorized và 404 Not Found.
+```
+
+#### 32.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng hướng dẫn của AI để tạo LogiPort-API.postman_collection.json, bổ sung đầy đủ các request Happy Path, cấu hình Environment Variables và Test Scripts. Collection sau khi hoàn thiện được import vào Postman để kiểm thử và export vào thư mục của dự án phục vụ quản lý bằng Git.
+```
+
+#### 32.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm đã đối chiếu lại hướng dẫn của AI với tài liệu API và backend thực tế của dự án. Một số endpoint, Request Body và phương thức xác thực được điều chỉnh để phù hợp với hệ thống. Đồng thời cập nhật lại các Test Script và Environment Variables theo cấu trúc backend hiện tại, đảm bảo Collection hoạt động đúng trước khi commit vào repository.
+```
+
+#### 32.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 32.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan |LogiPort-API.postman_collection.json |
+| Screenshot | |
+| Kết quả chạy/test |Các API Happy Path thực hiện thành công và trả về HTTP Status Code 200/201 theo mong đợi |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 32.8. Ghi chú thêm
+
+```text
+Việc sử dụng ChatGPT giúp giảm đáng kể thời gian tìm hiểu Postman và xây dựng Collection. AI hỗ trợ tốt trong việc đề xuất cấu trúc Collection, viết Test Script và giải thích quy trình kiểm thử. Tuy nhiên, toàn bộ nội dung đều được nhóm kiểm tra và điều chỉnh dựa trên tài liệu API và backend của dự án trước khi áp dụng chính thức nhằm đảm bảo tính chính xác và phù hợp với hệ thống thực tế.
+```
+
+---
+
+### Prompt số 33
+
+| Nội dung | Thông tin |
+| --- | --- |
+| Ngày sử dụng | 28/06/2026 |
+| Công cụ AI | Gemini |
+| Mục đích | Hỗ trợ tạo và cấu hình Environment trong Postman cho dự án LogiPort để quản lý các biến dùng chung khi kiểm thử API. |
+| Phần việc liên quan | API Testing / Postman / Environment Configuration |
+| Mức độ sử dụng | Hướng dẫn cấu hình và giải thích |
+
+#### 33.1. Prompt nguyên văn
+
+```text
+Hướng dẫn tạo Environment cho dự án LogiPort trên Postman.
+
+Yêu cầu:
+- Tạo Environment tên "LogiPort Local".
+- Khai báo các biến môi trường như:
+  + baseUrl
+  + tokenAdmin
+  + tokenUser
+  + yardId
+  + roleId
+  + appointmentId
+- Hướng dẫn sử dụng các biến trong URL, Authorization và Body của request.
+- Viết Test Script tự động lưu token và các ID sau khi gọi API thành công.
+- Giải thích cách export và import Environment để chia sẻ với các thành viên trong nhóm.
+```
+
+#### 33.2. Bối cảnh khi viết prompt
+
+```text
+Trong quá trình xây dựng Postman Collection cho dự án LogiPort, nhóm cần tạo một Environment thống nhất để lưu các biến dùng chung như địa chỉ server, token đăng nhập và các ID được sinh ra từ API. Việc sử dụng Environment giúp giảm thao tác nhập lại dữ liệu, dễ dàng chạy Collection Runner và thuận tiện khi chia sẻ Collection cho các thành viên khác trong nhóm.
+```
+
+#### 33.3. Kết quả AI trả về
+
+```text
+AI hướng dẫn cách tạo Environment trong Postman, khai báo các biến cần thiết, giải thích ý nghĩa của từng biến và cách sử dụng cú pháp {{variableName}} trong URL, Header, Authorization và Request Body. AI cũng cung cấp các Test Script để tự động lưu token và ID vào Environment sau khi API thực thi thành công.
+```
+
+#### 33.4. Kết quả đã áp dụng vào bài
+
+```text
+Áp dụng hướng dẫn để tạo Environment "LogiPort Local", cấu hình đầy đủ các biến môi trường và sử dụng chúng trong toàn bộ Postman Collection. Sau khi đăng nhập hoặc tạo dữ liệu mới, các Test Script tự động cập nhật giá trị của tokenAdmin, yardId và roleId, giúp các request tiếp theo có thể sử dụng ngay mà không cần nhập thủ công.
+```
+
+#### 33.5. Phần sinh viên/nhóm đã chỉnh sửa hoặc cải tiến
+
+```text
+Nhóm điều chỉnh giá trị baseUrl theo môi trường backend thực tế của dự án và bổ sung thêm một số biến phù hợp với quá trình kiểm thử. Các Test Script được chỉnh sửa để tương thích với cấu trúc Response của API LogiPort và đảm bảo dữ liệu được lưu chính xác vào Environment.
+```
+
+#### 33.6. Đánh giá chất lượng prompt
+
+- [x] Prompt rõ ràng
+- [x] Prompt có đủ bối cảnh
+- [ ] Prompt còn thiếu thông tin
+- [x] Prompt tạo ra kết quả tốt
+- [ ] Prompt tạo ra kết quả chưa phù hợp
+- [ ] Cần hỏi lại AI nhiều lần
+- [x] Cần tự kiểm tra và chỉnh sửa nhiều
+- [ ] Kết quả AI có lỗi hoặc chưa chính xác
+
+#### 33.7. Minh chứng liên quan
+
+| Loại minh chứng | Nội dung |
+| --- | --- |
+| Link commit | |
+| File liên quan |LogiPort.postman_environment.json |
+| Screenshot | |
+| Kết quả chạy/test |Environment hoạt động đúng, các request sử dụng được biến môi trường và Test Script tự động cập nhật giá trị |
+| Link tài liệu/báo cáo | |
+| Ghi chú khác | |
+
+#### 33.8. Ghi chú thêm
+
+```text
+Việc sử dụng AI giúp nhóm nhanh chóng thiết lập Environment theo đúng quy trình của Postman và giảm thời gian tìm hiểu tài liệu. Sau khi nhận được hướng dẫn, nhóm vẫn đối chiếu với backend và tài liệu API để điều chỉnh các biến môi trường và Test Script cho phù hợp với dự án LogiPort. Điều này giúp Collection hoạt động ổn định và thuận tiện hơn trong quá trình kiểm thử cũng như làm việc nhóm.
 ```
 
 ---
