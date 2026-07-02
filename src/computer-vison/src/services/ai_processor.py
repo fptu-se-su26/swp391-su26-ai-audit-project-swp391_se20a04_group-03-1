@@ -8,10 +8,13 @@ import threading
 import numpy as np
 from collections import Counter
 from queue import Queue
-from ultralytics import YOLO
 import torch
+from ultralytics import YOLO
 
-# Ensure the project root (computer-vison/) is on sys.path
+try:
+    from src.services.hailo_yolo import HailoYOLO, HAILO_AVAILABLE
+except ImportError:
+    HAILO_AVAILABLE = False
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from src.config import (
@@ -354,11 +357,25 @@ class AIProcessor:
         self.ocr_reader = get_ocr()
         self.gate_type = gate_type
         self.camera_ip = camera_ip
-        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-        # Load independent YOLO instances (isolate ByteTrack state per camera)
-        self.plate_model = YOLO(YOLO_PLATE_MODEL_PATH) if os.path.exists(YOLO_PLATE_MODEL_PATH) else None
-        self.container_model = YOLO(YOLO_CONTAINER_MODEL_PATH) if os.path.exists(YOLO_CONTAINER_MODEL_PATH) else None
+        if HAILO_AVAILABLE:
+            from hailo_platform import VDevice
+            try:
+                self.vdevice = VDevice()
+            except Exception as e:
+                print(f"[AI] Cannot open VDevice: {e}")
+                self.vdevice = None
+            
+            hef_plate = YOLO_PLATE_MODEL_PATH.replace(".onnx", ".hef").replace(".pt", ".hef")
+            hef_container = YOLO_CONTAINER_MODEL_PATH.replace(".onnx", ".hef").replace(".pt", ".hef")
+            
+            self.plate_model = HailoYOLO(hef_plate, self.vdevice) if os.path.exists(hef_plate) and self.vdevice else None
+            self.container_model = HailoYOLO(hef_container, self.vdevice) if os.path.exists(hef_container) and self.vdevice else None
+        else:
+            self.vdevice = None
+            self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+            self.plate_model = YOLO(YOLO_PLATE_MODEL_PATH) if os.path.exists(YOLO_PLATE_MODEL_PATH) else None
+            self.container_model = YOLO(YOLO_CONTAINER_MODEL_PATH) if os.path.exists(YOLO_CONTAINER_MODEL_PATH) else None
 
         # Tracking state riêng cho mỗi loại (plate / container)
         self.plate_track_state = {}
@@ -386,99 +403,76 @@ class AIProcessor:
         default_color = (0, 0, 255) if task_type == "plate" else (255, 0, 0)
         ocr_queue = GLOBAL_OCR_QUEUE if task_type == "plate" else GLOBAL_CONTAINER_OCR_QUEUE
 
-        # Plate: detect trên frame gốc (full-res) để nhìn biển số xa hơn
-        # Container: detect trên frame_resized (800x600) vì mã container đã đủ to
+        # Plate: detect trên frame gốc (full-res)
+        # Container: detect trên frame_resized (800x600)
         if task_type == "plate":
             detect_frame = frame
-            detect_imgsz = 1280
-            # Tọa độ trả về đã ở hệ frame gốc → scale về 800x600 để vẽ
+            scale_x = w_orig / 640.0
+            scale_y = h_orig / 640.0
             scale_x_draw = 800 / w_orig
             scale_y_draw = 600 / h_orig
-            # Tọa độ crop: đã ở hệ frame gốc, dùng trực tiếp
             scale_x_crop = 1.0
             scale_y_crop = 1.0
         else:
             detect_frame = frame_resized
-            detect_imgsz = 640
-            # Tọa độ trả về ở hệ 800x600 → dùng trực tiếp để vẽ
+            scale_x = 800 / 640.0
+            scale_y = 600 / 640.0
             scale_x_draw = 1.0
             scale_y_draw = 1.0
-            # Tọa độ crop: cần scale từ 800x600 về frame gốc
-            scale_x_crop = w_orig / 800
-            scale_y_crop = h_orig / 600
+            scale_x_crop = w_orig / 800.0
+            scale_y_crop = h_orig / 600.0
 
         try:
-            yolo_results = model.track(
-                detect_frame, persist=True, tracker="bytetrack.yaml",
-                device=self.device, verbose=False, conf=conf_threshold, imgsz=detect_imgsz
-            )
+            # HailoYOLO.track() trả về dict: objectID -> (centroid, (x1, y1, x2, y2) ở hệ 640x640)
+            objects = model.track(detect_frame, conf_threshold=conf_threshold)
 
-            if yolo_results and len(yolo_results) > 0 and yolo_results[0].boxes is not None:
-                boxes = yolo_results[0].boxes
+            for objectID, (centroid, rect) in objects.items():
+                x1_det, y1_det, x2_det, y2_det = rect
+                
+                # Đưa về hệ tọa độ của detect_frame
+                x1_det, x2_det = x1_det * scale_x, x2_det * scale_x
+                y1_det, y2_det = y1_det * scale_y, y2_det * scale_y
+                
+                track_id = f"{task_type}_{objectID}"
 
-                if boxes.id is not None:
-                    track_ids = boxes.id.int().cpu().tolist()
-                    xyxys = boxes.xyxy.cpu().tolist()
-                    confs = boxes.conf.cpu().tolist()
-
-                    for raw_id, xyxy, conf in zip(track_ids, xyxys, confs):
-                        if conf > conf_threshold:
-                            x1_det, y1_det, x2_det, y2_det = xyxy
-                            track_id = f"{task_type}_{int(raw_id)}"
-
-                            if track_id not in track_state_dict:
-                                track_state_dict[track_id] = {
-                                    "plate_text": None,
-                                    "history": [],
-                                    "ocr_status": "pending",
-                                    "last_seen": current_time,
-                                    "color": default_color
-                                }
-                            else:
-                                track_state_dict[track_id]["last_seen"] = current_time
-
-                            state = track_state_dict[track_id]
-
-                            if state["ocr_status"] == "pending":
-                                padding = 15 if task_type == "container" else 5
-
-                                # Chuyển tọa độ detection về hệ frame gốc để crop ảnh full-res
-                                x1_org = max(0, int(x1_det * scale_x_crop) - padding)
-                                y1_org = max(0, int(y1_det * scale_y_crop) - padding)
-                                x2_org = min(w_orig, int(x2_det * scale_x_crop) + padding)
-                                y2_org = min(h_orig, int(y2_det * scale_y_crop) + padding)
-
-                                cropped_img = frame[y1_org:y2_org, x1_org:x2_org]
-                                if cropped_img.size > 0 and not ocr_queue.full():
-                                    state["ocr_status"] = "processing"
-                                    ocr_queue.put((track_state_dict, track_id, cropped_img, self.gate_type, self.camera_ip))
-
-                            # Chuyển tọa độ detection về hệ 800x600 để vẽ lên frame hiển thị
-                            x1_draw = int(x1_det * scale_x_draw)
-                            y1_draw = int(y1_det * scale_y_draw)
-                            x2_draw = int(x2_det * scale_x_draw)
-                            y2_draw = int(y2_det * scale_y_draw)
-
-                            label = task_type.upper()
-                            display_text = f"{label} {int(raw_id)}: {state['plate_text'] if state['plate_text'] else 'SCANNING'}"
-                            cv2.rectangle(frame_resized, (x1_draw, y1_draw), (x2_draw, y2_draw), state["color"], 2)
-                            cv2.putText(frame_resized, display_text, (x1_draw, y1_draw - 10),
-                                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, state["color"], 2)
-
+                if track_id not in track_state_dict:
+                    track_state_dict[track_id] = {
+                        "plate_text": None,
+                        "history": [],
+                        "ocr_status": "pending",
+                        "last_seen": current_time,
+                        "color": default_color
+                    }
                 else:
-                    # Detections chưa có track_id — vẽ xám
-                    xyxys = boxes.xyxy.cpu().tolist()
-                    confs = boxes.conf.cpu().tolist()
-                    for xyxy, conf in zip(xyxys, confs):
-                        if conf > conf_threshold:
-                            x1_det, y1_det, x2_det, y2_det = xyxy
-                            x1_draw = int(x1_det * scale_x_draw)
-                            y1_draw = int(y1_det * scale_y_draw)
-                            x2_draw = int(x2_det * scale_x_draw)
-                            y2_draw = int(y2_det * scale_y_draw)
-                            cv2.rectangle(frame_resized, (x1_draw, y1_draw), (x2_draw, y2_draw), (128, 128, 128), 2)
-                            cv2.putText(frame_resized, "DETECTING...", (x1_draw, y1_draw - 10),
-                                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (128, 128, 128), 2)
+                    track_state_dict[track_id]["last_seen"] = current_time
+
+                state = track_state_dict[track_id]
+
+                if state["ocr_status"] == "pending":
+                    padding = 15 if task_type == "container" else 5
+
+                    # Tọa độ để crop trên frame gốc
+                    x1_org = max(0, int(x1_det * scale_x_crop) - padding)
+                    y1_org = max(0, int(y1_det * scale_y_crop) - padding)
+                    x2_org = min(w_orig, int(x2_det * scale_x_crop) + padding)
+                    y2_org = min(h_orig, int(y2_det * scale_y_crop) + padding)
+
+                    cropped_img = frame[y1_org:y2_org, x1_org:x2_org]
+                    if cropped_img.size > 0 and not ocr_queue.full():
+                        state["ocr_status"] = "processing"
+                        ocr_queue.put((track_state_dict, track_id, cropped_img, self.gate_type, self.camera_ip))
+
+                # Tọa độ để vẽ lên frame_resized (800x600)
+                x1_draw = int(x1_det * scale_x_draw)
+                y1_draw = int(y1_det * scale_y_draw)
+                x2_draw = int(x2_det * scale_x_draw)
+                y2_draw = int(y2_det * scale_y_draw)
+
+                label = task_type.upper()
+                display_text = f"{label} {objectID}: {state['plate_text'] if state['plate_text'] else 'SCANNING'}"
+                cv2.rectangle(frame_resized, (x1_draw, y1_draw), (x2_draw, y2_draw), state["color"], 2)
+                cv2.putText(frame_resized, display_text, (x1_draw, y1_draw - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, state["color"], 2)
 
         except Exception as e:
             print(f"[AI] Error during {task_type} tracking: {e}")

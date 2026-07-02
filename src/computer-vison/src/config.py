@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 # API / Server Configuration
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000/api/scan")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://api.datnotes.click/api/scan")
 FLASK_HOST = os.getenv("FLASK_HOST", "0.0.0.0")
 FLASK_PORT = int(os.getenv("FLASK_PORT", 5001))
 
@@ -14,18 +14,20 @@ FLASK_PORT = int(os.getenv("FLASK_PORT", 5001))
 # Or string path/URL for RTSP stream or test video file
 CAMERA_INDEX = int(os.getenv("CAMERA_INDEX", 0))
 
-# AI Model Paths
-# Tự động dùng bản tối ưu ncnn cho Raspberry Pi CPU nếu có
+# Tự động dùng bản hef cho Raspberry Pi 5 NPU nếu có
+hef_plate_path = os.path.join(MODELS_DIR, "best.hef")
+hef_container_path = os.path.join(MODELS_DIR, "container-code.hef")
+
 ncnn_plate_path = os.path.join(MODELS_DIR, "best_ncnn_model")
 ncnn_container_path = os.path.join(MODELS_DIR, "container-code_ncnn_model")
 
 YOLO_PLATE_MODEL_PATH = os.getenv(
     "YOLO_PLATE_MODEL_PATH", 
-    ncnn_plate_path if os.path.isdir(ncnn_plate_path) else os.path.join(MODELS_DIR, "best.pt")
+    hef_plate_path if os.path.isfile(hef_plate_path) else (ncnn_plate_path if os.path.isdir(ncnn_plate_path) else os.path.join(MODELS_DIR, "best.pt"))
 )
 YOLO_CONTAINER_MODEL_PATH = os.getenv(
     "YOLO_CONTAINER_MODEL_PATH", 
-    ncnn_container_path if os.path.isdir(ncnn_container_path) else os.path.join(MODELS_DIR, "container-code.pt")
+    hef_container_path if os.path.isfile(hef_container_path) else (ncnn_container_path if os.path.isdir(ncnn_container_path) else os.path.join(MODELS_DIR, "container-code.pt"))
 )
 
 # AI Processing Parameters
