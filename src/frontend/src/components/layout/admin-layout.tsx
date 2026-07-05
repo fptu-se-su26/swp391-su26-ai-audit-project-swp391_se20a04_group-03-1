@@ -6,14 +6,14 @@ import { Header } from "@/components/layout/header"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Footer } from "@/components/layout/footer"
 import { Toaster } from "react-hot-toast"
+import { PermissionProvider } from "@/lib/permissions"
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
-  const isAuthPage = pathname?.includes("/admin/login") || 
-                     pathname?.includes("/admin/register") || 
-                     pathname?.includes("/admin/forgot-password") || 
+  const isAuthPage = pathname?.includes("/admin/login") ||
+                     pathname?.includes("/admin/forgot-password") ||
                      pathname?.includes("/admin/reset-password")
 
   // Sync toast theme variables based on document.documentElement class
@@ -45,8 +45,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
+    <PermissionProvider>
     <div className="flex h-screen flex-col bg-[#f8f8f8] dark:bg-[#121212] text-[#121212] dark:text-[#ffffff] transition-colors duration-300">
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           style: {
@@ -83,5 +84,6 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+    </PermissionProvider>
   )
 }

@@ -11,8 +11,7 @@ export function ProviderLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
-  const isAuthPage = pathname?.includes("/client/provider/login") || 
-                     pathname?.includes("/client/provider/register") ||
+  const isAuthPage = pathname?.includes("/client/provider/login") ||
                      pathname?.includes("/client/provider/forgot-password") ||
                      pathname?.includes("/client/provider/reset-password")
 

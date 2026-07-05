@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { Can } from "@/lib/permissions";
 import JustValidate from "just-validate";
 
 interface Yard {
@@ -161,13 +162,15 @@ export default function YardPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
-          >
-            <Plus className="h-5 w-5" />
-            Thêm Bãi đỗ
-          </Button>
+          <Can resource="yards" action="create">
+            <Button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
+            >
+              <Plus className="h-5 w-5" />
+              Thêm Bãi đỗ
+            </Button>
+          </Can>
           <Link href="/admin/yard/trash">
             <Button
               variant="outline"
@@ -254,13 +257,15 @@ export default function YardPage() {
             <p className="font-bold text-[14px]">
               Chưa có bãi đỗ nào được tạo.
             </p>
-            <Button
-              variant="outline"
-              onClick={() => setShowCreateForm(true)}
-              className="mt-6 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider"
-            >
-              Tạo bãi đỗ đầu tiên
-            </Button>
+            <Can resource="yards" action="create">
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateForm(true)}
+                className="mt-6 bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider"
+              >
+                Tạo bãi đỗ đầu tiên
+              </Button>
+            </Can>
           </CardContent>
         </Card>
       ) : (
@@ -310,6 +315,7 @@ export default function YardPage() {
                     Xem chi tiết
                   </Button>
                 </Link>
+                <Can resource="yards" action="update">
                 <Link href={`/admin/yard/${yard._id}/config`}>
                   <Button
                     variant="outline"
@@ -319,6 +325,8 @@ export default function YardPage() {
                     Cấu hình
                   </Button>
                 </Link>
+                </Can>
+                <Can resource="yards" action="delete">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
@@ -354,6 +362,7 @@ export default function YardPage() {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+                </Can>
               </CardContent>
             </Card>
           ))}

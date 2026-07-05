@@ -8,6 +8,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.ts",
+    "seed:rbac": "ts-node scripts/seed-rbac.ts",
+    "check:dup-emails": "ts-node scripts/check-duplicate-emails.ts",
     "test:coverage": "jest --coverage",
     "build": "tsc",
     "test": "jest --runInBand",

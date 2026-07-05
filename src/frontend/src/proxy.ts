@@ -9,7 +9,6 @@ export default function proxy(request: NextRequest) {
     const tokenAdmin = request.cookies.get("tokenAdmin")?.value;
     const isAuthPageAdmin =
       pathname === "/admin/login" ||
-      pathname === "/admin/register" ||
       pathname === "/admin/forgot-password" ||
       pathname.includes("/admin/reset-password");
 
@@ -35,7 +34,6 @@ export default function proxy(request: NextRequest) {
     const tokenCompany = request.cookies.get("tokenCompany")?.value;
     const isAuthPageCompany =
       pathname === "/client/company/login" ||
-      pathname === "/client/company/register" ||
       pathname === "/client/company/forgot-password" ||
       pathname.includes("/client/company/reset-password");
 

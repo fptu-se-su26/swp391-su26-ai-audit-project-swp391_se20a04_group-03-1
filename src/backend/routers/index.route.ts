@@ -6,6 +6,7 @@ import companyRouter from "./companies.route";
 import gateRouter from "./gates.route";
 import driversRouter from "./drivers.route";
 import { requireAuth } from "../middlewares/auth.middleware";
+import { attachPermissions } from "../middlewares/rbac.middleware";
 import scanRouter from "./scan.route";
 import containerProvidersRouter from "./container-providers.route";
 import settingsRouter from "./settings.route";
@@ -19,15 +20,27 @@ const rootRouter = Router();
 // Combine all routers
 rootRouter.use("/client", clientRouter);
 rootRouter.use("/auth", authRouter);
-rootRouter.use("/appointments", requireAuth, appointmentRouter);
-rootRouter.use("/yards", requireAuth, yardRouter);
-rootRouter.use("/companies", requireAuth, companyRouter);
-rootRouter.use("/gates", requireAuth, gateRouter);
-rootRouter.use("/drivers", requireAuth, driversRouter);
-rootRouter.use("/container-providers", requireAuth, containerProvidersRouter);
-rootRouter.use("/containers", requireAuth, containersRoutes);
-rootRouter.use("/trucks", requireAuth, trucksRoutes);
+
+// Khu vực admin: requireAuth (xác thực) -> attachPermissions (nạp quyền).
+// Việc siết quyền theo resource + action (view/create/update/delete/export)
+// được đặt trong từng router con để phân tách CRUD rõ ràng.
+rootRouter.use("/appointments", requireAuth, attachPermissions, appointmentRouter);
+rootRouter.use("/yards", requireAuth, attachPermissions, yardRouter);
+rootRouter.use("/companies", requireAuth, attachPermissions, companyRouter);
+rootRouter.use("/gates", requireAuth, attachPermissions, gateRouter);
+rootRouter.use("/drivers", requireAuth, attachPermissions, driversRouter);
+rootRouter.use(
+  "/container-providers",
+  requireAuth,
+  attachPermissions,
+  containerProvidersRouter,
+);
+rootRouter.use("/containers", requireAuth, attachPermissions, containersRoutes);
+// trucks: chưa có resource riêng trong catalog -> chỉ nạp quyền, không cổng.
+rootRouter.use("/trucks", requireAuth, attachPermissions, trucksRoutes);
 rootRouter.use("/scan", scanRouter);
-rootRouter.use("/settings", requireAuth, settingsRouter);
+
+// settings: cổng truy cập & CRUD được siết chi tiết bên trong settings.route.ts
+rootRouter.use("/settings", requireAuth, attachPermissions, settingsRouter);
 
 export default rootRouter;

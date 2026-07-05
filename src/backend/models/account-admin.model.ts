@@ -12,10 +12,11 @@ const accountAdminSchema = new Schema(
       required: true,
       unique: true,
     },
+    // Tham chiếu tới AdminRole (RBAC). Trước đây là string tự do "operator".
     role: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "AdminRole",
       required: true,
-      default: "operator",
     },
     password: {
       type: String,
