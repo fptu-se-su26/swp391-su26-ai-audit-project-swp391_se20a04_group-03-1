@@ -46,10 +46,10 @@ Tài liệu tổng hợp các báo cáo lỗi phát hiện trong tuần 7 (bao g
 * **Summary:** Endpoint tạo lịch hẹn (`POST /api/appointments/create`) lưu trực tiếp `driverId` mà không xác thực sự tồn tại của tài xế trong cơ sở dữ liệu.
 * **Steps:**
   1. Gửi request `POST` tới `/api/appointments/create`.
-  2. Truyền payload đăng ký lịch hẹn đầy đủ, ngoại trừ trường `driverId` sử dụng một chuỗi ID ngẫu nhiên không tồn tại (ví dụ: `60c72b2f9b1d8e1f5c8f8b89`).
+  2. Truyền payload đăng ký lịch hẹn đầy đủ, ngoại trừ trường `driverId` sử dụng một chuỗi ID ngẫu nhiên không tồn tại.
   3. Kiểm tra phản hồi của API và kiểm tra database.
 * **Expected:** API phải chặn tạo lịch hẹn và trả về mã trạng thái **HTTP 400 Bad Request** kèm thông điệp lỗi: *"Tài xế không tồn tại trong hệ thống."*
-* **Actual:** API trả về mã trạng thái **HTTP 201 Created**, ghi nhận lịch hẹn thành công với tài xế không tồn tại (lỗi dữ liệu mồ côi).
+* **Actual:** API trả về mã trạng thái **HTTP 201 Created**, ghi nhận lịch hẹn thành công với tài xế không tồn tại.
 * **Severity:** Major
 * **Trạng thái:** Chưa sửa (Open - Lỗi nghiệp vụ backend)
 
@@ -59,17 +59,16 @@ Tài liệu tổng hợp các báo cáo lỗi phát hiện trong tuần 7 (bao g
 * **Summary:** API lấy chi tiết bãi đỗ (`GET /api/yards/:id`) vẫn trả về dữ liệu của bãi đỗ đã bị xóa mềm (`isDeleted = true`).
 * **Steps:**
   1. Thực hiện xóa mềm một bãi đỗ bằng cách gửi request `DELETE` tới `/api/yards/:yardId`.
-  2. Gửi request `GET` tới `/api/yards/:yardId` để lấy thông tin chi tiết của bãi đỗ vừa xóa đó.
-  3. Xem phản hồi trả về từ hệ thống.
-* **Expected:** API phải chặn truy cập và trả về mã trạng thái **HTTP 400 Bad Request** hoặc **HTTP 404 Not Found** kèm thông điệp: *"Không tìm thấy bãi đỗ"*.
-* **Actual:** API trả về mã trạng thái **HTTP 200 OK** kèm theo đầy đủ chi tiết thông tin của bãi đỗ đã xóa mềm.
+  2. Gửi request `GET` tới `/api/yards/:yardId`.
+* **Expected:** API phải chặn truy cập và trả về mã trạng thái **HTTP 404 Not Found**.
+* **Actual:** API trả về mã trạng thái **HTTP 200 OK** kèm theo đầy đủ chi tiết.
 * **Severity:** Medium
 * **Trạng thái:** Chưa sửa (Open - Lỗi nghiệp vụ backend)
 
 ---
 
 ### ID: BUG-006
-* **Summary:** API cập nhật cấu hình bãi đỗ (`PATCH /api/yards/:id/slots`) cho phép sửa đổi cấu hình slots của bãi đỗ đã bị xóa mềm (`isDeleted = true`).
+* **Summary:** API cập nhật cấu hình bãi đỗ (`PATCH /api/yards/:id/slots`) cho phép sửa đổi cấu hình slots của bãi đỗ đã bị xóa mềm.
 * **Steps:**
   1. Lấy ID của một bãi đỗ đã bị xóa mềm (`isDeleted: true`).
   2. Gửi request `PATCH` tới `/api/yards/:yardId/slots` kèm theo cấu hình slots mới trong body.
@@ -78,3 +77,56 @@ Tài liệu tổng hợp các báo cáo lỗi phát hiện trong tuần 7 (bao g
 * **Actual:** API phản hồi mã trạng thái **HTTP 200 OK** thông báo *"Cập nhật cấu hình bãi đỗ thành công"* và thay đổi cấu hình slots của bãi đỗ đã bị xóa bình thường.
 * **Severity:** Medium
 * **Trạng thái:** Chưa sửa (Open - Lỗi nghiệp vụ backend)
+
+---
+
+### ID: BUG-007
+* **Summary:** API xóa vĩnh viễn tài xế (`DELETE /api/drivers/:id/hard-delete`) không kiểm tra xem tài xế có đang nằm trong thùng rác (`isDeleted = true`) hay không, cho phép xóa vĩnh viễn tài xế đang hoạt động.
+* **Steps:**
+  1. Tìm một tài xế đang hoạt động bình thường (`isDeleted: false`) và lấy `_id` của tài xế đó.
+  2. Gửi request `DELETE` trực tiếp tới `/api/drivers/:id/hard-delete` với ID tài xế vừa lấy (tài xế chưa qua bước soft-delete).
+  3. Kiểm tra phản hồi của API và kiểm tra bản ghi trong database.
+* **Expected:** API phải trả về **HTTP 400 Bad Request** kèm thông điệp: *"Chỉ có thể xóa vĩnh viễn tài xế đang trong thùng rác."* và từ chối xóa tài xế vẫn đang hoạt động.
+* **Actual:** API trả về mã trạng thái **HTTP 200 OK** thông báo *"Xóa vĩnh viễn tài xế thành công"* và xóa hoàn toàn bản ghi tài xế đang hoạt động khỏi database, gây mất dữ liệu nghiệp vụ vĩnh viễn.
+* **Severity:** Critical
+* **Trạng thái:** Chưa sửa (Open - Lỗi nghiệp vụ backend)
+
+---
+
+### ID: BUG-008
+* **Summary:** API cập nhật tài xế (`PATCH /api/drivers/:id`) cho phép cập nhật thông tin của tài xế đã bị xóa mềm (`isDeleted = true`) mà không có cảnh báo hoặc ngăn chặn.
+* **Steps:**
+  1. Tìm một tài xế đã bị soft-delete (`isDeleted: true`) và lấy `_id` của tài xế đó.
+  2. Gửi request `PATCH` tới `/api/drivers/:id` với payload cập nhật thông tin (tên, số điện thoại,...).
+  3. Kiểm tra phản hồi của API và kiểm tra bản ghi trong database.
+* **Expected:** API phải từ chối cập nhật và trả về **HTTP 400 Bad Request** kèm thông báo: *"Không thể cập nhật tài xế đã bị xóa. Vui lòng khôi phục trước."*
+* **Actual:** Hàm `findByIdAndUpdate` trong `drivers.controller.ts` không kiểm tra `isDeleted`, API trả về **HTTP 200 OK** và cập nhật thành công thông tin của tài xế đang nằm trong thùng rác, gây mâu thuẫn dữ liệu.
+* **Severity:** Medium
+* **Trạng thái:** Chưa sửa (Open - Lỗi nghiệp vụ backend)
+
+---
+
+### ID: BUG-009
+* **Summary:** Endpoint chỉnh sửa lịch hẹn (`PATCH /api/appointments/edit`) không kiểm tra ngày hẹn trong quá khứ, cho phép cập nhật lịch hẹn thành một ngày đã qua.
+* **Steps:**
+  1. Tìm một lịch hẹn đang ở trạng thái `Pending` và lấy `id` của lịch hẹn đó.
+  2. Gửi request `PATCH` tới `/api/appointments/edit` với payload trong đó `scheduledDate` là một ngày trong quá khứ (ví dụ: `"2020-01-01"`).
+  3. Kiểm tra phản hồi của API.
+* **Expected:** API phải trả về **HTTP 400 Bad Request** kèm thông báo: *"Ngày hẹn không được trong quá khứ."*, tương tự như validation đã có trong endpoint tạo mới (`POST /api/appointments/create`).
+* **Actual:** API trả về **HTTP 200 OK** và cập nhật `scheduledDate` thành ngày quá khứ thành công, vi phạm tính nhất quán giữa endpoint tạo mới và chỉnh sửa lịch hẹn.
+* **Severity:** Major
+* **Trạng thái:** Chưa sửa (Open - Lỗi nghiệp vụ backend)
+
+---
+
+### ID: BUG-010
+* **Summary:** API đặt lại mật khẩu (`POST /api/auth/reset-password`) không kiểm tra độ mạnh của mật khẩu mới, cho phép đặt mật khẩu quá ngắn hoặc dạng đơn giản như `"1"`.
+* **Steps:**
+  1. Thực hiện luồng quên mật khẩu để lấy OTP hợp lệ: gọi `POST /api/auth/forgot-password` với email tồn tại trong hệ thống.
+  2. Lấy mã OTP từ hộp thư email.
+  3. Gọi `POST /api/auth/reset-password` với payload `{ "email": "...", "otp": "...", "password": "1" }` (mật khẩu chỉ 1 ký tự).
+  4. Kiểm tra phản hồi API.
+* **Expected:** API phải trả về **HTTP 400 Bad Request** kèm thông báo lỗi: *"Mật khẩu phải có ít nhất 8 ký tự."* để đảm bảo chính sách bảo mật mật khẩu được áp dụng nhất quán.
+* **Actual:** API chấp nhận mật khẩu `"1"` và trả về **HTTP 200 OK** thông báo *"Đặt lại mật khẩu thành công"*, cho phép người dùng đặt mật khẩu cực kỳ yếu, gây rủi ro bảo mật nghiêm trọng.
+* **Severity:** Major
+* **Trạng thái:** Chưa sửa (Open - Lỗi bảo mật backend)
