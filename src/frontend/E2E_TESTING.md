@@ -99,6 +99,20 @@ Khi 1 test fail, Playwright tạo thư mục trong `test-results/<tên-test>/` c
 > ⚠️ Các thư mục `playwright-report/`, `test-results/`, `playwright/.cache/` đã nằm
 > trong `.gitignore` — **KHÔNG commit** chúng lên repo.
 
+### File demo báo cáo lỗi
+
+Repo cố tình giữ 1 test **luôn fail**: `tests/demo-failure.spec.ts`. Đây là **bằng
+chứng** cho tính năng screenshot/trace khi lỗi — chạy `npm run test:e2e` rồi
+`npm run test:e2e:report` sẽ thấy 1 test đỏ kèm ảnh chụp màn hình.
+
+- Vì file này luôn fail nên `npm run test:e2e` sẽ báo **"1 failed"** — đúng như
+  thiết kế, không phải lỗi môi trường.
+- Chạy **chỉ các test thật** (bỏ qua demo):
+  ```bash
+  npx playwright test --grep-invert "DEMO fail"
+  ```
+- Khi không cần demo nữa, chỉ việc xoá `tests/demo-failure.spec.ts`.
+
 ---
 
 ## 5. Cấu trúc & cấu hình
@@ -107,7 +121,8 @@ Khi 1 test fail, Playwright tạo thư mục trong `test-results/<tên-test>/` c
 src/frontend/
 ├── playwright.config.ts     # Cấu hình: baseURL, webServer, browser, reporter...
 ├── tests/                   # Nơi chứa toàn bộ file test (*.spec.ts)
-│   └── smoke.spec.ts        # Smoke test kiểm tra môi trường
+│   ├── smoke.spec.ts        # Smoke test kiểm tra môi trường (PASS)
+│   └── demo-failure.spec.ts # Test FAIL cố ý — demo báo cáo Screenshot/Trace khi lỗi
 └── E2E_TESTING.md           # Tài liệu này
 ```
 
