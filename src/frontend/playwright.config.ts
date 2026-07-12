@@ -21,15 +21,19 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters
+     HTML report được sinh ra trong thư mục playwright-report/. */
+  reporter: [['html', { outputFolder: 'playwright-report' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Chụp màn hình TỰ ĐỘNG khi test fail (đính kèm vào HTML report). */
+    screenshot: 'only-on-failure',
+
+    /* Lưu trace log chi tiết khi test fail để mở lại từng bước trong Trace Viewer. */
+    trace: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */

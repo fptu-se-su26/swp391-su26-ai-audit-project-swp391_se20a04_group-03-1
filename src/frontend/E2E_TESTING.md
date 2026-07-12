@@ -63,20 +63,41 @@ npx playwright codegen http://localhost:3000
 
 ---
 
-## 4. Xem kết quả
+## 4. Xem kết quả & Báo cáo lỗi (Screenshot + Trace)
 
-- Sau khi chạy, báo cáo HTML nằm ở `playwright-report/`. Mở bằng:
-  ```bash
-  npm run test:e2e:report
-  ```
-- Khi test **fail**, báo cáo có kèm ảnh chụp, video (nếu bật) và **trace** để xem
-  lại từng bước. Mở trace từ trong báo cáo HTML, hoặc:
-  ```bash
-  npx playwright show-trace
-  ```
+Dự án đã bật sẵn **tự động chụp màn hình và ghi trace khi test fail** — không cần
+viết listener thủ công. Cấu hình trong `playwright.config.ts`:
 
-> Các thư mục kết quả (`playwright-report/`, `test-results/`, `playwright/.cache/`)
-> đã được thêm vào `.gitignore` — **không commit** chúng.
+| Cấu hình | Giá trị | Ý nghĩa |
+| --- | --- | --- |
+| `use.screenshot` | `'only-on-failure'` | Chỉ chụp màn hình tại bước test **fail**, đính kèm thẳng vào HTML report. |
+| `use.trace` | `'retain-on-failure'` | Lưu file `trace.zip` (log chi tiết từng bước, DOM, network) khi test **fail**. |
+| `reporter` | `[['html', { outputFolder: 'playwright-report' }]]` | Sinh báo cáo HTML vào thư mục `playwright-report/`. |
+
+### Mở báo cáo HTML
+
+```bash
+npm run test:e2e:report      # mở lại report của lần chạy gần nhất
+```
+
+Trong report, click vào test bị fail → bạn sẽ thấy:
+- 📸 **Ảnh chụp màn hình** ngay tại thời điểm lỗi (mục *Screenshots* / attachment
+  `test-failed-1.png`).
+- 🧵 **Trace** — click để mở **Trace Viewer**: tua lại từng action, xem DOM
+  snapshot, console, network của từng bước.
+
+### Vị trí file khi fail
+
+Khi 1 test fail, Playwright tạo thư mục trong `test-results/<tên-test>/` chứa:
+- `test-failed-1.png` — ảnh chụp màn hình.
+- `trace.zip` — mở trực tiếp bằng:
+  ```bash
+  npx playwright show-trace test-results/<tên-test>/trace.zip
+  ```
+- `error-context.md` — tóm tắt ngữ cảnh lỗi.
+
+> ⚠️ Các thư mục `playwright-report/`, `test-results/`, `playwright/.cache/` đã nằm
+> trong `.gitignore` — **KHÔNG commit** chúng lên repo.
 
 ---
 
@@ -95,6 +116,9 @@ Các điểm cấu hình chính trong `playwright.config.ts`:
 - `testDir: './tests'` — thư mục chứa test.
 - `use.baseURL: 'http://localhost:3000'` — URL gốc, cho phép dùng đường dẫn tương
   đối như `page.goto('/')`.
+- `use.screenshot: 'only-on-failure'` — tự chụp màn hình khi fail.
+- `use.trace: 'retain-on-failure'` — lưu trace log khi fail.
+- `reporter: [['html', { outputFolder: 'playwright-report' }]]` — báo cáo HTML.
 - `webServer` — tự chạy `npm run dev` trước khi test.
 - `projects` — hiện chỉ có `chromium`.
 
