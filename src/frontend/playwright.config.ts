@@ -1,12 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * Nạp biến môi trường test từ .env.test (nếu có).
+ * Copy .env.test.example -> .env.test để tùy chỉnh (ví dụ E2E_BASE_URL).
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '.env.test') });
+
+// URL gốc: ưu tiên biến môi trường, mặc định localhost:3000.
+const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -26,8 +29,8 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'playwright-report' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    /* Base URL to use in actions like `await page.goto('/')`. Đọc từ .env.test (E2E_BASE_URL). */
+    baseURL: BASE_URL,
 
     /* Chụp màn hình TỰ ĐỘNG khi test fail (đính kèm vào HTML report). */
     screenshot: 'only-on-failure',

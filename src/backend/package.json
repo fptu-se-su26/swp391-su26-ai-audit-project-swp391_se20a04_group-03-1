@@ -12,6 +12,8 @@
     "check:dup-emails": "ts-node scripts/check-duplicate-emails.ts",
     "seed:mobile": "ts-node scripts/seed-mobile.ts",
     "test:coverage": "jest --coverage",
+    "test:sample": "jest --config jest.sample.config.js",
+    "test:auth": "jest --config jest.auth.config.js",
     "build": "tsc",
     "test": "jest --runInBand",
     "test:cov": "jest --coverage --runInBand",
