@@ -109,4 +109,64 @@ test.describe('Admin Login Flow - Toàn bộ Test Cases', () => {
     await expect(loginCard).toBeVisible();
   });
 
+  test('Hiển thị lỗi validate khi nhập mật khẩu quá ngắn', async () => {
+    // Nhập email đúng, mật khẩu < 6 ký tự
+    await loginPage.login('admin@port.com', '12345');
+    
+    const lengthError = await loginPage.getPasswordLengthValidationError();
+    await expect(lengthError).toBeVisible();
+  });
+
+  test('Ẩn/Hiện mật khẩu khi bấm vào biểu tượng con mắt', async ({ page }) => {
+    await loginPage.passwordInput.fill('secret_password');
+    
+    // Mặc định type là password
+    await expect(loginPage.passwordInput).toHaveAttribute('type', 'password');
+    
+    // Click nút con mắt
+    await loginPage.eyeIconBtn.click();
+    // Chuyển type thành text
+    await expect(loginPage.passwordInput).toHaveAttribute('type', 'text');
+    
+    // Click lần nữa
+    await loginPage.eyeIconBtn.click();
+    // Chuyển lại type thành password
+    await expect(loginPage.passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  test('Chuyển hướng thành công sang trang Quên mật khẩu', async ({ page }) => {
+    await loginPage.forgotPasswordLink.click();
+    
+    // Đảm bảo URL chuyển đúng (có thể timeout nhanh do page này có sẵn)
+    await expect(page).toHaveURL(/\/admin\/forgot-password/);
+  });
+
+  test('Cho phép gửi form đăng nhập bằng cách nhấn nút Enter', async ({ page }) => {
+    // Mock the response for a successful login
+    await page.route('**/auth/login', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          code: 'success',
+          message: 'Login successful',
+          data: { token: 'mock-token' }
+        })
+      });
+    });
+
+    await page.route('**/admin/dashboard', async (route) => {
+      await route.fulfill({ status: 200, body: '<html><body>Dashboard Mock</body></html>' });
+    });
+
+    // Fill form without clicking submit
+    await loginPage.emailInput.fill('admin@port.com');
+    await loginPage.passwordInput.fill('password123');
+    
+    // Press Enter on password input
+    await loginPage.passwordInput.press('Enter');
+    
+    // Toast success should be visible
+    await expect(loginPage.toastSuccessMessage).toBeVisible({ timeout: 5000 });
+  });
 });
