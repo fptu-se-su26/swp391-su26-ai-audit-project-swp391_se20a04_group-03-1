@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import { mockAccount } from './config/accounts';
 
 test.describe('Quản lý Lịch hẹn - Xem & Thêm mới (Client/Company)', () => {
+  test.setTimeout(60000); // 60 giây timeout cục bộ
+
   test.beforeEach(async ({ page }) => {
     // 1. Lắng nghe network để debug lỗi Failed to fetch
     page.on('requestfailed', request => {

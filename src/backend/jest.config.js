@@ -11,7 +11,8 @@ module.exports = {
     'models/appointment.model.ts',
     'controllers/appointment.controller.ts',
     'repositories/appointment.repository.ts',
-    'repositories/gateTransaction.repository.ts'
+    'repositories/gateTransaction.repository.ts',
+    'controllers/yard.controller.ts'
   ],
   testPathIgnorePatterns: [
     "/node_modules/",
