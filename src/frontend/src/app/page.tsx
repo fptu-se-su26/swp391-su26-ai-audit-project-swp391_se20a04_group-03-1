@@ -148,18 +148,8 @@ export default function HomePage() {
             </button>
             <div className="hidden sm:flex gap-3">
               <Link href="/client">
-                <Button variant="ghost" className="rounded-[500px] font-bold uppercase tracking-[1.5px] px-6 text-[#121212] dark:text-[#ffffff]">
-                  Doanh nghiệp
-                </Button>
-              </Link>
-              <Link href="/admin/login">
-                <Button variant="ghost" className="rounded-[500px] font-bold uppercase tracking-[1.5px] px-6 text-[#121212] dark:text-[#ffffff]">
-                  Admin
-                </Button>
-              </Link>
-              <Link href="/admin/dashboard">
                 <Button className="bg-[#1ed760] hover:bg-[#1db954] text-[#000000] rounded-[500px] font-bold uppercase tracking-[1.5px] px-8 border-none">
-                  Vào Hệ Thống
+                  Cổng Doanh Nghiệp
                 </Button>
               </Link>
             </div>
@@ -181,9 +171,9 @@ export default function HomePage() {
             ))}
           </nav>
           <div className="h-[1px] bg-[#eeeeee] dark:bg-[#272727]" />
-          <Link href="/admin/dashboard" onClick={() => setMobileMenuOpen(false)}>
+          <Link href="/client" onClick={() => setMobileMenuOpen(false)}>
             <Button className="w-full bg-[#1ed760] hover:bg-[#1db954] text-[#000000] rounded-[500px] font-bold uppercase tracking-[1.5px] py-6 border-none">
-              Vào Hệ Thống
+              Cổng Doanh Nghiệp
             </Button>
           </Link>
         </div>
@@ -205,9 +195,9 @@ export default function HomePage() {
             giảm thiểu ùn tắc và nâng cao hiệu suất bãi cảng 24/7.
           </p>
           <div className="flex flex-wrap gap-4 pt-4">
-            <Link href="/admin/dashboard">
+            <Link href="/client">
               <Button className="bg-[#1ed760] hover:bg-[#1db954] text-[#000000] rounded-[500px] font-bold uppercase tracking-[1.5px] px-10 py-6 text-[14px] border-none shadow-[0_8px_8px_rgba(30,215,96,0.3)]">
-                Khám Phá Dashboard <ArrowUpRight className="ml-2 h-5 w-5" />
+                Cổng Doanh Nghiệp <ArrowUpRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <a href="#trải-nghiệm-ai">

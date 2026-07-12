@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     height: 260,
     borderRadius: radii.lg,
     borderWidth: 2,
-    borderColor: 'rgba(246, 177, 28, 0.5)',
+    borderColor: 'rgba(30, 215, 96, 0.5)',
     position: 'relative',
   },
   corner: {

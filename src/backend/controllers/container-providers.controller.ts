@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ContainerProvider } from "../models/container-provider.model";
 import bcrypt from "bcryptjs";
-import { sendMail } from "../helpers/mail.helper";
+import { sendMail, buildAccountProvisionEmail } from "../helpers/mail.helper";
 
 export const providersGet = async (req: Request, res: Response) => {
   try {
@@ -100,9 +100,33 @@ export const createProviderPost = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    const providerData = { ...req.body, password: hashedPassword };
+    // Admin tạo = đã cấp & duyệt -> mặc định ACTIVE (đăng nhập được ngay),
+    // đồng bộ với luồng tạo company. Vẫn tôn trọng status nếu client gửi rõ.
+    const providerData = {
+      ...req.body,
+      password: hashedPassword,
+      status: req.body.status || "ACTIVE",
+    };
     const newProvider = new ContainerProvider(providerData);
     await newProvider.save();
+
+    // Email cấp tài khoản: KHÔNG gửi mật khẩu trong email (bảo mật).
+    if (newProvider.contact_email) {
+      const loginUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/client/provider/login`;
+      const isActive = newProvider.status === "ACTIVE";
+      sendMail(
+        newProvider.contact_email,
+        "Tài khoản nhà cung cấp LogiPort đã được khởi tạo",
+        buildAccountProvisionEmail({
+          name: newProvider.name,
+          codeLabel: "Mã nhà cung cấp",
+          code: newProvider.code,
+          email: newProvider.contact_email,
+          isActive,
+          loginUrl,
+        }),
+      );
+    }
 
     res.status(200).json({
       code: "success",

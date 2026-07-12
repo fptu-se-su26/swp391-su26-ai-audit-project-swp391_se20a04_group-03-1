@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { AccountAdmin } from "../models/account-admin.model";
+import { AdminRole } from "../models/adminRole.model";
 
 export const adminsGet = async (req: Request, res: Response) => {
   try {
@@ -26,6 +27,7 @@ export const adminsGet = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalItems / limitNum);
 
     const adminList = await AccountAdmin.find(query)
+      .populate("role", "roleCode roleName")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum);
@@ -58,6 +60,19 @@ export const adminCreatePost = async (req: Request, res: Response) => {
       return res.status(400).json({
         code: "error",
         message: "Email đã được sử dụng.",
+      });
+    }
+
+    // Vai trò phải là một AdminRole hợp lệ, đang hoạt động.
+    const roleDoc = await AdminRole.findOne({
+      _id: role,
+      isDeleted: false,
+      status: "Active",
+    });
+    if (!roleDoc) {
+      return res.status(400).json({
+        code: "error",
+        message: "Vai trò không hợp lệ hoặc đã bị vô hiệu hóa.",
       });
     }
 
@@ -110,6 +125,18 @@ export const adminEditPatch = async (req: Request, res: Response) => {
       return res.status(400).json({
         code: "error",
         message: "Không tìm thấy tài khoản admin.",
+      });
+    }
+
+    const roleDoc = await AdminRole.findOne({
+      _id: role,
+      isDeleted: false,
+      status: "Active",
+    });
+    if (!roleDoc) {
+      return res.status(400).json({
+        code: "error",
+        message: "Vai trò không hợp lệ hoặc đã bị vô hiệu hóa.",
       });
     }
 
@@ -217,6 +244,7 @@ export const adminsTrashGet = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalItems / limitNum);
 
     const adminList = await AccountAdmin.find(query)
+      .populate("role", "roleCode roleName")
       .sort({ deletedAt: -1 })
       .skip(skip)
       .limit(limitNum);

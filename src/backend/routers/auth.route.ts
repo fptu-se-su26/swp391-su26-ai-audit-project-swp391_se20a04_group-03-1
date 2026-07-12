@@ -4,13 +4,7 @@ import * as authValidate from "../validators/auth.validator";
 
 const router = Router();
 
-// Route: POST /api/auth/register
-router.post(
-  "/register",
-  authValidate.registerPost,
-  authController.registerPost,
-);
-
+// Đăng ký công khai đã bị vô hiệu hóa: chỉ tài khoản được cấp & xét duyệt mới vào hệ thống.
 router.post("/login", authValidate.loginPost, authController.loginPost);
 
 router.get("/client-roles", authController.getClientRoles);

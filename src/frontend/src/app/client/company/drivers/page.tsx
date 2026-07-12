@@ -14,6 +14,7 @@ import { Plus, Trash2, Loader2, Pencil, Search, IdCard } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
+import { CustomSelect } from "@/components/CustomSelect";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +41,8 @@ interface Driver {
   driverId: string;
   driverName: string;
   driverPhone: string;
+  email?: string;
+  status?: "Active" | "Inactive";
   companyId: {
     _id: string;
     companyCode: string;
@@ -57,6 +60,7 @@ export default function DriversPage() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [driverStatus, setDriverStatus] = useState("Active");
   const ITEMS_PER_PAGE = 10;
 
   
@@ -130,16 +134,35 @@ export default function DriversPage() {
       .addField("#driverName", [
         { rule: "required", errorMessage: "Bắt buộc." },
       ])
-      
+      .addField("#driverEmail", [
+        {
+          validator: (value: string) =>
+            !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+          errorMessage: "Email không hợp lệ.",
+        },
+      ])
+      .addField("#driverPassword", [
+        {
+          validator: (value: string) => !value || value.length >= 6,
+          errorMessage: "Mật khẩu phải từ 6 ký tự.",
+        },
+      ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
-        const payload = {
-          driverId: formData.get("driverId")?.toString().trim(),
-          driverName: formData.get("driverName")?.toString().trim(),
-          driverPhone: formData.get("driverPhone")?.toString().trim(),
-          
+        const email = formData.get("email")?.toString().trim() || "";
+        const password = formData.get("password")?.toString() || "";
+        const payload: Record<string, string> = {
+          driverId: formData.get("driverId")?.toString().trim() || "",
+          driverName: formData.get("driverName")?.toString().trim() || "",
+          driverPhone: formData.get("driverPhone")?.toString().trim() || "",
         };
+        // Chỉ gửi thông tin tài khoản khi company thực sự nhập.
+        if (email) payload.email = email;
+        if (password) payload.password = password;
+        if (email && password) {
+          payload.status = formData.get("status")?.toString() || "Active";
+        }
 
         const loadingToast = toast.loading("Đang lưu tài xế...");
         try {
@@ -291,6 +314,70 @@ export default function DriversPage() {
                   />
                 </div>
               </div>
+
+              {/* Tài khoản đăng nhập app (tùy chọn) */}
+              <div className="pt-2">
+                <p className="text-[12px] font-black uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff] mb-1">
+                  Tài khoản đăng nhập app (tùy chọn)
+                </p>
+                <p className="text-[13px] font-bold text-[#666666] dark:text-[#b3b3b3] mb-5">
+                  Nhập email + mật khẩu để cấp tài khoản cho tài xế đăng nhập ứng
+                  dụng LogiPort trên điện thoại. Bỏ trống nếu chưa cấp.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="driverEmail"
+                      className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                    >
+                      Email đăng nhập
+                    </Label>
+                    <Input
+                      id="driverEmail"
+                      name="email"
+                      type="email"
+                      autoComplete="off"
+                      placeholder="VD: taixe@congty.vn"
+                      className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="driverPassword"
+                      className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                    >
+                      Mật khẩu
+                    </Label>
+                    <Input
+                      id="driverPassword"
+                      name="password"
+                      type="password"
+                      autoComplete="new-password"
+                      placeholder="Tối thiểu 6 ký tự"
+                      className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="driverStatus"
+                      className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                    >
+                      Trạng thái
+                    </Label>
+                    <CustomSelect
+                      id="driverStatus"
+                      name="status"
+                      value={driverStatus}
+                      onChange={setDriverStatus}
+                      options={[
+                        { value: "Active", label: "Kích hoạt (đăng nhập được)" },
+                        { value: "Inactive", label: "Chưa kích hoạt" },
+                      ]}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="flex gap-4 justify-end pt-8">
                 <Button
                   type="button"
@@ -371,7 +458,7 @@ export default function DriversPage() {
                     <th className="px-6 py-4 font-black">Mã CC/GPLX</th>
                     <th className="px-6 py-4 font-black">Họ Tên</th>
                     <th className="px-6 py-4 font-black">Điện Thoại</th>
-                    
+                    <th className="px-6 py-4 font-black">Tài khoản app</th>
                     <th className="px-6 py-4 font-black text-right">
                       Hành động
                     </th>
@@ -392,7 +479,21 @@ export default function DriversPage() {
                       <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
                         {driver.driverPhone || "-"}
                       </td>
-                      
+                      <td className="px-6 py-4">
+                        {!driver.email ? (
+                          <span className="inline-flex items-center rounded-[500px] bg-[#eeeeee] dark:bg-[#272727] px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#666666] dark:text-[#b3b3b3]">
+                            Chưa cấp
+                          </span>
+                        ) : driver.status === "Active" ? (
+                          <span className="inline-flex items-center rounded-[500px] bg-[#1ed760]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#1db954]">
+                            Đã kích hoạt
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-[500px] bg-[#f0a500]/15 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#b8860b]">
+                            Chờ kích hoạt
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link href={`/client/company/drivers/edit/${driver._id}`}>

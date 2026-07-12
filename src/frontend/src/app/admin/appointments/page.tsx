@@ -49,6 +49,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
+import { Can } from "@/lib/permissions";
 
 const TIME_SLOTS = [
   "05:00-06:00",
@@ -356,13 +357,15 @@ export default function AppointmentsPage() {
               Thùng rác
             </Button>
           </Link>
-          <Button
-            onClick={() => setShowForm(!showForm)}
-            className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
-          >
-            <Plus className="h-5 w-5" />
-            Đăng ký
-          </Button>
+          <Can resource="appointments" action="create">
+            <Button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
+            >
+              <Plus className="h-5 w-5" />
+              Đăng ký
+            </Button>
+          </Can>
         </div>
       </div>
 
@@ -696,6 +699,7 @@ export default function AppointmentsPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Can resource="appointments" action="update">
                           {apt.status === "Pending" && (
                             <Button
                               onClick={() =>
@@ -723,7 +727,9 @@ export default function AppointmentsPage() {
                               <Pencil className="h-3 w-3" />
                             </Button>
                           </Link>
+                          </Can>
 
+                          <Can resource="appointments" action="delete">
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f3727f] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors">
@@ -759,6 +765,7 @@ export default function AppointmentsPage() {
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
+                          </Can>
                         </div>
                       </td>
                     </tr>

@@ -52,6 +52,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
+import { Can } from "@/lib/permissions";
 
 interface Gate {
   _id: string;
@@ -385,21 +386,25 @@ export default function GatePage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Button
-            onClick={() => setShowCheckIn(!showCheckIn)}
-            variant="outline"
-            className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#1ed760] dark:hover:border-[#1ed760] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
-          >
-            <Activity className="h-4 w-4" />
-            Check-in thủ công
-          </Button>
-          <Button
-            onClick={() => setShowCreateGate(!showCreateGate)}
-            className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
-          >
-            <Camera className="h-5 w-5" />
-            Thêm Camera
-          </Button>
+          <Can resource="gates" action="update">
+            <Button
+              onClick={() => setShowCheckIn(!showCheckIn)}
+              variant="outline"
+              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#1ed760] dark:hover:border-[#1ed760] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
+            >
+              <Activity className="h-4 w-4" />
+              Check-in thủ công
+            </Button>
+          </Can>
+          <Can resource="gates" action="create">
+            <Button
+              onClick={() => setShowCreateGate(!showCreateGate)}
+              className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
+            >
+              <Camera className="h-5 w-5" />
+              Thêm Camera
+            </Button>
+          </Can>
           <Link href="/admin/gate/trash">
             <Button
               variant="outline"
@@ -678,6 +683,7 @@ export default function GatePage() {
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Can resource="gates" action="update">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -686,6 +692,8 @@ export default function GatePage() {
                       >
                         <Edit2 className="h-3.5 w-3.5" />
                       </Button>
+                      </Can>
+                      <Can resource="gates" action="delete">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -722,6 +730,7 @@ export default function GatePage() {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
+                      </Can>
                     </div>
                   </CardHeader>
                 )}
@@ -921,14 +930,17 @@ export default function GatePage() {
                             </Button>
                           </Link>
                           {item.status === "in" && (
-                            <Button
-                              onClick={() => handleManualCheckout(item._id)}
-                              className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f59e0b] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
-                              title="Checkout"
-                            >
-                              <LogOut className="h-3.5 w-3.5" />
-                            </Button>
+                            <Can resource="gates" action="update">
+                              <Button
+                                onClick={() => handleManualCheckout(item._id)}
+                                className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#f59e0b] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                                title="Checkout"
+                              >
+                                <LogOut className="h-3.5 w-3.5" />
+                              </Button>
+                            </Can>
                           )}
+                          <Can resource="gates" action="delete">
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
@@ -964,6 +976,7 @@ export default function GatePage() {
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
+                          </Can>
                         </div>
                       </td>
                     </tr>

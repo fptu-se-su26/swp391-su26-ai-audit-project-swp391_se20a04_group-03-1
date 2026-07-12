@@ -492,6 +492,201 @@ class AIProcessor:
         current_time = time.time()
 
         if self.frame_count % 30 == 0:
+            ocr_results = GLOBAL_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
+
+        # Lọc kết quả đạt ngưỡng confidence
+        valid_parts = [(bbox, text) for (bbox, text, prob) in ocr_results if prob > CONTAINER_OCR_MIN_PROB]
+
+        # Kịch bản 1: Nối chữ theo thứ tự mặc định của EasyOCR (Top→Bottom, Left→Right)
+        raw_text_y = "".join([text for bbox, text in valid_parts])
+        res_y = clean_and_format_container(raw_text_y)
+
+        # Kịch bản 2: Ép sắp xếp từ trái qua phải (theo trục X)
+        # Giải quyết lỗi "đọc ngược" khi camera quay nghiêng
+        parts_sorted_x = sorted(valid_parts, key=lambda p: p[0][0][0])
+        raw_text_x = "".join([text for bbox, text in parts_sorted_x])
+        res_x = clean_and_format_container(raw_text_x)
+
+        # Ưu tiên kịch bản nào ra được mã chuẩn
+        validated_text = res_y if res_y else res_x
+
+        if validated_text and track_id in track_state_dict:
+            track_state_dict[track_id]["history"].append(validated_text)
+            counter = Counter(track_state_dict[track_id]["history"])
+            best_text, count = counter.most_common(1)[0]
+            track_state_dict[track_id]["plate_text"] = best_text
+
+            # Container (10 ký tự, không có checksum):
+            # Yêu cầu ≥6 lần giống hệt, hoặc ≥15 mẫu với ≥5 lần
+            is_stable = count >= 6 or (len(track_state_dict[track_id]["history"]) >= 15 and count >= 5)
+
+            if is_stable:
+                track_state_dict[track_id]["ocr_status"] = "done"
+                track_state_dict[track_id]["color"] = (0, 255, 0)  # Xanh lá → chốt
+                print(f"\n{'='*50}")
+                print(f"[OCR ỔN ĐỊNH] CONTAINER ID:{track_id} | KẾT QUẢ: {best_text} ({count}/{len(track_state_dict[track_id]['history'])})")
+                print(f"{'='*50}\n")
+                send_scan_event(best_text, "container", 1.0, gate_type, camera_ip)
+            else:
+                track_state_dict[track_id]["ocr_status"] = "pending"
+                track_state_dict[track_id]["color"] = (0, 255, 255)  # Vàng → đang lấy mẫu
+                print(f"[LẤY MẪU] CONTAINER ID:{track_id} → {validated_text} | Tạm: {best_text} ({count} lần)")
+        elif track_id in track_state_dict:
+            track_state_dict[track_id]["ocr_status"] = "pending"
+
+        GLOBAL_CONTAINER_OCR_QUEUE.task_done()
+
+
+# ---------------------------------------------------------------------------
+# Main AI Processor class
+# ---------------------------------------------------------------------------
+
+class AIProcessor:
+    """
+    Xử lý frame camera: chạy YOLO detection + ByteTrack tracking cho cả
+    biển số xe (plate) và mã container (container), sau đó gửi crop vào
+    hàng đợi OCR background để nhận diện văn bản.
+    """
+
+    def __init__(self, gate_type="in", camera_ip=None):
+        self.ocr_reader = get_ocr()
+        self.gate_type = gate_type
+        self.camera_ip = camera_ip
+
+        if HAILO_AVAILABLE:
+            from hailo_platform import VDevice
+            try:
+                self.vdevice = VDevice()
+            except Exception as e:
+                print(f"[AI] Cannot open VDevice: {e}")
+                self.vdevice = None
+            
+            hef_plate = YOLO_PLATE_MODEL_PATH.replace(".onnx", ".hef").replace(".pt", ".hef")
+            hef_container = YOLO_CONTAINER_MODEL_PATH.replace(".onnx", ".hef").replace(".pt", ".hef")
+            
+            self.plate_model = HailoYOLO(hef_plate, self.vdevice) if os.path.exists(hef_plate) and self.vdevice else None
+            self.container_model = HailoYOLO(hef_container, self.vdevice) if os.path.exists(hef_container) and self.vdevice else None
+        else:
+            self.vdevice = None
+            self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+            self.plate_model = YOLO(YOLO_PLATE_MODEL_PATH) if os.path.exists(YOLO_PLATE_MODEL_PATH) else None
+            self.container_model = YOLO(YOLO_CONTAINER_MODEL_PATH) if os.path.exists(YOLO_CONTAINER_MODEL_PATH) else None
+
+        # Tracking state riêng cho mỗi loại (plate / container)
+        self.plate_track_state = {}
+        self.container_track_state = {}
+        self.TRACK_TIMEOUT = 10.0
+        self.frame_count = 0
+
+    def _cleanup_stale_tracks(self):
+        """Dọn dẹp các track_id cũ không xuất hiện trên màn hình > TRACK_TIMEOUT giây."""
+        current_time = time.time()
+        for state_dict in (self.plate_track_state, self.container_track_state):
+            stale_ids = [tid for tid, data in state_dict.items()
+                         if current_time - data["last_seen"] > self.TRACK_TIMEOUT]
+            for tid in stale_ids:
+                del state_dict[tid]
+                print(f"[CLEANUP] Đã dọn dẹp bộ nhớ ID: {tid}")
+
+    def _process_tracking(self, frame, frame_resized, model, task_type, track_state_dict, h_orig, w_orig, current_time):
+        """
+        Hàm tổng quát xử lý tracking cho một model YOLO (plate hoặc container).
+        - Plate: detect trên ảnh gốc full-res + imgsz=1280 → nhìn xa hơn
+        - Container: detect trên ảnh 800x600 + imgsz=640 → tiết kiệm GPU
+        """
+        conf_threshold = 0.35 if task_type == "plate" else DETECTION_CONFIDENCE_THRESHOLD
+        default_color = (0, 0, 255) if task_type == "plate" else (255, 0, 0)
+        ocr_queue = GLOBAL_OCR_QUEUE if task_type == "plate" else GLOBAL_CONTAINER_OCR_QUEUE
+
+        # Plate: detect trên frame gốc (full-res)
+        # Container: detect trên frame_resized (800x600)
+        if task_type == "plate":
+            detect_frame = frame
+            scale_x = w_orig / 640.0
+            scale_y = h_orig / 640.0
+            scale_x_draw = 800 / w_orig
+            scale_y_draw = 600 / h_orig
+            scale_x_crop = 1.0
+            scale_y_crop = 1.0
+        else:
+            detect_frame = frame_resized
+            scale_x = 800 / 640.0
+            scale_y = 600 / 640.0
+            scale_x_draw = 1.0
+            scale_y_draw = 1.0
+            scale_x_crop = w_orig / 800.0
+            scale_y_crop = h_orig / 600.0
+
+        try:
+            # HailoYOLO.track() trả về dict: objectID -> (centroid, (x1, y1, x2, y2) ở hệ 640x640)
+            objects = model.track(detect_frame, conf_threshold=conf_threshold)
+
+            for objectID, (centroid, rect) in objects.items():
+                x1_det, y1_det, x2_det, y2_det = rect
+                
+                # Đưa về hệ tọa độ của detect_frame
+                x1_det, x2_det = x1_det * scale_x, x2_det * scale_x
+                y1_det, y2_det = y1_det * scale_y, y2_det * scale_y
+                
+                track_id = f"{task_type}_{objectID}"
+
+                if track_id not in track_state_dict:
+                    track_state_dict[track_id] = {
+                        "plate_text": None,
+                        "history": [],
+                        "ocr_status": "pending",
+                        "last_seen": current_time,
+                        "color": default_color
+                    }
+                else:
+                    track_state_dict[track_id]["last_seen"] = current_time
+
+                state = track_state_dict[track_id]
+
+                if state["ocr_status"] == "pending":
+                    padding = 15 if task_type == "container" else 5
+
+                    # Tọa độ để crop trên frame gốc
+                    x1_org = max(0, int(x1_det * scale_x_crop) - padding)
+                    y1_org = max(0, int(y1_det * scale_y_crop) - padding)
+                    x2_org = min(w_orig, int(x2_det * scale_x_crop) + padding)
+                    y2_org = min(h_orig, int(y2_det * scale_y_crop) + padding)
+
+                    cropped_img = frame[y1_org:y2_org, x1_org:x2_org]
+                    if cropped_img.size > 0 and not ocr_queue.full():
+                        state["ocr_status"] = "processing"
+                        ocr_queue.put((track_state_dict, track_id, cropped_img, self.gate_type, self.camera_ip))
+
+                # Tọa độ để vẽ lên frame_resized (800x600)
+                x1_draw = int(x1_det * scale_x_draw)
+                y1_draw = int(y1_det * scale_y_draw)
+                x2_draw = int(x2_det * scale_x_draw)
+                y2_draw = int(y2_det * scale_y_draw)
+
+                label = task_type.upper()
+                display_text = f"{label} {objectID}: {state['plate_text'] if state['plate_text'] else 'SCANNING'}"
+                cv2.rectangle(frame_resized, (x1_draw, y1_draw), (x2_draw, y2_draw), state["color"], 2)
+                cv2.putText(frame_resized, display_text, (x1_draw, y1_draw - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, state["color"], 2)
+
+        except Exception as e:
+            print(f"[AI] Error during {task_type} tracking: {e}")
+
+    def process_frame(self, frame):
+        """
+        Pipeline xử lý chính cho mỗi frame:
+        1. Resize frame về 800x600 cho YOLO
+        2. Chạy tracking biển số (mỗi frame)
+        3. Chạy tracking container (mỗi frame)
+        4. Dọn dẹp track cũ mỗi 30 frame
+        """
+        if frame is None:
+            return None
+
+        self.frame_count += 1
+        current_time = time.time()
+
+        if self.frame_count % 30 == 0:
             self._cleanup_stale_tracks()
 
         h_orig, w_orig, _ = frame.shape

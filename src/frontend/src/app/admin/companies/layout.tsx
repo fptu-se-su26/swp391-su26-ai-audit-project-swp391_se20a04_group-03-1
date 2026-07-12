@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RequirePermission } from "@/lib/permissions";
 
 export const metadata: Metadata = {
   title: "Quản lý Công ty",
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <RequirePermission resource="companies" action="view">
+      {children}
+    </RequirePermission>
+  );
 }

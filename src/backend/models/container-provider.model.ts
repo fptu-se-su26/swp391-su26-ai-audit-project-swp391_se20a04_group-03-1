@@ -21,6 +21,7 @@ const containerProviderSchema = new Schema(
     contact_email: {
       type: String,
       required: true,
+      unique: true,
     },
 
     password: {

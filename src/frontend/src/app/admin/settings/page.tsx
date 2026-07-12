@@ -1,22 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { Users, ShieldCheck, Settings as SettingsIcon, Bell, Database, Building2 } from "lucide-react";
+import { Users, ShieldCheck, Settings as SettingsIcon, Bell, Database, Building2, KeyRound } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePermissions } from "@/lib/permissions";
 
 export default function SettingsPage() {
+  const { can } = usePermissions();
   const settingOptions = [
+    {
+      title: "Vai trò & Phân quyền",
+      description: "Tạo vai trò, gán quyền truy cập từng trang và thao tác CRUD cho quản trị viên.",
+      icon: <KeyRound className="h-6 w-6" />,
+      href: "/admin/settings/roles",
+      resource: "settings.roles",
+    },
     {
       title: "Loại hình Doanh nghiệp",
       description: "Cấu hình các vai trò (roles) để client lựa chọn phân loại khi đăng ký tài khoản.",
       icon: <Building2 className="h-6 w-6" />,
       href: "/admin/settings/client-roles",
+      resource: "settings.client-roles",
     },
     {
       title: "Quản lý Tài khoản",
       description: "Thêm mới, xét duyệt và phân quyền cho các tài khoản quản trị hệ thống.",
       icon: <Users className="h-6 w-6" />,
       href: "/admin/settings/admins",
+      resource: "settings.admins",
     },
     {
       title: "Cấu hình Bảo mật",
@@ -59,7 +70,9 @@ export default function SettingsPage() {
 
       {/* Menu Options Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
-        {settingOptions.map((option, idx) => (
+        {settingOptions
+          .filter((option) => !option.resource || can(option.resource, "view"))
+          .map((option, idx) => (
           <Link href={option.href} key={idx} className="group outline-none">
             <Card className="h-full bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] shadow-sm hover:border-[#1ed760] dark:hover:border-[#1ed760] transition-colors rounded-[16px] overflow-hidden cursor-pointer">
               <CardContent className="p-6 flex flex-col h-full">

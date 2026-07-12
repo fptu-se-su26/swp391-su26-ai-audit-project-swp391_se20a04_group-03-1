@@ -12,7 +12,11 @@ FLASK_PORT = int(os.getenv("FLASK_PORT", 5001))
 # Camera Configuration
 # Use integer (e.g. 0 or 1) for local webcam / Iriun Webcam
 # Or string path/URL for RTSP stream or test video file
-CAMERA_INDEX = int(os.getenv("CAMERA_INDEX", 0))
+camera_env = os.getenv("CAMERA_INDEX", "0")
+if camera_env.isdigit():
+    CAMERA_INDEX = int(camera_env)
+else:
+    CAMERA_INDEX = camera_env
 
 # Tự động dùng bản hef cho Raspberry Pi 5 NPU nếu có
 hef_plate_path = os.path.join(MODELS_DIR, "best.hef")

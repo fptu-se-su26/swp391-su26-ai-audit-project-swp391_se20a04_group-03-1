@@ -16,10 +16,8 @@ export const registerPost = (
       "string.empty": "Email không được để trống",
       "any.required": "Email là bắt buộc",
     }),
-    role: Joi.string().required().messages({
-      "string.empty": "Quyền hạn không được để trống",
-      "any.required": "Quyền hạn là bắt buộc",
-    }),
+    // role bị bỏ qua ở tầng đăng ký công khai — hệ thống tự gán OPERATOR.
+    role: Joi.string().optional(),
     password: Joi.string().min(6).required().messages({
       "string.min": "Mật khẩu phải chứa ít nhất 6 ký tự",
       "string.empty": "Mật khẩu không được để trống",
