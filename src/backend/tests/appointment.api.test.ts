@@ -141,7 +141,7 @@ describe('Appointment Integration Tests (Supertest)', () => {
         .post('/api/appointments/create')
         .send(payload);
 
-      expect(response.status).toBe(200); // Controller thực tế trả 200 kèm code error
+      expect(response.status).toBe(400); // Controller thực tế trả 400 kèm code error
       expect(response.body.code).toBe('error');
       expect(response.body.message).toContain('đã đầy');
     });
