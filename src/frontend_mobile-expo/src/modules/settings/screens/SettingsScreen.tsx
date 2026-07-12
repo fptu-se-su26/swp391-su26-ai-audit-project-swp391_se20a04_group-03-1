@@ -1,273 +1,191 @@
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  Switch,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenShell } from "@/shared/components/layout/ScreenShell";
-import { useProfile, setProfile, Profile } from "@/shared/state/profile";
-import { signOut } from "@/shared/state/auth";
-import { TextInput, Alert } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import styles from "../style/Settings.style";
+import { Button } from "@/shared/components/Button";
+import { QueryStateHandler } from "@/shared/components/query-state-handler";
+import { fetchMe } from "@/shared/api/mobile-api";
+import { useAuth, signOut } from "@/shared/state/auth";
+import { palette, radii, spacing } from "@/shared/theme";
+
+type DriverProfile = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  driverId?: string;
+  company?: { companyName?: string; companyCode?: string } | null;
+};
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const auth = useAuth();
+  const [loggingOut, setLoggingOut] = useState(false);
 
-  const profile = useProfile();
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<Profile>(profile);
+  // Hồ sơ lấy từ /api/mobile/auth/me; dùng auth.user (đã có sẵn từ đăng nhập)
+  // làm dữ liệu khởi tạo để hiển thị ngay, rồi làm mới nền.
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useQuery<DriverProfile>({
+    queryKey: ["me", "driver"],
+    queryFn: async () => (await fetchMe()) as DriverProfile,
+    initialData: (auth.user as DriverProfile) ?? undefined,
+  });
 
-  function startEdit() {
-    setDraft(profile);
-    setEditing(true);
-  }
-
-  function cancelEdit() {
-    setDraft(profile);
-    setEditing(false);
-  }
-
-  function saveEdit() {
-    // Basic validation
-    if (!draft.fullName || !draft.license) {
-      Alert.alert(
-        "Thiếu thông tin",
-        "Vui lòng nhập họ tên và giấy phép lái xe.",
-      );
-      return;
-    }
-    setProfile(draft);
-    setEditing(false);
-    Alert.alert(
-      "Lưu thành công",
-      "Thông tin tài xế đã được cập nhật (chưa đồng bộ server).",
-    );
-    // navigate back to Dashboard (tabs index) after save
-    try {
-      router.push("/(tabs)");
-    } catch (e) {
-      // ignore navigation errors
-    }
-  }
-
-  function handleLogout() {
-    signOut();
+  async function handleLogout() {
+    setLoggingOut(true);
+    await signOut();
     router.replace("/login");
   }
 
   return (
-    <ScreenShell title="Cài đặt" subtitle="Quản lý tài khoản và thiết bị">
-      <View style={styles.container}>
-        <View style={styles.identityCard}>
-          <Image
-            source={{ uri: editing ? draft.avatarUrl : profile.avatarUrl }}
-            style={styles.avatar}
+    <ScreenShell
+      title="TÀI KHOẢN TÀI XẾ"
+      subtitle="Thông tin do công ty vận tải cấp và quản lý."
+    >
+      <QueryStateHandler
+        isLoading={isLoading && !profile}
+        isError={isError && !profile}
+        errorMessage="Không tải được thông tin tài khoản."
+      >
+        <View style={styles.card}>
+          <View style={styles.avatar}>
+            <Ionicons name="person" size={34} color={palette.accent} />
+          </View>
+          <Text style={styles.name}>{profile?.fullName ?? "Tài xế"}</Text>
+          {profile?.email ? (
+            <Text style={styles.email}>{profile.email}</Text>
+          ) : null}
+
+          <View style={styles.infoBlock}>
+            <Row label="Mã tài xế" value={profile?.driverId ?? "-"} />
+            <Row label="Số điện thoại" value={profile?.phone ?? "-"} />
+            <Row
+              label="Công ty"
+              value={profile?.company?.companyName ?? "-"}
+            />
+            <Row
+              label="Mã công ty"
+              value={profile?.company?.companyCode ?? "-"}
+            />
+          </View>
+
+          <Pressable
+            style={styles.refreshRow}
+            onPress={() => refetch()}
+            disabled={isRefetching}
+          >
+            <Ionicons name="refresh" size={15} color={palette.accent} />
+            <Text style={styles.refreshText}>
+              {isRefetching ? "Đang làm mới…" : "Làm mới thông tin"}
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.noteCard}>
+          <Ionicons
+            name="information-circle-outline"
+            size={18}
+            color={palette.textSubtle}
           />
-          <View style={styles.identityText}>
-            {editing ? (
-              <TextInput
-                value={draft.fullName}
-                onChangeText={(t) => setDraft({ ...draft, fullName: t })}
-                style={styles.input}
-              />
-            ) : (
-              <Text style={styles.name}>{profile.fullName}</Text>
-            )}
-
-            {editing ? (
-              <TextInput
-                value={draft.license}
-                onChangeText={(t) => setDraft({ ...draft, license: t })}
-                style={styles.smallInput}
-              />
-            ) : (
-              <Text style={styles.license}>License: {profile.license}</Text>
-            )}
-
-            {editing ? (
-              <TextInput
-                value={draft.company}
-                onChangeText={(t) => setDraft({ ...draft, company: t })}
-                style={styles.smallInput}
-              />
-            ) : (
-              <Text style={styles.company}>{profile.company}</Text>
-            )}
-          </View>
-
-          <View style={{ marginLeft: 8 }}>
-            {!editing ? (
-              <Pressable style={styles.editBtn} onPress={startEdit}>
-                <Text style={styles.editText}>Chỉnh sửa</Text>
-              </Pressable>
-            ) : (
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                <Pressable style={styles.saveBtn} onPress={saveEdit}>
-                  <Text style={styles.saveText}>Lưu</Text>
-                </Pressable>
-                <Pressable style={styles.cancelBtn} onPress={cancelEdit}>
-                  <Text style={styles.cancelText}>Hủy</Text>
-                </Pressable>
-              </View>
-            )}
-          </View>
+          <Text style={styles.noteText}>
+            Cần cập nhật họ tên, số điện thoại hay phương tiện? Vui lòng liên hệ
+            công ty vận tải quản lý tài khoản của bạn.
+          </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tùy chọn</Text>
-          <View style={styles.row}>
-            <View style={styles.rowLeft}>
-              <Ionicons
-                name="notifications"
-                size={20}
-                color="#f6b11c"
-                style={{ marginRight: 10 }}
-              />
-              <View>
-                <Text style={styles.rowLabel}>Thông báo đẩy</Text>
-                <Text style={styles.rowSub}>Nhận cảnh báo và nhắc nhở</Text>
-              </View>
-            </View>
-            <Switch value={pushEnabled} onValueChange={setPushEnabled} />
-          </View>
-
-          <View style={styles.row}>
-            <View style={styles.rowLeft}>
-              <Ionicons
-                name="moon"
-                size={20}
-                color="#94a3b8"
-                style={{ marginRight: 10 }}
-              />
-              <View>
-                <Text style={styles.rowLabel}>Giao diện tối</Text>
-                <Text style={styles.rowSub}>
-                  Giao diện tối theo theme công nghiệp
-                </Text>
-              </View>
-            </View>
-            <Switch value={darkMode} onValueChange={setDarkMode} />
-          </View>
-
-          <View style={[styles.section, { marginTop: 12 }]}>
-            <Text style={styles.sectionTitle}>Thông tin lái xe</Text>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Số điện thoại</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.phone}
-                  onChangeText={(t) => setDraft({ ...draft, phone: t })}
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>{profile.phone}</Text>
-              )}
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Biển số xe</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.vehicleNumber}
-                  onChangeText={(t) => setDraft({ ...draft, vehicleNumber: t })}
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>{profile.vehicleNumber}</Text>
-              )}
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Loại phương tiện</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.vehicleType}
-                  onChangeText={(t) => setDraft({ ...draft, vehicleType: t })}
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>{profile.vehicleType}</Text>
-              )}
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Hết hạn GPLX</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.licenseExpiry}
-                  onChangeText={(t) => setDraft({ ...draft, licenseExpiry: t })}
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>{profile.licenseExpiry}</Text>
-              )}
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Bảo hiểm</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.insurancePolicy}
-                  onChangeText={(t) =>
-                    setDraft({ ...draft, insurancePolicy: t })
-                  }
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>{profile.insurancePolicy}</Text>
-              )}
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Khám sức khỏe</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.medicalExpiry}
-                  onChangeText={(t) => setDraft({ ...draft, medicalExpiry: t })}
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>{profile.medicalExpiry}</Text>
-              )}
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Người liên hệ khẩn cấp</Text>
-              {editing ? (
-                <TextInput
-                  value={draft.emergencyContact?.phone ?? ""}
-                  onChangeText={(t) =>
-                    setDraft({
-                      ...draft,
-                      emergencyContact: {
-                        ...(draft.emergencyContact ?? { name: "" }),
-                        phone: t,
-                      },
-                    })
-                  }
-                  style={styles.smallInput}
-                />
-              ) : (
-                <Text style={styles.infoValue}>
-                  {profile.emergencyContact?.name} —{" "}
-                  {profile.emergencyContact?.phone}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          {/* Removed links to Notifications / Help — app trimmed to 3 main screens */}
-        </View>
-
-        <Pressable style={styles.logoutBtn} onPress={handleLogout}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Ionicons name="log-out" size={18} color="#071122" />
-            <Text style={styles.logoutText}>Đăng xuất</Text>
-          </View>
-        </Pressable>
-      </View>
+        <Button
+          variant="danger"
+          size="lg"
+          loading={loggingOut}
+          onPress={handleLogout}
+          icon={
+            <Ionicons name="log-out-outline" size={18} color={palette.danger} />
+          }
+          style={{ marginTop: spacing.md }}
+        >
+          Đăng xuất
+        </Button>
+      </QueryStateHandler>
     </ScreenShell>
   );
 }
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: palette.surface,
+    borderRadius: radii["2xl"],
+    borderWidth: 1,
+    borderColor: palette.borderSoft,
+    padding: spacing.lg,
+    alignItems: "center",
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 9999,
+    backgroundColor: palette.surfaceMuted,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: palette.borderStrong,
+    marginBottom: spacing.sm,
+  },
+  name: { color: palette.text, fontSize: 20, fontWeight: "900" },
+  email: { color: palette.textMuted, fontSize: 13, marginTop: 2 },
+  infoBlock: { width: "100%", marginTop: spacing.lg },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: palette.surfaceMuted,
+  },
+  label: { color: palette.textSubtle, fontSize: 13 },
+  value: {
+    color: palette.text,
+    fontSize: 15,
+    fontWeight: "700",
+    maxWidth: "60%",
+    textAlign: "right",
+  },
+  refreshRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: spacing.md,
+  },
+  refreshText: { color: palette.accent, fontSize: 13, fontWeight: "800" },
+  noteCard: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "flex-start",
+    backgroundColor: palette.surfaceAlt,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: palette.borderSoft,
+    padding: spacing.md,
+    marginTop: spacing.md,
+  },
+  noteText: {
+    flex: 1,
+    color: palette.textMuted,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+});

@@ -46,11 +46,19 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (__DEV__) {
-      console.warn(
-        `[API] ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
-        error.response?.status,
-        error.response?.data,
-      );
+      if (!error.response) {
+        // Không có response = lỗi mạng: sai API base URL hoặc backend chưa chạy.
+        console.warn(
+          `[API] ${error.config?.method?.toUpperCase()} ${error.config?.baseURL}${error.config?.url}` +
+            ` — KHÔNG kết nối được backend. Kiểm tra baseURL (Android emulator dùng 10.0.2.2, máy thật dùng IP LAN) và backend đã chạy cổng 4000 chưa.`,
+        );
+      } else {
+        console.warn(
+          `[API] ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+          error.response.status,
+          error.response.data,
+        );
+      }
     }
     return Promise.reject(error);
   },

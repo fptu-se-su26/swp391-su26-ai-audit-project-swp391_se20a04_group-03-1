@@ -11,6 +11,7 @@ import scanRouter from "./scan.route";
 import containerProvidersRouter from "./container-providers.route";
 import settingsRouter from "./settings.route";
 import clientRouter from "./client/index.route";
+import mobileRouter from "./mobile/index.route";
 
 import { containersRoutes } from "./containers.route";
 import { trucksRoutes } from "./trucks.route";
@@ -20,6 +21,8 @@ const rootRouter = Router();
 // Combine all routers
 rootRouter.use("/client", clientRouter);
 rootRouter.use("/auth", authRouter);
+// App mobile (tài xế + quản lý cổng): xác thực Bearer riêng, không dùng cookie.
+rootRouter.use("/mobile", mobileRouter);
 
 // Khu vực admin: requireAuth (xác thực) -> attachPermissions (nạp quyền).
 // Việc siết quyền theo resource + action (view/create/update/delete/export)

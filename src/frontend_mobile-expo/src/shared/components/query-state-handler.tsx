@@ -113,7 +113,7 @@ export function QueryStateHandler({
     if (spinnerOnly) {
       return (
         <View style={styles.spinnerContainer}>
-          <ActivityIndicator size="large" color="#f6b11c" />
+          <ActivityIndicator size="large" color="#1ed760" />
           <Text style={styles.spinnerText}>Đang tải…</Text>
         </View>
       );

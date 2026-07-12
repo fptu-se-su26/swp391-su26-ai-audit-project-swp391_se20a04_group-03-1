@@ -1,9 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,77 +12,58 @@ import {
   View,
 } from "react-native";
 
-import { Snackbar } from "@/shared/components/feedback/Snackbar";
-import { signIn, signInAsGuest, useAuth } from "@/shared/state/auth";
+import { signIn, useAuth } from "@/shared/state/auth";
+import { palette } from "@/shared/theme";
 import styles from "../style/Login.style";
 
 const isFilled = (value: string) => value.trim().length > 0;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{
-    authToast?: string;
-    username?: string;
-  }>();
   const auth = useAuth();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const [registerToastVisible, setRegisterToastVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fieldErrors = useMemo(
     () => ({
-      username:
-        submitted && !isFilled(username) ? "Vui lòng nhập tên đăng nhập." : "",
+      email: submitted && !isFilled(email) ? "Vui lòng nhập email." : "",
       password:
         submitted && !isFilled(password) ? "Vui lòng nhập mật khẩu." : "",
     }),
-    [password, submitted, username],
+    [email, password, submitted],
   );
 
-  useEffect(() => {
-    if (params.authToast === "register-success") {
-      setRegisterToastVisible(true);
-      const timer = setTimeout(() => setRegisterToastVisible(false), 2800);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [params.authToast]);
-
+  // Đã đăng nhập -> điều hướng theo vai trò.
   useEffect(() => {
     if (auth.isReady && auth.isAuthenticated) {
-      router.replace("/(tabs)");
+      router.replace(auth.role === "gate_manager" ? "/(gate)" : "/(driver)");
     }
-  }, [auth.isAuthenticated, auth.isReady, router]);
+  }, [auth.isAuthenticated, auth.isReady, auth.role, router]);
 
   async function handleSubmit() {
     setSubmitted(true);
     setError("");
 
-    if (!isFilled(username) || !isFilled(password)) {
-      setError("Vui lòng điền đầy đủ tên đăng nhập và mật khẩu.");
+    if (!isFilled(email) || !isFilled(password)) {
+      setError("Vui lòng điền đầy đủ email và mật khẩu.");
       return;
     }
 
-    const result = signIn(username, password);
+    setLoading(true);
+    const result = await signIn(email, password);
+    setLoading(false);
+
     if (!result.ok) {
-      setError(result.message);
+      setError(result.message ?? "Đăng nhập thất bại");
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
 
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.replace({
-      pathname: "/(tabs)",
-      params: { authToast: "login-success" },
-    });
-  }
-
-  async function handleGuestAccess() {
-    signInAsGuest();
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.replace("/(tabs)");
+    router.replace(result.role === "gate_manager" ? "/(gate)" : "/(driver)");
   }
 
   return (
@@ -101,47 +81,53 @@ export default function LoginScreen() {
         <View style={styles.card}>
           <View style={styles.brandRow}>
             <View style={styles.brandMark}>
-              <Ionicons name="shield-checkmark" size={18} color="#0b1d33" />
+              <Ionicons name="cube" size={20} color={palette.ink} />
             </View>
-            <View>
-              <Text style={styles.kicker}>LOGI PORT</Text>
-              <Text style={styles.title}>Đăng nhập tài xế</Text>
-            </View>
+            <Text style={styles.wordmark}>
+              Logi<Text style={styles.wordmarkAccent}>Port</Text>
+            </Text>
           </View>
 
+          <Text style={styles.title}>Đăng nhập</Text>
           <Text style={styles.subtitle}>
-            Truy cập nhanh vào dashboard, lịch hẹn và trạng thái cổng.
+            Tài khoản do quản trị viên cấp. Hệ thống tự nhận diện vai trò Tài xế
+            hoặc Quản lý cổng của bạn.
           </Text>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Tên đăng nhập</Text>
+            <Text style={styles.label}>Email</Text>
             <View style={styles.inputWrap}>
-              <Ionicons name="person-outline" size={18} color="#8aa0bf" />
+              <Ionicons name="mail-outline" size={18} color={palette.textSubtle} />
               <TextInput
-                value={username}
-                onChangeText={setUsername}
-                placeholder="Nhập tên đăng nhập"
-                placeholderTextColor="#7f93ae"
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Nhập email"
+                placeholderTextColor={palette.textSubtle}
                 style={styles.input}
                 autoCapitalize="none"
                 autoCorrect={false}
+                keyboardType="email-address"
                 returnKeyType="next"
               />
             </View>
-            {fieldErrors.username ? (
-              <Text style={styles.errorText}>{fieldErrors.username}</Text>
+            {fieldErrors.email ? (
+              <Text style={styles.errorText}>{fieldErrors.email}</Text>
             ) : null}
           </View>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Mật khẩu</Text>
             <View style={styles.inputWrap}>
-              <Ionicons name="lock-closed-outline" size={18} color="#8aa0bf" />
+              <Ionicons
+                name="lock-closed-outline"
+                size={18}
+                color={palette.textSubtle}
+              />
               <TextInput
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Nhập mật khẩu"
-                placeholderTextColor="#7f93ae"
+                placeholderTextColor={palette.textSubtle}
                 style={styles.input}
                 secureTextEntry
                 autoCapitalize="none"
@@ -159,48 +145,24 @@ export default function LoginScreen() {
 
           <Pressable
             onPress={handleSubmit}
+            disabled={loading}
             style={({ pressed }) => [
               styles.loginButton,
               pressed && styles.loginButtonPressed,
+              loading && styles.loginButtonDisabled,
             ]}
           >
-            <Text style={styles.loginButtonText}>Xác nhận đăng nhập</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={handleGuestAccess}
-            style={({ pressed }) => [
-              styles.guestButton,
-              pressed && styles.guestButtonPressed,
-            ]}
-          >
-            <Text style={styles.guestButtonText}>
-              Tiếp tục với tư cách khách
+            <Text style={styles.loginButtonText}>
+              {loading ? "Đang đăng nhập…" : "Đăng nhập"}
             </Text>
           </Pressable>
 
           <View style={styles.linksRow}>
-            <Pressable onPress={() => router.push("/register")}>
-              <Text style={styles.link}>Đăng ký tài khoản</Text>
-            </Pressable>
             <Pressable onPress={() => router.push("/forgot")}>
               <Text style={styles.linkMuted}>Quên mật khẩu?</Text>
             </Pressable>
           </View>
         </View>
-
-        <Snackbar
-          position="top-right"
-          visible={registerToastVisible}
-          message={
-            params.username
-              ? `Đăng ký thành công. Tên đăng nhập: ${params.username}`
-              : "Đăng ký thành công. Vui lòng đăng nhập."
-          }
-          variant="success"
-          onDismiss={() => setRegisterToastVisible(false)}
-          duration={2800}
-        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

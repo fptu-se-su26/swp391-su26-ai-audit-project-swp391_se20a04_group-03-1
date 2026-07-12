@@ -5,30 +5,30 @@
  * Organized into semantic groups for easy consumption.
  */
 
-/** Background & surface colors */
+/** Background & surface colors — neutral dark (đồng bộ web LogiPort). */
 export const backgrounds = {
-  bg: '#091122',
-  bgDeep: '#050b14',
-  surface: '#101b31',
-  surfaceAlt: '#0f1a2a',
-  surfaceMuted: '#18243d',
+  bg: '#0b0f14',
+  bgDeep: '#06090c',
+  surface: '#121821',
+  surfaceAlt: '#0e141c',
+  surfaceMuted: '#1a232e',
 } as const;
 
-/** Border colors (with alpha) */
+/** Border colors (with alpha) — xanh LogiPort. */
 export const borders = {
-  borderSoft: 'rgba(184, 140, 69, 0.32)',
-  borderStrong: 'rgba(246, 192, 106, 0.26)',
+  borderSoft: 'rgba(30, 215, 96, 0.22)',
+  borderStrong: 'rgba(30, 215, 96, 0.34)',
 } as const;
 
-/** Accent & semantic colors */
+/** Accent & semantic colors — LogiPort green (#1ed760). */
 export const accents = {
-  accent: '#f6b11c',
-  accentSoft: '#f6c06a',
-  accentHover: '#ffbf3f',
-  success: '#4dd7a5',
+  accent: '#1ed760',
+  accentSoft: '#4ade80',
+  accentHover: '#22e56a',
+  success: '#1ed760',
   warning: '#f4ac1c',
-  danger: '#ef7c54',
-  info: '#79a8ff',
+  danger: '#ef4444',
+  info: '#3b82f6',
 } as const;
 
 /** Text colors — from brightest to most muted */
@@ -37,7 +37,7 @@ export const texts = {
   textSoft: '#e2e8f0',
   textMuted: '#cbd5e1',
   textSubtle: '#94a3b8',
-  ink: '#111827',
+  ink: '#05140b',
 } as const;
 
 /**

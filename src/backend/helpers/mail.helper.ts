@@ -40,9 +40,12 @@ export const buildAccountProvisionEmail = (params: {
   code: string;
   email: string;
   isActive: boolean;
-  loginUrl: string;
+  // loginUrl: nút "Đăng nhập ngay" (tài khoản có cổng web). Bỏ trống với tài
+  // khoản đăng nhập bằng app mobile (tài xế) và truyền appNote thay thế.
+  loginUrl?: string;
+  appNote?: string;
 }): string => {
-  const { name, codeLabel, code, email, isActive, loginUrl } = params;
+  const { name, codeLabel, code, email, isActive, loginUrl, appNote } = params;
 
   const statusColor = isActive ? "#1ed760" : "#f0a500";
   const statusBg = isActive ? "#eafaf0" : "#fdf6e3";
@@ -93,7 +96,15 @@ export const buildAccountProvisionEmail = (params: {
           </div>
 
           ${
-            isActive
+            appNote
+              ? `<div style="background-color: #eafaf0; border: 1px solid #b8ebc9; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px;">
+                   <p style="margin: 0; font-size: 14px; color: #0f7a37; line-height: 1.6;">📱 ${appNote}</p>
+                 </div>`
+              : ""
+          }
+
+          ${
+            isActive && loginUrl
               ? `<a href="${loginUrl}" style="display: inline-block; background-color: #1ed760; color: #121212; font-weight: 900; text-decoration: none; padding: 14px 28px; border-radius: 500px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14px; margin-bottom: 32px;">Đăng nhập ngay</a>`
               : ""
           }
