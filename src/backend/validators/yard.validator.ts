@@ -19,7 +19,7 @@ export const yardPost = (
   
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });

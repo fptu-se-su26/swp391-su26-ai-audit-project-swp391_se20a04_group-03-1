@@ -283,6 +283,7 @@ Viết tại đây...
 - [X] Viết test case mẫu (dummy test) chạy thành công trên cả Backend & Frontend
 - [X] Khởi tạo các file cấu hình (jest.config.js, jest.sample.config.js, playwright.config.ts)
 - [X] Tối ưu hóa / Sửa lỗi assertion cho test suite tích hợp API Appointment của Backend
+- [X] Viết Backend API Integration Test cho Quản lý Bãi đỗ (Yards) với 4 test cases chính và đạt line coverage >= 80% trên YardController
 - [X] Chạy thành công toàn bộ test suite và cập nhật tài liệu kiểm thử
 
 ## Danh sách lỗi đã xử lý
@@ -291,6 +292,7 @@ Viết tại đây...
 |---:|---|---|---|---|
 | 1 | `TC_INT_3` trong `appointment.api.test.ts` bị lỗi (Assertion fail) | Test mong muốn HTTP status là `200` nhưng controller thực tế trả về `400` khi khung giờ đặt chỗ đã đầy. | Cập nhật assertion trong `appointment.api.test.ts` để mong đợi HTTP status là `400` khi capacity của slot đạt tối đa. | Fixed |
 | 2 | Thiếu file `.env.test` ở backend khiến các test check env bị skip | Developer quên tạo file `.env.test` thực tế ở backend (chỉ có file ví dụ). | Tạo file `.env.test` cho backend dựa trên template `.env.test.example`. | Fixed |
+| 3 | Thiếu mã trạng thái lỗi `400 Bad Request` khi validation Yard thất bại | Hàm validator `yardPost` trong `yard.validator.ts` sử dụng `res.json(...)` trực tiếp làm phản hồi mặc định trả về status code `200 OK`. | Thêm `res.status(400)` vào validator trước khi trả về phản hồi lỗi. | Fixed |
 
 ## Thay đổi chi tiết
 
@@ -299,6 +301,7 @@ Viết tại đây...
 | 1 | Tạo file cấu hình và nạp `.env.test` cho backend Jest | Nhóm Phát triển | [jest.config.js](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/jest.config.js), [.env.test](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/.env.test) | Chạy `npm run test:sample` thành công |
 | 2 | Sửa lỗi assertion HTTP Status code cho API đặt lịch hẹn khi slot đầy | AI (Antigravity) | [appointment.api.test.ts](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/tests/appointment.api.test.ts) | Chạy `npm run test` thành công toàn bộ test suites |
 | 3 | Thiết lập cấu hình Playwright & POM mẫu ở frontend | Nhóm Phát triển | [playwright.config.ts](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/frontend/playwright.config.ts), [home.pom.spec.ts](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/frontend/tests/home.pom.spec.ts), [HomePage.ts](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/frontend/tests/pages/HomePage.ts) | Chạy `npx playwright test tests/home.pom.spec.ts` thành công |
+| 4 | Viết Backend API Integration Test cho Yards & Cập nhật Joi validator | AI (Antigravity) | [yard.api.test.ts](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/tests/yard.api.test.ts), [yard.validator.ts](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/validators/yard.validator.ts), [jest.config.js](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/backend/jest.config.js) | Chạy `npm run test` và `npm run test:cov` thành công, YardController đạt line coverage 91.39% |
 
 ## AI có hỗ trợ không?
 
@@ -308,14 +311,15 @@ Viết tại đây...
 Nếu có, mô tả AI đã hỗ trợ phần nào:
 
 ```text
-Antigravity hỗ trợ kiểm tra cấu hình kiểm thử backend và frontend, phát hiện và sửa đổi lỗi assertion trong file appointment.api.test.ts, tạo file .env.test thực tế từ .env.test.example và cập nhật CHANGELOG.md.
+Antigravity hỗ trợ kiểm tra cấu hình kiểm thử backend và frontend, phát hiện và sửa đổi lỗi assertion trong file appointment.api.test.ts, tạo file .env.test thực tế từ .env.test.example, viết test suite tự động hoàn chỉnh cho Yard (Yards API Integration test), cấu hình coverage trong jest.config.js, nâng cấp mã lỗi cho Joi validator của bãi đỗ và cập nhật CHANGELOG.md.
 ```
 
 ## Commit/Screenshot minh chứng
 
 ```text
-- Backend: Chạy lệnh `npm run test:sample` và `npm run test` thành công (tất cả 7 test suites đều PASS).
+- Backend: Chạy lệnh `npm run test:sample` và `npm run test` thành công (tất cả 8 test suites đều PASS).
 - Frontend: Chạy lệnh `npx playwright test tests/home.pom.spec.ts` thành công qua Playwright sử dụng POM.
+- Coverage: Chạy lệnh `npm run test:cov` thành công, YardController đạt line coverage 91.39% (yêu cầu >= 80%).
 ```
 
 ## Ghi chú
