@@ -71,7 +71,7 @@ export const registerPost = async (req: Request, res: Response) => {
 export const loginPost = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const existAccount = await AccountAdmin.findOne({ email });
+    const existAccount = await AccountAdmin.findOne({ email, isDeleted: false });
     if (!existAccount) {
       return res.status(400).json({
         code: "error",
