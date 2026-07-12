@@ -49,7 +49,7 @@ export const appointmentPost = (
 
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });
@@ -111,7 +111,7 @@ export const appointmentEdit = (
 
   const { error } = schema.validate(req.body);
   if (error) {
-    res.json({
+    res.status(400).json({
       code: "error",
       message: error.details[0].message,
     });
