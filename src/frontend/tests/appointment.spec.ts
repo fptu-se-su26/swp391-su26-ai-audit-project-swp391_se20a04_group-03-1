@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mockAccount } from './config/accounts';
 
 test.describe('Quản lý Lịch hẹn - Xem & Thêm mới (Client/Company)', () => {
   test.beforeEach(async ({ page }) => {
@@ -120,8 +121,8 @@ test.describe('Quản lý Lịch hẹn - Xem & Thêm mới (Client/Company)', ()
     // 1. Đăng nhập và điều hướng tới /admin/appointments
     await page.goto('/admin/login');
     await page.waitForTimeout(1000);
-    await page.locator('input[type="email"]').fill('company@test.com');
-    await page.locator('input[type="password"]').fill('password123');
+    await page.locator('input[type="email"]').fill(mockAccount.email);
+    await page.locator('input[type="password"]').fill(mockAccount.password);
     await page.locator('button[type="submit"]').click();
     
     await page.waitForURL('**/admin/dashboard', { timeout: 10000 });

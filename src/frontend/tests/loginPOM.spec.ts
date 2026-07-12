@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './pages/login.pom';
+import { mockAccount, wrongPassword } from './config/accounts';
 
 test.describe('Flow Đăng nhập UI /admin/login (Issue 1)', () => {
   let loginPage: LoginPage;
@@ -25,7 +26,7 @@ test.describe('Flow Đăng nhập UI /admin/login (Issue 1)', () => {
     });
 
     // Nhập Email & Password hợp lệ của Admin -> Click Submit
-    await loginPage.login('admin@logiport.com', 'password123');
+    await loginPage.login(mockAccount.email, mockAccount.password);
     
     // Hiện thông báo chào mừng trước khi chuyển hướng
     await expect(loginPage.toastSuccessMessage).toBeVisible({ timeout: 15000 });
@@ -45,7 +46,7 @@ test.describe('Flow Đăng nhập UI /admin/login (Issue 1)', () => {
     });
 
     // Nhập Password sai
-    await loginPage.login('admin@logiport.com', 'wrongpassword');
+    await loginPage.login(mockAccount.email, wrongPassword);
     
     // Element lỗi (div[role="alert"] hoặc toast) hiển thị
     await expect(loginPage.toastErrorMessage).toBeVisible({ timeout: 5000 });
@@ -53,7 +54,7 @@ test.describe('Flow Đăng nhập UI /admin/login (Issue 1)', () => {
 
   test('Kiểm tra UI Validation', async () => {
     // Bỏ trống trường Email, click submit
-    await loginPage.login('', 'password123');
+    await loginPage.login('', mockAccount.password);
     
     // Trình duyệt hiện báo lỗi
     const emailError = await loginPage.getEmailValidationError();
