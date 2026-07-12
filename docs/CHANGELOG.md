@@ -335,11 +335,12 @@ Các thiết lập này đã hoạt động chính xác và ổn định, sẵn 
 ## Ngày thực hiện
 
 ```text
-DD/MM/YYYY
+12/07/2026
 ```
 
 ## Đã hoàn thành
 
+- [X] Thực hiện Exploratory Testing và viết báo cáo lỗi
 - [ ] Hoàn thiện source code
 - [ ] Hoàn thiện README.md
 - [ ] Hoàn thiện report
@@ -348,38 +349,36 @@ DD/MM/YYYY
 - [ ] Kiểm tra lại `AI_AUDIT_LOG.md`
 - [ ] Kiểm tra lại `PROMPTS.md`
 - [ ] Hoàn thiện `REFLECTION.md`
-- [ ] Kiểm tra lại `CHANGELOG.md`
+- [X] Kiểm tra lại `CHANGELOG.md`
 - [ ] Đóng gói bài nộp
 
 ## Thay đổi chi tiết
 
 | STT | Nội dung thay đổi | Người thực hiện | File/Module liên quan | Minh chứng |
 |---:|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+| 1 | Thực hiện Exploratory Testing và lập báo cáo BugReports.md | Lê Tự Minh Quang | [BugReports.md](file:///d:/HocPhanKy5/SWP391_LOGI_PORT/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/BugReports.md) | Báo cáo 3 lỗi logic nghiệp vụ, xóa mềm và validate dữ liệu |
 
 ## AI có hỗ trợ không?
 
-- [ ] Có
+- [X] Có
 - [ ] Không
 
 Nếu có, mô tả AI đã hỗ trợ phần nào:
 
 ```text
-Viết tại đây...
+Antigravity hỗ trợ duyệt mã nguồn tìm lỗi nghiệp vụ ngầm (business logic), lập báo cáo 3 lỗi phát hiện được vào file BugReports.md theo đúng template chuẩn của bài học môn SWT301 và cập nhật CHANGELOG.md.
 ```
 
 ## Commit/Screenshot minh chứng
 
 ```text
-Dán link commit, screenshot hoặc mô tả minh chứng tại đây...
+- BugReports.md được tạo mới và lưu trực tiếp tại thư mục gốc của repository.
 ```
 
 ## Ghi chú
 
 ```text
-Viết tại đây...
+Các lỗi được phát hiện đều là lỗi nghiệp vụ thực tế có sẵn trên codebase của backend.
 ```
 
 ---
