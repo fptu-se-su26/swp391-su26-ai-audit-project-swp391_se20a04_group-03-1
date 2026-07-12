@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 // Sửa đường dẫn import từ './Pages/yard.page' thành './pages/yard.page'
 import { YardPage } from './pages/yard.page';
+import { mockAccount } from './config/accounts';
 
 test.describe('Quản lý Bãi đỗ - Thêm mới dữ liệu', () => {
   
@@ -57,8 +58,8 @@ test.describe('Quản lý Bãi đỗ - Thêm mới dữ liệu', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Thêm 2 giây cho an toàn tuyệt đối với máy yếu
 
-    await page.locator('#email').fill('admin@port.com');
-    await page.locator('#password').fill('123456');
+    await page.locator('#email').fill(mockAccount.email);
+    await page.locator('#password').fill(mockAccount.password);
     await page.getByRole('button', { name: /đăng nhập ngay/i }).click();
 
     // Xác nhận đã có toast báo thành công (tránh lỗi submit form native reload lại trang)

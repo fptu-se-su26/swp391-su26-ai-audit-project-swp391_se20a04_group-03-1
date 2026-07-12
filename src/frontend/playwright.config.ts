@@ -16,14 +16,18 @@ const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:3000';
  */
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
+  /* Chạy TUẦN TỰ (không song song).
+     Lý do: cả suite dùng CHUNG một Next dev server (`npm run dev`) — chạy nhiều
+     worker song song khiến dev server compile route dưới tải nặng -> timeout giả.
+     Ngoài ra vài test đăng nhập bằng cùng 1 tài khoản thật (cơ chế single-session
+     Redis), chạy song song sẽ đẩy phiên của nhau ra gây lỗi 401. */
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* 1 worker cho ổn định với dev server + tài khoản single-session. */
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters
      HTML report được sinh ra trong thư mục playwright-report/. */
   reporter: [['html', { outputFolder: 'playwright-report' }]],
