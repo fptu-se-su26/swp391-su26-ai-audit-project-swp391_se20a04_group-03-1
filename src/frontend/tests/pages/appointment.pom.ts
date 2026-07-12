@@ -122,4 +122,15 @@ export class AppointmentPage {
     const row = this.appointmentTableRows.filter({ hasText: truckPlate }).first();
     return row.locator('button:has-text("Duyệt")');
   }
+
+  async loginToAdmin() {
+    await this.page.goto('/admin/login');
+    await this.page.waitForTimeout(1000);
+    await this.page.locator('input[type="email"]').fill('admin@test.com');
+    await this.page.locator('input[type="password"]').fill('password123');
+    await this.page.locator('button[type="submit"]').click();
+    await this.page.waitForURL('**/admin/dashboard', { timeout: 10000 });
+    await this.goto();
+    await this.page.waitForURL('**/admin/appointments', { timeout: 10000 });
+  }
 }
