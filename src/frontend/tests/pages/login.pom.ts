@@ -7,6 +7,8 @@ export class LoginPage {
   readonly submitBtn: Locator;
   readonly toastSuccessMessage: Locator;
   readonly toastErrorMessage: Locator;
+  readonly eyeIconBtn: Locator;
+  readonly forgotPasswordLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +16,8 @@ export class LoginPage {
     this.emailInput = page.locator('#email');
     this.passwordInput = page.locator('#password');
     this.submitBtn = page.locator('button[type="submit"]');
+    this.eyeIconBtn = page.locator('#password ~ button');
+    this.forgotPasswordLink = page.getByRole('link', { name: /Quên mật khẩu/i });
     
     // Locators for react-hot-toast
     this.toastSuccessMessage = page.getByText('Đăng nhập thành công!');
@@ -40,5 +44,9 @@ export class LoginPage {
 
   async getPasswordValidationError(): Promise<Locator> {
     return this.page.getByText('Vui lòng nhập mật khẩu.');
+  }
+
+  async getPasswordLengthValidationError(): Promise<Locator> {
+    return this.page.getByText('Mật khẩu phải chứa ít nhất 6 ký tự.');
   }
 }
