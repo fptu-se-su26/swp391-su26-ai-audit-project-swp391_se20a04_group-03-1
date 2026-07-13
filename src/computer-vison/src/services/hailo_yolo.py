@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+import threading
 from scipy.spatial import distance as dist
 
 try:
@@ -144,6 +145,8 @@ class CentroidTracker:
         del self.objects[objectID]
         del self.disappeared[objectID]
 
+HAILO_DEVICE_LOCK = threading.Lock()
+
 class HailoYOLO:
     """Wrapper class for Hailo-8L inference that behaves similarly to Ultralytics YOLO"""
     def __init__(self, hef_path, target_vdevice=None):
@@ -161,24 +164,25 @@ class HailoYOLO:
         self.input_vstreams_params = InputVStreamParams.make(self.network_group, format_type=FormatType.FLOAT32)
         self.output_vstreams_params = OutputVStreamParams.make(self.network_group, format_type=FormatType.FLOAT32)
         
-        # Enter context managers manually to keep them alive
-        self.ctx_ng = self.network_group.activate(self.network_group_params)
-        self.ctx_ng.__enter__()
-        
-        self.infer_pipeline = InferVStreams(self.network_group, self.input_vstreams_params, self.output_vstreams_params)
-        self.infer_pipeline.__enter__()
-        
         self.input_name = self.hef.get_input_vstream_infos()[0].name
-        self.tracker = CentroidTracker(maxDisappeared=15, maxDistance=100)
+        
+        # Thread lock để tránh xung đột khi nhiều camera gọi infer_pipeline cùng lúc
+        import threading
+        self.infer_lock = threading.Lock()
 
-    def track(self, image, conf_threshold=0.5):
-        """Runs inference and tracking. Returns dictionary of active tracked objects."""
+    def track(self, image, tracker, conf_threshold=0.5):
+        """Runs inference and tracking using the provided tracker instance."""
         img_resized = cv2.resize(image, (640, 640))
         img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
         input_data = np.expand_dims(img_rgb, axis=0).astype(np.float32)
         
         input_dict = {self.input_name: input_data}
-        output_dict = self.infer_pipeline.infer(input_dict)
+        
+        # Chỉ kích hoạt mạng khi infer để tránh lỗi HAILO_INVALID_OPERATION
+        with HAILO_DEVICE_LOCK:
+            with self.network_group.activate(self.network_group_params):
+                with InferVStreams(self.network_group, self.input_vstreams_params, self.output_vstreams_params) as infer_pipeline:
+                    output_dict = infer_pipeline.infer(input_dict)
         
         pred_bboxes, cls_preds = decode_yolov8(output_dict)
         
@@ -200,9 +204,8 @@ class HailoYOLO:
                         y2 = y + h/2
                         rects.append((x1, y1, x2, y2))
                         
-        objects = self.tracker.update(rects)
+        objects = tracker.update(rects)
         return objects
 
     def release(self):
-        self.infer_pipeline.__exit__(None, None, None)
-        self.ctx_ng.__exit__(None, None, None)
+        pass
