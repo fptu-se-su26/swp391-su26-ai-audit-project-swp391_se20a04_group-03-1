@@ -5,10 +5,11 @@ import jwt from "jsonwebtoken";
 import { redisClient } from "../config/redis.config";
 import { sendMail } from "../helpers/mail.helper";
 import { CompanyRole } from "../models/companyRole.model";
+import { AdminRole } from "../models/adminRole.model";
 
 export const registerPost = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, role, password } = req.body;
+    const { fullName, email, password } = req.body;
 
     // 1. Check if email already exists
     const existingUser = await AccountAdmin.findOne({ email });
@@ -19,15 +20,29 @@ export const registerPost = async (req: Request, res: Response) => {
       });
     }
 
-    // 2. Hash the password
+    // 2. Người tự đăng ký KHÔNG được tự chọn quyền — mặc định OPERATOR,
+    //    tài khoản ở trạng thái chờ duyệt (isActive=false). Super admin sẽ
+    //    duyệt & đổi vai trò sau ở trang quản lý tài khoản.
+    const defaultRole = await AdminRole.findOne({
+      roleCode: "OPERATOR",
+      isDeleted: false,
+    });
+    if (!defaultRole) {
+      return res.status(400).json({
+        code: "error",
+        message: "Hệ thống chưa khởi tạo vai trò mặc định. Liên hệ quản trị viên.",
+      });
+    }
+
+    // 3. Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Create and save new account
+    // 4. Create and save new account
     const newAccount = new AccountAdmin({
       fullName,
       email,
-      role,
+      role: defaultRole._id,
       password: hashedPassword,
     });
 
@@ -56,7 +71,7 @@ export const registerPost = async (req: Request, res: Response) => {
 export const loginPost = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const existAccount = await AccountAdmin.findOne({ email });
+    const existAccount = await AccountAdmin.findOne({ email, isDeleted: false });
     if (!existAccount) {
       return res.status(400).json({
         code: "error",

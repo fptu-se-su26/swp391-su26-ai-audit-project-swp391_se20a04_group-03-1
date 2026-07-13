@@ -3,7 +3,7 @@ import { Company } from "../models/company.model";
 import { Driver } from "../models/driver.model";
 import { CompanyRole } from "../models/companyRole.model";
 import bcrypt from "bcryptjs";
-import { sendMail } from "../helpers/mail.helper";
+import { sendMail, buildAccountProvisionEmail } from "../helpers/mail.helper";
 
 export const companiesGet = async (req: Request, res: Response) => {
   try {
@@ -114,7 +114,28 @@ export const createCompanyPost = async (req: Request, res: Response) => {
       newCompany.password = await bcrypt.hash(req.body.password, salt);
     }
 
+    // Admin tạo = đã cấp & duyệt -> Active ngay (đăng nhập được), đồng bộ với provider.
+    newCompany.status = req.body.status || "Active";
+
     await newCompany.save();
+
+    // Email cấp tài khoản: KHÔNG gửi mật khẩu trong email (bảo mật).
+    if (newCompany.email) {
+      const loginUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/client/company/login`;
+      const isActive = newCompany.status === "Active";
+      sendMail(
+        newCompany.email,
+        "Tài khoản doanh nghiệp LogiPort đã được khởi tạo",
+        buildAccountProvisionEmail({
+          name: newCompany.contactPerson || newCompany.companyName,
+          codeLabel: "Mã doanh nghiệp",
+          code: newCompany.companyCode,
+          email: newCompany.email,
+          isActive,
+          loginUrl,
+        }),
+      );
+    }
 
     res.status(200).json({
       code: "success",

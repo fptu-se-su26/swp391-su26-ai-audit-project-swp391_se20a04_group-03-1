@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { usePermissions } from "@/lib/permissions";
 import {
   LayoutDashboard,
   Calendar,
@@ -22,56 +23,29 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
+// Mỗi mục gắn `resource` để lọc theo quyền view.
 const menuItems = [
-  {
-    label: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Quản lý lịch hẹn",
-    href: "/admin/appointments",
-    icon: Calendar,
-  },
-  {
-    label: "Quản lý công ty",
-    href: "/admin/companies",
-    icon: Building2,
-  },
-  {
-    label: "Quản lý nhà cung cấp",
-    href: "/admin/container-providers",
-    icon: Ship,
-  },
-  {
-    label: "Quản lý tài xế",
-    href: "/admin/drivers",
-    icon: IdCard,
-  },
-  {
-    label: "Quản lý cổng",
-    href: "/admin/gate",
-    icon: Truck,
-  },
-  {
-    label: "Quản lý bãi",
-    href: "/admin/yard",
-    icon: Warehouse,
-  },
-  {
-    label: "Quản lý container",
-    href: "/admin/containers",
-    icon: Box,
-  },
-  {
-    label: "Báo cáo",
-    href: "/admin/reports",
-    icon: BarChart3,
-  },
+  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, resource: "dashboard" },
+  { label: "Quản lý lịch hẹn", href: "/admin/appointments", icon: Calendar, resource: "appointments" },
+  { label: "Quản lý công ty", href: "/admin/companies", icon: Building2, resource: "companies" },
+  { label: "Quản lý nhà cung cấp", href: "/admin/container-providers", icon: Ship, resource: "container-providers" },
+  { label: "Quản lý tài xế", href: "/admin/drivers", icon: IdCard, resource: "drivers" },
+  { label: "Quản lý cổng", href: "/admin/gate", icon: Truck, resource: "gates" },
+  { label: "Quản lý bãi", href: "/admin/yard", icon: Warehouse, resource: "yards" },
+  { label: "Quản lý container", href: "/admin/containers", icon: Box, resource: "containers" },
+  { label: "Báo cáo", href: "/admin/reports", icon: BarChart3, resource: "reports" },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { can } = usePermissions();
+
+  // Chỉ hiện mục có quyền view. Menu cài đặt hiện nếu có quyền vào bất kỳ trang con nào.
+  const visibleItems = menuItems.filter((item) => can(item.resource, "view"));
+  const canSeeSettings =
+    can("settings.admins", "view") ||
+    can("settings.roles", "view") ||
+    can("settings.client-roles", "view");
 
   return (
     <>
@@ -103,7 +77,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         <nav className="space-y-2">
-          {menuItems.map((item) => {
+          {visibleItems.map((item) => {
             const Icon = item.icon;
             const isActive =
               pathname === item.href || pathname.startsWith(item.href + "/");
@@ -137,6 +111,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             );
           })}
 
+          {canSeeSettings && (
+          <>
           <div className="pt-4 pb-2">
             <div className="h-px w-full bg-[#e5e5e5] dark:bg-[#272727]" />
           </div>
@@ -167,6 +143,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               Cài đặt chung
             </span>
           </Link>
+          </>
+          )}
         </nav>
       </aside>
     </>

@@ -224,14 +224,6 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              <div className="mt-8 pt-6 border-t border-[#e5e5e5] dark:border-[#272727] text-[14px] text-center text-[#666666] dark:text-[#b3b3b3] font-bold">
-                <p>
-                  Chưa có tài khoản?{" "}
-                  <Link href="/admin/register" className="text-[#121212] dark:text-[#ffffff] hover:text-[#1ed760] transition-colors ml-1 uppercase tracking-wider text-[12px]">
-                    Đăng ký
-                  </Link>
-                </p>
-              </div>
             </CardContent>
           </Card>
         </div>

@@ -11,6 +11,7 @@ import {
 import { Plus, Trash2, Box, Archive, LayoutGrid, Search, Loader2, Pencil } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
+import { Can } from "@/lib/permissions";
 import { CustomSelect } from "@/components/CustomSelect";
 import Link from "next/link";
 import {
@@ -151,14 +152,16 @@ export default function AdminContainersPage() {
               Thùng rác
             </Button>
           </Link>
-          <Link href="/admin/containers/create">
-            <Button
-              className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 h-12 gap-2 border-none transition-all duration-200 shadow-lg shadow-[#1ed760]/20"
-            >
-              <Plus className="h-5 w-5" />
-              Tạo container
-            </Button>
-          </Link>
+          <Can resource="containers" action="create">
+            <Link href="/admin/containers/create">
+              <Button
+                className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 h-12 gap-2 border-none transition-all duration-200 shadow-lg shadow-[#1ed760]/20"
+              >
+                <Plus className="h-5 w-5" />
+                Tạo container
+              </Button>
+            </Link>
+          </Can>
         </div>
       </div>
 
@@ -326,6 +329,7 @@ export default function AdminContainersPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Can resource="containers" action="update">
                           <Link href={`/admin/containers/edit/${container._id}`}>
                             <Button
                               title="Sửa"
@@ -334,7 +338,9 @@ export default function AdminContainersPage() {
                               <Pencil className="h-3 w-3" />
                             </Button>
                           </Link>
+                          </Can>
 
+                          <Can resource="containers" action="delete">
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
@@ -370,6 +376,7 @@ export default function AdminContainersPage() {
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
+                          </Can>
                         </div>
                       </td>
                     </tr>

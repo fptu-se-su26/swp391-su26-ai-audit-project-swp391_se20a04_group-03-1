@@ -119,7 +119,7 @@ def video_capture_loop():
                 continue
                 
             current_time = time.time()
-            if current_time - last_process_time < 0.2: # 5 FPS limit
+            if current_time - last_process_time < 0.066: # 15 FPS limit
                 time.sleep(0.01)
                 continue
             last_process_time = current_time

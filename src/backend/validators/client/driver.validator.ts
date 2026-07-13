@@ -1,6 +1,20 @@
 import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 
+// Trường tài khoản mobile (email/password/status) là TÙY CHỌN — company có thể
+// tạo tài xế không cấp tài khoản, hoặc cấp để tài xế đăng nhập app.
+const accountFields = {
+  email: Joi.string().allow("").optional().email().messages({
+    "string.email": "Email không hợp lệ.",
+  }),
+  password: Joi.string().allow("").optional().min(6).messages({
+    "string.min": "Mật khẩu phải từ 6 ký tự trở lên.",
+  }),
+  status: Joi.string().valid("Active", "Inactive").optional().messages({
+    "any.only": "Trạng thái không hợp lệ.",
+  }),
+};
+
 export const driverPost = (
   req: Request,
   res: Response,
@@ -22,8 +36,9 @@ export const driverPost = (
       .messages({
         "string.pattern.base": "Số điện thoại không đúng định dạng Việt Nam.",
       }),
+    ...accountFields,
   });
-  
+
   const { error } = schema.validate(req.body);
   if (error) {
     res.json({
@@ -56,8 +71,9 @@ export const driverEdit = (
       .messages({
         "string.pattern.base": "Số điện thoại không đúng định dạng Việt Nam.",
       }),
+    ...accountFields,
   });
-  
+
   const { error } = schema.validate(req.body);
   if (error) {
     res.json({

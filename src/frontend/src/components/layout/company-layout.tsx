@@ -11,8 +11,7 @@ export function CompanyLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
-  const isAuthPage = pathname?.includes("/client/company/login") || 
-                     pathname?.includes("/client/company/register") ||
+  const isAuthPage = pathname?.includes("/client/company/login") ||
                      pathname?.includes("/client/company/forgot-password") ||
                      pathname?.includes("/client/company/reset-password")
 

@@ -3,13 +3,6 @@
  *
  * Consistent screen wrapper with header (accent bar, title, subtitle)
  * and scrollable content area. Used by all feature module screens.
- *
- * @example
- * ```tsx
- * <ScreenShell title="Bãi xe" subtitle="Quản lý vị trí đỗ xe">
- *   <YardGrid />
- * </ScreenShell>
- * ```
  */
 import React, { type ReactNode } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";

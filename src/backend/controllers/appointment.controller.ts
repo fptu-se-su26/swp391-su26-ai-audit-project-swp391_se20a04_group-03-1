@@ -7,6 +7,17 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
     const { truckPlate, scheduledDate, timeSlot, containerNo, purpose } = req.body;
 
+    // 0.5. Kiểm tra thời gian trong quá khứ
+    const reqDate = new Date(scheduledDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (reqDate < today) {
+      return res.status(400).json({
+        code: "error",
+        message: "Ngày hẹn không được trong quá khứ.",
+      });
+    }
+
     // 0. Kiểm tra Mục đích và Tình trạng container
     const container = await Container.findOne({ number: containerNo, isDeleted: false });
     if (!container) {
@@ -29,6 +40,8 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
         message: "Mục đích trả container không hợp lệ: Container này hiện đang ở Trong cảng.",
       });
     }
+
+
 
     // 1. Kiểm tra 1 xe chỉ được đặt 1 lần/ngày
     const existAppointmentInDay = await Appointment.findOne({
@@ -66,7 +79,7 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     const newAppointment = new Appointment(req.body);
     await newAppointment.save();
 
-    res.status(200).json({
+    res.status(201).json({
       code: "success",
       message: "Tạo lịch hẹn thành công",
     });

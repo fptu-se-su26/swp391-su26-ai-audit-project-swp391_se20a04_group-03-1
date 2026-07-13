@@ -1,47 +1,44 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+/**
+ * Auth store cho app mobile — dùng backend thật (/api/mobile/auth/*).
+ *
+ * Token JWT lưu an toàn qua expo-secure-store (client.ts). Vai trò (role)
+ * do backend trả về theo tài khoản: "driver" | "gate_manager". App route
+ * theo role sau khi đăng nhập.
+ *
+ * Giữ pattern subscribe/snapshot (không cần Provider bọc ngoài).
+ */
 import { useEffect, useState } from "react";
+import {
+  setAuthToken,
+  clearAuthToken,
+  getAuthToken,
+} from "@/shared/api/client";
+import {
+  loginRequest,
+  fetchMe,
+  logoutRequest,
+} from "@/shared/api/mobile-api";
+import type { MobileRole } from "@/shared/types";
 
-export type AuthAccount = {
-  username: string;
+export type MobileUser = {
+  id: string;
   fullName: string;
-  phone: string;
-  email: string;
-  password: string;
-  createdAt: string;
+  email?: string;
+  [key: string]: unknown;
 };
 
 type AuthSnapshot = {
   isReady: boolean;
   isAuthenticated: boolean;
-  isGuest: boolean;
-  currentUsername: string | null;
-  accounts: AuthAccount[];
-};
-
-export type RegisterAccountInput = {
-  fullName: string;
-  phone: string;
-  email: string;
-  password: string;
-};
-
-const STORAGE_KEY = "@app:auth_state_v1";
-
-const DEFAULT_ACCOUNT: AuthAccount = {
-  username: "driver01",
-  fullName: "Nguyen Van An",
-  phone: "+84 912 345 678",
-  email: "driver01@logiport.vn",
-  password: "123456",
-  createdAt: new Date().toISOString(),
+  role: MobileRole | null;
+  user: MobileUser | null;
 };
 
 let authState: AuthSnapshot = {
   isReady: false,
   isAuthenticated: false,
-  isGuest: false,
-  currentUsername: null,
-  accounts: [DEFAULT_ACCOUNT],
+  role: null,
+  user: null,
 };
 
 const subscribers = new Set<(state: AuthSnapshot) => void>();
@@ -51,22 +48,15 @@ function notify() {
   subscribers.forEach((subscriber) => {
     try {
       subscriber(authState);
-    } catch (error) {
+    } catch {
       // ignore subscriber failures
     }
   });
 }
 
-function persistState(nextState: AuthSnapshot) {
-  AsyncStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      isAuthenticated: nextState.isAuthenticated,
-      isGuest: nextState.isGuest,
-      currentUsername: nextState.currentUsername,
-      accounts: nextState.accounts,
-    }),
-  ).catch(() => {});
+function commit(next: AuthSnapshot) {
+  authState = next;
+  notify();
 }
 
 async function hydrateAuthState() {
@@ -74,205 +64,78 @@ async function hydrateAuthState() {
   hydrateStarted = true;
 
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      authState = { ...authState, isReady: true };
-      notify();
+    const token = await getAuthToken();
+    if (!token) {
+      commit({ ...authState, isReady: true });
       return;
     }
 
-    const parsed = JSON.parse(raw) as Partial<AuthSnapshot>;
-    authState = {
+    // Có token -> xác thực lại với backend để lấy role + hồ sơ.
+    const me = await fetchMe();
+    commit({
       isReady: true,
-      isAuthenticated: Boolean(parsed.isAuthenticated),
-      isGuest: Boolean(parsed.isGuest),
-      currentUsername: parsed.currentUsername ?? null,
-      accounts:
-        Array.isArray(parsed.accounts) && parsed.accounts.length > 0
-          ? parsed.accounts
-          : [DEFAULT_ACCOUNT],
-    };
-  } catch (error) {
-    authState = { ...authState, isReady: true };
+      isAuthenticated: true,
+      role: me.role as MobileRole,
+      user: me as unknown as MobileUser,
+    });
+  } catch {
+    // Token hỏng/hết hạn -> dọn sạch.
+    await clearAuthToken().catch(() => {});
+    commit({
+      isReady: true,
+      isAuthenticated: false,
+      role: null,
+      user: null,
+    });
   }
-
-  notify();
 }
 
 void hydrateAuthState();
-
-function commit(nextState: AuthSnapshot) {
-  authState = nextState;
-  notify();
-  persistState(nextState);
-}
-
-function normalize(value: string) {
-  return value.trim().toLowerCase();
-}
-
-function buildUsername(email: string, accounts: AuthAccount[]) {
-  const base =
-    normalize(email)
-      .split("@")[0]
-      .replace(/[^a-z0-9]/g, "") || "driver";
-  let candidate = base;
-  let counter = 1;
-
-  while (
-    accounts.some(
-      (account) => account.username.toLowerCase() === candidate.toLowerCase(),
-    )
-  ) {
-    counter += 1;
-    candidate = `${base}${counter}`;
-  }
-
-  return candidate;
-}
 
 export function useAuth() {
   const [snapshot, setSnapshot] = useState<AuthSnapshot>(authState);
 
   useEffect(() => {
     void hydrateAuthState();
-    const subscriber = (nextState: AuthSnapshot) => setSnapshot(nextState);
+    const subscriber = (next: AuthSnapshot) => setSnapshot(next);
     subscribers.add(subscriber);
     setSnapshot(authState);
-
     return () => {
       subscribers.delete(subscriber);
     };
   }, []);
 
-  const currentAccount =
-    snapshot.accounts.find(
-      (account) => account.username === snapshot.currentUsername,
-    ) ?? null;
-
-  return {
-    ...snapshot,
-    currentAccount,
-  };
+  return snapshot;
 }
 
-export function signInAsGuest() {
-  commit({
-    ...authState,
-    isAuthenticated: true,
-    isGuest: true,
-    currentUsername: null,
-  });
-
-  return {
-    ok: true,
-  } as const;
-}
-
-export function signIn(identifier: string, password: string) {
-  const normalizedIdentifier = normalize(identifier);
-  const matchedAccount = authState.accounts.find(
-    (account) =>
-      account.username.toLowerCase() === normalizedIdentifier ||
-      account.email.toLowerCase() === normalizedIdentifier,
-  );
-
-  if (!matchedAccount || matchedAccount.password !== password) {
+/** Đăng nhập bằng email + mật khẩu. Backend tự xác định vai trò. */
+export async function signIn(email: string, password: string) {
+  try {
+    const result = await loginRequest(email.trim(), password);
+    await setAuthToken(result.token);
+    commit({
+      isReady: true,
+      isAuthenticated: true,
+      role: result.role,
+      user: result.user as MobileUser,
+    });
+    return { ok: true as const, role: result.role };
+  } catch (err: any) {
     return {
-      ok: false,
-      message: "Sai tên đăng nhập hoặc mật khẩu.",
-    } as const;
+      ok: false as const,
+      message: err?.message ?? "Đăng nhập thất bại",
+    };
   }
-
-  commit({
-    ...authState,
-    isAuthenticated: true,
-    isGuest: false,
-    currentUsername: matchedAccount.username,
-  });
-
-  return {
-    ok: true,
-    account: matchedAccount,
-  } as const;
 }
 
-export function signOut() {
+/** Đăng xuất: hủy phiên backend + xóa token cục bộ. */
+export async function signOut() {
+  await logoutRequest();
+  await clearAuthToken().catch(() => {});
   commit({
-    ...authState,
+    isReady: true,
     isAuthenticated: false,
-    isGuest: false,
-    currentUsername: null,
+    role: null,
+    user: null,
   });
-}
-
-export function registerAccount(input: RegisterAccountInput) {
-  const fullName = input.fullName.trim();
-  const phone = input.phone.trim();
-  const email = normalize(input.email);
-
-  if (
-    authState.accounts.some((account) => account.email.toLowerCase() === email)
-  ) {
-    return {
-      ok: false,
-      message: "Email đã được sử dụng.",
-    } as const;
-  }
-
-  const username = buildUsername(email, authState.accounts);
-  const account: AuthAccount = {
-    username,
-    fullName,
-    phone,
-    email,
-    password: input.password,
-    createdAt: new Date().toISOString(),
-  };
-
-  commit({
-    ...authState,
-    accounts: [...authState.accounts, account],
-  });
-
-  return {
-    ok: true,
-    account,
-  } as const;
-}
-
-export function recoverPassword(identifier: string, nextPassword: string) {
-  const normalizedIdentifier = normalize(identifier);
-  const index = authState.accounts.findIndex(
-    (account) =>
-      account.email.toLowerCase() === normalizedIdentifier ||
-      account.phone.replace(/\s+/g, "") ===
-        normalizedIdentifier.replace(/\s+/g, ""),
-  );
-
-  if (index < 0) {
-    return {
-      ok: false,
-      message: "Không tìm thấy tài khoản theo thông tin đã nhập.",
-    } as const;
-  }
-
-  const updatedAccounts = authState.accounts.map((account, currentIndex) =>
-    currentIndex === index
-      ? {
-          ...account,
-          password: nextPassword,
-        }
-      : account,
-  );
-
-  commit({
-    ...authState,
-    accounts: updatedAccounts,
-  });
-
-  return {
-    ok: true,
-    account: updatedAccounts[index],
-  } as const;
 }

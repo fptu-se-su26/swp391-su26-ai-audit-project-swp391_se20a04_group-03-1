@@ -53,18 +53,40 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
+import { RequirePermission, Can } from "@/lib/permissions";
+
+interface RoleRef {
+  _id: string;
+  roleCode: string;
+  roleName: string;
+}
 
 interface AdminUser {
   _id: string;
   fullName: string;
   email: string;
-  role: string;
+  role: RoleRef | string | null;
   isActive: boolean;
   createdAt: string;
 }
 
+// Hiển thị an toàn: role có thể là object (đã populate) hoặc string cũ.
+const roleLabel = (role: AdminUser["role"]) =>
+  role && typeof role === "object" ? role.roleName : role || "—";
+const roleId = (role: AdminUser["role"]) =>
+  role && typeof role === "object" ? role._id : (role as string) || "";
+
 export default function AdminsPage() {
+  return (
+    <RequirePermission resource="settings.admins" action="view">
+      <AdminsInner />
+    </RequirePermission>
+  );
+}
+
+function AdminsInner() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const [roleOptions, setRoleOptions] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
@@ -80,7 +102,7 @@ export default function AdminsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState<AdminUser | null>(null);
 
-  const [addRole, setAddRole] = useState("Admin");
+  const [addRole, setAddRole] = useState("");
   const [addStatus, setAddStatus] = useState("active");
   const [editRole, setEditRole] = useState("");
   const [editStatus, setEditStatus] = useState("");
@@ -164,6 +186,30 @@ export default function AdminsPage() {
   useEffect(() => {
     fetchAdmins();
   }, [currentPage, debouncedSearchQuery, statusFilter]);
+
+  // Nạp danh sách vai trò (Active) để đổ vào dropdown.
+  useEffect(() => {
+    const loadRoles = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/settings/roles?limit=100&status=Active`,
+          { credentials: "include" },
+        );
+        const data = await res.json();
+        if (data.code === "success") {
+          const opts = data.data.map((r: any) => ({
+            value: r._id,
+            label: r.roleName,
+          }));
+          setRoleOptions(opts);
+          if (opts.length > 0) setAddRole((prev) => prev || opts[0].value);
+        }
+      } catch {
+        /* ignore — dropdown sẽ rỗng */
+      }
+    };
+    loadRoles();
+  }, []);
 
   useEffect(() => {
     if (isAddModalOpen && formElement) {
@@ -322,7 +368,7 @@ export default function AdminsPage() {
 
   const openEditModal = (admin: AdminUser) => {
     setEditingAdmin(admin);
-    setEditRole(admin.role);
+    setEditRole(roleId(admin.role));
     setEditStatus(admin.isActive ? "active" : "pending");
     setIsEditModalOpen(true);
   };
@@ -356,12 +402,14 @@ export default function AdminsPage() {
               Thùng rác
             </Button>
           </Link>
-          <Button
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
-          >
-            <Plus className="h-5 w-5 mr-1" /> Thêm Admin
-          </Button>
+          <Can resource="settings.admins" action="create">
+            <Button
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
+            >
+              <Plus className="h-5 w-5 mr-1" /> Thêm Admin
+            </Button>
+          </Can>
         </div>
       </div>
 
@@ -499,30 +547,35 @@ export default function AdminsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]">
-                        {admin.role}
+                        {roleLabel(admin.role)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         {admin.isActive === false && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
-                            onClick={() => handleApprove(admin._id, "active")}
-                            title="Duyệt tài khoản"
-                          >
-                            Duyệt ngay
-                          </Button>
+                          <Can resource="settings.admins" action="update">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="bg-[#1ed760]/10 hover:bg-[#1ed760] text-[#1db954] hover:text-[#121212] rounded-[500px] h-8 px-4 text-[11px] font-black uppercase tracking-wider border-none transition-colors"
+                              onClick={() => handleApprove(admin._id, "active")}
+                              title="Duyệt tài khoản"
+                            >
+                              Duyệt ngay
+                            </Button>
+                          </Can>
                         )}
-                        <Button
-                          variant="ghost"
-                          className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
-                          onClick={() => openEditModal(admin)}
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </Button>
+                        <Can resource="settings.admins" action="update">
+                          <Button
+                            variant="ghost"
+                            className="bg-[#eeeeee] dark:bg-[#272727] hover:bg-[#1ed760] hover:text-[#121212] text-[#121212] dark:text-[#ffffff] rounded-[500px] h-8 w-8 p-0 border-none transition-colors"
+                            onClick={() => openEditModal(admin)}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                        </Can>
 
+                        <Can resource="settings.admins" action="delete">
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
@@ -559,6 +612,7 @@ export default function AdminsPage() {
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
+                        </Can>
                       </div>
                     </td>
                   </tr>
@@ -693,17 +747,7 @@ export default function AdminsPage() {
                 name="role"
                 value={addRole}
                 onChange={setAddRole}
-                options={[
-                  { value: "Admin", label: "Admin (Quản trị viên)" },
-                  {
-                    value: "Manager",
-                    label: "Manager (Quản lý cấp trung)",
-                  },
-                  {
-                    value: "SuperAdmin",
-                    label: "Super Admin (Quản trị cấp cao)",
-                  },
-                ]}
+                options={roleOptions}
                 className="w-full"
               />
             </div>
@@ -799,17 +843,7 @@ export default function AdminsPage() {
                 name="role"
                 value={editRole}
                 onChange={setEditRole}
-                options={[
-                  { value: "Admin", label: "Admin (Quản trị viên)" },
-                  {
-                    value: "Manager",
-                    label: "Manager (Quản lý cấp trung)",
-                  },
-                  {
-                    value: "SuperAdmin",
-                    label: "Super Admin (Quản trị cấp cao)",
-                  },
-                ]}
+                options={roleOptions}
                 className="w-full"
               />
             </div>

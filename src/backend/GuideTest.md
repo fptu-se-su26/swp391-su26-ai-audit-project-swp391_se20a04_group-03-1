@@ -36,6 +36,51 @@ Mở terminal và di chuyển vào thư mục `src/backend`:
   ```
   *Mẹo: Mở file `coverage/lcov-report/index.html` lên bằng trình duyệt, bạn sẽ thấy chi tiết giao diện màu xanh (đã test) và màu đỏ (chưa được chạy tới) của file code gốc.*
 
+- **Chạy riêng test cho AuthController (login / register / logout / forgot / reset):**
+  ```bash
+  npm run test:auth
+  ```
+  Đo coverage riêng cho `controllers/auth.controller.ts` (báo cáo tại
+  `coverage/auth/index.html`). Hiện đạt **100%** line/branch/statement.
+
+- **Chạy dummy/sample test (kiểm tra nhanh môi trường Jest):**
+  ```bash
+  npm run test:sample
+  ```
+
+---
+
+## 2.1. Các Script Test & Config Tách Biệt
+
+Ngoài `jest.config.js` chính, dự án có thêm vài **config Jest riêng** để chạy độc
+lập một nhóm test mà không dính ràng buộc coverage của suite chính:
+
+| Script | Config | Mục đích |
+| --- | --- | --- |
+| `npm run test` | `jest.config.js` | Chạy toàn bộ suite (Unit + Integration). |
+| `npm run test:auth` | `jest.auth.config.js` | Chỉ chạy `tests/auth.controller.test.ts`, đo coverage riêng cho `auth.controller.ts` (ngưỡng ≥ 80%). |
+| `npm run test:sample` | `jest.sample.config.js` | Chỉ chạy `tests/sample.dummy.test.ts` (dummy, không đo coverage). |
+
+**Vì sao tách config `test:auth` / `test:sample`?**
+`jest.config.js` chính bật `collectCoverage` + `coverageThreshold 80%` giới hạn trên
+một số file nghiệp vụ cụ thể. Nếu chạy lẻ một file test qua config chính, coverage
+sẽ không đạt ngưỡng và báo đỏ dù test PASS. Các config riêng giúp mỗi nhóm test
+chạy sạch và đo đúng phạm vi của nó.
+
+### Biến môi trường test — `.env.test`
+
+Các config trên nạp biến môi trường từ **`.env.test`** (thay cho `.env`). File này
+được **gitignore** (mỗi máy tự giữ). Sau khi clone, copy từ template:
+
+```bash
+# tại thư mục src/backend
+cp .env.test.example .env.test         # Bash
+# Copy-Item .env.test.example .env.test    # PowerShell
+```
+
+> Chỉ đặt **giá trị giả** trong `.env.test` (test dùng `MongoMemoryServer` và mock
+> Redis nên không cần DB/secret thật).
+
 ---
 
 ## 3. Hướng Dẫn Viết Unit Test (node-mocks-http)

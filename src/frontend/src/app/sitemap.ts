@@ -10,12 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 1,
     },
-    {
-      url: `${baseUrl}/admin/dashboard`,
-      lastModified: new Date(),
-      changeFrequency: "always",
-      priority: 0.8,
-    },
-    // Bạn có thể fetch API để thêm các trang động (dynamic routes) vào đây
+    // Khu vực admin & cổng đăng nhập KHÔNG đưa vào sitemap (nội bộ, không public).
   ];
 }

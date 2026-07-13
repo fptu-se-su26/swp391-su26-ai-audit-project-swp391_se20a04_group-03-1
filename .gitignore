@@ -46,6 +46,10 @@ htmlcov/
 .pytest_cache/
 .coverage
 .coverage.*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/
 
 # ── Cache & Temp ────────────────────────────────────────────
 .cache/

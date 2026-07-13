@@ -7,12 +7,14 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Chặn các bot index các trang nhạy cảm hoặc rác
+      // Chặn bot index toàn bộ khu vực quản trị & cổng đăng nhập nội bộ.
       disallow: [
-        "/admin/trash/*", 
-        "/admin/*/trash",
-        "/.next/", 
-        "/api/"
+        "/admin",
+        "/admin/",
+        "/client",
+        "/client/",
+        "/.next/",
+        "/api/",
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,

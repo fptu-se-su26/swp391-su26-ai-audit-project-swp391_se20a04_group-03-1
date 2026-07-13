@@ -1,83 +1,56 @@
-import React from 'react';
-import { View, Text, Modal, Image, Pressable, StyleSheet, Platform } from 'react-native';
-import styles from '../style/Dashboard.style';
+import React from "react";
+import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import { palette, radii, spacing } from "@/shared/theme";
+import type { DriverAppointment } from "@/shared/types";
 
-type Profile = {
-  fullName: string;
-  license: string;
-  company?: string;
-  avatarUrl?: string;
-  vehicleNumber?: string;
-  parkingZone?: string;
-  parkingSlot?: string;
-};
-
-type Appointment = {
-  code: string;
-  time?: string;
-};
-
+// Thẻ thông hành tài xế — QR sinh động theo từng lịch hẹn (qrToken).
 export default function DriverPassModal({
   visible,
   onClose,
-  profile,
   appointment,
-  verified,
+  driverName,
 }: {
   visible: boolean;
   onClose: () => void;
-  profile: Profile;
-  appointment?: Appointment;
-  verified?: boolean;
+  appointment?: DriverAppointment | null;
+  driverName?: string;
 }) {
-  const showParkingInfo = Boolean(verified);
-
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.qrModalOverlay}>
-        <View style={[styles.qrModalInner, localStyles.passContainer]}>
-          <View style={[styles.qrModalFrame, localStyles.passFrame]}>
-            <Image
-              source={require('../../../../assets/images/qr.png')}
-              style={localStyles.passQr}
-              resizeMode="contain"
-            />
-            <View style={localStyles.passBadge}>
-              <Text style={localStyles.passBadgeText}>PORT DRIVER PASS</Text>
-            </View>
-            <View style={localStyles.infoPanel}>
-              <Text style={localStyles.infoLabel}>MÃ LỊCH HẸN</Text>
-              <Text style={localStyles.infoValue}>{appointment?.code ?? 'AP-1024'}</Text>
+      <View style={styles.overlay}>
+        <View style={styles.frame}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>PORT DRIVER PASS</Text>
+          </View>
 
-              <Text style={localStyles.infoLabel}>TÀI XẾ</Text>
-              <Text style={localStyles.infoValue}>{profile.fullName}</Text>
-
-              <Text style={localStyles.infoLabel}>BIỂN SỐ</Text>
-              <Text style={localStyles.infoValue}>{profile.vehicleNumber ?? '-'}</Text>
-
-              <Text style={localStyles.infoLabel}>KHUNG GIỜ</Text>
-              <Text style={localStyles.infoValue}>{appointment?.time ?? '09:30'}</Text>
-            </View>
-
-            {showParkingInfo && (
-              <View style={localStyles.parkingPanel}>
-                <Text style={localStyles.parkingTitle}>THÔNG TIN Ô ĐỖ XE</Text>
-                <View style={localStyles.parkingGrid}>
-                  <View style={localStyles.parkingItem}>
-                    <Text style={localStyles.parkingLabel}>KHU ĐỖ XE</Text>
-                    <Text style={localStyles.parkingValue}>{profile.parkingZone ?? 'Khu A'}</Text>
-                  </View>
-                  <View style={localStyles.parkingItem}>
-                    <Text style={localStyles.parkingLabel}>Ô ĐỖ XE</Text>
-                    <Text style={localStyles.parkingValue}>{profile.parkingSlot ?? 'A-18'}</Text>
-                  </View>
-                </View>
-              </View>
+          <View style={styles.qrBox}>
+            {appointment?.qrToken ? (
+              <QRCode
+                value={appointment.qrToken}
+                size={220}
+                backgroundColor="#ffffff"
+                color="#05140b"
+              />
+            ) : (
+              <Text style={styles.qrPlaceholder}>Không có mã QR</Text>
             )}
           </View>
 
-          <Pressable style={[styles.resetButton, localStyles.closeButton]} onPress={onClose} accessibilityRole="button">
-            <Text style={[styles.resetButtonText, localStyles.closeButtonText]}>Đóng</Text>
+          <Text style={styles.scanHint}>
+            Đưa mã cho nhân viên cổng quét để vào cảng
+          </Text>
+
+          <View style={styles.infoPanel}>
+            <Row label="MÃ LỊCH HẸN" value={appointment?.code ?? "-"} />
+            <Row label="TÀI XẾ" value={driverName ?? "-"} />
+            <Row label="BIỂN SỐ" value={appointment?.truckPlate ?? "-"} />
+            <Row label="CONTAINER" value={appointment?.containerNo ?? "-"} />
+            <Row label="KHUNG GIỜ" value={appointment?.timeSlot ?? "-"} />
+          </View>
+
+          <Pressable style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Đóng</Text>
           </Pressable>
         </View>
       </View>
@@ -85,109 +58,99 @@ export default function DriverPassModal({
   );
 }
 
-const localStyles = StyleSheet.create({
-  passContainer: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  passFrame: {
-    width: 340,
-    padding: 18,
-    alignItems: 'center',
-    backgroundColor: '#0b1220',
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      <Text style={styles.rowValue}>{value}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.72)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.lg,
+  },
+  frame: {
+    width: "100%",
+    maxWidth: 360,
+    backgroundColor: palette.surface,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(246, 192, 106, 0.28)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.22,
-    shadowRadius: 22,
-    elevation: 14,
+    borderColor: palette.borderStrong,
+    padding: spacing.lg,
+    alignItems: "center",
   },
-  passQr: {
-    width: 240,
-    height: 240,
-    borderRadius: 12,
-    backgroundColor: '#f7f0e4',
-    padding: 12,
-  },
-  passBadge: {
-    marginTop: 10,
-    backgroundColor: '#071426',
+  badge: {
+    backgroundColor: palette.surfaceMuted,
     paddingHorizontal: 16,
     paddingVertical: 7,
     borderRadius: 22,
-    alignSelf: 'center',
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: palette.borderStrong,
   },
-  passBadgeText: {
-    color: '#f6c06a',
-    fontWeight: '900',
+  badgeText: {
+    color: palette.accent,
+    fontWeight: "900",
     letterSpacing: 1.3,
     fontSize: 12,
-    fontFamily: Platform.select({ ios: 'Avenir Next Condensed', android: 'sans-serif-condensed', default: undefined }),
   },
-  infoPanel: { marginTop: 18, width: '100%', paddingHorizontal: 6 },
-  infoLabel: {
-    color: '#92a4c6',
-    fontSize: 10,
-    fontWeight: '800',
-    marginTop: 10,
-    letterSpacing: 1.3,
-    fontFamily: Platform.select({ ios: 'Avenir Next Condensed', android: 'sans-serif-condensed', default: undefined }),
-  },
-  infoValue: {
-    color: '#f6f7fb',
-    fontSize: 16,
-    fontWeight: Platform.OS === 'ios' ? '800' : '700',
-    marginTop: 2,
-    lineHeight: 21,
-  },
-  parkingPanel: {
-    width: '100%',
-    marginTop: 16,
-    padding: 12,
+  qrBox: {
+    backgroundColor: "#ffffff",
+    padding: 14,
     borderRadius: 16,
-    backgroundColor: 'rgba(246, 192, 106, 0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(246, 192, 106, 0.22)',
   },
-  parkingTitle: {
-    color: '#f6c06a',
-    fontSize: 11,
-    fontWeight: '900',
-    letterSpacing: 1.2,
-    marginBottom: 10,
-    fontFamily: Platform.select({ ios: 'Avenir Next Condensed', android: 'sans-serif-condensed', default: undefined }),
+  qrPlaceholder: {
+    width: 220,
+    height: 220,
+    textAlign: "center",
+    textAlignVertical: "center",
+    color: "#64748b",
   },
-  parkingGrid: {
-    flexDirection: 'row',
-    gap: 10,
+  scanHint: {
+    color: palette.textMuted,
+    fontSize: 12,
+    marginTop: spacing.md,
+    textAlign: "center",
   },
-  parkingItem: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 14,
-    backgroundColor: 'rgba(7, 20, 38, 0.72)',
-    borderWidth: 1,
-    borderColor: 'rgba(185, 204, 234, 0.12)',
+  infoPanel: { marginTop: spacing.md, width: "100%" },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: palette.surfaceMuted,
   },
-  parkingLabel: {
-    color: '#9cb0d1',
-    fontSize: 9,
-    fontWeight: '800',
+  rowLabel: {
+    color: palette.textSubtle,
+    fontSize: 10,
+    fontWeight: "800",
     letterSpacing: 1.1,
-    marginBottom: 4,
   },
-  parkingValue: {
-    color: '#f8fafc',
+  rowValue: {
+    color: palette.text,
     fontSize: 15,
-    fontWeight: '900',
+    fontWeight: "800",
+    maxWidth: "62%",
+    textAlign: "right",
   },
   closeButton: {
-    backgroundColor: '#f6a313',
-    shadowColor: '#f6a313',
-    shadowOpacity: 0.25,
+    marginTop: spacing.lg,
+    backgroundColor: palette.accent,
+    borderRadius: radii.lg,
+    paddingVertical: 13,
+    width: "100%",
+    alignItems: "center",
   },
   closeButtonText: {
-    color: '#071122',
-    fontWeight: '900',
+    color: palette.ink,
+    fontWeight: "900",
+    fontSize: 15,
   },
 });

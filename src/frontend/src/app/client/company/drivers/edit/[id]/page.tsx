@@ -13,6 +13,7 @@ import { Loader2, ArrowLeft, Search } from "lucide-react";
 import { useState, useEffect, useRef, use } from "react";
 import JustValidate from "just-validate";
 import Link from "next/link";
+import { CustomSelect } from "@/components/CustomSelect";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -27,6 +28,7 @@ export default function EditDriverPage({
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [driver, setDriver] = useState<any>(null);
+  const [driverStatus, setDriverStatus] = useState("Inactive");
 
   
 
@@ -47,6 +49,7 @@ export default function EditDriverPage({
 
         const d = data.data;
         setDriver(d);
+        setDriverStatus(d.status || "Inactive");
       } catch (err: any) {
         toast.error(err.message || "Không thể tải dữ liệu.");
       } finally {
@@ -70,15 +73,33 @@ export default function EditDriverPage({
     validator
       .addField("#driverId", [{ rule: "required", errorMessage: "Bắt buộc." }])
       .addField("#driverName", [{ rule: "required", errorMessage: "Bắt buộc." }])
+      .addField("#driverEmail", [
+        {
+          validator: (value: string) =>
+            !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+          errorMessage: "Email không hợp lệ.",
+        },
+      ])
+      .addField("#driverPassword", [
+        {
+          validator: (value: string) => !value || value.length >= 6,
+          errorMessage: "Mật khẩu phải từ 6 ký tự.",
+        },
+      ])
       .onSuccess(async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current!);
-        const payload = {
-          driverId: formData.get("driverId")?.toString().trim(),
-          driverName: formData.get("driverName")?.toString().trim(),
-          driverPhone: formData.get("driverPhone")?.toString().trim(),
-          
+        const payload: Record<string, string> = {
+          driverId: formData.get("driverId")?.toString().trim() || "",
+          driverName: formData.get("driverName")?.toString().trim() || "",
+          driverPhone: formData.get("driverPhone")?.toString().trim() || "",
+          // email luôn gửi (kể cả rỗng) để backend có thể gỡ tài khoản khi xóa email.
+          email: formData.get("email")?.toString().trim() || "",
+          status: formData.get("status")?.toString() || "Inactive",
         };
+        // Mật khẩu chỉ gửi khi nhập mới (bỏ trống = giữ nguyên).
+        const newPassword = formData.get("password")?.toString() || "";
+        if (newPassword) payload.password = newPassword;
 
         const loadingToast = toast.loading("Đang lưu thay đổi...");
         try {
@@ -196,6 +217,62 @@ export default function EditDriverPage({
                 />
               </div>
             </div>
+
+            {/* Tài khoản đăng nhập app (tùy chọn) */}
+            <div className="pt-2">
+              <p className="text-[12px] font-black uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff] mb-1">
+                Tài khoản đăng nhập app (tùy chọn)
+              </p>
+              <p className="text-[13px] font-bold text-[#666666] dark:text-[#b3b3b3] mb-5">
+                Nhập email để cấp tài khoản mobile. Để trống ô mật khẩu nếu không
+                đổi mật khẩu. Xóa email để gỡ quyền đăng nhập của tài xế.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label htmlFor="driverEmail" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Email đăng nhập
+                  </Label>
+                  <Input
+                    id="driverEmail"
+                    name="email"
+                    type="email"
+                    autoComplete="off"
+                    defaultValue={driver?.email || ""}
+                    placeholder="VD: taixe@congty.vn"
+                    className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label htmlFor="driverPassword" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Mật khẩu mới
+                  </Label>
+                  <Input
+                    id="driverPassword"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Để trống nếu không đổi"
+                    className="bg-[#ffffff] dark:bg-[#121212] border border-[#d6dbde] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[4px] focus-visible:ring-0 focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] hover:border-[#00754A] transition-colors"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label htmlFor="driverStatus" className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
+                    Trạng thái
+                  </Label>
+                  <CustomSelect
+                    id="driverStatus"
+                    name="status"
+                    value={driverStatus}
+                    onChange={setDriverStatus}
+                    options={[
+                      { value: "Active", label: "Kích hoạt (đăng nhập được)" },
+                      { value: "Inactive", label: "Chưa kích hoạt" },
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="flex gap-4 justify-end pt-8">
               <Link href="/client/company/drivers">
                 <Button 

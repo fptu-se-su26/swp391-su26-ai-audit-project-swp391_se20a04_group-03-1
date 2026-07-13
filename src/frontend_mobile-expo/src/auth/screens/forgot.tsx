@@ -1,198 +1,111 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as Haptics from "expo-haptics";
-import React, { useMemo, useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import React from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { palette, radii, spacing } from "@/shared/theme";
 
-import { recoverPassword } from "@/shared/state/auth";
-import styles from "../style/Forgot.style";
-
+// Tài khoản mobile do quản trị viên/công ty cấp -> không tự đặt lại mật khẩu.
+// Màn này hướng dẫn liên hệ để được cấp lại.
 export default function ForgotScreen() {
   const router = useRouter();
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const errors = useMemo(() => {
-    const result: Record<string, string> = {};
-    const trimmedIdentifier = identifier.trim();
-
-    if (submitted && trimmedIdentifier.length < 5)
-      result.identifier = "Nhập số điện thoại hoặc email để khôi phục.";
-    if (submitted && password.length < 6)
-      result.password = "Mật khẩu mới tối thiểu 6 ký tự.";
-    if (submitted && confirmPassword !== password)
-      result.confirmPassword = "Mật khẩu xác nhận không khớp.";
-    return result;
-  }, [confirmPassword, identifier, password, submitted]);
-
-  async function handleRecovery() {
-    setSubmitted(true);
-
-    if (Object.keys(errors).length > 0) {
-      Alert.alert(
-        "Thông tin chưa hợp lệ",
-        "Vui lòng kiểm tra lại form khôi phục.",
-      );
-      try {
-        await Haptics.notificationAsync(
-          Haptics.NotificationFeedbackType.Warning,
-        );
-      } catch (error) {
-        // ignore haptics on web / unsupported devices
-      }
-      return;
-    }
-
-    const result = recoverPassword(identifier, password);
-    if (!result.ok) {
-      Alert.alert("Khôi phục thất bại", result.message);
-      try {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      } catch (error) {
-        // ignore haptics on web / unsupported devices
-      }
-      return;
-    }
-
-    try {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch (error) {
-      // ignore haptics on web / unsupported devices
-    }
-
-    Alert.alert(
-      "Khôi phục thành công",
-      "Mật khẩu đã được cập nhật. Hãy đăng nhập lại.",
-      [{ text: "Về trang đăng nhập", onPress: () => router.replace("/login") }],
-    );
-  }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.screen}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
-      >
+    <View style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.card}>
-          <View style={styles.brandRow}>
-            <View style={styles.brandMark}>
-              <Ionicons name="key-outline" size={18} color="#0b1d33" />
-            </View>
-            <View>
-              <Text style={styles.kicker}>KHÔI PHỤC TÀI KHOẢN</Text>
-              <Text style={styles.title}>Quên mật khẩu</Text>
-            </View>
+          <View style={styles.iconCircle}>
+            <Ionicons name="key-outline" size={28} color={palette.accent} />
           </View>
-
-          <Text style={styles.subtitle}>
-            Nhập số điện thoại hoặc email đã đăng ký để tạo mật khẩu mới.
+          <Text style={styles.title}>Quên mật khẩu?</Text>
+          <Text style={styles.body}>
+            Tài khoản trên ứng dụng do quản trị viên hệ thống hoặc công ty của
+            bạn cấp. Để được cấp lại mật khẩu, vui lòng liên hệ:
           </Text>
 
-          <Field
-            label="Số điện thoại / Email"
-            icon="mail-open-outline"
-            value={identifier}
-            onChangeText={setIdentifier}
-            placeholder="Nhập số điện thoại hoặc email"
-            autoCapitalize="none"
-            error={errors.identifier}
-          />
+          <View style={styles.infoBlock}>
+            <Row
+              icon="business-outline"
+              label="Tài xế"
+              value="Liên hệ công ty vận tải quản lý tài khoản của bạn."
+            />
+            <Row
+              icon="shield-checkmark-outline"
+              label="Quản lý cổng"
+              value="Liên hệ quản trị viên cảng (bộ phận vận hành)."
+            />
+          </View>
 
-          <Field
-            label="Mật khẩu mới"
-            icon="lock-closed-outline"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Nhập mật khẩu mới"
-            secureTextEntry
-            autoCapitalize="none"
-            error={errors.password}
-          />
-
-          <Field
-            label="Xác nhận mật khẩu"
-            icon="shield-checkmark-outline"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            placeholder="Nhập lại mật khẩu mới"
-            secureTextEntry
-            autoCapitalize="none"
-            error={errors.confirmPassword}
-          />
-
-          <Pressable
-            onPress={handleRecovery}
-            style={({ pressed }) => [
-              styles.submitButton,
-              pressed && styles.submitButtonPressed,
-            ]}
-          >
-            <Text style={styles.submitButtonText}>Khôi phục tài khoản</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => router.replace("/login")}
-            style={styles.linkWrap}
-          >
-            <Text style={styles.link}>Quay lại đăng nhập</Text>
+          <Pressable onPress={() => router.replace("/login")} style={styles.button}>
+            <Text style={styles.buttonText}>Quay lại đăng nhập</Text>
           </Pressable>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
-  );
-}
-
-type FieldProps = {
-  label: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  value: string;
-  onChangeText: (value: string) => void;
-  placeholder: string;
-  error?: string;
-  secureTextEntry?: boolean;
-  autoCapitalize?: "none" | "sentences" | "words" | "characters";
-};
-
-function Field({
-  label,
-  icon,
-  value,
-  onChangeText,
-  placeholder,
-  error,
-  secureTextEntry,
-  autoCapitalize = "sentences",
-}: FieldProps) {
-  return (
-    <View style={styles.fieldGroup}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={[styles.inputWrap, error ? styles.inputWrapError : null]}>
-        <Ionicons name={icon} size={18} color="#8aa0bf" />
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor="#7f93ae"
-          style={styles.input}
-          secureTextEntry={secureTextEntry}
-          autoCapitalize={autoCapitalize}
-        />
-      </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 }
+
+function Row({
+  icon,
+  label,
+  value,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.row}>
+      <Ionicons name={icon} size={18} color={palette.accent} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.rowLabel}>{label}</Text>
+        <Text style={styles.rowValue}>{value}</Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: palette.bgDeep },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: spacing.lg,
+  },
+  card: {
+    backgroundColor: palette.surface,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: palette.borderSoft,
+    padding: spacing.lg,
+  },
+  iconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 9999,
+    backgroundColor: palette.surfaceMuted,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: palette.borderStrong,
+    marginBottom: spacing.md,
+  },
+  title: { color: palette.text, fontSize: 22, fontWeight: "900" },
+  body: {
+    color: palette.textMuted,
+    fontSize: 14,
+    lineHeight: 21,
+    marginTop: 8,
+  },
+  infoBlock: { marginTop: spacing.lg, gap: spacing.md },
+  row: { flexDirection: "row", gap: 12, alignItems: "flex-start" },
+  rowLabel: { color: palette.text, fontSize: 15, fontWeight: "800" },
+  rowValue: { color: palette.textMuted, fontSize: 13, marginTop: 2, lineHeight: 18 },
+  button: {
+    marginTop: spacing.xl,
+    backgroundColor: palette.accent,
+    borderRadius: radii.lg,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  buttonText: { color: palette.ink, fontWeight: "900", fontSize: 15 },
+});

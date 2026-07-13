@@ -77,18 +77,19 @@ describe('Appointment Integration Tests (Supertest)', () => {
         .post('/api/appointments/create')
         .send(payload);
 
-      // Thường Express trả 200 mặc định nếu không set tường minh res.status(201)
-      expect([200, 201]).toContain(response.status); 
+      expect(response.status).toBe(201); 
       expect(response.body.code).toBe('success');
       
       const savedApp = await Appointment.findOne({ truckPlate: '51C12345' });
       expect(savedApp).toBeTruthy();
       expect(savedApp?.containerNo).toBe('MSGU1234567');
+      expect(savedApp?.status).toBe('Pending');
     });
 
     it('TC_INT_2: should return Error if validation fails (Missing truckPlate)', async () => {
       const payload = {
         scheduledDate: '2026-12-01',
+        driverId: new mongoose.Types.ObjectId().toString(),
         timeSlot: '08:00-09:00',
         containerNo: 'MSGU1234567',
         purpose: 'Lấy container'
@@ -98,8 +99,7 @@ describe('Appointment Integration Tests (Supertest)', () => {
         .post('/api/appointments/create')
         .send(payload);
 
-      // Validate Joi trả về HTTP 200 và code="error"
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
       expect(response.body.code).toBe('error');
     });
 
@@ -141,9 +141,46 @@ describe('Appointment Integration Tests (Supertest)', () => {
         .post('/api/appointments/create')
         .send(payload);
 
-      expect(response.status).toBe(200); // Controller thực tế trả 200 kèm code error
+      expect(response.status).toBe(400); // Controller thực tế trả 400 kèm code error
       expect(response.body.code).toBe('error');
       expect(response.body.message).toContain('đã đầy');
+    });
+
+    it('TC_INT_5: Edge case: Thời gian trong quá khứ -> HTTP 400 Bad Request', async () => {
+      const payload = {
+        truckPlate: '51C12345',
+        driverId: new mongoose.Types.ObjectId().toString(),
+        scheduledDate: '2000-01-01', // Thời gian trong quá khứ
+        timeSlot: '08:00-09:00',
+        containerNo: 'MSGU1234567',
+        purpose: 'Lấy container'
+      };
+
+      const response = await request(app)
+        .post('/api/appointments/create')
+        .send(payload);
+
+      expect(response.status).toBe(400);
+      expect(response.body.code).toBe('error');
+      expect(response.body.message).toBe('Ngày hẹn không được trong quá khứ.');
+    });
+
+    it('TC_INT_6: Edge case: Thiếu thông tin xe/tài xế (Missing driverId) -> HTTP 400 Bad Request', async () => {
+      const payload = {
+        truckPlate: '51C12345',
+        // Thiếu driverId
+        scheduledDate: '2026-12-01',
+        timeSlot: '08:00-09:00',
+        containerNo: 'MSGU1234567',
+        purpose: 'Lấy container'
+      };
+
+      const response = await request(app)
+        .post('/api/appointments/create')
+        .send(payload);
+
+      expect(response.status).toBe(400);
+      expect(response.body.code).toBe('error');
     });
   });
 
