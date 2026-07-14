@@ -1,9 +1,18 @@
-
-ultralytics
-easyocr
+# ============================================================
+# CORE — bắt buộc cho cả Pi 5 (Hailo) lẫn laptop
+# ============================================================
+opencv-python
+numpy<2                 # BẮT BUỘC <2: hailo_platform + onnxruntime chưa hỗ trợ numpy 2.x
+scipy                   # CentroidTracker (scipy.spatial.distance)
 flask
 flask-cors
 requests
-opencv-python
-numpy
+rapidocr-onnxruntime    # OCR nhẹ (ONNXRuntime + PP-OCRv4 mobile) — backend mặc định
+
+# ============================================================
+# CHỈ cần khi TEST trên laptop (không có Hailo) hoặc dùng OCR_ENGINE=easyocr.
+# Trên Pi 5 + Hailo + RapidOCR có thể BỎ QUA cả nhóm này để nhẹ máy (khỏi cài torch).
+# ============================================================
+ultralytics             # detection fallback bằng YOLO .pt (kéo theo torch)
+easyocr                 # OCR fallback (kéo theo torch)
 ncnn

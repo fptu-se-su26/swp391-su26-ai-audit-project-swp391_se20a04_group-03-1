@@ -1,7 +1,6 @@
 import cv2
 import os
 import sys
-import easyocr
 import re
 import time
 import threading
@@ -9,8 +8,22 @@ import numpy as np
 from collections import Counter
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
-import torch
-from ultralytics import YOLO
+
+# torch chỉ cần cho nhánh detection Ultralytics (khi KHÔNG có Hailo) và cho EasyOCR.
+# Trên Pi 5 + Hailo + RapidOCR có thể GỠ HẲN torch/ultralytics/easyocr cho nhẹ máy,
+# nên import "mềm" — thiếu cũng không sao.
+try:
+    import torch
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
+
+# RapidOCR (ONNXRuntime + PP-OCRv4 mobile): OCR nhẹ, KHÔNG cần torch. Ưu tiên dùng.
+try:
+    from rapidocr_onnxruntime import RapidOCR
+    HAS_RAPIDOCR = True
+except ImportError:
+    HAS_RAPIDOCR = False
 
 try:
     from src.services.hailo_yolo import HailoYOLO, HAILO_AVAILABLE, HAILO_SCHEDULER_AVAILABLE
@@ -26,6 +39,7 @@ from src.config import (
     OCR_CONFIDENCE_THRESHOLD,
     OCR_LANGUAGES,
     DETECT_INTERVAL,
+    OCR_ENGINE,
 )
 from src.services.api_client import send_scan_event
 
@@ -241,30 +255,89 @@ GLOBAL_CONTAINER_OCR_LOCK = threading.Lock()
 
 OCR_ALLOWLIST = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
-# Khoảng lặng (giây) để coi như "xe mới": nếu không có mẫu OCR hợp lệ nào trong
-# ngần này giây thì bộ đếm vote được reset để bắt đầu chốt cho xe kế tiếp.
-VOTE_RESET_GAP = 6.0
+
+def _resolve_ocr_backend():
+    """Chọn backend OCR thực tế: ưu tiên OCR_ENGINE, fallback easyocr nếu thiếu rapidocr."""
+    want = (OCR_ENGINE or "rapidocr").lower()
+    if want == "rapidocr":
+        if HAS_RAPIDOCR:
+            return "rapidocr"
+        print("[AI] OCR_ENGINE=rapidocr nhưng chưa cài rapidocr-onnxruntime → fallback easyocr.")
+    return "easyocr"
+
+
+class _OCRReader:
+    """
+    Bọc EasyOCR hoặc RapidOCR về CÙNG MỘT API: .read(img) → [(box4, text, prob), ...]
+    với box4 = 4 điểm [[x,y],...] (cùng quy ước cho cả hai backend).
+    """
+    def __init__(self, backend, engine, allowlist=None):
+        self.backend = backend
+        self.engine = engine
+        self.allowlist = allowlist
+
+    def read(self, img):
+        if self.backend == "rapidocr":
+            # use_cls=False: bỏ bước phân loại xoay 180° cho nhanh (ảnh cổng thường đứng).
+            res, _ = self.engine(img, use_cls=False)
+            return list(res) if res else []
+        out = self.engine.readtext(img, allowlist=self.allowlist)
+        return [(box, text, prob) for (box, text, prob) in out]
+
+
+def _preprocess_for_ocr(image, task_type, backend):
+    """Tiền xử lý theo backend: EasyOCR thích ảnh xám CLAHE; RapidOCR (PP-OCR) tự chuẩn
+    hoá tốt hơn trên ảnh màu, chỉ cần phóng to đủ để chữ rõ."""
+    if backend == "rapidocr":
+        if image is None or image.size == 0:
+            return image
+        h, w = image.shape[:2]
+        target_h = 64 if task_type == "plate" else 56
+        if 0 < h < target_h:
+            scale = target_h / h
+            image = cv2.resize(image, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_CUBIC)
+        if image.ndim == 2:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        return image
+    # easyocr
+    return preprocess_image_plate(image) if task_type == "plate" else preprocess_image_container(image)
+
+
+# Khoảng lặng DETECTION (giây) để coi như "xe mới".
+# QUAN TRỌNG: mốc thời gian được làm mới mỗi khi CÓ DETECTION (xem _touch_vote),
+# KHÔNG phải mỗi khi OCR ra kết quả. OCR trên CPU chậm nên nếu tính theo OCR thì rất
+# dễ reset nhầm GIỮA CHỪNG một xe → phiếu không bao giờ đủ để chốt. Tính theo detection
+# thì khi xe còn trong khung, bộ đếm luôn "sống" và tích luỹ; chỉ reset khi xe đã rời
+# khung > ngần này giây (lúc đó bắt đầu chốt cho xe kế tiếp).
+VOTE_RESET_GAP = 5.0
+
+
+def _touch_vote(bucket):
+    """
+    Gọi mỗi khi có DETECTION của loại tương ứng. Nếu trước đó có khoảng lặng detection
+    dài hơn VOTE_RESET_GAP thì coi là XE MỚI → reset bộ đếm trước khi tích luỹ tiếp.
+    Nhờ tách khỏi OCR, xe đang đứng yên (OCR chậm) sẽ KHÔNG bị reset giữa chừng.
+    """
+    now = time.time()
+    with bucket["lock"]:
+        if bucket["last_update"] > 0 and now - bucket["last_update"] > VOTE_RESET_GAP:
+            bucket["votes"].clear()
+            bucket["samples"] = 0
+            bucket["finalized"] = None
+        bucket["last_update"] = now
 
 
 def _accumulate_vote(bucket, text, task_type):
     """
     Cộng dồn phiếu (vote) cho MỘT loại (plate/container) ở cấp CAMERA — độc lập với
     track_id. Nhờ vậy dù tracker mất/đổi ID liên tục (che khuất, detect trượt), phiếu
-    vẫn được giữ và tiến tới chốt, thay vì bị reset về 0 mỗi lần đổi ID (nguyên nhân
-    khiến biển số "lấy mẫu xong lại bị quét lại từ đầu").
+    vẫn được giữ và tiến tới chốt, thay vì bị reset về 0 mỗi lần đổi ID.
 
+    Vòng đời (reset khi xe rời khung) do _touch_vote lo. Hàm này chỉ cộng phiếu + chốt.
     Trả về (best_text, is_finalized, just_finalized).
     """
-    now = time.time()
     just_finalized = False
     with bucket["lock"]:
-        # Gap dài → coi như xe mới: xoá phiếu cũ.
-        if now - bucket["last_update"] > VOTE_RESET_GAP:
-            bucket["votes"].clear()
-            bucket["samples"] = 0
-            bucket["finalized"] = None
-        bucket["last_update"] = now
-
         # Đã chốt cho xe hiện tại → không cộng thêm, không gửi lại.
         if bucket["finalized"] is not None:
             return bucket["finalized"], True, False
@@ -274,10 +347,15 @@ def _accumulate_vote(bucket, text, task_type):
         best, count = bucket["votes"].most_common(1)[0]
 
         if task_type == "plate":
-            stable = count >= 3 or (bucket["samples"] >= 6 and count >= 2)
+            # ≥3 lần giống hệt, HOẶC 6 mẫu mà top ≥2, HOẶC đã thử ≥10 lần thì chốt "best".
+            stable = (count >= 3
+                      or (bucket["samples"] >= 6 and count >= 2)
+                      or bucket["samples"] >= 10)
         else:
-            # Container không có checksum, nhưng ngưỡng cũ (6) quá cao gây chốt chậm.
-            stable = count >= 4 or (bucket["samples"] >= 8 and count >= 3)
+            # Container không checksum: ≥4 giống hệt, HOẶC 8 mẫu & top ≥3, HOẶC ≥15 lần.
+            stable = (count >= 4
+                      or (bucket["samples"] >= 8 and count >= 3)
+                      or bucket["samples"] >= 15)
 
         if stable:
             bucket["finalized"] = best
@@ -286,16 +364,39 @@ def _accumulate_vote(bucket, text, task_type):
 
 
 def get_ocr():
-    """Lazily initialize the two EasyOCR readers and start worker threads."""
+    """Lazily initialize the two OCR readers (backend theo config) và start workers."""
     global GLOBAL_PLATE_OCR_READER, GLOBAL_CONTAINER_OCR_READER
     global GLOBAL_MODELS_LOADED, GLOBAL_OCR_THREAD_STARTED
     with GLOBAL_MODEL_LOCK:
         if not GLOBAL_MODELS_LOADED:
-            print("=== INITIALIZING GLOBAL OCR (2 readers) ===")
-            use_gpu = torch.cuda.is_available()
-            print(f"[AI] Initializing 2 EasyOCR Readers (GPU={use_gpu})...")
-            GLOBAL_PLATE_OCR_READER = easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu)
-            GLOBAL_CONTAINER_OCR_READER = easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu)
+            backend = _resolve_ocr_backend()
+            # Chia đều core CPU cho 2 worker OCR: mỗi engine dùng ~1 nửa số core →
+            # plate & container chạy SONG SONG thật, thay vì cùng giành cả 4 core
+            # (oversubscribe → chậm và giống như tuần tự).
+            n_cores = os.cpu_count() or 4
+            per_worker = max(1, n_cores // 2)
+            print(f"=== INIT OCR (backend={backend}, {per_worker} threads/worker) ===")
+
+            if backend == "rapidocr":
+                # 2 engine RapidOCR riêng → gọi song song an toàn (session độc lập).
+                GLOBAL_PLATE_OCR_READER = _OCRReader(
+                    "rapidocr", RapidOCR(intra_op_num_threads=per_worker))
+                GLOBAL_CONTAINER_OCR_READER = _OCRReader(
+                    "rapidocr", RapidOCR(intra_op_num_threads=per_worker))
+            else:
+                import easyocr
+                if HAS_TORCH:
+                    try:
+                        torch.set_num_threads(per_worker)
+                    except Exception as e:
+                        print(f"[AI] set_num_threads failed: {e}")
+                use_gpu = HAS_TORCH and torch.cuda.is_available()
+                print(f"[AI] Initializing 2 EasyOCR Readers (GPU={use_gpu})...")
+                GLOBAL_PLATE_OCR_READER = _OCRReader(
+                    "easyocr", easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu), OCR_ALLOWLIST)
+                GLOBAL_CONTAINER_OCR_READER = _OCRReader(
+                    "easyocr", easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu), OCR_ALLOWLIST)
+
             GLOBAL_MODELS_LOADED = True
 
         if not GLOBAL_OCR_THREAD_STARTED:
@@ -322,10 +423,10 @@ def _plate_ocr_worker():
 
         vote_bucket, track_state_dict, track_id, cropped_plate, gate_type, camera_ip = task
 
-        processed_img = preprocess_image_plate(cropped_plate)
+        processed_img = _preprocess_for_ocr(cropped_plate, "plate", GLOBAL_PLATE_OCR_READER.backend)
 
         with GLOBAL_PLATE_OCR_LOCK:
-            ocr_results = GLOBAL_PLATE_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
+            ocr_results = GLOBAL_PLATE_OCR_READER.read(processed_img)
 
         # Sắp xếp theo hàng (Y) rồi theo cột (X) — xử lý biển số 2 dòng
         def get_sort_key(item):
@@ -383,10 +484,10 @@ def _container_ocr_worker():
 
         vote_bucket, track_state_dict, track_id, cropped_container, gate_type, camera_ip = task
 
-        processed_img = preprocess_image_container(cropped_container)
+        processed_img = _preprocess_for_ocr(cropped_container, "container", GLOBAL_CONTAINER_OCR_READER.backend)
 
         with GLOBAL_CONTAINER_OCR_LOCK:
-            ocr_results = GLOBAL_CONTAINER_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
+            ocr_results = GLOBAL_CONTAINER_OCR_READER.read(processed_img)
 
         # Lọc kết quả đạt ngưỡng confidence
         valid_parts = [(bbox, text) for (bbox, text, prob) in ocr_results if prob > CONTAINER_OCR_MIN_PROB]
@@ -449,8 +550,10 @@ class AIProcessor:
             self.device = 'cpu'
             self.plate_model, self.container_model = get_hailo_models()
         else:
+            # Nhánh không-Hailo (test trên laptop): cần torch + ultralytics.
+            from ultralytics import YOLO
             self.vdevice = None
-            self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+            self.device = 'cuda:0' if (HAS_TORCH and torch.cuda.is_available()) else 'cpu'
             self.plate_model = YOLO(YOLO_PLATE_MODEL_PATH) if os.path.exists(YOLO_PLATE_MODEL_PATH) else None
             self.container_model = YOLO(YOLO_CONTAINER_MODEL_PATH) if os.path.exists(YOLO_CONTAINER_MODEL_PATH) else None
 
@@ -539,6 +642,8 @@ class AIProcessor:
 
         def _register_and_maybe_ocr(det_id, x1_det, y1_det, x2_det, y2_det):
             """Cập nhật track state + enqueue OCR + trả về (color, plate_text) để vẽ."""
+            # Có detection → giữ bộ đếm vote "sống" (và reset nếu vừa qua 1 xe mới).
+            _touch_vote(vote_bucket)
             track_id = f"{task_type}_{det_id}"
             if track_id not in track_state_dict:
                 track_state_dict[track_id] = {

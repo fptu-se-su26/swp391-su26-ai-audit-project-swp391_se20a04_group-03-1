@@ -46,5 +46,10 @@ DETECT_INTERVAL = int(os.getenv("DETECT_INTERVAL", 1))
 # Period in seconds before sending the same recognized license plate or container code to the backend again.
 COOLDOWN_PERIOD = float(os.getenv("COOLDOWN_PERIOD", 5.0))
 
-# EasyOCR Language list
+# EasyOCR Language list (chỉ dùng khi OCR_ENGINE = "easyocr")
 OCR_LANGUAGES = ["en"]
+
+# Backend OCR: "rapidocr" (nhẹ, ONNXRuntime + PP-OCRv4, khuyến nghị cho Pi 5)
+# hoặc "easyocr" (nặng, cần torch — dùng làm fallback / khi test trên laptop).
+# Nếu chọn "rapidocr" mà chưa cài rapidocr-onnxruntime thì tự fallback về easyocr.
+OCR_ENGINE = os.getenv("OCR_ENGINE", "rapidocr")
