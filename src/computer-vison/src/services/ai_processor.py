@@ -170,7 +170,8 @@ def clean_and_format_container(raw_text):
 # Global singleton models (prevent OOM & duplicate loading)
 # ---------------------------------------------------------------------------
 
-GLOBAL_OCR_READER = None
+GLOBAL_PLATE_OCR_READER = None
+GLOBAL_CONTAINER_OCR_READER = None
 GLOBAL_MODELS_LOADED = False
 GLOBAL_MODEL_LOCK = threading.Lock()
 
@@ -232,22 +233,69 @@ def get_hailo_models():
 GLOBAL_OCR_QUEUE = Queue(maxsize=50)           # Plate OCR queue
 GLOBAL_CONTAINER_OCR_QUEUE = Queue(maxsize=50)  # Container OCR queue
 GLOBAL_OCR_THREAD_STARTED = False
-# Một lock DUY NHẤT cho EasyOCR: cùng 1 Reader không an toàn khi readtext() song song.
-# Plate & container OCR chạy nền nên serialize ở đây không ảnh hưởng FPS detection.
-GLOBAL_OCR_LOCK = threading.Lock()
+# HAI Reader riêng biệt (plate & container) → OCR hai loại chạy SONG SONG trên 2 core
+# CPU của Pi 5, không còn xếp hàng qua một lock chung. Mỗi Reader có lock riêng
+# (mỗi Reader chỉ do 1 worker thread dùng; lock để an toàn khi nhiều camera đổ vào).
+GLOBAL_PLATE_OCR_LOCK = threading.Lock()
+GLOBAL_CONTAINER_OCR_LOCK = threading.Lock()
 
 OCR_ALLOWLIST = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
+# Khoảng lặng (giây) để coi như "xe mới": nếu không có mẫu OCR hợp lệ nào trong
+# ngần này giây thì bộ đếm vote được reset để bắt đầu chốt cho xe kế tiếp.
+VOTE_RESET_GAP = 6.0
+
+
+def _accumulate_vote(bucket, text, task_type):
+    """
+    Cộng dồn phiếu (vote) cho MỘT loại (plate/container) ở cấp CAMERA — độc lập với
+    track_id. Nhờ vậy dù tracker mất/đổi ID liên tục (che khuất, detect trượt), phiếu
+    vẫn được giữ và tiến tới chốt, thay vì bị reset về 0 mỗi lần đổi ID (nguyên nhân
+    khiến biển số "lấy mẫu xong lại bị quét lại từ đầu").
+
+    Trả về (best_text, is_finalized, just_finalized).
+    """
+    now = time.time()
+    just_finalized = False
+    with bucket["lock"]:
+        # Gap dài → coi như xe mới: xoá phiếu cũ.
+        if now - bucket["last_update"] > VOTE_RESET_GAP:
+            bucket["votes"].clear()
+            bucket["samples"] = 0
+            bucket["finalized"] = None
+        bucket["last_update"] = now
+
+        # Đã chốt cho xe hiện tại → không cộng thêm, không gửi lại.
+        if bucket["finalized"] is not None:
+            return bucket["finalized"], True, False
+
+        bucket["votes"][text] += 1
+        bucket["samples"] += 1
+        best, count = bucket["votes"].most_common(1)[0]
+
+        if task_type == "plate":
+            stable = count >= 3 or (bucket["samples"] >= 6 and count >= 2)
+        else:
+            # Container không có checksum, nhưng ngưỡng cũ (6) quá cao gây chốt chậm.
+            stable = count >= 4 or (bucket["samples"] >= 8 and count >= 3)
+
+        if stable:
+            bucket["finalized"] = best
+            just_finalized = True
+        return best, stable, just_finalized
+
 
 def get_ocr():
-    """Lazily initialize the global EasyOCR reader and start worker threads."""
-    global GLOBAL_OCR_READER, GLOBAL_MODELS_LOADED, GLOBAL_OCR_THREAD_STARTED
+    """Lazily initialize the two EasyOCR readers and start worker threads."""
+    global GLOBAL_PLATE_OCR_READER, GLOBAL_CONTAINER_OCR_READER
+    global GLOBAL_MODELS_LOADED, GLOBAL_OCR_THREAD_STARTED
     with GLOBAL_MODEL_LOCK:
         if not GLOBAL_MODELS_LOADED:
-            print("=== INITIALIZING GLOBAL OCR ===")
+            print("=== INITIALIZING GLOBAL OCR (2 readers) ===")
             use_gpu = torch.cuda.is_available()
-            print(f"[AI] Initializing EasyOCR Reader (GPU={use_gpu})...")
-            GLOBAL_OCR_READER = easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu)
+            print(f"[AI] Initializing 2 EasyOCR Readers (GPU={use_gpu})...")
+            GLOBAL_PLATE_OCR_READER = easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu)
+            GLOBAL_CONTAINER_OCR_READER = easyocr.Reader(OCR_LANGUAGES, gpu=use_gpu)
             GLOBAL_MODELS_LOADED = True
 
         if not GLOBAL_OCR_THREAD_STARTED:
@@ -255,7 +303,7 @@ def get_ocr():
             threading.Thread(target=_container_ocr_worker, daemon=True).start()
             GLOBAL_OCR_THREAD_STARTED = True
 
-    return GLOBAL_OCR_READER
+    return GLOBAL_PLATE_OCR_READER
 
 
 # ---------------------------------------------------------------------------
@@ -264,27 +312,20 @@ def get_ocr():
 
 def _plate_ocr_worker():
     """
-    Background thread: nhận crop biển số từ queue, chạy OCR,
-    cập nhật track_state theo cơ chế voting (majority vote).
+    Background thread: nhận crop biển số từ queue, chạy OCR, cộng phiếu vào bộ đếm
+    vote CẤP CAMERA (bền vững qua các lần đổi track_id) rồi chốt khi ổn định.
     """
     while True:
         task = GLOBAL_OCR_QUEUE.get()
         if task is None:
             break
 
-        track_state_dict, track_id, cropped_plate, gate_type, camera_ip = task
-
-        # Skip nếu track_id đã bị xóa hoặc đã chốt kết quả
-        if track_id not in track_state_dict or track_state_dict[track_id]["ocr_status"] == "done":
-            GLOBAL_OCR_QUEUE.task_done()
-            continue
-
-        track_state_dict[track_id]["ocr_status"] = "processing"
+        vote_bucket, track_state_dict, track_id, cropped_plate, gate_type, camera_ip = task
 
         processed_img = preprocess_image_plate(cropped_plate)
 
-        with GLOBAL_OCR_LOCK:
-            ocr_results = GLOBAL_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
+        with GLOBAL_PLATE_OCR_LOCK:
+            ocr_results = GLOBAL_PLATE_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
 
         # Sắp xếp theo hàng (Y) rồi theo cột (X) — xử lý biển số 2 dòng
         def get_sort_key(item):
@@ -299,27 +340,22 @@ def _plate_ocr_worker():
         raw_text_combined = "".join(raw_plate_parts)
         validated_plate = clean_and_format_plate(raw_text_combined)
 
-        if validated_plate and track_id in track_state_dict:
-            track_state_dict[track_id]["history"].append(validated_plate)
-            counter = Counter(track_state_dict[track_id]["history"])
-            best_plate, count = counter.most_common(1)[0]
-            track_state_dict[track_id]["plate_text"] = best_plate
+        if validated_plate:
+            best, finalized, just_finalized = _accumulate_vote(vote_bucket, validated_plate, "plate")
 
-            # Ngưỡng ổn định: ≥3 lần giống hệt, hoặc ≥6 mẫu với ≥2 lần
-            is_stable = count >= 3 or (len(track_state_dict[track_id]["history"]) >= 6 and count >= 2)
+            if track_id in track_state_dict:
+                track_state_dict[track_id]["plate_text"] = best
+                track_state_dict[track_id]["ocr_status"] = "done" if finalized else "pending"
+                track_state_dict[track_id]["color"] = (0, 255, 0) if finalized else (0, 255, 255)
 
-            if is_stable:
-                track_state_dict[track_id]["ocr_status"] = "done"
-                track_state_dict[track_id]["color"] = (0, 255, 0)  # Xanh lá → chốt
+            if just_finalized:
                 print(f"\n{'='*50}")
-                print(f"[OCR ỔN ĐỊNH] PLATE ID:{track_id} | KẾT QUẢ: {best_plate} ({count}/{len(track_state_dict[track_id]['history'])})")
+                print(f"[OCR ỔN ĐỊNH] PLATE → KẾT QUẢ: {best}")
                 print(f"{'='*50}\n")
-                send_scan_event(best_plate, "plate", 1.0, gate_type, camera_ip)
+                send_scan_event(best, "plate", 1.0, gate_type, camera_ip)
             else:
-                track_state_dict[track_id]["ocr_status"] = "pending"
-                track_state_dict[track_id]["color"] = (0, 255, 255)  # Vàng → đang lấy mẫu
-                print(f"[LẤY MẪU] PLATE ID:{track_id} → {validated_plate} | Tạm: {best_plate} ({count} lần)")
-        elif track_id in track_state_dict:
+                print(f"[LẤY MẪU] PLATE → {validated_plate} | Tạm: {best}")
+        elif track_id in track_state_dict and track_state_dict[track_id]["ocr_status"] != "done":
             track_state_dict[track_id]["ocr_status"] = "pending"
 
         GLOBAL_OCR_QUEUE.task_done()
@@ -331,11 +367,12 @@ def _container_ocr_worker():
     cập nhật track_state theo cơ chế voting (majority vote).
 
     So với pipeline biển số:
+    - Dùng Reader RIÊNG (GLOBAL_CONTAINER_OCR_READER) → chạy song song với plate.
     - Dùng preprocess_image_container (blur nhẹ hơn, tránh khuếch đại sóng container)
     - Dùng clean_and_format_container (sliding-window 10 ký tự, ép 4 chữ + 6 số)
     - Xử lý "đọc ngược" bằng cách sinh 2 kịch bản nối chữ (theo Y và theo X)
     - Ngưỡng confidence thấp hơn (0.2) vì container hay bị bóng mờ
-    - Yêu cầu voting cao hơn: ≥6 lần giống hệt để chốt (vì không có checksum)
+    - Vote cấp camera, chốt khi ≥4 lần giống hệt (hạ từ 6 để chốt nhanh hơn).
     """
     CONTAINER_OCR_MIN_PROB = 0.2
 
@@ -344,19 +381,12 @@ def _container_ocr_worker():
         if task is None:
             break
 
-        track_state_dict, track_id, cropped_container, gate_type, camera_ip = task
-
-        # Skip nếu đã chốt hoặc bị dọn dẹp
-        if track_id not in track_state_dict or track_state_dict[track_id]["ocr_status"] == "done":
-            GLOBAL_CONTAINER_OCR_QUEUE.task_done()
-            continue
-
-        track_state_dict[track_id]["ocr_status"] = "processing"
+        vote_bucket, track_state_dict, track_id, cropped_container, gate_type, camera_ip = task
 
         processed_img = preprocess_image_container(cropped_container)
 
-        with GLOBAL_OCR_LOCK:
-            ocr_results = GLOBAL_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
+        with GLOBAL_CONTAINER_OCR_LOCK:
+            ocr_results = GLOBAL_CONTAINER_OCR_READER.readtext(processed_img, allowlist=OCR_ALLOWLIST)
 
         # Lọc kết quả đạt ngưỡng confidence
         valid_parts = [(bbox, text) for (bbox, text, prob) in ocr_results if prob > CONTAINER_OCR_MIN_PROB]
@@ -374,28 +404,22 @@ def _container_ocr_worker():
         # Ưu tiên kịch bản nào ra được mã chuẩn
         validated_text = res_y if res_y else res_x
 
-        if validated_text and track_id in track_state_dict:
-            track_state_dict[track_id]["history"].append(validated_text)
-            counter = Counter(track_state_dict[track_id]["history"])
-            best_text, count = counter.most_common(1)[0]
-            track_state_dict[track_id]["plate_text"] = best_text
+        if validated_text:
+            best, finalized, just_finalized = _accumulate_vote(vote_bucket, validated_text, "container")
 
-            # Container (10 ký tự, không có checksum):
-            # Yêu cầu ≥6 lần giống hệt, hoặc ≥15 mẫu với ≥5 lần
-            is_stable = count >= 6 or (len(track_state_dict[track_id]["history"]) >= 15 and count >= 5)
+            if track_id in track_state_dict:
+                track_state_dict[track_id]["plate_text"] = best
+                track_state_dict[track_id]["ocr_status"] = "done" if finalized else "pending"
+                track_state_dict[track_id]["color"] = (0, 255, 0) if finalized else (0, 255, 255)
 
-            if is_stable:
-                track_state_dict[track_id]["ocr_status"] = "done"
-                track_state_dict[track_id]["color"] = (0, 255, 0)  # Xanh lá → chốt
+            if just_finalized:
                 print(f"\n{'='*50}")
-                print(f"[OCR ỔN ĐỊNH] CONTAINER ID:{track_id} | KẾT QUẢ: {best_text} ({count}/{len(track_state_dict[track_id]['history'])})")
+                print(f"[OCR ỔN ĐỊNH] CONTAINER → KẾT QUẢ: {best}")
                 print(f"{'='*50}\n")
-                send_scan_event(best_text, "container", 1.0, gate_type, camera_ip)
+                send_scan_event(best, "container", 1.0, gate_type, camera_ip)
             else:
-                track_state_dict[track_id]["ocr_status"] = "pending"
-                track_state_dict[track_id]["color"] = (0, 255, 255)  # Vàng → đang lấy mẫu
-                print(f"[LẤY MẪU] CONTAINER ID:{track_id} → {validated_text} | Tạm: {best_text} ({count} lần)")
-        elif track_id in track_state_dict:
+                print(f"[LẤY MẪU] CONTAINER → {validated_text} | Tạm: {best}")
+        elif track_id in track_state_dict and track_state_dict[track_id]["ocr_status"] != "done":
             track_state_dict[track_id]["ocr_status"] = "pending"
 
         GLOBAL_CONTAINER_OCR_QUEUE.task_done()
@@ -430,14 +454,20 @@ class AIProcessor:
             self.plate_model = YOLO(YOLO_PLATE_MODEL_PATH) if os.path.exists(YOLO_PLATE_MODEL_PATH) else None
             self.container_model = YOLO(YOLO_CONTAINER_MODEL_PATH) if os.path.exists(YOLO_CONTAINER_MODEL_PATH) else None
 
-        # Tracking state riêng cho mỗi loại (plate / container)
+        # Tracking state riêng cho mỗi loại (plate / container) — chỉ dùng để VẼ.
         self.plate_track_state = {}
         self.container_track_state = {}
 
+        # Bộ đếm vote cấp CAMERA — bền vững qua các lần tracker đổi track_id, nên biển
+        # số/container không bị "reset về 0" mỗi khi mất box một nhịp rồi bắt lại.
+        self.plate_votes = self._new_vote_bucket()
+        self.container_votes = self._new_vote_bucket()
+
         if HAILO_AVAILABLE:
             from src.services.hailo_yolo import CentroidTracker
-            self.plate_tracker = CentroidTracker(maxDisappeared=15, maxDistance=100)
-            self.container_tracker = CentroidTracker(maxDisappeared=15, maxDistance=100)
+            # maxDisappeared nới rộng để giữ ID qua các nhịp detect trượt (đỡ nhấp nháy).
+            self.plate_tracker = CentroidTracker(maxDisappeared=30, maxDistance=100)
+            self.container_tracker = CentroidTracker(maxDisappeared=30, maxDistance=100)
         else:
             self.plate_tracker = None
             self.container_tracker = None
@@ -451,6 +481,16 @@ class AIProcessor:
         # Frame-skip detection để giảm tải NPU khi cần (mặc định 1 = detect mỗi frame).
         self.detect_interval = max(1, DETECT_INTERVAL)
         self._last_draws = []
+
+    @staticmethod
+    def _new_vote_bucket():
+        return {
+            "votes": Counter(),
+            "samples": 0,
+            "last_update": 0.0,
+            "finalized": None,
+            "lock": threading.Lock(),
+        }
 
     def _cleanup_stale_tracks(self):
         """Dọn dẹp các track_id cũ không xuất hiện trên màn hình > TRACK_TIMEOUT giây."""
@@ -477,6 +517,7 @@ class AIProcessor:
         conf_threshold = 0.35 if task_type == "plate" else DETECTION_CONFIDENCE_THRESHOLD
         default_color = (0, 0, 255) if task_type == "plate" else (255, 0, 0)
         ocr_queue = GLOBAL_OCR_QUEUE if task_type == "plate" else GLOBAL_CONTAINER_OCR_QUEUE
+        vote_bucket = self.plate_votes if task_type == "plate" else self.container_votes
         draws = []
 
         if task_type == "plate":
@@ -513,16 +554,28 @@ class AIProcessor:
             state = track_state_dict[track_id]
 
             if state["ocr_status"] == "pending":
-                padding = 15 if task_type == "container" else 5
-                x1_org = max(0, int(x1_det * scale_x_crop) - padding)
-                y1_org = max(0, int(y1_det * scale_y_crop) - padding)
-                x2_org = min(w_orig, int(x2_det * scale_x_crop) + padding)
-                y2_org = min(h_orig, int(y2_det * scale_y_crop) + padding)
+                # Nếu đã chốt cho xe hiện tại (bucket còn "nóng") thì khỏi OCR track mới.
+                with vote_bucket["lock"]:
+                    done_recent = (vote_bucket["finalized"] is not None and
+                                   current_time - vote_bucket["last_update"] < VOTE_RESET_GAP)
+                    done_text = vote_bucket["finalized"]
 
-                cropped_img = frame[y1_org:y2_org, x1_org:x2_org]
-                if cropped_img.size > 0 and not ocr_queue.full():
-                    state["ocr_status"] = "processing"
-                    ocr_queue.put((track_state_dict, track_id, cropped_img.copy(), self.gate_type, self.camera_ip))
+                if done_recent:
+                    state["ocr_status"] = "done"
+                    state["color"] = (0, 255, 0)
+                    state["plate_text"] = done_text
+                else:
+                    padding = 15 if task_type == "container" else 5
+                    x1_org = max(0, int(x1_det * scale_x_crop) - padding)
+                    y1_org = max(0, int(y1_det * scale_y_crop) - padding)
+                    x2_org = min(w_orig, int(x2_det * scale_x_crop) + padding)
+                    y2_org = min(h_orig, int(y2_det * scale_y_crop) + padding)
+
+                    cropped_img = frame[y1_org:y2_org, x1_org:x2_org]
+                    if cropped_img.size > 0 and not ocr_queue.full():
+                        state["ocr_status"] = "processing"
+                        ocr_queue.put((vote_bucket, track_state_dict, track_id,
+                                       cropped_img.copy(), self.gate_type, self.camera_ip))
 
             return state["color"], state["plate_text"]
 
