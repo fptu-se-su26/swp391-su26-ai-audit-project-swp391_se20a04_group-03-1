@@ -10,6 +10,7 @@ import { attachPermissions } from "../middlewares/rbac.middleware";
 import scanRouter from "./scan.route";
 import containerProvidersRouter from "./container-providers.route";
 import settingsRouter from "./settings.route";
+import reportsRouter from "./reports.route";
 import clientRouter from "./client/index.route";
 import mobileRouter from "./mobile/index.route";
 
@@ -42,6 +43,7 @@ rootRouter.use("/containers", requireAuth, attachPermissions, containersRoutes);
 // trucks: chưa có resource riêng trong catalog -> chỉ nạp quyền, không cổng.
 rootRouter.use("/trucks", requireAuth, attachPermissions, trucksRoutes);
 rootRouter.use("/scan", scanRouter);
+rootRouter.use("/reports", requireAuth, attachPermissions, reportsRouter);
 
 // settings: cổng truy cập & CRUD được siết chi tiết bên trong settings.route.ts
 rootRouter.use("/settings", requireAuth, attachPermissions, settingsRouter);
