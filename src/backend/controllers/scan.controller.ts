@@ -4,6 +4,8 @@ import { GateTransaction } from "../models/gateTransaction.model";
 import { io } from "../index";
 import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
+import { assignRandomFreeSlot } from "../services/yard-slot.service";
+import { buildCheckInTicketPdf, CheckInTicketData } from "../services/ticket.service";
 
 interface ScanCache {
   plate?: { text: string; time: number };
@@ -190,12 +192,29 @@ export const scanPost = async (req: Request, res: Response) => {
         }
         // --- END NEW REQUIREMENT LOGIC ---
 
+        // --- CẤP PHÁT Ô ĐỖ NGẪU NHIÊN KHI CHECK-IN ---
+        // Tính ngay sát thời điểm tạo transaction để trạng thái trống/đầy mới nhất.
+        const slot = await assignRandomFreeSlot();
+        if (!slot) {
+          // Bãi đã đầy: không tạo check-in, không mở cổng, giữ xe ở cổng.
+          io.emit("gate_scan_error", {
+            plate: appointment.truckPlate,
+            message: "Bãi đỗ đã đầy, không thể cho xe vào. Vui lòng chờ có ô trống.",
+          });
+          res.status(200).json({
+            code: "ignored",
+            message: "Bãi đỗ đã đầy, không thể cho xe vào.",
+          });
+          return;
+        }
+
         // Create new check-in
         transaction = new GateTransaction({
           actualTruckPlate: appointment.truckPlate,
           actualContainerNo: appointment.containerNo,
           appointmentId: appointment._id,
-          
+          yardId: slot.yardId,
+          assignedSlot: slot.slotName,
           checkInTime: now,
           status: "in",
           ocrConfidence: confidence,
@@ -313,6 +332,7 @@ export const scanPost = async (req: Request, res: Response) => {
       checkInTime: transaction!.checkInTime,
       checkOutTime: transaction!.checkOutTime,
       status: status,
+      assignedSlot: transaction!.assignedSlot,
       activeCount: activeVehicles,
       completedCount: checkedOutVehicles,
     };
@@ -320,7 +340,13 @@ export const scanPost = async (req: Request, res: Response) => {
     io.emit("gate_scan_update", emitData);
     io.emit("gate_scan_success", {
       plate: text,
-      message: status === "in" ? "Check-in thành công" : "Check-out thành công",
+      assignedSlot: transaction!.assignedSlot,
+      message:
+        status === "in"
+          ? transaction!.assignedSlot
+            ? `Check-in thành công. Xe vào ô ${transaction!.assignedSlot}.`
+            : "Check-in thành công"
+          : "Check-out thành công",
     });
 
     // --- GỬI LỆNH MỞ CỔNG TỚI ESP32 ---
@@ -585,6 +611,51 @@ export const restoreLogPatch = async (req: Request, res: Response) => {
     console.error("Restore Log Error: ", error);
     res.status(400).json({ code: "error", message: "Lỗi hệ thống khi khôi phục nhật ký" });
       return;
+  }
+};
+
+export const getCheckInTicket = async (req: Request, res: Response) => {
+  try {
+    const tx: any = await GateTransaction.findById(req.params.id)
+      .populate({
+        path: "appointmentId",
+        populate: { path: "driverId", select: "driverName driverPhone" },
+      })
+      .populate({ path: "yardId", select: "name" });
+
+    if (!tx) {
+      res.status(400).json({ code: "error", message: "Không tìm thấy nhật ký" });
+      return;
+    }
+
+    const appt = tx.appointmentId || {};
+    const ticketData: CheckInTicketData = {
+      ticketCode: tx._id.toString().slice(-8).toUpperCase(),
+      truckPlate: tx.actualTruckPlate || appt.truckPlate || "—",
+      containerNo: tx.actualContainerNo || appt.containerNo || "—",
+      driverName: appt.driverId?.driverName || "—",
+      driverPhone: appt.driverId?.driverPhone || "—",
+      purpose: appt.purpose || "—",
+      scheduledDate: appt.scheduledDate,
+      timeSlot: appt.timeSlot || "—",
+      checkInTime: tx.checkInTime || tx.createdAt,
+      yardName: tx.yardId?.name,
+      slotName: tx.assignedSlot,
+    };
+
+    const doc = buildCheckInTicketPdf(ticketData);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="phieu-vao-bai-${ticketData.ticketCode}.pdf"`,
+    );
+    doc.pipe(res);
+    doc.end();
+    return;
+  } catch (error) {
+    console.error("Get Check-in Ticket Error: ", error);
+    res.status(400).json({ code: "error", message: "Lỗi hệ thống khi tạo phiếu" });
+    return;
   }
 };
 
