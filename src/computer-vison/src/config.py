@@ -38,6 +38,10 @@ YOLO_CONTAINER_MODEL_PATH = os.getenv(
 DETECTION_CONFIDENCE_THRESHOLD = float(os.getenv("DETECTION_CONFIDENCE_THRESHOLD", 0.5))
 OCR_CONFIDENCE_THRESHOLD = float(os.getenv("OCR_CONFIDENCE_THRESHOLD", 0.4))
 
+# Số frame chạy detection 1 lần (1 = mỗi frame). Tăng lên 2~3 để giảm tải NPU nếu cần
+# mượt hơn — tracking vẫn giữ box giữa các lần detect.
+DETECT_INTERVAL = int(os.getenv("DETECT_INTERVAL", 1))
+
 # De-duplication Cooldown
 # Period in seconds before sending the same recognized license plate or container code to the backend again.
 COOLDOWN_PERIOD = float(os.getenv("COOLDOWN_PERIOD", 5.0))

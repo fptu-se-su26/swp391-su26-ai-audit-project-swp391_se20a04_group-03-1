@@ -291,19 +291,22 @@ export const scanPost = async (req: Request, res: Response) => {
     }
 
     // 4. Calculate Stats and Emit
-    const activeVehicles = await GateTransaction.countDocuments({
-      status: "in",
-      isDeleted: false,
-    });
+    // Hai count độc lập → chạy song song để giảm latency response (client CV timeout 3s).
     const nowTime = new Date();
     const vnDateString = nowTime.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh", year: 'numeric', month: '2-digit', day: '2-digit' });
     const [month, day, year] = vnDateString.split('/');
     const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000+07:00`);
-    const checkedOutVehicles = await GateTransaction.countDocuments({
-      status: "out",
-      checkOutTime: { $gte: todayStart },
-      isDeleted: false,
-    });
+    const [activeVehicles, checkedOutVehicles] = await Promise.all([
+      GateTransaction.countDocuments({
+        status: "in",
+        isDeleted: false,
+      }),
+      GateTransaction.countDocuments({
+        status: "out",
+        checkOutTime: { $gte: todayStart },
+        isDeleted: false,
+      }),
+    ]);
 
     const emitData = {
       _id: transaction!._id,

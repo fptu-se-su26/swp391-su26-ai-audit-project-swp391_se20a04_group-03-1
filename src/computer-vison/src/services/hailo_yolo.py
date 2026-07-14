@@ -11,6 +11,15 @@ try:
 except ImportError:
     HAILO_AVAILABLE = False
 
+# Scheduler cho phép nhiều network group (plate + container) cùng chia sẻ 1 NPU
+# mà không phải activate/deactivate thủ công mỗi frame. Guard riêng để tương thích
+# với các bản HailoRT cũ chưa có API này (khi đó tự fallback về chế độ activate cũ).
+try:
+    from hailo_platform import HailoSchedulingAlgorithm
+    HAILO_SCHEDULER_AVAILABLE = True
+except (ImportError, NameError):
+    HAILO_SCHEDULER_AVAILABLE = False
+
 
 def softmax(x, axis=-1):
     e_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
@@ -145,17 +154,29 @@ class CentroidTracker:
         del self.objects[objectID]
         del self.disappeared[objectID]
 
+# Chỉ dùng khi KHÔNG có scheduler (fallback): serialize toàn bộ truy cập NPU.
+# Khi có scheduler, mỗi model có infer_lock riêng nên plate/container không chặn nhau.
 HAILO_DEVICE_LOCK = threading.Lock()
 
 class HailoYOLO:
-    """Wrapper class for Hailo-8L inference that behaves similarly to Ultralytics YOLO"""
-    def __init__(self, hef_path, target_vdevice=None):
+    """
+    Wrapper cho Hailo-8L, hành xử gần giống Ultralytics YOLO.
+
+    Hai chế độ:
+    - persistent=True (khuyến nghị, cần scheduler VDevice): mở InferVStreams MỘT LẦN
+      và tái sử dụng cho mọi frame → bỏ hoàn toàn chi phí activate()/tạo pipeline mỗi
+      frame (nguyên nhân chính gây chậm). Scheduler tự chia lượt NPU giữa các model.
+    - persistent=False (fallback bản HailoRT cũ): activate + tạo pipeline mỗi lần infer,
+      dùng chung HAILO_DEVICE_LOCK (chậm, nhưng an toàn).
+    """
+    def __init__(self, hef_path, target_vdevice=None, persistent=False):
         if not HAILO_AVAILABLE:
             raise Exception("hailo_platform not available. Cannot initialize HailoYOLO.")
-        
+
         self.target = target_vdevice if target_vdevice else VDevice()
         self.hef = HEF(hef_path)
-        
+        self.persistent = persistent
+
         configure_params = ConfigureParams.create_from_hef(self.hef, interface=HailoStreamInterface.PCIe)
         self.network_groups = self.target.configure(self.hef, configure_params)
         self.network_group = self.network_groups[0]
@@ -163,49 +184,72 @@ class HailoYOLO:
 
         self.input_vstreams_params = InputVStreamParams.make(self.network_group, format_type=FormatType.FLOAT32)
         self.output_vstreams_params = OutputVStreamParams.make(self.network_group, format_type=FormatType.FLOAT32)
-        
+
         self.input_name = self.hef.get_input_vstream_infos()[0].name
-        
-        # Thread lock để tránh xung đột khi nhiều camera gọi infer_pipeline cùng lúc
-        import threading
+
+        # Lock riêng cho từng model → cho phép plate & container overlap phần host,
+        # chỉ chặn khi CÙNG một model bị gọi từ nhiều camera cùng lúc.
         self.infer_lock = threading.Lock()
 
-    def track(self, image, tracker, conf_threshold=0.5):
-        """Runs inference and tracking using the provided tracker instance."""
+        # Mở sẵn pipeline một lần và giữ sống suốt vòng đời tiến trình.
+        self._infer_ctx = None
+        self.infer_pipeline = None
+        if self.persistent:
+            self._infer_ctx = InferVStreams(
+                self.network_group, self.input_vstreams_params, self.output_vstreams_params
+            )
+            self.infer_pipeline = self._infer_ctx.__enter__()
+
+    def infer(self, image, conf_threshold=0.5):
+        """Chạy inference thuần, trả về danh sách rects [(x1,y1,x2,y2)] ở hệ 640x640."""
         img_resized = cv2.resize(image, (640, 640))
         img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
         input_data = np.expand_dims(img_rgb, axis=0).astype(np.float32)
-        
         input_dict = {self.input_name: input_data}
-        
-        # Chỉ kích hoạt mạng khi infer để tránh lỗi HAILO_INVALID_OPERATION
-        with HAILO_DEVICE_LOCK:
-            with self.network_group.activate(self.network_group_params):
-                with InferVStreams(self.network_group, self.input_vstreams_params, self.output_vstreams_params) as infer_pipeline:
-                    output_dict = infer_pipeline.infer(input_dict)
-        
+
+        if self.persistent:
+            # Pipeline đã mở sẵn; scheduler tự activate khi cần. Lock riêng theo model.
+            with self.infer_lock:
+                output_dict = self.infer_pipeline.infer(input_dict)
+        else:
+            # Fallback: activate + tạo pipeline mỗi frame, serialize toàn cục.
+            with HAILO_DEVICE_LOCK:
+                with self.network_group.activate(self.network_group_params):
+                    with InferVStreams(self.network_group, self.input_vstreams_params,
+                                       self.output_vstreams_params) as infer_pipeline:
+                        output_dict = infer_pipeline.infer(input_dict)
+
         pred_bboxes, cls_preds = decode_yolov8(output_dict)
-        
+
         rects = []
         if pred_bboxes is not None:
             scores = np.max(cls_preds, axis=1)
             mask = scores > conf_threshold
             pred_bboxes = pred_bboxes[mask]
             scores = scores[mask]
-            
+
             if len(scores) > 0:
                 indices = cv2.dnn.NMSBoxes(pred_bboxes.tolist(), scores.tolist(), conf_threshold, 0.4)
                 if len(indices) > 0:
                     for i in indices.flatten():
                         x, y, w, h = pred_bboxes[i]
-                        x1 = max(0, x - w/2)
-                        y1 = max(0, y - h/2)
-                        x2 = x + w/2
-                        y2 = y + h/2
+                        x1 = max(0, x - w / 2)
+                        y1 = max(0, y - h / 2)
+                        x2 = x + w / 2
+                        y2 = y + h / 2
                         rects.append((x1, y1, x2, y2))
-                        
-        objects = tracker.update(rects)
-        return objects
+        return rects
+
+    def track(self, image, tracker, conf_threshold=0.5):
+        """Runs inference and tracking using the provided tracker instance."""
+        rects = self.infer(image, conf_threshold=conf_threshold)
+        return tracker.update(rects)
 
     def release(self):
-        pass
+        if self._infer_ctx is not None:
+            try:
+                self._infer_ctx.__exit__(None, None, None)
+            except Exception:
+                pass
+            self._infer_ctx = None
+            self.infer_pipeline = None
