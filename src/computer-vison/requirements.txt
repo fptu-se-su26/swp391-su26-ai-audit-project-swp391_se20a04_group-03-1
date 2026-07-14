@@ -3,7 +3,7 @@
 # ============================================================
 opencv-python
 numpy<2                 # BẮT BUỘC <2: hailo_platform + onnxruntime chưa hỗ trợ numpy 2.x
-scipy                   # CentroidTracker (scipy.spatial.distance)
+# scipy ĐÃ BỎ: CentroidTracker dùng numpy thuần (_cdist trong hailo_yolo.py) — khỏi build gfortran/BLAS trên Pi
 flask
 flask-cors
 requests

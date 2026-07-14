@@ -2,7 +2,15 @@ import cv2
 import numpy as np
 import time
 import threading
-from scipy.spatial import distance as dist
+
+
+def _cdist(A, B):
+    """Ma trận khoảng cách Euclid giữa từng cặp điểm (thay cho scipy.spatial.distance.cdist).
+    A: (n,2), B: (m,2) -> D: (n,m). Dùng numpy thuần để khỏi phụ thuộc scipy trên Pi 5."""
+    A = np.asarray(A, dtype=np.float64)
+    B = np.asarray(B, dtype=np.float64)
+    diff = A[:, None, :] - B[None, :, :]
+    return np.sqrt((diff ** 2).sum(axis=-1))
 
 try:
     from hailo_platform import (HEF, VDevice, HailoStreamInterface, InferVStreams,
@@ -113,7 +121,7 @@ class CentroidTracker:
             objectIDs = list(self.objects.keys())
             objectCentroids = [self.objects[objID][0] for objID in objectIDs]
 
-            D = dist.cdist(np.array(objectCentroids), inputCentroids)
+            D = _cdist(np.array(objectCentroids), inputCentroids)
             rows = D.min(axis=1).argsort()
             cols = D.argmin(axis=1)[rows]
 
