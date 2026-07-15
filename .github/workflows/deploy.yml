@@ -38,7 +38,7 @@ jobs:
           # Ép các tham số biến môi trường HTTPS cứng lúc build như các bước trước
           build-args: |
             NEXT_PUBLIC_API_URL=https://api.datnotes.click/api
-            NEXT_PUBLIC_CV_URL=https://broke-serves-cap-reprint.trycloudflare.com
+            NEXT_PUBLIC_CV_URL=https://raspberrypi.tail358c82.ts.net
           tags: ${{ secrets.DOCKER_USERNAME }}/logiport-frontend:latest
 
   deploy:
