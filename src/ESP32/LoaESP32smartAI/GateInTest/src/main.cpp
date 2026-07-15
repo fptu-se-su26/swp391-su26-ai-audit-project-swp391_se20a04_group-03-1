@@ -24,6 +24,11 @@
 #define LED2_PIN 12
 #define LED3_PIN 14
 
+// --- ĐỊNH NGHĨA CHÂN CHO BÁO CHÁY VÀ CÒI ---
+#define FIRE_SENSOR_PIN 34 // Chân DO của cảm biến báo cháy
+#define BUZZER_PIN 4       // Chân điều khiển còi MH-FMG
+#define FIRE_DETECTED LOW  // Trạng thái khi phát hiện có lửa (cảm biến IR thường xuất LOW)
+
 // --- ĐỊNH NGHĨA TRẠNG THÁI CẢM BIẾN ---
 // CHÚ Ý: Cảm biến hồng ngoại (IR) phổ biến (như FC-51) thường xuất mức LOW khi
 // CÓ vật cản.
@@ -140,6 +145,11 @@ void setup() {
   // 5. Khởi tạo cảm biến hồng ngoại
   pinMode(IR_PIN, INPUT);
 
+  // 5.1. Khởi tạo cảm biến lửa và còi báo cháy
+  pinMode(FIRE_SENSOR_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW); // Tắt còi ban đầu
+
   // 6. Thiết lập trạng thái ban đầu
   isGateOpen = false;
   lastCloseTime = millis(); // Bắt đầu tính thời gian để mở cổng
@@ -154,6 +164,47 @@ void setup() {
 }
 
 void loop() {
+  // --- ƯU TIÊN KIỂM TRA BÁO CHÁY ---
+  if (digitalRead(FIRE_SENSOR_PIN) == FIRE_DETECTED) {
+    Serial.println("!!! PHAT HIEN CHAY !!! COI BAO DONG KICH HOAT !!!");
+    digitalWrite(BUZZER_PIN, HIGH); // Bật còi MH-FMG kêu liên tục
+    
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("!!! CANH BAO !!!");
+    lcd.setCursor(0, 1);
+    lcd.print("PHAT HIEN CHAY");
+    
+    // Vòng lặp chờ đến khi ngọn lửa tắt (loa kêu liên tục)
+    while (digitalRead(FIRE_SENSOR_PIN) == FIRE_DETECTED) {
+      delay(100);
+      yield(); // Tránh lỗi Watchdog Timer trên ESP32
+    }
+    
+    // Ngọn lửa đã tắt -> Tắt còi
+    Serial.println("-> Da tat ngon lua. Tat coi bao dong.");
+    digitalWrite(BUZZER_PIN, LOW);
+    
+    // Khôi phục lại giao diện LCD tuỳ theo trạng thái cổng hiện tại
+    lcd.clear();
+    if (isGateOpen) {
+      lcd.setCursor(0, 0);
+      lcd.print("Mo cong. Goc:");
+      lcd.print(ANGLE_OPEN);
+      lcd.setCursor(0, 1);
+      lcd.print("Moi xe vao...");
+    } else {
+      lcd.setCursor(0, 0);
+      lcd.print("Dong cong.Goc:");
+      lcd.print(ANGLE_CLOSED);
+      lcd.setCursor(0, 1);
+      lcd.print("Cho 5s de mo...");
+    }
+    
+    // Cập nhật lại thời gian để không bị mở/đóng cổng sai nhịp do thời gian chờ
+    lastCloseTime = millis();
+  }
+
   if (!isGateOpen) {
     // Nếu cổng đang đóng, kiểm tra xem đã đủ 5 giây chưa (để tự động mở, có thể
     // thay đổi sau này)
