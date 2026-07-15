@@ -1,0 +1,40 @@
+# Bộ thư viện để CHẠY tao_chunks.py trên LAPTOP (render mẩu WAV bằng MeloTTS).
+# KHÔNG cần trên Pi 5 — Pi chỉ ghép WAV bằng thư viện chuẩn, xem README_TTS.md.
+#
+# Vì sao có file này thay vì dùng requirements.txt:
+#   requirements.txt ghim transformers==4.27.4 -> kéo theo tokenizers<0.14, mà
+#   tokenizers 0.13.3 CHỈ có wheel tới cp311. Nên trên Python 3.12 (laptop) và
+#   3.13 (Pi) pip buộc phải build tokenizers từ Rust và sẽ fail.
+#   Đã kiểm chứng: bỏ ghim đó ra thì transformers 5.x chạy tốt với MeloTTS tiếng Việt.
+#
+# Cài:
+#   python3 -m venv venv-tts
+#   ./venv-tts/bin/pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+#   ./venv-tts/bin/pip install -r requirements-tao-chunks.txt
+#
+# Model (KHÔNG có trong repo, models/ nằm trong .gitignore):
+#   from huggingface_hub import hf_hub_download
+#   hf_hub_download("nmcuong/MeloTTS-Vietnamese", "pretrain/G_463000.pth")  -> models/G_model.pth
+#   hf_hub_download("nmcuong/MeloTTS-Vietnamese", "pretrain/config.json")   -> models/config.json
+#   (README.md ghi link cũ 'MeloTTS_Vietnamese' gạch dưới — HF đã đổi sang gạch ngang)
+#
+# Lần đầu chạy còn tự tải ~2.2GB: bert-base-uncased + phobert-base-v2 + byT5 g2p.
+
+numpy<2                # torch/numba chưa hợp numpy 2.x trong tổ hợp này
+transformers           # KHÔNG ghim 4.27.4 — xem giải thích ở trên
+librosa
+soundfile
+underthesea
+segments
+cached_path
+huggingface_hub
+g2p_en                 # melo/text/__init__.py import english_bert ở tầng module
+eng_to_ipa
+inflect
+unidecode
+txtsplit
+tqdm
+
+# Đã kiểm chứng chạy được trên Python 3.12 với đúng các bản sau (2026-07-15):
+#   torch 2.13.0+cpu, torchaudio 2.11.0+cpu, transformers 5.13.1, tokenizers 0.22.2,
+#   librosa 0.11.0, numpy 1.26.4, underthesea 9.5.0, segments 2.4.0, soundfile 0.14.0
