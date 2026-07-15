@@ -4,6 +4,7 @@ import sys
 import re
 import time
 import threading
+import traceback
 import numpy as np
 from collections import Counter
 from queue import Queue
@@ -266,6 +267,38 @@ def _resolve_ocr_backend():
     return "easyocr"
 
 
+_OCR_FORMAT_LOGGED = False
+
+
+def _normalize_ocr_item(item):
+    """RapidOCR đổi định dạng theo phiên bản: score có khi là str ("0.98"), có bản đảo
+    thứ tự text/score. Chuẩn hoá mọi biến thể về (box4, text:str, prob:float);
+    trả None nếu không hiểu được item."""
+    if isinstance(item, dict):
+        box = item.get("box") or item.get("dt_boxes") or item.get("points")
+        text = item.get("text", item.get("txt", item.get("rec_txt", "")))
+        score = item.get("score", item.get("confidence", 0.0))
+        try:
+            return box, str(text), float(score)
+        except (TypeError, ValueError):
+            return None
+
+    if not isinstance(item, (list, tuple)) or len(item) < 3:
+        return None
+
+    box, a, b = item[0], item[1], item[2]
+    # Thứ tự chuẩn (box, text, score) — kể cả khi score là chuỗi "0.98".
+    try:
+        return box, str(a), float(b)
+    except (TypeError, ValueError):
+        pass
+    # Dự phòng: bản đảo thứ tự (box, score, text).
+    try:
+        return box, str(b), float(a)
+    except (TypeError, ValueError):
+        return None
+
+
 class _OCRReader:
     """
     Bọc EasyOCR hoặc RapidOCR về CÙNG MỘT API: .read(img) → [(box4, text, prob), ...]
@@ -279,8 +312,25 @@ class _OCRReader:
     def read(self, img):
         if self.backend == "rapidocr":
             # use_cls=False: bỏ bước phân loại xoay 180° cho nhanh (ảnh cổng thường đứng).
-            res, _ = self.engine(img, use_cls=False)
-            return list(res) if res else []
+            out = self.engine(img, use_cls=False)
+            # Bản cũ trả (res, elapse); bản mới trả thẳng res hoặc object có .boxes/.txts/.scores.
+            if hasattr(out, "txts"):
+                res = list(zip(out.boxes, out.txts, out.scores)) if out.txts else []
+            elif isinstance(out, tuple) and len(out) == 2:
+                res = out[0]
+            else:
+                res = out
+            if not res:
+                return []
+
+            global _OCR_FORMAT_LOGGED
+            if not _OCR_FORMAT_LOGGED:
+                _OCR_FORMAT_LOGGED = True
+                print(f"[AI] RapidOCR item mẫu (chẩn đoán định dạng): {res[0]!r}")
+
+            items = (_normalize_ocr_item(it) for it in res)
+            return [it for it in items if it is not None]
+
         out = self.engine.readtext(img, allowlist=self.allowlist)
         return [(box, text, prob) for (box, text, prob) in out]
 
@@ -411,61 +461,75 @@ def get_ocr():
 # Background OCR worker threads
 # ---------------------------------------------------------------------------
 
+def _process_plate_task(task):
+    """Xử lý 1 crop biển số: OCR → gộp chữ → validate → cộng phiếu → chốt."""
+    vote_bucket, track_state_dict, track_id, cropped_plate, gate_type, camera_ip = task
+
+    processed_img = _preprocess_for_ocr(cropped_plate, "plate", GLOBAL_PLATE_OCR_READER.backend)
+
+    with GLOBAL_PLATE_OCR_LOCK:
+        ocr_results = GLOBAL_PLATE_OCR_READER.read(processed_img)
+
+    # Sắp xếp theo hàng (Y) rồi theo cột (X) — xử lý biển số 2 dòng
+    def get_sort_key(item):
+        bbox = item[0]
+        y_center = (bbox[0][1] + bbox[2][1]) / 2
+        x_center = (bbox[0][0] + bbox[1][0]) / 2
+        return (int(y_center // 15), x_center)
+
+    ocr_results.sort(key=get_sort_key)
+
+    raw_plate_parts = [text for (bbox, text, prob) in ocr_results if prob > OCR_CONFIDENCE_THRESHOLD]
+    raw_text_combined = "".join(raw_plate_parts)
+    validated_plate = clean_and_format_plate(raw_text_combined)
+
+    if validated_plate:
+        best, finalized, just_finalized = _accumulate_vote(vote_bucket, validated_plate, "plate")
+
+        if track_id in track_state_dict:
+            track_state_dict[track_id]["plate_text"] = best
+            track_state_dict[track_id]["ocr_status"] = "done" if finalized else "pending"
+            track_state_dict[track_id]["color"] = (0, 255, 0) if finalized else (0, 255, 255)
+
+        if just_finalized:
+            print(f"\n{'='*50}")
+            print(f"[OCR ỔN ĐỊNH] PLATE → KẾT QUẢ: {best}")
+            print(f"{'='*50}\n")
+            send_scan_event(best, "plate", 1.0, gate_type, camera_ip)
+        else:
+            print(f"[LẤY MẪU] PLATE → {validated_plate} | Tạm: {best}")
+    elif track_id in track_state_dict and track_state_dict[track_id]["ocr_status"] != "done":
+        track_state_dict[track_id]["ocr_status"] = "pending"
+
+
 def _plate_ocr_worker():
     """
     Background thread: nhận crop biển số từ queue, chạy OCR, cộng phiếu vào bộ đếm
     vote CẤP CAMERA (bền vững qua các lần đổi track_id) rồi chốt khi ổn định.
+
+    Lỗi trong 1 task CHỈ được log rồi bỏ qua — tuyệt đối không để thoát ra ngoài
+    vòng lặp, vì thread chết là OCR ngừng vĩnh viễn trong khi service vẫn chạy.
     """
     while True:
         task = GLOBAL_OCR_QUEUE.get()
         if task is None:
+            GLOBAL_OCR_QUEUE.task_done()
             break
-
-        vote_bucket, track_state_dict, track_id, cropped_plate, gate_type, camera_ip = task
-
-        processed_img = _preprocess_for_ocr(cropped_plate, "plate", GLOBAL_PLATE_OCR_READER.backend)
-
-        with GLOBAL_PLATE_OCR_LOCK:
-            ocr_results = GLOBAL_PLATE_OCR_READER.read(processed_img)
-
-        # Sắp xếp theo hàng (Y) rồi theo cột (X) — xử lý biển số 2 dòng
-        def get_sort_key(item):
-            bbox = item[0]
-            y_center = (bbox[0][1] + bbox[2][1]) / 2
-            x_center = (bbox[0][0] + bbox[1][0]) / 2
-            return (int(y_center // 15), x_center)
-
-        ocr_results.sort(key=get_sort_key)
-
-        raw_plate_parts = [text for (bbox, text, prob) in ocr_results if prob > OCR_CONFIDENCE_THRESHOLD]
-        raw_text_combined = "".join(raw_plate_parts)
-        validated_plate = clean_and_format_plate(raw_text_combined)
-
-        if validated_plate:
-            best, finalized, just_finalized = _accumulate_vote(vote_bucket, validated_plate, "plate")
-
-            if track_id in track_state_dict:
-                track_state_dict[track_id]["plate_text"] = best
-                track_state_dict[track_id]["ocr_status"] = "done" if finalized else "pending"
-                track_state_dict[track_id]["color"] = (0, 255, 0) if finalized else (0, 255, 255)
-
-            if just_finalized:
-                print(f"\n{'='*50}")
-                print(f"[OCR ỔN ĐỊNH] PLATE → KẾT QUẢ: {best}")
-                print(f"{'='*50}\n")
-                send_scan_event(best, "plate", 1.0, gate_type, camera_ip)
-            else:
-                print(f"[LẤY MẪU] PLATE → {validated_plate} | Tạm: {best}")
-        elif track_id in track_state_dict and track_state_dict[track_id]["ocr_status"] != "done":
-            track_state_dict[track_id]["ocr_status"] = "pending"
-
-        GLOBAL_OCR_QUEUE.task_done()
+        try:
+            _process_plate_task(task)
+        except Exception:
+            print("[AI] Lỗi khi xử lý task PLATE (bỏ qua task này, worker vẫn chạy):")
+            traceback.print_exc()
+        finally:
+            GLOBAL_OCR_QUEUE.task_done()
 
 
-def _container_ocr_worker():
+CONTAINER_OCR_MIN_PROB = 0.2
+
+
+def _process_container_task(task):
     """
-    Background thread: nhận crop mã container từ queue, chạy OCR,
-    cập nhật track_state theo cơ chế voting (majority vote).
+    Xử lý 1 crop mã container: OCR → gộp chữ → validate → cộng phiếu → chốt.
 
     So với pipeline biển số:
     - Dùng Reader RIÊNG (GLOBAL_CONTAINER_OCR_READER) → chạy song song với plate.
@@ -475,55 +539,68 @@ def _container_ocr_worker():
     - Ngưỡng confidence thấp hơn (0.2) vì container hay bị bóng mờ
     - Vote cấp camera, chốt khi ≥4 lần giống hệt (hạ từ 6 để chốt nhanh hơn).
     """
-    CONTAINER_OCR_MIN_PROB = 0.2
+    vote_bucket, track_state_dict, track_id, cropped_container, gate_type, camera_ip = task
 
+    processed_img = _preprocess_for_ocr(cropped_container, "container", GLOBAL_CONTAINER_OCR_READER.backend)
+
+    with GLOBAL_CONTAINER_OCR_LOCK:
+        ocr_results = GLOBAL_CONTAINER_OCR_READER.read(processed_img)
+
+    # Lọc kết quả đạt ngưỡng confidence
+    valid_parts = [(bbox, text) for (bbox, text, prob) in ocr_results if prob > CONTAINER_OCR_MIN_PROB]
+
+    # Kịch bản 1: Nối chữ theo thứ tự mặc định của OCR (Top→Bottom, Left→Right)
+    raw_text_y = "".join([text for bbox, text in valid_parts])
+    res_y = clean_and_format_container(raw_text_y)
+
+    # Kịch bản 2: Ép sắp xếp từ trái qua phải (theo trục X)
+    # Giải quyết lỗi "đọc ngược" khi camera quay nghiêng
+    parts_sorted_x = sorted(valid_parts, key=lambda p: p[0][0][0])
+    raw_text_x = "".join([text for bbox, text in parts_sorted_x])
+    res_x = clean_and_format_container(raw_text_x)
+
+    # Ưu tiên kịch bản nào ra được mã chuẩn
+    validated_text = res_y if res_y else res_x
+
+    if validated_text:
+        best, finalized, just_finalized = _accumulate_vote(vote_bucket, validated_text, "container")
+
+        if track_id in track_state_dict:
+            track_state_dict[track_id]["plate_text"] = best
+            track_state_dict[track_id]["ocr_status"] = "done" if finalized else "pending"
+            track_state_dict[track_id]["color"] = (0, 255, 0) if finalized else (0, 255, 255)
+
+        if just_finalized:
+            print(f"\n{'='*50}")
+            print(f"[OCR ỔN ĐỊNH] CONTAINER → KẾT QUẢ: {best}")
+            print(f"{'='*50}\n")
+            send_scan_event(best, "container", 1.0, gate_type, camera_ip)
+        else:
+            print(f"[LẤY MẪU] CONTAINER → {validated_text} | Tạm: {best}")
+    elif track_id in track_state_dict and track_state_dict[track_id]["ocr_status"] != "done":
+        track_state_dict[track_id]["ocr_status"] = "pending"
+
+
+def _container_ocr_worker():
+    """
+    Background thread: nhận crop mã container từ queue, chạy OCR,
+    cập nhật track_state theo cơ chế voting (majority vote).
+
+    Lỗi trong 1 task CHỈ được log rồi bỏ qua — tuyệt đối không để thoát ra ngoài
+    vòng lặp, vì thread chết là OCR ngừng vĩnh viễn trong khi service vẫn chạy.
+    """
     while True:
         task = GLOBAL_CONTAINER_OCR_QUEUE.get()
         if task is None:
+            GLOBAL_CONTAINER_OCR_QUEUE.task_done()
             break
-
-        vote_bucket, track_state_dict, track_id, cropped_container, gate_type, camera_ip = task
-
-        processed_img = _preprocess_for_ocr(cropped_container, "container", GLOBAL_CONTAINER_OCR_READER.backend)
-
-        with GLOBAL_CONTAINER_OCR_LOCK:
-            ocr_results = GLOBAL_CONTAINER_OCR_READER.read(processed_img)
-
-        # Lọc kết quả đạt ngưỡng confidence
-        valid_parts = [(bbox, text) for (bbox, text, prob) in ocr_results if prob > CONTAINER_OCR_MIN_PROB]
-
-        # Kịch bản 1: Nối chữ theo thứ tự mặc định của EasyOCR (Top→Bottom, Left→Right)
-        raw_text_y = "".join([text for bbox, text in valid_parts])
-        res_y = clean_and_format_container(raw_text_y)
-
-        # Kịch bản 2: Ép sắp xếp từ trái qua phải (theo trục X)
-        # Giải quyết lỗi "đọc ngược" khi camera quay nghiêng
-        parts_sorted_x = sorted(valid_parts, key=lambda p: p[0][0][0])
-        raw_text_x = "".join([text for bbox, text in parts_sorted_x])
-        res_x = clean_and_format_container(raw_text_x)
-
-        # Ưu tiên kịch bản nào ra được mã chuẩn
-        validated_text = res_y if res_y else res_x
-
-        if validated_text:
-            best, finalized, just_finalized = _accumulate_vote(vote_bucket, validated_text, "container")
-
-            if track_id in track_state_dict:
-                track_state_dict[track_id]["plate_text"] = best
-                track_state_dict[track_id]["ocr_status"] = "done" if finalized else "pending"
-                track_state_dict[track_id]["color"] = (0, 255, 0) if finalized else (0, 255, 255)
-
-            if just_finalized:
-                print(f"\n{'='*50}")
-                print(f"[OCR ỔN ĐỊNH] CONTAINER → KẾT QUẢ: {best}")
-                print(f"{'='*50}\n")
-                send_scan_event(best, "container", 1.0, gate_type, camera_ip)
-            else:
-                print(f"[LẤY MẪU] CONTAINER → {validated_text} | Tạm: {best}")
-        elif track_id in track_state_dict and track_state_dict[track_id]["ocr_status"] != "done":
-            track_state_dict[track_id]["ocr_status"] = "pending"
-
-        GLOBAL_CONTAINER_OCR_QUEUE.task_done()
+        try:
+            _process_container_task(task)
+        except Exception:
+            print("[AI] Lỗi khi xử lý task CONTAINER (bỏ qua task này, worker vẫn chạy):")
+            traceback.print_exc()
+        finally:
+            GLOBAL_CONTAINER_OCR_QUEUE.task_done()
 
 
 # ---------------------------------------------------------------------------
