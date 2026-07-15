@@ -303,3 +303,8 @@ Dưới đây là danh sách được trích xuất tự động từ mã nguồ
 | **DELETE** | `/api/client/trucks/:id` |
 | **PATCH** | `/api/client/trucks/:id/restore` |
 | **DELETE** | `/api/client/trucks/:id/force` |
+### Module: /api/reports (RBAC: resource `reports`)
+| Method | Endpoint | Quyền | Mô tả |
+|---|---|---|---|
+| **GET** | `/api/reports/overview?from=&to=` | `view` | KPIs + biểu đồ + cảnh báo cho khoảng ngày (mặc định 30 ngày gần nhất) |
+| **GET** | `/api/reports/export?type=&from=&to=` | `export` | Xuất PDF; `type` ∈ all\|traffic\|yard\|container\|performance\|alerts |

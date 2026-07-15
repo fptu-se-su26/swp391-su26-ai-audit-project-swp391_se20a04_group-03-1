@@ -259,7 +259,7 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
           </h1>
           <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Khôi phục mật khẩu!</h2>
           <p style="font-size: 16px; line-height: 1.6; color: #666666; margin-bottom: 24px;">
-            Xin chào <b style="color: #121212;">\${provider.name}</b>,<br/><br/>
+            Xin chào <b style="color: #121212;">${provider.name}</b>,<br/><br/>
             Hệ thống nhận được yêu cầu khôi phục mật khẩu cho tài khoản nhà cung cấp của bạn trên <strong>LogiPort</strong>.
           </p>
           
@@ -267,7 +267,7 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
             <p style="margin: 0; font-size: 15px; color: #1db954; font-weight: 700;">
               Mã xác nhận (OTP) của bạn là:
             </p>
-            <h2 style="margin: 8px 0 0 0; font-size: 32px; color: #121212; letter-spacing: 5px;">\${otp}</h2>
+            <h2 style="margin: 8px 0 0 0; font-size: 32px; color: #121212; letter-spacing: 5px;">${otp}</h2>
           </div>
 
           <p style="font-size: 15px; line-height: 1.6; color: #666666; margin-bottom: 32px;">
@@ -282,7 +282,7 @@ export const forgotPasswordPost = async (req: Request, res: Response) => {
         <div style="text-align: center; margin-top: 24px;">
           <p style="font-size: 12px; color: #999999; line-height: 1.5;">
             Đây là email tự động từ hệ thống LogiPort. Vui lòng không trả lời email này.<br/>
-            © \${new Date().getFullYear()} LogiPort. All rights reserved.
+            © ${new Date().getFullYear()} LogiPort. All rights reserved.
           </p>
         </div>
       </div>

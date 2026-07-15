@@ -11,6 +11,7 @@ router.post("/", scanController.scanPost);
 router.get("/logs", requireAuth, scanController.getLogs);
 router.get("/logs/paginated", requireAuth, scanController.getLogsPaginated);
 router.get("/logs/trash/list", requireAuth, scanController.logsTrashGet);
+router.get("/logs/:id/ticket", requireAuth, scanController.getCheckInTicket);
 router.get("/logs/:id", requireAuth, scanController.getLogDetail);
 router.delete("/logs/:id", requireAuth, scanController.softDeleteLogDelete);
 router.delete("/logs/:id/force", requireAuth, scanController.hardDeleteLogDelete);
