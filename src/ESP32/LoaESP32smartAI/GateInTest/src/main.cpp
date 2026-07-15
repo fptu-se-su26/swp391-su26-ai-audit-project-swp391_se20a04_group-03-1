@@ -18,8 +18,6 @@
 #define IR_PIN 32 // Chân kết nối cảm biến hồng ngoại
 
 // --- ĐỊNH NGHĨA CHÂN CHO 3 ĐÈN LED ---
-// (Bạn có thể thay đổi các chân này tuỳ theo sơ đồ đấu nối thực tế của thiết
-// bị)
 #define LED1_PIN 13
 #define LED2_PIN 12
 #define LED3_PIN 14
@@ -30,53 +28,90 @@
 #define FIRE_DETECTED LOW  // Trạng thái khi phát hiện có lửa (cảm biến IR thường xuất LOW)
 
 // --- ĐỊNH NGHĨA TRẠNG THÁI CẢM BIẾN ---
-// CHÚ Ý: Cảm biến hồng ngoại (IR) phổ biến (như FC-51) thường xuất mức LOW khi
-// CÓ vật cản.
 #define IR_CAR_PRESENT HIGH // Trạng thái khi CÓ xe cản tia hồng ngoại
 #define IR_NO_CAR LOW       // Trạng thái khi KHÔNG CÓ xe
 
 // --- KHỞI TẠO ĐỐI TƯỢNG ---
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-// SDA: 21
-// SCL: 22
 Servo gateServo;
 
-// --- BIẾN TRẠNG THÁI ---
-unsigned long lastCloseTime = 0;
-bool isGateOpen = false;
+// --- STATE MACHINE ENUM ---
+enum GateState {
+  STATE_IDLE_CLOSED,
+  STATE_OPENING,
+  STATE_WAITING_CAR,
+  STATE_CAR_PASSING,
+  STATE_CLOSING,
+  STATE_FIRE_EMERGENCY
+};
 
-// --- HÀM ĐIỀU KHIỂN 3 ĐÈN CÙNG LÚC ---
+// --- BIẾN TOÀN CỤC MỚI (NON-BLOCKING) ---
+GateState currentState = STATE_IDLE_CLOSED;
+GateState previousState = STATE_IDLE_CLOSED;
+
+unsigned long stateStartTime = 0;
+unsigned long lastServoMoveTime = 0;
+unsigned long lastLedBlinkTime = 0;
+unsigned long lastBeepTime = 0;
+
+int currentServoAngle = ANGLE_CLOSED;
+int targetServoAngle = ANGLE_CLOSED;
+
+bool ledBlinkState = false;
+int blinkCount = 0;
+int beepCount = 0;
+
+// --- HÀM HỖ TRỢ ---
 void set3LEDs(int state) {
   digitalWrite(LED1_PIN, state);
   digitalWrite(LED2_PIN, state);
   digitalWrite(LED3_PIN, state);
 }
 
-// --- HÀM CẤU HÌNH I2S CHO MODULE MAX98357A ---
-void setupI2S() {
-  i2s_config_t i2s_config = {.mode =
-                                 (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
-                             .sample_rate = 44100,
-                             .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-                             .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-                             .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-                             .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-                             .dma_buf_count = 8,
-                             .dma_buf_len = 64,
-                             .use_apll = false,
-                             .tx_desc_auto_clear = true,
-                             .fixed_mclk = 0};
+void updateLCD(const char* line1, const char* line2) {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(line1);
+  if (line2 != nullptr) {
+    lcd.setCursor(0, 1);
+    lcd.print(line2);
+  }
+}
 
-  i2s_pin_config_t pin_config = {.bck_io_num = I2S_BCLK,
-                                 .ws_io_num = I2S_LRC,
-                                 .data_out_num = I2S_DOUT,
-                                 .data_in_num = I2S_PIN_NO_CHANGE};
+void changeState(GateState newState) {
+  previousState = currentState;
+  currentState = newState;
+  stateStartTime = millis();
+}
+
+void setupI2S() {
+  i2s_config_t i2s_config = {
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
+    .sample_rate = 44100,
+    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+    .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+    .dma_buf_count = 8,
+    .dma_buf_len = 64,
+    .use_apll = false,
+    .tx_desc_auto_clear = true,
+    .fixed_mclk = 0
+  };
+
+  i2s_pin_config_t pin_config = {
+    .bck_io_num = I2S_BCLK,
+    .ws_io_num = I2S_LRC,
+    .data_out_num = I2S_DOUT,
+    .data_in_num = I2S_PIN_NO_CHANGE
+  };
 
   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
   i2s_set_pin(I2S_NUM_0, &pin_config);
 }
 
-// --- HÀM TẠO ÂM THANH QUA I2S ---
+// Hàm này chạy mất khoảng 150ms do ghi vào I2S, 
+// nhưng chỉ được gọi riêng lẻ nên không gây blocking nghiêm trọng.
 void playTone(float freq, int duration_ms) {
   int sample_rate = 44100;
   int num_samples = (sample_rate * duration_ms) / 1000;
@@ -85,52 +120,43 @@ void playTone(float freq, int duration_ms) {
 
   for (int i = 0; i < num_samples; i++) {
     sample = (int16_t)(10000.0 * sin(2.0 * M_PI * freq * i / sample_rate));
-    i2s_write(I2S_NUM_0, &sample, sizeof(sample), &bytes_written,
-              10 / portTICK_PERIOD_MS);
+    i2s_write(I2S_NUM_0, &sample, sizeof(sample), &bytes_written, 10 / portTICK_PERIOD_MS);
   }
-
   i2s_zero_dma_buffer(I2S_NUM_0);
 }
 
-// --- HÀM ĐIỀU KHIỂN SERVO (MƯỢT NHẤT, KHÔNG DỪNG) ---
-void moveServoSmoothly(int startAngle, int targetAngle) {
-  int delayMs = 15; // Dừng 15ms cho mỗi độ để quay mượt
-
-  if (startAngle < targetAngle) {
-    for (int angle = startAngle; angle <= targetAngle; angle++) {
-      gateServo.write(angle);
-      delay(delayMs);
+// Hàm điều khiển Servo mượt mà, gọi liên tục trong loop, không dùng delay()
+void updateServo() {
+  if (currentServoAngle != targetServoAngle) {
+    if (millis() - lastServoMoveTime >= 15) { // 15ms cho 1 độ quay
+      lastServoMoveTime = millis();
+      if (currentServoAngle < targetServoAngle) {
+        currentServoAngle++;
+      } else {
+        currentServoAngle--;
+      }
+      gateServo.write(currentServoAngle);
     }
-  } else if (startAngle > targetAngle) {
-    for (int angle = startAngle; angle >= targetAngle; angle--) {
-      gateServo.write(angle);
-      delay(delayMs);
-    }
-  } else {
-    gateServo.write(targetAngle);
   }
 }
 
 void setup() {
   Serial.begin(115200);
 
-  // 1. Khởi tạo 3 đèn LED là OUTPUT và đặt trạng thái ban đầu là tắt
+  // 1. Đèn LED
   pinMode(LED1_PIN, OUTPUT);
   pinMode(LED2_PIN, OUTPUT);
   pinMode(LED3_PIN, OUTPUT);
-  set3LEDs(LOW); // Đảm bảo đèn tắt khi hệ thống mới khởi động
+  set3LEDs(LOW); 
 
-  // 2. Khởi tạo màn hình LCD
+  // 2. Màn hình LCD
   Wire.begin(21, 22);
   lcd.init();
   lcd.backlight();
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  // Cập nhật text thành GateIn cho đúng module
-  lcd.print("He thong GateIn");
-  delay(1000);
+  updateLCD("He thong GateIn", "Khoi tao...");
+  delay(1000); 
 
-  // 3. Khởi tạo Servo
+  // 3. Servo
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
@@ -138,151 +164,172 @@ void setup() {
   gateServo.setPeriodHertz(50);
   gateServo.attach(SERVO_PIN, 500, 2400);
   gateServo.write(ANGLE_CLOSED);
+  currentServoAngle = ANGLE_CLOSED;
+  targetServoAngle = ANGLE_CLOSED;
 
-  // 4. Khởi tạo I2S cho loa
+  // 4. Loa (I2S)
   setupI2S();
 
-  // 5. Khởi tạo cảm biến hồng ngoại
+  // 5. Cảm biến
   pinMode(IR_PIN, INPUT);
-
-  // 5.1. Khởi tạo cảm biến lửa và còi báo cháy
   pinMode(FIRE_SENSOR_PIN, INPUT);
+  
+  // 6. Còi
   pinMode(BUZZER_PIN, OUTPUT);
-  digitalWrite(BUZZER_PIN, LOW); // Tắt còi ban đầu
+  digitalWrite(BUZZER_PIN, LOW); 
 
-  // 6. Thiết lập trạng thái ban đầu
-  isGateOpen = false;
-  lastCloseTime = millis(); // Bắt đầu tính thời gian để mở cổng
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Dong cong.Goc:");
-  lcd.print(ANGLE_CLOSED);
-  lcd.setCursor(0, 1);
-  lcd.print("Cho 5s de mo...");
-  Serial.println("GateIn Test Ready! Cho 5 giay de mo cong...");
+  // 7. Hoàn tất setup, vào trạng thái Idle
+  char buf[16];
+  sprintf(buf, "Goc: %d", ANGLE_CLOSED);
+  updateLCD("Dong cong.", buf);
+  Serial.println("GateIn Test Ready! Cho mo cong...");
+  
+  changeState(STATE_IDLE_CLOSED);
 }
 
 void loop() {
-  // --- ƯU TIÊN KIỂM TRA BÁO CHÁY ---
+  unsigned long currentTime = millis();
+  unsigned long timeInState = currentTime - stateStartTime;
+
+  // --- 1. ƯU TIÊN CAO NHẤT: KIỂM TRA BÁO CHÁY ---
+  // Luôn kiểm tra cảm biến cháy, không bị chặn bởi bất kỳ vòng lặp nào
   if (digitalRead(FIRE_SENSOR_PIN) == FIRE_DETECTED) {
-    Serial.println("!!! PHAT HIEN CHAY !!! COI BAO DONG KICH HOAT !!!");
-    digitalWrite(BUZZER_PIN, HIGH); // Bật còi MH-FMG kêu liên tục
-    
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("!!! CANH BAO !!!");
-    lcd.setCursor(0, 1);
-    lcd.print("PHAT HIEN CHAY");
-    
-    // Vòng lặp chờ đến khi ngọn lửa tắt (loa kêu liên tục)
-    while (digitalRead(FIRE_SENSOR_PIN) == FIRE_DETECTED) {
-      delay(100);
-      yield(); // Tránh lỗi Watchdog Timer trên ESP32
+    if (currentState != STATE_FIRE_EMERGENCY) {
+      Serial.println("!!! PHAT HIEN CHAY !!! COI BAO DONG KICH HOAT !!!");
+      digitalWrite(BUZZER_PIN, HIGH); // Bật còi MH-FMG
+      set3LEDs(HIGH);                 // Bật full đèn
+      targetServoAngle = ANGLE_OPEN;  // MỞ CỔNG KHẨN CẤP
+      updateLCD("!!! CANH BAO !!!", "PHAT HIEN CHAY");
+      changeState(STATE_FIRE_EMERGENCY);
     }
-    
-    // Ngọn lửa đã tắt -> Tắt còi
-    Serial.println("-> Da tat ngon lua. Tat coi bao dong.");
+  } 
+  else if (currentState == STATE_FIRE_EMERGENCY) {
+    // Nếu lửa đã tắt và đang ở trạng thái cấp cứu -> Khôi phục
+    Serial.println("-> Da tat ngon lua. Khac phuc su co.");
     digitalWrite(BUZZER_PIN, LOW);
-    
-    // Khôi phục lại giao diện LCD tuỳ theo trạng thái cổng hiện tại
-    lcd.clear();
-    if (isGateOpen) {
-      lcd.setCursor(0, 0);
-      lcd.print("Mo cong. Goc:");
-      lcd.print(ANGLE_OPEN);
-      lcd.setCursor(0, 1);
-      lcd.print("Moi xe vao...");
-    } else {
-      lcd.setCursor(0, 0);
-      lcd.print("Dong cong.Goc:");
-      lcd.print(ANGLE_CLOSED);
-      lcd.setCursor(0, 1);
-      lcd.print("Cho 5s de mo...");
-    }
-    
-    // Cập nhật lại thời gian để không bị mở/đóng cổng sai nhịp do thời gian chờ
-    lastCloseTime = millis();
+    set3LEDs(LOW);
+    targetServoAngle = ANGLE_CLOSED; // Đóng lại cho an toàn
+    char buf[16];
+    sprintf(buf, "Goc: %d", ANGLE_CLOSED);
+    updateLCD("Dong cong an toan", buf);
+    changeState(STATE_IDLE_CLOSED);
   }
 
-  if (!isGateOpen) {
-    // Nếu cổng đang đóng, kiểm tra xem đã đủ 5 giây chưa (để tự động mở, có thể
-    // thay đổi sau này)
-    if (millis() - lastCloseTime >= 5000) {
-      Serial.println("-> Da du 5s, mo cong!");
+  // --- 2. CẬP NHẬT GÓC SERVO LIÊN TỤC ---
+  updateServo();
 
-      // Mở cổng
-      moveServoSmoothly(ANGLE_CLOSED, ANGLE_OPEN);
-      isGateOpen = true;
+  // --- 3. XỬ LÝ THEO TRẠNG THÁI (STATE MACHINE) ---
+  switch (currentState) {
+    
+    case STATE_IDLE_CLOSED:
+      // Mô phỏng tự động mở cửa sau 5 giây (như code gốc yêu cầu)
+      if (timeInState >= 5000) {
+        Serial.println("-> Da du 5s, tu dong mo cong!");
+        targetServoAngle = ANGLE_OPEN;
+        set3LEDs(HIGH); // Bật sáng 3 đèn
+        updateLCD("Mo cong...", "Moi xe vao");
+        beepCount = 0;
+        lastBeepTime = currentTime;
+        changeState(STATE_OPENING);
+      }
+      break;
 
-      // YÊU CẦU: Đèn sáng liên tục khi mở cửa
-      Serial.println("-> Bat 3 den (sang lien tuc)");
-      set3LEDs(HIGH);
-
-      // Cập nhật LCD
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Mo cong. Goc:");
-      lcd.print(ANGLE_OPEN);
-      lcd.setCursor(0, 1);
-      lcd.print("Moi xe vao..."); // Cập nhật text cho GateIn (xe vào)
-
-      // Phát âm thanh cảnh báo
-      for (int i = 0; i < 3; i++) {
+    case STATE_OPENING:
+      // Phát tiếng bíp cảnh báo (3 lần) khi đang mở cổng, cách nhau 250ms
+      if (beepCount < 3 && (currentTime - lastBeepTime >= 250)) {
         playTone(1200.0, 150);
-        delay(100);
-        yield();
+        lastBeepTime = currentTime;
+        beepCount++;
       }
 
-      Serial.println("-> Dang cho xe di qua tia hong ngoai...");
-    }
-  } else {
-    // Nếu cổng đang mở: chờ xe đi qua
+      // Đợi cửa mở xong hẳn
+      if (currentServoAngle == targetServoAngle && beepCount >= 3) {
+        Serial.println("-> Cong da mo. Cho xe.");
+        updateLCD("Da mo cong", "Moi xe qua...");
+        changeState(STATE_WAITING_CAR);
+      }
+      break;
 
-    // 1. Chờ xe đi vào vùng cảm biến
-    if (digitalRead(IR_PIN) == IR_CAR_PRESENT) {
-      Serial.println("-> Phat hien xe. Van giu cong...");
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Xe dang qua...");
-      lcd.setCursor(0, 1);
-      lcd.print("Goc servo: ");
-      lcd.print(ANGLE_OPEN);
+    case STATE_WAITING_CAR:
+      // Chờ xe đi qua
+      if (digitalRead(IR_PIN) == IR_CAR_PRESENT) {
+        Serial.println("-> Phat hien xe. Van giu cong...");
+        char buf[16];
+        sprintf(buf, "Goc servo: %d", ANGLE_OPEN);
+        updateLCD("Xe dang qua...", buf);
+        changeState(STATE_CAR_PASSING);
+      } 
+      // TIMEOUT AN TOÀN: Nếu mở 10s không có xe nào qua thì tự động đóng lại
+      else if (timeInState >= 10000) {
+        Serial.println("-> Timeout khong co xe. Dong cong.");
+        updateLCD("Het han cho", "Tu dong dong...");
+        targetServoAngle = ANGLE_CLOSED;
+        blinkCount = 0;
+        lastLedBlinkTime = currentTime;
+        changeState(STATE_CLOSING);
+      }
+      break;
 
-      // 2. Chờ xe đi qua hẳn
-      while (true) {
-        if (digitalRead(IR_PIN) == IR_NO_CAR) {
-          break; // Xe đã qua hẳn
+    case STATE_CAR_PASSING:
+      // Chờ xe đi qua hẳn
+      if (digitalRead(IR_PIN) == IR_NO_CAR) {
+        // Đợi thêm 1 giây an toàn sau khi IR clear (Debounce)
+        if (timeInState >= 1000) {
+          Serial.println("-> Xe da qua khoi. Chuan bi dong cong...");
+          updateLCD("Xe da qua", "Dong cong...");
+          targetServoAngle = ANGLE_CLOSED;
+          blinkCount = 0;
+          lastLedBlinkTime = currentTime;
+          ledBlinkState = false;
+          changeState(STATE_CLOSING);
         }
-        delay(10);
+      } else {
+        // Nếu xe vẫn đang che hồng ngoại thì liên tục reset thời gian state
+        stateStartTime = currentTime;
       }
+      break;
 
-      Serial.println("-> Xe da qua khoi. Chuan bi dong cong...");
-      delay(1000); // Đợi thêm 1 giây an toàn sau khi xe đi qua
-
-      // YÊU CẦU: Trong khi đóng cửa thì sẽ nháy liên tục 3 cái rồi tắt
-      Serial.println("-> Qua trinh dong cua: Nhay den 3 lan roi tat...");
-      for (int i = 0; i < 3; i++) {
-        set3LEDs(LOW);
-        delay(250);
+    case STATE_CLOSING:
+      // ANTI-PINCH (Chống kẹt): 
+      // Nếu có người/xe đi vào vùng hồng ngoại trong lúc cổng ĐANG ĐÓNG!
+      if (digitalRead(IR_PIN) == IR_CAR_PRESENT) {
+        Serial.println("-> VAT CAN! Hủy dong cong, mo lai ngay lap tuc!");
+        targetServoAngle = ANGLE_OPEN;
         set3LEDs(HIGH);
-        delay(250);
+        updateLCD("!!! VAT CAN !!!", "Mo lai cong");
+        changeState(STATE_OPENING);
+        beepCount = 3; // Không beep lại quá nhiều
+        break; // Thoát case đóng
       }
-      // Tắt hẳn 3 đèn sau khi nháy xong
-      set3LEDs(LOW);
 
-      // Bắt đầu đóng cổng lại bằng servo
-      Serial.println("-> Dong cong...");
-      moveServoSmoothly(ANGLE_OPEN, ANGLE_CLOSED);
-      isGateOpen = false;
-      lastCloseTime = millis(); // Cập nhật lại thời gian đóng cổng gần nhất
+      // Xử lý nháy đèn cảnh báo khi đóng (3 lần sáng/tắt = 6 lần đổi trạng thái)
+      if (blinkCount < 6) {
+        if (currentTime - lastLedBlinkTime >= 250) {
+          ledBlinkState = !ledBlinkState;
+          set3LEDs(ledBlinkState ? HIGH : LOW);
+          lastLedBlinkTime = currentTime;
+          blinkCount++;
+        }
+      } else {
+        set3LEDs(LOW); // Nháy xong thì tắt đèn
+      }
 
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Dong cong.Goc:");
-      lcd.print(ANGLE_CLOSED);
-      lcd.setCursor(0, 1);
-      lcd.print("Cho 5s de mo...");
-    }
+      // Đã đóng xong
+      if (currentServoAngle == targetServoAngle) {
+        Serial.println("-> Dong cong thanh cong.");
+        char buf[16];
+        sprintf(buf, "Goc: %d", ANGLE_CLOSED);
+        updateLCD("Dong cong.", buf);
+        changeState(STATE_IDLE_CLOSED);
+      }
+      break;
+
+    case STATE_FIRE_EMERGENCY:
+      // Trong trường hợp hỏa hoạn:
+      // - Còi MH-FMG hú liên tục (do digitalWrite BUZZER_PIN HIGH ở đầu)
+      // - Servo đã quay tới góc OPEN để sơ tán
+      // Hàm updateServo() vẫn chạy để đảm bảo góc quay tới đích an toàn
+      // - Đợi đến khi hết lửa sẽ xử lý ở bước (1. ƯU TIÊN CAO NHẤT)
+      break;
   }
 }
