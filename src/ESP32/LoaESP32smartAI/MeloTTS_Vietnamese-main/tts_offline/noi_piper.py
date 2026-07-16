@@ -87,11 +87,15 @@ class BoDoc:
         self.voice = PiperVoice.load(duong_dan_giong)
         self.duong_dan_giong = duong_dan_giong
 
-    def doc_ra_file(self, bien_so, o_so, duong_dan_ra, toc_do=1.0, so_o_toi_da=SO_O_TOI_DA):
-        """Render câu thông báo ra file WAV -> (câu_đã_đọc, độ_dài_giây)."""
+    def doc_cau_ra_file(self, cau, duong_dan_ra, toc_do=1.0):
+        """
+        Render MỘT câu tiếng Việt bất kỳ ra file WAV -> (câu, độ_dài_giây).
+
+        Dùng chung cho cả câu vào (có ô) lẫn câu ra (không ô). Piper cho vais1000-medium
+        xuất WAV PCM 16-bit, mono, 22050Hz — ESP32 tự đọc sample rate từ header WAV.
+        """
         from piper import SynthesisConfig
 
-        cau = cau_thong_bao(bien_so, o_so, so_o_toi_da)
         # length_scale: >1 chậm lại, <1 nhanh lên (ngược chiều trực giác về "tốc độ").
         cfg = SynthesisConfig(length_scale=1.0 / toc_do if toc_do else 1.0)
 
@@ -103,6 +107,11 @@ class BoDoc:
         with wave.open(duong_dan_ra, 'rb') as w:
             giay = w.getnframes() / w.getframerate()
         return cau, giay
+
+    def doc_ra_file(self, bien_so, o_so, duong_dan_ra, toc_do=1.0, so_o_toi_da=SO_O_TOI_DA):
+        """Render câu thông báo VÀO (biển số + ô) ra file WAV -> (câu, độ_dài_giây)."""
+        cau = cau_thong_bao(bien_so, o_so, so_o_toi_da)
+        return self.doc_cau_ra_file(cau, duong_dan_ra, toc_do)
 
 
 def phat(duong_dan):

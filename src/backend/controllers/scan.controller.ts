@@ -6,6 +6,7 @@ import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
 import { assignRandomFreeSlot } from "../services/yard-slot.service";
 import { buildCheckInTicketPdf, CheckInTicketData } from "../services/ticket.service";
+import { publishGateOpen, publishAnnounce } from "../services/mqtt.service";
 
 interface ScanCache {
   plate?: { text: string; time: number };
@@ -352,24 +353,18 @@ export const scanPost = async (req: Request, res: Response) => {
           : "Check-out thành công",
     });
 
-    // --- GỬI LỆNH MỞ CỔNG TỚI ESP32 ---
+    // --- ĐIỀU KHIỂN CỔNG + LOA QUA MQTT ---
+    // status ("in"/"out") chính là cổng cần thao tác.
+    // - Mở cổng: publish tới ESP32 tại cổng đó.
+    // - Loa: check-in gửi kèm số ô (câu VÀO); check-out không có ô (câu RA).
     try {
-      const esp32Ip = process.env.ESP32_IP || "http://192.168.1.100";
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout 3s tránh treo server
-      
+      const gate = status as "in" | "out";
       const p = appointment.truckPlate || "";
       const c = appointment.containerNo || "";
-      fetch(`${esp32Ip}/api/open-gate?plate=${encodeURIComponent(p)}&container=${encodeURIComponent(c)}`, {
-        method: "GET",
-        signal: controller.signal
-      }).then(res => res.text())
-        .then(data => console.log(`[ESP32] Lệnh mở cổng thành công:`, data))
-        .catch(err => console.error("[ESP32] Không thể kết nối tới ESP32:", err.message));
-        
-      clearTimeout(timeoutId);
+      publishGateOpen(gate, p, c);
+      publishAnnounce(gate, p, status === "in" ? transaction!.assignedSlot : null);
     } catch (err) {
-      console.error("[ESP32] Lỗi hệ thống khi gọi ESP32:", err);
+      console.error("[MQTT] Lỗi khi publish lệnh cổng/loa:", err);
     }
     // -----------------------------------
 

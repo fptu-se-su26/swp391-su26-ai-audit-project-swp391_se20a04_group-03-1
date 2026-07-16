@@ -1,64 +1,103 @@
+// =============================================================================
+// CỔNG RA (GateOut) — ESP32
+//
+// Cùng kiến trúc MQTT với cổng vào (xem GateInTest + docs/mqtt_setup.md). Khác biệt:
+//   - GATE_ID = "out"  -> topic smartparking/gate/out/{cmd,audio,status}
+//   - Không có cảm biến cháy / LED / còi. Có 4 cảm biến đếm xe đang CHỜ ra.
+//   - Cảm biến IR đảo cực so với cổng vào (IR_CAR_PRESENT = LOW).
+//   - Câu thông báo do Pi dựng là câu RA ("... mời di chuyển ra cổng").
+//
+// BỎ hẳn kiểu "cứ 5 giây tự mở". Cổng chỉ mở khi backend gửi lệnh MQTT.
+// Âm thanh chạy 1 task riêng (core 0) — nơi DUY NHẤT ghi I2S.
+// =============================================================================
 #include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
 #include <ESP32Servo.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <driver/i2s.h>
 #include <math.h>
 
-// --- ĐỊNH NGHĨA CHÂN VÀ GÓC SERVO ---
-#define SERVO_PIN 33
-// Tinh chỉnh 2 thông số này để bù trừ góc lệch của Servo
-#define ANGLE_CLOSED 0 // Góc đóng cổng
-#define ANGLE_OPEN 90  // Góc mở cổng
+// ===== CẤU HÌNH MẠNG — SỬA CHO ĐÚNG MÔI TRƯỜNG =====
+#define WIFI_SSID   "TEN_WIFI"
+#define WIFI_PASS   "MAT_KHAU_WIFI"
 
+#define MQTT_HOST   "xxxxxxxx.s1.eu.hivemq.cloud"
+#define MQTT_PORT   8883
+#define MQTT_USER   "esp32gate"
+#define MQTT_PASS   "MAT_KHAU_MQTT"
+#define MQTT_USE_TLS 1
+
+#define GATE_ID     "out"
+
+#define TOPIC_CMD    "smartparking/gate/" GATE_ID "/cmd"
+#define TOPIC_AUDIO  "smartparking/gate/" GATE_ID "/audio"
+#define TOPIC_STATUS "smartparking/gate/" GATE_ID "/status"
+
+// ===== SERVO =====
+#define SERVO_PIN 33
+#define ANGLE_CLOSED 0
+#define ANGLE_OPEN 90
+
+// ===== I2S (MAX98357A) =====
 #define I2S_BCLK 26
 #define I2S_LRC 25
 #define I2S_DOUT 27
+#define I2S_DEFAULT_RATE 22050
 
-#define IR_PIN 32 // Cảm biến đặt PHÍA SAU cổng để nhận biết xe đã ra ngoài -> Đóng cổng
-
-// --- CẢM BIẾN ĐẾM XE CHỜ ---
-#define IR_WAIT_1 19
+#define IR_PIN 32          // cảm biến PHÍA SAU cổng: xe qua khỏi -> đóng
+#define IR_WAIT_1 19       // 4 cảm biến đếm xe đang chờ ra
 #define IR_WAIT_2 18
 #define IR_WAIT_3 17
 #define IR_WAIT_4 16
 
-// --- ĐỊNH NGHĨA TRẠNG THÁI CẢM BIẾN ---
-#define IR_CAR_PRESENT LOW // CÓ xe cản tia
-#define IR_NO_CAR HIGH     // KHÔNG CÓ xe
+#define IR_CAR_PRESENT LOW  // cổng ra: CÓ xe = LOW
+#define IR_NO_CAR HIGH
 
-// --- KHỞI TẠO ĐỐI TƯỢNG ---
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 Servo gateServo;
 
-// --- STATE MACHINE CỔNG ---
+#if MQTT_USE_TLS
+WiFiClientSecure netClient;
+#else
+WiFiClient netClient;
+#endif
+PubSubClient mqtt(netClient);
+
+// ===== STATE MACHINE =====
 enum GateState {
-  STATE_IDLE_CLOSED,   // Cổng đang đóng, chờ 5s để tự mở
-  STATE_OPENING,       // Đang quay Servo mở ra
-  STATE_WAIT_CAR_PASS, // Cổng đã mở, chờ xe đi qua cảm biến IR_PIN phía sau
-  STATE_SAFE_DELAY,    // Xe đã qua cảm biến, chờ 1 giây an toàn
-  STATE_CLOSING        // Đang quay Servo đóng lại
+  STATE_IDLE_CLOSED,
+  STATE_OPENING,
+  STATE_WAIT_CAR_PASS,
+  STATE_SAFE_DELAY,
+  STATE_CLOSING
 };
 
 GateState currentState = STATE_IDLE_CLOSED;
 unsigned long stateStartTime = 0;
-const char* currentLine2Msg = "Cho 5s de mo...";
+const char* currentLine2Msg = "Cho lenh MQTT";
 
-// --- BIẾN ĐIỀU KHIỂN SERVO ---
 int currentServoAngle = ANGLE_CLOSED;
 unsigned long lastServoMoveTime = 0;
-const int SERVO_MOVE_DELAY = 15; // ms per degree
+const int SERVO_MOVE_DELAY = 15;
 
-// --- I2S AUDIO TASK ---
-enum AudioMode {
-  AUDIO_NONE,
-  AUDIO_BEEP_3
+volatile bool openRequested = false;
+char pendingPlate[16] = "";
+unsigned long lastMqttReconnect = 0;
+
+// ===== HÀNG ĐỢI ÂM THANH =====
+enum AudioType { AUDIO_BEEP, AUDIO_PLAY_URL };
+struct AudioCmd {
+  AudioType type;
+  char url[200];
 };
+QueueHandle_t audioQueue;
 
-volatile AudioMode currentAudioMode = AUDIO_NONE;
-TaskHandle_t audioTaskHandle = NULL;
-
-// --- HÀM ĐẾM XE CHỜ ---
+// --------------------------------------------------------------------------
 int getWaitingCars() {
   int count = 0;
   if (digitalRead(IR_WAIT_1) == IR_CAR_PRESENT) count++;
@@ -68,87 +107,274 @@ int getWaitingCars() {
   return count;
 }
 
-// --- HÀM CẬP NHẬT MÀN HÌNH LCD ---
-void updateDisplay(const char *line2) {
+void updateDisplay(const char* line2) {
   int count = getWaitingCars();
-  
   char buf1[17];
-  snprintf(buf1, 17, "Goc:%2d|Cho:%dxe  ", currentServoAngle, count);
-  
+  snprintf(buf1, sizeof(buf1), "Goc:%2d|Cho:%dxe  ", currentServoAngle, count);
   char buf2[17];
-  snprintf(buf2, 17, "%-16s", line2); // Pad with spaces to 16 chars để tự ghi đè
-  
+  snprintf(buf2, sizeof(buf2), "%-16s", line2);
   lcd.setCursor(0, 0);
   lcd.print(buf1);
   lcd.setCursor(0, 1);
   lcd.print(buf2);
 }
 
-// --- HÀM CHUYỂN TRẠNG THÁI ---
 void changeState(GateState newState, const char* msg) {
   if (currentState != newState) {
     currentState = newState;
     stateStartTime = millis();
     currentLine2Msg = msg;
-    updateDisplay(currentLine2Msg); 
+    updateDisplay(currentLine2Msg);
   }
 }
 
-// --- HÀM CẤU HÌNH I2S CHO MODULE MAX98357A ---
+// --------------------------------------------------------------------------
+// I2S + âm thanh (giống hệt cổng vào — nơi duy nhất ghi I2S)
+// --------------------------------------------------------------------------
 void setupI2S() {
   i2s_config_t i2s_config = {
-      .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
-      .sample_rate = 44100,
-      .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-      .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-      .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-      .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-      .dma_buf_count = 8,
-      .dma_buf_len = 64,
-      .use_apll = false,
-      .tx_desc_auto_clear = true,
-      .fixed_mclk = 0};
-
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
+    .sample_rate = I2S_DEFAULT_RATE,
+    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+    .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+    .dma_buf_count = 8,
+    .dma_buf_len = 256,
+    .use_apll = false,
+    .tx_desc_auto_clear = true,
+    .fixed_mclk = 0
+  };
   i2s_pin_config_t pin_config = {
-      .bck_io_num = I2S_BCLK,
-      .ws_io_num = I2S_LRC,
-      .data_out_num = I2S_DOUT,
-      .data_in_num = I2S_PIN_NO_CHANGE};
-
+    .bck_io_num = I2S_BCLK,
+    .ws_io_num = I2S_LRC,
+    .data_out_num = I2S_DOUT,
+    .data_in_num = I2S_PIN_NO_CHANGE
+  };
   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
   i2s_set_pin(I2S_NUM_0, &pin_config);
 }
 
-// --- TASK XỬ LÝ ÂM THANH NON-BLOCKING ---
-void audioTask(void * pvParameters) {
-  int sample_rate = 44100;
-  int16_t sample;
-  size_t bytes_written;
+void playBeep(int times) {
+  const int sr = I2S_DEFAULT_RATE;
+  i2s_set_sample_rate(I2S_NUM_0, sr);
+  const int n = sr * 120 / 1000;
+  int16_t s;
+  size_t bw;
+  for (int t = 0; t < times; t++) {
+    for (int i = 0; i < n; i++) {
+      s = (int16_t)(9000.0 * sin(2.0 * M_PI * 1200.0 * i / sr));
+      i2s_write(I2S_NUM_0, &s, sizeof(s), &bw, portMAX_DELAY);
+    }
+    i2s_zero_dma_buffer(I2S_NUM_0);
+    vTaskDelay(90 / portTICK_PERIOD_MS);
+  }
+}
 
-  for(;;) {
-    if (currentAudioMode == AUDIO_BEEP_3) {
-      for (int i = 0; i < 3 && currentAudioMode == AUDIO_BEEP_3; i++) {
-        int num_samples = (sample_rate * 150) / 1000;
-        for (int j = 0; j < num_samples && currentAudioMode == AUDIO_BEEP_3; j++) {
-          sample = (int16_t)(10000.0 * sin(2.0 * M_PI * 1200.0 * j / sample_rate));
-          i2s_write(I2S_NUM_0, &sample, sizeof(sample), &bytes_written, portMAX_DELAY);
+bool readExact(WiFiClient* stream, uint8_t* buf, size_t n) {
+  size_t got = 0;
+  unsigned long last = millis();
+  while (got < n) {
+    int a = stream->available();
+    if (a <= 0) {
+      if (!stream->connected() && stream->available() <= 0) return false;
+      if (millis() - last > 4000) return false;
+      vTaskDelay(1);
+      continue;
+    }
+    int r = stream->read(buf + got, n - got);
+    if (r > 0) { got += r; last = millis(); }
+  }
+  return true;
+}
+
+bool skipBytes(WiFiClient* stream, uint32_t n) {
+  uint8_t tmp[64];
+  while (n > 0) {
+    size_t want = n < sizeof(tmp) ? n : sizeof(tmp);
+    if (!readExact(stream, tmp, want)) return false;
+    n -= want;
+  }
+  return true;
+}
+
+static inline uint32_t le32(const uint8_t* p) {
+  return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+}
+
+void streamWavToI2S(const char* url) {
+  HTTPClient http;
+  WiFiClient client;
+  if (!http.begin(client, url)) {
+    Serial.printf("[audio] http.begin lỗi: %s\n", url);
+    return;
+  }
+  int code = http.GET();
+  if (code != HTTP_CODE_OK) {
+    Serial.printf("[audio] HTTP %d cho %s\n", code, url);
+    http.end();
+    return;
+  }
+  WiFiClient* stream = http.getStreamPtr();
+
+  uint8_t hdr[12];
+  if (!readExact(stream, hdr, 12) ||
+      memcmp(hdr, "RIFF", 4) != 0 || memcmp(hdr + 8, "WAVE", 4) != 0) {
+    Serial.println("[audio] Không phải WAV hợp lệ");
+    http.end();
+    return;
+  }
+
+  uint32_t sampleRate = I2S_DEFAULT_RATE;
+  uint16_t bits = 16, channels = 1;
+
+  while (true) {
+    uint8_t ch[8];
+    if (!readExact(stream, ch, 8)) { http.end(); return; }
+    uint32_t sz = le32(ch + 4);
+
+    if (memcmp(ch, "fmt ", 4) == 0) {
+      uint8_t fmt[16];
+      uint32_t toread = sz > 16 ? 16 : sz;
+      if (!readExact(stream, fmt, toread)) { http.end(); return; }
+      channels = (uint16_t)fmt[2] | ((uint16_t)fmt[3] << 8);
+      sampleRate = le32(fmt + 4);
+      bits = (uint16_t)fmt[14] | ((uint16_t)fmt[15] << 8);
+      if (sz > toread && !skipBytes(stream, sz - toread)) { http.end(); return; }
+    } else if (memcmp(ch, "data", 4) == 0) {
+      Serial.printf("[audio] WAV %uHz %ubit %uch, data=%u byte\n",
+                    sampleRate, bits, channels, sz);
+      i2s_set_sample_rate(I2S_NUM_0, sampleRate);
+      static uint8_t buf[1024];
+      uint32_t remaining = sz;
+      size_t bw;
+      unsigned long last = millis();
+      while (remaining > 0) {
+        int a = stream->available();
+        if (a <= 0) {
+          if (!stream->connected() && stream->available() <= 0) break;
+          if (millis() - last > 4000) break;
+          vTaskDelay(1);
+          continue;
         }
-        i2s_zero_dma_buffer(I2S_NUM_0);
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        size_t want = remaining < sizeof(buf) ? remaining : sizeof(buf);
+        int r = stream->read(buf, want < (size_t)a ? want : (size_t)a);
+        if (r > 0) {
+          i2s_write(I2S_NUM_0, buf, r, &bw, portMAX_DELAY);
+          remaining -= r;
+          last = millis();
+        }
       }
-      if (currentAudioMode == AUDIO_BEEP_3) currentAudioMode = AUDIO_NONE;
+      i2s_zero_dma_buffer(I2S_NUM_0);
+      break;
     } else {
-      vTaskDelay(50 / portTICK_PERIOD_MS);
+      if (!skipBytes(stream, sz)) { http.end(); return; }
+    }
+  }
+  http.end();
+}
+
+void audioTask(void* pv) {
+  AudioCmd cmd;
+  for (;;) {
+    if (xQueueReceive(audioQueue, &cmd, portMAX_DELAY) == pdTRUE) {
+      if (cmd.type == AUDIO_BEEP) playBeep(3);
+      else if (cmd.type == AUDIO_PLAY_URL) streamWavToI2S(cmd.url);
     }
   }
 }
 
-// --- HÀM CẬP NHẬT SERVO NON-BLOCKING ---
+void requestBeep() {
+  AudioCmd c;
+  c.type = AUDIO_BEEP;
+  c.url[0] = 0;
+  xQueueSend(audioQueue, &c, 0);
+}
+
+void requestPlay(const char* url) {
+  AudioCmd c;
+  c.type = AUDIO_PLAY_URL;
+  strncpy(c.url, url, sizeof(c.url) - 1);
+  c.url[sizeof(c.url) - 1] = 0;
+  xQueueSend(audioQueue, &c, 0);
+}
+
+// --------------------------------------------------------------------------
+// MQTT
+// --------------------------------------------------------------------------
+void publishStatus(const char* event) {
+  JsonDocument doc;
+  doc["event"] = event;
+  doc["gate"] = GATE_ID;
+  doc["waiting"] = getWaitingCars();
+  char buf[160];
+  size_t n = serializeJson(doc, buf);
+  mqtt.publish(TOPIC_STATUS, (const uint8_t*)buf, n, false);
+}
+
+void onMqttMessage(char* topic, byte* payload, unsigned int len) {
+  JsonDocument doc;
+  if (deserializeJson(doc, payload, len)) {
+    Serial.println("[mqtt] Payload không phải JSON, bỏ qua");
+    return;
+  }
+  if (strcmp(topic, TOPIC_CMD) == 0) {
+    const char* action = doc["action"] | "";
+    if (strcmp(action, "open") == 0) {
+      const char* plate = doc["plate"] | "";
+      strncpy(pendingPlate, plate, sizeof(pendingPlate) - 1);
+      pendingPlate[sizeof(pendingPlate) - 1] = 0;
+      openRequested = true;
+      Serial.printf("[mqtt] Lệnh MỞ cổng ra, biển %s\n", pendingPlate);
+    }
+  } else if (strcmp(topic, TOPIC_AUDIO) == 0) {
+    const char* url = doc["url"] | "";
+    if (url[0]) {
+      Serial.printf("[mqtt] Phát audio: %s\n", url);
+      requestPlay(url);
+    }
+  }
+}
+
+void mqttReconnect() {
+  if (mqtt.connected() || millis() - lastMqttReconnect < 5000) return;
+  lastMqttReconnect = millis();
+  Serial.print("[mqtt] Đang nối broker... ");
+  String cid = String("esp32-gate-") + GATE_ID + "-" + String((uint32_t)ESP.getEfuseMac(), HEX);
+  if (mqtt.connect(cid.c_str(), MQTT_USER, MQTT_PASS,
+                   TOPIC_STATUS, 1, true, "{\"event\":\"offline\",\"gate\":\"" GATE_ID "\"}")) {
+    Serial.println("OK");
+    mqtt.subscribe(TOPIC_CMD, 1);
+    mqtt.subscribe(TOPIC_AUDIO, 1);
+    publishStatus("online");
+  } else {
+    Serial.printf("thất bại rc=%d\n", mqtt.state());
+  }
+}
+
+void setupWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  Serial.print("[wifi] Đang nối");
+  unsigned long t0 = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - t0 < 20000) {
+    delay(300);
+    Serial.print(".");
+  }
+  if (WiFi.status() == WL_CONNECTED)
+    Serial.printf("\n[wifi] OK, IP %s\n", WiFi.localIP().toString().c_str());
+  else
+    Serial.println("\n[wifi] CHƯA nối được (sẽ thử lại trong loop).");
+}
+
+// --------------------------------------------------------------------------
+// Servo (tự chuyển state khi mở/đóng xong, như bản gốc)
+// --------------------------------------------------------------------------
 void updateServo() {
   if (millis() - lastServoMoveTime >= SERVO_MOVE_DELAY) {
     lastServoMoveTime = millis();
-    int targetAngle = (currentState == STATE_IDLE_CLOSED || currentState == STATE_CLOSING) ? ANGLE_CLOSED : ANGLE_OPEN;
-    
+    int targetAngle = (currentState == STATE_IDLE_CLOSED || currentState == STATE_CLOSING)
+                          ? ANGLE_CLOSED : ANGLE_OPEN;
     if (currentServoAngle < targetAngle) {
       currentServoAngle++;
       gateServo.write(currentServoAngle);
@@ -156,14 +382,13 @@ void updateServo() {
       currentServoAngle--;
       gateServo.write(currentServoAngle);
     }
-    
-    // Chuyển state sau khi servo mở xong
     if (currentState == STATE_OPENING && currentServoAngle == ANGLE_OPEN) {
-        changeState(STATE_WAIT_CAR_PASS, "Moi xe ra...");
+      publishStatus("opened");
+      changeState(STATE_WAIT_CAR_PASS, "Moi xe ra...");
     }
-    // Chuyển state sau khi servo đóng xong
     if (currentState == STATE_CLOSING && currentServoAngle == ANGLE_CLOSED) {
-        changeState(STATE_IDLE_CLOSED, "Cho 5s de mo...");
+      publishStatus("closed");
+      changeState(STATE_IDLE_CLOSED, "Cho lenh MQTT");
     }
   }
 }
@@ -177,7 +402,6 @@ void setup() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("He thong GateOut");
-  delay(1000);
 
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
@@ -189,7 +413,8 @@ void setup() {
   currentServoAngle = ANGLE_CLOSED;
 
   setupI2S();
-  xTaskCreatePinnedToCore(audioTask, "AudioTask", 4096, NULL, 1, &audioTaskHandle, 0);
+  audioQueue = xQueueCreate(4, sizeof(AudioCmd));
+  xTaskCreatePinnedToCore(audioTask, "AudioTask", 8192, NULL, 1, NULL, 0);
 
   pinMode(IR_PIN, INPUT);
   pinMode(IR_WAIT_1, INPUT);
@@ -197,60 +422,65 @@ void setup() {
   pinMode(IR_WAIT_3, INPUT);
   pinMode(IR_WAIT_4, INPUT);
 
-  // Mới khởi động: Cổng đóng, chờ 5s mở
-  changeState(STATE_IDLE_CLOSED, "Cho 5s de mo...");
-  Serial.println("GateOut 02 Ready! Cho 5s de mo cong...");
+  setupWiFi();
+#if MQTT_USE_TLS
+  netClient.setInsecure();
+#endif
+  mqtt.setServer(MQTT_HOST, MQTT_PORT);
+  mqtt.setBufferSize(512);
+  mqtt.setCallback(onMqttMessage);
+
+  changeState(STATE_IDLE_CLOSED, "Cho lenh MQTT");
+  Serial.println("GateOut READY — cho lenh mo cong qua MQTT.");
 }
 
 void loop() {
   static unsigned long lastLCDUpdateTime = 0;
+  static bool carDetectedAtGate = false;
 
-  // Cập nhật LCD định kỳ (200ms) để theo dõi số xe đang chờ
+  if (WiFi.status() == WL_CONNECTED) {
+    mqttReconnect();
+    mqtt.loop();
+  }
+
   if (millis() - lastLCDUpdateTime >= 200) {
     lastLCDUpdateTime = millis();
     updateDisplay(currentLine2Msg);
   }
 
-  // --- CẬP NHẬT SERVO ---
   updateServo();
-
-  // --- MÁY TRẠNG THÁI (STATE MACHINE) ---
-  static bool carDetectedAtGate = false;
 
   switch (currentState) {
     case STATE_IDLE_CLOSED:
-      // Chờ đủ 5s sau khi đóng thì tự động mở
-      if (millis() - stateStartTime >= 5000) {
+      // Chỉ mở khi có lệnh MQTT (bỏ auto-5s).
+      if (openRequested) {
+        openRequested = false;
+        Serial.println("-> Nhan lenh MQTT, mo cong ra!");
+        requestBeep();
+        publishStatus("opening");
         changeState(STATE_OPENING, "Dang mo...");
-        currentAudioMode = AUDIO_BEEP_3; // Kêu 3 tiếng bíp khi bắt đầu mở
-        Serial.println("-> Da du 5s, tu dong mo cong!");
       }
       break;
 
     case STATE_OPENING:
-      // updateServo() đang xử lý, tự động chuyển sang STATE_WAIT_CAR_PASS khi mở xong.
-      break;
+      break;  // updateServo() lo, tự sang WAIT_CAR_PASS
 
     case STATE_WAIT_CAR_PASS:
-      // Chờ xe đi ngang qua IR_PIN (phía sau cổng)
       if (!carDetectedAtGate && digitalRead(IR_PIN) == IR_CAR_PRESENT) {
-          carDetectedAtGate = true;
-          currentLine2Msg = "Xe dang qua..."; // Cập nhật ngay dòng chữ
-          updateDisplay(currentLine2Msg);
-          Serial.println("-> Phat hien xe dang qua cong...");
+        carDetectedAtGate = true;
+        currentLine2Msg = "Xe dang qua...";
+        updateDisplay(currentLine2Msg);
+        publishStatus("car_passing");
+        Serial.println("-> Xe dang qua cong.");
       }
-      
       if (carDetectedAtGate && digitalRead(IR_PIN) == IR_NO_CAR) {
-          // Xe đã qua hẳn IR_PIN
-          carDetectedAtGate = false;
-          changeState(STATE_SAFE_DELAY, "An toan...");
-          Serial.println("-> Xe da qua khoi cong.");
+        carDetectedAtGate = false;
+        changeState(STATE_SAFE_DELAY, "An toan...");
+        Serial.println("-> Xe da qua khoi cong.");
       }
-      // Không cần timeout nếu logic là cổng cứ giữ mở để chờ xe đi ra
       break;
 
     case STATE_SAFE_DELAY:
-      // Chờ 1 giây an toàn sau khi xe đi qua hoàn toàn trước khi đóng
       if (millis() - stateStartTime >= 1000) {
         changeState(STATE_CLOSING, "Dang dong...");
         Serial.println("-> Dang dong cong.");
@@ -258,7 +488,6 @@ void loop() {
       break;
 
     case STATE_CLOSING:
-      // updateServo() đang xử lý, tự động chuyển sang STATE_IDLE_CLOSED khi đóng xong.
-      break;
+      break;  // updateServo() lo, tự sang IDLE_CLOSED
   }
 }

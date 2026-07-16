@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./config/database.config";
 import rootRouter from "./routers/index.route";
 import { connectRedis } from "./config/redis.config";
+import { initMqtt } from "./services/mqtt.service";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
@@ -40,6 +41,9 @@ app.use(cookieParser());
 //Connect Database
 connectDB();
 connectRedis();
+
+//Connect MQTT broker (điều khiển cổng + loa qua ESP32/Pi). No-op nếu thiếu MQTT_URL.
+initMqtt();
 
 //Allow json
 app.use(express.json());

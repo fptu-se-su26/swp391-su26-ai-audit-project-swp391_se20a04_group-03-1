@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Từ vựng dùng CHUNG giữa bộ sinh chunk (tao_chunks.py, chạy trên laptop) và bộ ghép
-(thong_bao.py, chạy trên Pi 5).
+Từ vựng + quy tắc đọc số/biển số tiếng Việt cho TTS (Piper).
 
-Cả hai bắt buộc import từ đây. Nhờ vậy nếu sinh thiếu mẩu nào thì lúc ghép sẽ báo lỗi
-rõ ràng, thay vì phát ra một câu bị cụt mà không ai biết.
+Dùng chung cho:
+  - noi_piper.py / mqtt_loa.py (chạy trên Pi 5) — dựng CÂU cho Piper đọc.
+  - danh_sach_chunk (tàn dư hướng ghép chunk, đã bỏ — giữ để tham khảo).
 """
+
+import re
 
 # Đọc từng chữ số. Biển số phải đọc rời từng ký tự ("một hai ba"), KHÔNG đọc thành
 # số nguyên ("một trăm hai mươi ba") — xem luu_y.md.
@@ -28,6 +30,7 @@ CHU_CAI = {
 CUM_TU = {
     'mo_dau': 'xe có biển số',
     'vao_o': 'di chuyển vào ô số',
+    'moi_ra': 'mời di chuyển ra cổng',  # câu cổng RA (không có số ô)
 }
 
 # Số ô lớn nhất cần đọc được. Tăng lên nếu bãi có nhiều ô hơn rồi chạy lại tao_chunks.py.
@@ -142,20 +145,66 @@ def _tach_ky_tu(bien_so):
     return ds
 
 
-def cau_thong_bao(bien_so, o_so, so_o_toi_da=SO_O_TOI_DA):
+def doc_o(o_so):
     """
-    Biển số + số ô -> CÂU tiếng Việt hoàn chỉnh, cho TTS đọc liền một mạch (Piper).
+    Đọc TÊN Ô (assignedSlot của backend là chuỗi tự do) thành tiếng Việt.
+
+    Tách thành các cụm chữ / cụm số rồi đọc:
+      - cụm số  -> đọc tự nhiên  ("12" -> "mười hai")
+      - cụm chữ -> đọc RỜI từng chữ cái theo tên ("A" -> "a", "B" -> "bê")
+
+    Ví dụ: 3 -> "ba"; "12" -> "mười hai"; "A3" -> "a ba"; "B12" -> "bê mười hai".
+    Số quá lớn (>999) thì đọc rời từng chữ số cho khỏi vỡ so_sang_chu.
+    """
+    s = str(o_so).strip().upper()
+    if not s:
+        raise LoiTuVung(f"Tên ô rỗng: {o_so!r}")
+
+    cum = []
+    for run in re.findall(r'\d+|[A-Z]+', s):
+        if run.isdigit():
+            n = int(run)
+            if 0 <= n <= 999:
+                cum.append(so_sang_chu(n))
+            else:
+                cum.append(' '.join(_DON_VI[int(d)] for d in run))
+        else:
+            for c in run:
+                cum.append(CHU_CAI[c])  # run đã là [A-Z] nên chắc chắn có trong CHU_CAI
+
+    if not cum:
+        raise LoiTuVung(f"Tên ô không đọc được (không có chữ/số): {o_so!r}")
+    return ' '.join(cum)
+
+
+def cau_thong_bao(bien_so, o_so, so_o_toi_da=None):
+    """
+    Biển số + tên ô -> CÂU tiếng Việt hoàn chỉnh, cho Piper đọc liền một mạch.
 
     Ví dụ ("51A-12345", 3) ->
         "xe có biển số năm một a một hai ba bốn năm, di chuyển vào ô số ba."
 
-    Biển số vẫn đọc RỜI từng ký tự theo luu_y.md; chỉ SỐ Ô mới đọc tự nhiên.
+    o_so nhận cả int (3) lẫn chuỗi ("A3", "12") vì backend cấp assignedSlot dạng chuỗi.
+    Biển số vẫn đọc RỜI từng ký tự theo luu_y.md; TÊN Ô đọc theo doc_o.
     Dấu phẩy trước "di chuyển" là cố ý: Piper ngắt nhịp ở đó cho dễ nghe.
+
+    so_o_toi_da chỉ để tương thích ngược; khi o_so là int sẽ kiểm tra trong khoảng.
     """
-    _kiem_o_so(o_so, so_o_toi_da)
+    if isinstance(o_so, int) and so_o_toi_da is not None:
+        _kiem_o_so(o_so, so_o_toi_da)
     tu = [CHU_SO[c] if c in CHU_SO else CHU_CAI[c] for c in _tach_ky_tu(bien_so)]
     return (f"{CUM_TU['mo_dau']} {' '.join(tu)}, "
-            f"{CUM_TU['vao_o']} {so_sang_chu(o_so)}.")
+            f"{CUM_TU['vao_o']} {doc_o(o_so)}.")
+
+
+def cau_thong_bao_ra(bien_so):
+    """
+    Câu cho CỔNG RA (không có số ô).
+
+    Ví dụ ("51A-12345",) -> "xe có biển số năm một a một hai ba bốn năm, mời di chuyển ra cổng."
+    """
+    tu = [CHU_SO[c] if c in CHU_SO else CHU_CAI[c] for c in _tach_ky_tu(bien_so)]
+    return f"{CUM_TU['mo_dau']} {' '.join(tu)}, {CUM_TU['moi_ra']}."
 
 
 def danh_sach_chunk(bien_so, o_so, so_o_toi_da=SO_O_TOI_DA):
