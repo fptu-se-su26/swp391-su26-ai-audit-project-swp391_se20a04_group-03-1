@@ -57,16 +57,16 @@
 
 #define IR_PIN 32                // cảm biến hồng ngoại dưới cổng
 
-#define LED1_PIN 13
-#define LED2_PIN 12
-#define LED3_PIN 14
+#define LED1_PIN 13 //Box 1
+#define LED2_PIN 12 //Box 2
+#define LED3_PIN 14 //Box 3
 
 #define FIRE_SENSOR_PIN 34
 #define BUZZER_PIN 4
 #define FIRE_DETECTED LOW
 
-#define IR_CAR_PRESENT HIGH
-#define IR_NO_CAR LOW
+#define IR_CAR_PRESENT LOW
+#define IR_NO_CAR HIGH
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 Servo gateServo;
