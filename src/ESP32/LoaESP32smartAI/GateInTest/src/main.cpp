@@ -17,19 +17,17 @@
 
 #define IR_PIN 32 // Chân kết nối cảm biến hồng ngoại
 
-// --- ĐỊNH NGHĨA CHÂN CHO 3 ĐÈN LED ---
-#define LED1_PIN 13
-#define LED2_PIN 12
-#define LED3_PIN 14
+#define LED1_PIN 13 //Box 1
+#define LED2_PIN 12 //Box 2
+#define LED3_PIN 14 //Box 3
 
 // --- ĐỊNH NGHĨA CHÂN CHO BÁO CHÁY VÀ CÒI ---
 #define FIRE_SENSOR_PIN 34 // Chân DO của cảm biến báo cháy
 #define BUZZER_PIN 4       // Chân điều khiển còi MH-FMG
 #define FIRE_DETECTED LOW  // Trạng thái khi phát hiện có lửa (cảm biến IR thường xuất LOW)
 
-// --- ĐỊNH NGHĨA TRẠNG THÁI CẢM BIẾN ---
-#define IR_CAR_PRESENT HIGH // Trạng thái khi CÓ xe cản tia hồng ngoại
-#define IR_NO_CAR LOW       // Trạng thái khi KHÔNG CÓ xe
+#define IR_CAR_PRESENT LOW
+#define IR_NO_CAR HIGH
 
 // --- KHỞI TẠO ĐỐI TƯỢNG ---
 LiquidCrystal_I2C lcd(0x27, 16, 2);
