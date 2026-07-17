@@ -75,15 +75,43 @@ GIU_TOI_DA_WAV = 40
 
 
 def _doan_ip_lan():
-    """Đoán IP LAN của Pi bằng cách 'mở' một socket UDP (không thực sự gửi gói nào)."""
+    """
+    Đoán IP LAN của Pi bằng cách 'mở' một socket UDP (không thực sự gửi gói nào).
+
+    Trả None nếu chưa có mạng — KHÔNG trả '127.0.0.1', vì URL trỏ về loopback sẽ khiến
+    ESP32 tự gọi về chính nó và loa câm âm thầm.
+    """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(('8.8.8.8', 80))
-        return s.getsockname()[0]
+        ip = s.getsockname()[0]
+        return None if ip.startswith('127.') else ip
     except OSError:
-        return '127.0.0.1'
+        return None
     finally:
         s.close()
+
+
+def _cho_ip_lan(giay_toi_da=120):
+    """
+    Chờ tới khi có IP LAN thật. Lúc Pi boot, service có thể chạy trước khi WiFi kịp lên;
+    chốt nhầm IP loopback ở thời điểm đó là hỏng cho tới khi có người restart service.
+    """
+    t0 = time.time()
+    lan_dau = True
+    while True:
+        ip = _doan_ip_lan()
+        if ip:
+            return ip
+        if time.time() - t0 > giay_toi_da:
+            raise RuntimeError(
+                f"Không tìm được IP LAN sau {giay_toi_da}s. Kiểm tra mạng của Pi, "
+                f"hoặc đặt sẵn LOA_HTTP_HOST=<ip-của-pi>."
+            )
+        if lan_dau:
+            print("[loa] Chưa có mạng, đang chờ IP LAN...")
+            lan_dau = False
+        time.sleep(2)
 
 
 def _don_wav_cu(thu_muc, giu):
@@ -107,7 +135,7 @@ class CauLoa:
         os.makedirs(THU_MUC_WAV, exist_ok=True)
         print(f"[loa] Nạp model Piper...")
         self.bo_doc = BoDoc()               # nạp 1 lần, ~1s (LoiPiper nếu đường dẫn/giọng sai)
-        self.http_host = HTTP_HOST or _doan_ip_lan()
+        self.http_host = HTTP_HOST or _cho_ip_lan()
         self._dem = 0
         self._lock = threading.Lock()
         self._khoi_dong_http()
@@ -172,6 +200,14 @@ class CauLoa:
                 print(f"[loa] Piper render lỗi: {e}")
                 return
             _don_wav_cu(THU_MUC_WAV, GIU_TOI_DA_WAV)
+
+        # Đọc lại IP mỗi lần phát: DHCP cấp lại / đổi router thì URL vẫn đúng mà không
+        # phải restart service. Giữ IP cũ nếu tạm thời mất mạng (còn hơn không có gì).
+        if not HTTP_HOST:
+            ip_moi = _doan_ip_lan()
+            if ip_moi and ip_moi != self.http_host:
+                print(f"[loa] IP LAN đổi: {self.http_host} -> {ip_moi}")
+                self.http_host = ip_moi
 
         url = f"http://{self.http_host}:{HTTP_PORT}/{ten}"
         topic = TOPIC_AUDIO_FMT.format(gate=gate)

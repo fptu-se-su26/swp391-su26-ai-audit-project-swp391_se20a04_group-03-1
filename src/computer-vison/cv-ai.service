@@ -1,0 +1,35 @@
+[Unit]
+# Dịch vụ Computer Vision (YOLO + OCR) — chạy trên PI 5.
+# Cài đặt: xem README hoặc docs/mqtt_setup.md (mục Chạy tự động lúc boot).
+Description=Computer Vision AI service (YOLO + OCR) cho cong bai xe
+# Cần mạng thật: gọi backend cloud /gates, /yards và mở RTSP của camera trong LAN.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+Environment=HOME=/home/pi
+WorkingDirectory=/home/pi/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison
+
+# Biến môi trường (BACKEND_URL, OCR_ENGINE...). Xem cv-ai.env.example.
+# Bỏ dấu - ở đầu nếu muốn service TỪ CHỐI chạy khi thiếu file.
+EnvironmentFile=-/etc/cv-ai.env
+
+# !!! SỬA CHO ĐÚNG PYTHON CỦA PI !!!
+# Tìm bằng: cd src/computer-vison && source venv/bin/activate && which python
+# Hailo cần hailo_platform (thường cài ở python hệ thống hoặc venv --system-site-packages).
+ExecStart=/home/pi/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/computer-vison/venv/bin/python src/app.py
+
+# Camera rớt / RTSP đứt thì app tự thử lại; Restart lo các ca chết hẳn.
+Restart=always
+RestartSec=10
+
+StandardOutput=journal
+StandardError=journal
+# Không có cái này thì print() bị đệm, journalctl -f im lìm rồi đổ ra một cục.
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
