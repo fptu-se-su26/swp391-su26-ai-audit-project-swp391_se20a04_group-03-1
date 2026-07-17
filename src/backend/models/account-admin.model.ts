@@ -18,6 +18,13 @@ const accountAdminSchema = new Schema(
       ref: "AdminRole",
       required: true,
     },
+    // Cổng được phân công — chỉ dùng cho tài khoản Quản lý cổng (role GATE_MANAGER)
+    // đăng nhập app mobile. Các tài khoản admin khác để trống.
+    gateId: {
+      type: Schema.Types.ObjectId,
+      ref: "Gate",
+      default: null,
+    },
     password: {
       type: String,
       required: true,

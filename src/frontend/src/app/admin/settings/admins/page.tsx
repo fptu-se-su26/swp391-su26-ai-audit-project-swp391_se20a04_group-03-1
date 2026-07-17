@@ -61,20 +61,32 @@ interface RoleRef {
   roleName: string;
 }
 
+interface GateRef {
+  _id: string;
+  name: string;
+  type: string;
+}
+
 interface AdminUser {
   _id: string;
   fullName: string;
   email: string;
   role: RoleRef | string | null;
+  gateId?: GateRef | string | null;
   isActive: boolean;
   createdAt: string;
 }
+
+// roleCode của vai trò Quản lý cổng — form chỉ hiện ô chọn cổng cho role này.
+const GATE_MANAGER_CODE = "GATE_MANAGER";
 
 // Hiển thị an toàn: role có thể là object (đã populate) hoặc string cũ.
 const roleLabel = (role: AdminUser["role"]) =>
   role && typeof role === "object" ? role.roleName : role || "—";
 const roleId = (role: AdminUser["role"]) =>
   role && typeof role === "object" ? role._id : (role as string) || "";
+const gateIdOf = (gate: AdminUser["gateId"]) =>
+  gate && typeof gate === "object" ? gate._id : (gate as string) || "";
 
 export default function AdminsPage() {
   return (
@@ -87,6 +99,9 @@ export default function AdminsPage() {
 function AdminsInner() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [roleOptions, setRoleOptions] = useState<{ value: string; label: string }[]>([]);
+  // Tra roleCode theo _id để biết vai trò đang chọn có phải Quản lý cổng không.
+  const [roleCodeById, setRoleCodeById] = useState<Record<string, string>>({});
+  const [gateOptions, setGateOptions] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
@@ -103,9 +118,13 @@ function AdminsInner() {
   const [editingAdmin, setEditingAdmin] = useState<AdminUser | null>(null);
 
   const [addRole, setAddRole] = useState("");
+  const [addGate, setAddGate] = useState("");
   const [addStatus, setAddStatus] = useState("active");
   const [editRole, setEditRole] = useState("");
+  const [editGate, setEditGate] = useState("");
   const [editStatus, setEditStatus] = useState("");
+
+  const isGateRole = (rid: string) => roleCodeById[rid] === GATE_MANAGER_CODE;
 
   const [formElement, setFormElement] = useState<HTMLFormElement | null>(null);
   const [editFormElement, setEditFormElement] = useState<HTMLFormElement | null>(null);
@@ -201,7 +220,12 @@ function AdminsInner() {
             value: r._id,
             label: r.roleName,
           }));
+          const codeMap: Record<string, string> = {};
+          data.data.forEach((r: any) => {
+            codeMap[r._id] = r.roleCode;
+          });
           setRoleOptions(opts);
+          setRoleCodeById(codeMap);
           if (opts.length > 0) setAddRole((prev) => prev || opts[0].value);
         }
       } catch {
@@ -209,6 +233,29 @@ function AdminsInner() {
       }
     };
     loadRoles();
+  }, []);
+
+  // Nạp danh sách cổng để đổ vào dropdown "Cổng phụ trách" (chỉ dùng cho Quản lý cổng).
+  useEffect(() => {
+    const loadGates = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gates`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.code === "success") {
+          setGateOptions(
+            data.data.map((g: any) => ({
+              value: g._id,
+              label: `${g.name} (${g.type === "in" ? "Cổng vào" : "Cổng ra"})`,
+            })),
+          );
+        }
+      } catch {
+        /* ignore — dropdown sẽ rỗng */
+      }
+    };
+    loadGates();
   }, []);
 
   useEffect(() => {
@@ -369,6 +416,7 @@ function AdminsInner() {
   const openEditModal = (admin: AdminUser) => {
     setEditingAdmin(admin);
     setEditRole(roleId(admin.role));
+    setEditGate(gateIdOf(admin.gateId));
     setEditStatus(admin.isActive ? "active" : "pending");
     setIsEditModalOpen(true);
   };
@@ -404,7 +452,10 @@ function AdminsInner() {
           </Link>
           <Can resource="settings.admins" action="create">
             <Button
-              onClick={() => setIsAddModalOpen(true)}
+              onClick={() => {
+                setAddGate("");
+                setIsAddModalOpen(true);
+              }}
               className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] rounded-[500px] font-black uppercase tracking-[1.5px] px-6 gap-2 border-none transition-all duration-200"
             >
               <Plus className="h-5 w-5 mr-1" /> Thêm Admin
@@ -546,9 +597,16 @@ function AdminsInner() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]">
-                        {roleLabel(admin.role)}
-                      </span>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider border bg-[#e5e5e5] text-[#666666] border-[#cccccc] dark:bg-[#272727] dark:text-[#999999] dark:border-[#333333]">
+                          {roleLabel(admin.role)}
+                        </span>
+                        {admin.gateId && typeof admin.gateId === "object" && (
+                          <span className="text-[11px] font-bold text-[#666666] dark:text-[#b3b3b3]">
+                            Cổng: {admin.gateId.name}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -751,6 +809,28 @@ function AdminsInner() {
                 className="w-full"
               />
             </div>
+            {isGateRole(addRole) && (
+              <div className="space-y-3">
+                <Label
+                  htmlFor="gateId"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Cổng phụ trách
+                </Label>
+                <CustomSelect
+                  id="gateId"
+                  name="gateId"
+                  value={addGate}
+                  onChange={setAddGate}
+                  options={gateOptions}
+                  placeholder="-- Chọn cổng --"
+                  className="w-full"
+                />
+                <p className="text-[11px] font-bold text-[#666666] dark:text-[#999999]">
+                  Chỉ áp dụng cho tài khoản Quản lý cổng đăng nhập app mobile.
+                </p>
+              </div>
+            )}
             <div className="space-y-3">
               <Label
                 htmlFor="status"
@@ -847,6 +927,28 @@ function AdminsInner() {
                 className="w-full"
               />
             </div>
+            {isGateRole(editRole) && (
+              <div className="space-y-3">
+                <Label
+                  htmlFor="editGateId"
+                  className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]"
+                >
+                  Cổng phụ trách
+                </Label>
+                <CustomSelect
+                  id="editGateId"
+                  name="gateId"
+                  value={editGate}
+                  onChange={setEditGate}
+                  options={gateOptions}
+                  placeholder="-- Chọn cổng --"
+                  className="w-full"
+                />
+                <p className="text-[11px] font-bold text-[#666666] dark:text-[#999999]">
+                  Chỉ áp dụng cho tài khoản Quản lý cổng đăng nhập app mobile.
+                </p>
+              </div>
+            )}
             <div className="space-y-3">
               <Label
                 htmlFor="editStatus"

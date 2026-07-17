@@ -63,7 +63,22 @@ async function run() {
     console.log("[seed-rbac] Created OPERATOR");
   }
 
-  // 3. Migrate account cũ (role đang là string, chưa phải ObjectId).
+  // 3. GATE_MANAGER — vai trò cho Quản lý cổng đăng nhập app mobile.
+  //    Không cần quyền web (họ chỉ dùng mobile); tồn tại để định danh tài khoản.
+  let gateManagerRole = await AdminRole.findOne({ roleCode: "GATE_MANAGER" });
+  if (!gateManagerRole) {
+    gateManagerRole = await AdminRole.create({
+      roleCode: "GATE_MANAGER",
+      roleName: "Quản lý cổng",
+      description:
+        "Nhân viên/Quản lý cổng — đăng nhập app mobile để quét QR thủ công.",
+      permissions: [],
+      status: "Active",
+    });
+    console.log("[seed-rbac] Created GATE_MANAGER");
+  }
+
+  // 4. Migrate account cũ (role đang là string, chưa phải ObjectId).
   const accounts = await AccountAdmin.find({}).lean();
   let migrated = 0;
   for (const acc of accounts) {

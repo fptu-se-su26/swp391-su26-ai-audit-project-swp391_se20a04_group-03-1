@@ -26,6 +26,8 @@ export const createAdminPost = (
       "string.empty": "Vai trò không được để trống",
       "any.required": "Vai trò là bắt buộc",
     }),
+    // Cổng phụ trách — chỉ áp dụng cho role Quản lý cổng, có thể để trống.
+    gateId: Joi.string().allow("", null).optional(),
     status: Joi.string().valid("active", "pending").required().messages({
       "any.only": "Trạng thái không hợp lệ",
       "any.required": "Trạng thái là bắt buộc",
@@ -62,6 +64,8 @@ export const editAdminPatch = (
       "string.empty": "Vai trò không được để trống",
       "any.required": "Vai trò là bắt buộc",
     }),
+    // Cổng phụ trách — chỉ áp dụng cho role Quản lý cổng, có thể để trống.
+    gateId: Joi.string().allow("", null).optional(),
     status: Joi.string()
       .valid("active", "pending", "banned")
       .required()
