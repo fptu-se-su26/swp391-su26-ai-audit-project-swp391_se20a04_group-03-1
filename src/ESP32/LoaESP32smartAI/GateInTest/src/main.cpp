@@ -27,14 +27,14 @@
 #include <math.h>
 
 // ===== CẤU HÌNH MẠNG — SỬA CHO ĐÚNG MÔI TRƯỜNG =====
-#define WIFI_SSID   "TEN_WIFI"
-#define WIFI_PASS   "MAT_KHAU_WIFI"
+#define WIFI_SSID   "LogiPort"
+#define WIFI_PASS   "logiport123"
 
 // Broker MQTT cloud (ví dụ HiveMQ Cloud). TLS = cổng 8883.
-#define MQTT_HOST   "xxxxxxxx.s1.eu.hivemq.cloud"
+#define MQTT_HOST   "ea8a7d82ce1d49cf9672b0771ce7511a.s1.eu.hivemq.cloud"
 #define MQTT_PORT   8883
-#define MQTT_USER   "esp32gate"
-#define MQTT_PASS   "MAT_KHAU_MQTT"
+#define MQTT_USER   "smartparking"
+#define MQTT_PASS   "logiport123"
 #define MQTT_USE_TLS 1        // 1 = TLS(8883); 0 = trần(1883) chỉ để test broker LAN
 
 // Định danh cổng. Toàn bộ topic sinh ra từ đây — file cổng RA chỉ khác đúng dòng này.
@@ -169,7 +169,8 @@ void setupI2S() {
 // --------------------------------------------------------------------------
 void playBeep(int times) {
   const int sr = I2S_DEFAULT_RATE;
-  i2s_set_sample_rate(I2S_NUM_0, sr);
+  // Đặt lại mono/16-bit: WAV vừa phát trước đó có thể đã đổi số kênh.
+  i2s_set_clk(I2S_NUM_0, sr, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
   const int n = sr * 120 / 1000;    // 120ms mỗi tiếng
   int16_t s;
   size_t bw;
@@ -262,12 +263,18 @@ void streamWavToI2S(const char* url) {
     } else if (memcmp(ch, "data", 4) == 0) {
       Serial.printf("[audio] WAV %uHz %ubit %uch, data=%u byte\n",
                     sampleRate, bits, channels, sz);
-      // MAX98357A mono; Piper xuất mono 16-bit nên đẩy thẳng. (Nếu về sau đổi sang
-      // stereo/8-bit thì cần downmix ở đây — hiện không cần.)
-      i2s_set_sample_rate(I2S_NUM_0, sampleRate);
+      // Lấy đúng tần số/độ sâu/số kênh từ header WAV. Piper xuất mono 16-bit 22050Hz,
+      // nhưng đọc từ header thì đổi giọng khác cũng không phải sửa firmware.
+      i2s_set_clk(I2S_NUM_0, sampleRate, (i2s_bits_per_sample_t)bits,
+                  channels == 2 ? I2S_CHANNEL_STEREO : I2S_CHANNEL_MONO);
 
+      // read() trả về số byte tuỳ TCP chia gói, rất hay LẺ. Mẫu là 16-bit (2 byte), nên
+      // ghi thẳng r byte vào I2S sẽ cắt đôi mẫu và lệch byte vĩnh viễn từ đó -> rè.
+      // Giữ phần dư lại, chỉ ghi trọn frame.
+      const size_t frameBytes = (bits / 8) * (channels == 2 ? 2 : 1);
       static uint8_t buf[1024];
       uint32_t remaining = sz;
+      size_t carry = 0;
       size_t bw;
       unsigned long last = millis();
       while (remaining > 0) {
@@ -278,12 +285,18 @@ void streamWavToI2S(const char* url) {
           vTaskDelay(1);
           continue;
         }
-        size_t want = remaining < sizeof(buf) ? remaining : sizeof(buf);
-        int r = stream->read(buf, want < (size_t)a ? want : (size_t)a);
+        size_t want = sizeof(buf) - carry;
+        if (want > remaining) want = remaining;
+        if (want > (size_t)a) want = (size_t)a;
+        int r = stream->read(buf + carry, want);
         if (r > 0) {
-          i2s_write(I2S_NUM_0, buf, r, &bw, portMAX_DELAY);
           remaining -= r;
           last = millis();
+          size_t have = carry + r;
+          size_t writable = have - (have % frameBytes);
+          if (writable > 0) i2s_write(I2S_NUM_0, buf, writable, &bw, portMAX_DELAY);
+          carry = have - writable;
+          if (carry > 0) memmove(buf, buf + writable, carry);
         }
       }
       i2s_zero_dma_buffer(I2S_NUM_0);
