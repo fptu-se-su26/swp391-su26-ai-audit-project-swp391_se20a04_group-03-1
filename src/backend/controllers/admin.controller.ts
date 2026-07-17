@@ -1,6 +1,19 @@
 import { Request, Response } from "express";
 import { AccountAdmin } from "../models/account-admin.model";
 import { AdminRole } from "../models/adminRole.model";
+import { Gate } from "../models/gate.model";
+
+// Cổng chỉ gán cho tài khoản Quản lý cổng (role GATE_MANAGER). Trả về ObjectId
+// cổng hợp lệ, hoặc null nếu role khác / không chọn / cổng không tồn tại.
+const resolveGateAssignment = async (
+  roleCode: string,
+  gateId: unknown,
+): Promise<string | null> => {
+  if (roleCode !== "GATE_MANAGER") return null;
+  if (!gateId || typeof gateId !== "string") return null;
+  const gate = await Gate.findOne({ _id: gateId, isDeleted: false });
+  return gate ? String(gate._id) : null;
+};
 
 export const adminsGet = async (req: Request, res: Response) => {
   try {
@@ -28,6 +41,7 @@ export const adminsGet = async (req: Request, res: Response) => {
 
     const adminList = await AccountAdmin.find(query)
       .populate("role", "roleCode roleName")
+      .populate("gateId", "name type")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum);
@@ -53,7 +67,7 @@ export const adminsGet = async (req: Request, res: Response) => {
 
 export const adminCreatePost = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, password, role, status } = req.body;
+    const { fullName, email, password, role, status, gateId } = req.body;
 
     const existingUser = await AccountAdmin.findOne({ email });
     if (existingUser) {
@@ -80,10 +94,13 @@ export const adminCreatePost = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const assignedGate = await resolveGateAssignment(roleDoc.roleCode, gateId);
+
     const newAccount = new AccountAdmin({
       fullName,
       email,
       role,
+      gateId: assignedGate,
       password: hashedPassword,
       isActive: status === "active",
     });
@@ -107,7 +124,7 @@ export const adminCreatePost = async (req: Request, res: Response) => {
 export const adminEditPatch = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { fullName, email, role, status } = req.body;
+    const { fullName, email, role, status, gateId } = req.body;
 
     const existingUser = await AccountAdmin.findOne({
       email,
@@ -143,6 +160,8 @@ export const adminEditPatch = async (req: Request, res: Response) => {
     admin.fullName = fullName;
     admin.email = email;
     admin.role = role;
+    // Gán/xóa cổng phụ trách theo role mới (role khác GATE_MANAGER -> null).
+    admin.gateId = (await resolveGateAssignment(roleDoc.roleCode, gateId)) as any;
     if (status === "active") admin.isActive = true;
     else if (status === "pending" || status === "banned")
       admin.isActive = false;
