@@ -91,6 +91,34 @@ python tts_offline/mqtt_loa.py
 Bridge tự đoán IP LAN của Pi cho URL WAV; đặt `LOA_HTTP_HOST` nếu đoán sai, `LOA_HTTP_PORT`
 để đổi cổng (mặc định 8080). **Cổng 8080 của Pi phải cho ESP32 truy cập trong LAN.**
 
+#### Chạy tự động lúc boot (systemd)
+
+Cách `export` ở trên chỉ sống trong 1 phiên shell: đóng SSH là bridge chết, reboot là mất
+biến. Pi đặt ngoài cổng thì phải tự chạy lại sau mất điện — dùng service:
+
+```bash
+# 1. Biến môi trường + mật khẩu (KHÔNG nằm trong repo)
+sudo cp tts_offline/loa-tts.env.example /etc/loa-tts.env
+sudo nano /etc/loa-tts.env          # điền MQTT_HOST/USER/PASS thật
+sudo chmod 600 /etc/loa-tts.env     # chỉ root đọc
+
+# 2. Service
+sudo cp tts_offline/loa-tts.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now loa-tts
+
+# 3. Kiểm tra
+systemctl status loa-tts
+journalctl -u loa-tts -f            # phải thấy "Đã nối MQTT ..." 
+```
+
+`loa-tts.service` giả định: user `pi`, venv `~/venv-tts`, repo ở `~/swp391-...`. Khác thì
+sửa `User=`, `WorkingDirectory=`, `ExecStart=` cho khớp.
+
+Sau khi bật service, **đừng chạy `python tts_offline/mqtt_loa.py` bằng tay nữa** — hai tiến
+trình sẽ tranh nhau cổng 8080 và cùng subscribe `announce` (mỗi câu bị đọc 2 lần). Sửa code
+xong thì `sudo systemctl restart loa-tts`.
+
 ### Backend (cloud)
 ```bash
 npm install            # đã thêm "mqtt" vào package.json
