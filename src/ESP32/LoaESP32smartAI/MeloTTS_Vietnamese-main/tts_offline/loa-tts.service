@@ -1,0 +1,36 @@
+[Unit]
+# Cầu nối MQTT -> Piper -> loa ESP32. Chạy trên PI 5.
+# Cài đặt: xem docs/mqtt_setup.md mục "Chạy tự động lúc boot".
+Description=Loa TTS bridge (MQTT + Piper) cho cong ESP32
+Documentation=file:///home/pi/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/ESP32/LoaESP32smartAI/docs/mqtt_setup.md
+# network-online (không phải network.target) vì cần có IP thật để nối broker + đoán IP LAN.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+# Python tự lấy HOME từ pwd nếu thiếu, nhưng đặt rõ cho ~/.cache/loa_tts và ~/piper-voices khỏi lệch.
+Environment=HOME=/home/pi
+WorkingDirectory=/home/pi/swp391-su26-ai-audit-project-swp391_se20a04_group-03-1/src/ESP32/LoaESP32smartAI/MeloTTS_Vietnamese-main
+
+# Mật khẩu MQTT nằm ở đây, KHÔNG nằm trong repo. Tạo file này bằng tay, chmod 600.
+EnvironmentFile=/etc/loa-tts.env
+
+# Gọi thẳng python của venv-tts — không cần "source activate".
+# Đường dẫn venv phải NGẮN: espeak-ng chỉ có buffer 160 byte cho đường dẫn dữ liệu.
+ExecStart=/home/pi/venv-tts/bin/python tts_offline/mqtt_loa.py
+
+# Mất mạng/broker sập thì mqtt_loa.py tự thử lại; Restart lo các ca chết hẳn.
+Restart=always
+RestartSec=5
+
+# Log đi thẳng vào journald: journalctl -u loa-tts -f
+StandardOutput=journal
+StandardError=journal
+# Python buffer stdout khi không phải TTY -> log không hiện ngay. Tắt buffer đi.
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
