@@ -32,6 +32,11 @@ RUN npm install --omit=dev
 # Copy compiled JavaScript from builder stage
 COPY --from=builder /app/dist ./dist
 
+# Copy non-code assets (font .ttf) — tsc không copy nên PDFKit không tìm thấy font
+# khi chạy `node dist/index.js`, khiến xuất báo cáo/phiếu PDF thất bại trên server.
+# Đích ./dist/assets khớp path runtime: __dirname(dist/services)/../assets/fonts.
+COPY --from=builder /app/assets ./dist/assets
+
 # Expose port 4000 for the backend API
 EXPOSE 4000
 
