@@ -47,7 +47,7 @@ Xe RA tương tự nhưng `slot` để trống → Pi đọc câu *"...mời di 
 | Topic | Chiều | Payload |
 |---|---|---|
 | `smartparking/gate/<g>/cmd` | backend → ESP32 | `{action:"open", plate, container}` |
-| `smartparking/announce` | backend → Pi | `{gate, plate, slot}` (slot=null → câu ra) |
+| `smartparking/announce` | backend → Pi | `{gate, plate, slot}` (slot=null → câu ra) **hoặc** `{gate, error}` (đọc nguyên văn câu lỗi) |
 | `smartparking/gate/<g>/audio` | Pi → ESP32 | `{url, text}` |
 | `smartparking/gate/<g>/status` | ESP32 → * | `{event, gate, ...}` (opening/opened/car_passing/closed/fire/offline) |
 | `smartparking/pi/status` | Pi → * | `{event}` (online/offline) |
@@ -146,10 +146,20 @@ mosquitto_pub -h <host> -p 8883 --capath /etc/ssl/certs -u <user> -P <pass> \
 mosquitto_pub -h <host> -p 8883 --capath /etc/ssl/certs -u <user> -P <pass> \
   -t smartparking/announce -m '{"gate":"in","plate":"51A-12345","slot":"3"}'
 
-# 4. Nghe status ESP32:
+# 4. Giả một câu LỖI (xe bị từ chối) để loa cổng ra đọc nguyên văn:
+mosquitto_pub -h <host> -p 8883 --capath /etc/ssl/certs -u <user> -P <pass> \
+  -t smartparking/announce -m '{"gate":"out","error":"Không tìm thấy dữ liệu vào bãi của xe này. Vui lòng liên hệ nhân viên."}'
+
+# 5. Nghe status ESP32:
 mosquitto_sub -h <host> -p 8883 --capath /etc/ssl/certs -u <user> -P <pass> \
   -t 'smartparking/gate/+/status'
 ```
+
+**Loa đọc lỗi:** khi backend từ chối xe (không có lịch hẹn, sai giờ, bãi đầy, xe đã trong bãi,
+không có dữ liệu vào bãi, chở container ra ngoài), nó publish `smartparking/announce`
+`{gate, error}` → Pi đọc **nguyên văn** câu lỗi ra loa cổng đó. Backend chống lặp 30s/biển
+nên xe đứng lì ở cổng không làm loa lải nhải. Các trạng thái *"đang chờ quét biển/container"*
+(bắn mỗi frame) **không** được đọc — chỉ hiện trên dashboard.
 
 Loa tại cổng in phải đọc: *"xe có biển số năm một a một hai ba bốn năm, di chuyển vào ô số ba."*
 

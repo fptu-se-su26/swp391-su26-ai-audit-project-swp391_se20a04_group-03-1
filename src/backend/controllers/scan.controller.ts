@@ -6,13 +6,36 @@ import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
 import { assignRandomFreeSlot } from "../services/yard-slot.service";
 import { buildCheckInTicketPdf, CheckInTicketData } from "../services/ticket.service";
-import { publishGateOpen, publishAnnounce } from "../services/mqtt.service";
+import { publishGateOpen, publishAnnounce, publishAnnounceError } from "../services/mqtt.service";
 
 interface ScanCache {
   plate?: { text: string; time: number };
   container?: { text: string; time: number };
 }
 const cameraScanCache: Record<string, ScanCache> = {};
+
+// Chống loa lải nhải: CV quét lại cùng 1 xe mỗi ~5s khi nó còn đứng ở cổng, nên chỉ
+// cho đọc lại CÙNG một câu lỗi ở CÙNG cổng sau ngần này ms.
+const ERROR_SPEAK_COOLDOWN_MS = 30_000;
+const lastErrorSpokenAt: Record<string, number> = {};
+
+/**
+ * Đọc một câu lỗi ra loa cổng, có debounce theo (cổng + biển). Chỉ dùng cho các lỗi TỪ
+ * CHỐI THẬT (tài xế cần biết vì sao cổng không mở) — KHÔNG dùng cho trạng thái "đang chờ
+ * quét..." vì chúng bắn mỗi frame.
+ */
+const speakGateError = (gate: "in" | "out", plate: string, text: string) => {
+  const key = `${gate}:${plate}`;
+  const now = Date.now();
+  const last = lastErrorSpokenAt[key];
+  if (last && now - last < ERROR_SPEAK_COOLDOWN_MS) return;
+  lastErrorSpokenAt[key] = now;
+  try {
+    publishAnnounceError(gate, text);
+  } catch (err) {
+    console.error("[MQTT] Lỗi publish câu lỗi ra loa:", err);
+  }
+};
 
 const captureAndSaveImageAsync = async (transactionId: string, cameraIp: string) => {
   try {
@@ -87,6 +110,7 @@ export const scanPost = async (req: Request, res: Response) => {
         plate: text,
         message: "Không tìm thấy lịch hẹn đã duyệt cho xe này.",
       });
+      speakGateError(status as "in" | "out", text, "Không tìm thấy lịch hẹn hợp lệ cho xe này. Vui lòng liên hệ nhân viên.");
       res.status(200).json({
         code: "ignored",
         message: "Không tìm thấy lịch hẹn đã duyệt cho xe này.",
@@ -121,6 +145,7 @@ export const scanPost = async (req: Request, res: Response) => {
         plate: text,
         message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`,
       });
+      speakGateError(status as "in" | "out", text, "Xe chưa tới giờ hoặc đã quá giờ hẹn. Vui lòng liên hệ nhân viên.");
       res.status(200).json({
         code: "ignored",
         message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`,
@@ -143,6 +168,7 @@ export const scanPost = async (req: Request, res: Response) => {
           plate: text,
           message: "Xe này đã check-in và đang ở trong bãi.",
         });
+        speakGateError("in", text, "Xe đã ở trong bãi, không thể vào lại.");
         res.status(200).json({
           code: "ignored",
           message: "Xe này đã check-in và đang ở trong bãi.",
@@ -202,6 +228,7 @@ export const scanPost = async (req: Request, res: Response) => {
             plate: appointment.truckPlate,
             message: "Bãi đỗ đã đầy, không thể cho xe vào. Vui lòng chờ có ô trống.",
           });
+          speakGateError("in", appointment.truckPlate, "Bãi đỗ đã đầy, vui lòng chờ có ô trống.");
           res.status(200).json({
             code: "ignored",
             message: "Bãi đỗ đã đầy, không thể cho xe vào.",
@@ -234,6 +261,7 @@ export const scanPost = async (req: Request, res: Response) => {
           plate: text,
           message: "Không tìm thấy dữ liệu check-in cho xe này.",
         });
+        speakGateError("out", text, "Không tìm thấy dữ liệu vào bãi của xe này. Vui lòng liên hệ nhân viên.");
         res.status(200).json({
           code: "ignored",
           message: "Không tìm thấy dữ liệu check-in cho xe này.",
@@ -279,6 +307,9 @@ export const scanPost = async (req: Request, res: Response) => {
               plate: appointment.truckPlate,
               message: `[Cổng ra - Trả container] LỖI: Phát hiện xe đang chở container ra ngoài! Không cho phép mở cổng.`,
             });
+            // "công-ten-nơ" = phiên âm tiếng Việt của "container"; để nguyên từ tiếng Anh thì
+            // Piper (giọng vi) đọc sai/lạ vì phonemize bằng luật tiếng Việt.
+            speakGateError("out", appointment.truckPlate, "Phát hiện công-ten-nơ trên xe, không được phép đưa ra ngoài. Vui lòng liên hệ nhân viên.");
             res.status(400).json({
               code: "error",
               message: "Phát hiện xe chở container ra ngoài (không hợp lệ)",

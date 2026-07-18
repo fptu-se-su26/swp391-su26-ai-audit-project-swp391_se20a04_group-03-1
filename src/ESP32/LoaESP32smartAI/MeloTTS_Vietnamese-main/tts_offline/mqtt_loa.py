@@ -173,21 +173,29 @@ class CauLoa:
             return
 
         gate = str(data.get('gate', 'in')).lower()
-        plate = data.get('plate', '')
-        slot = data.get('slot', None)
-        if not plate:
-            print(f"[loa] Gói announce thiếu 'plate': {data}")
-            return
 
-        try:
-            # Có slot -> câu VÀO (đọc ô). Không slot -> câu RA.
-            if slot not in (None, '', 'null'):
-                cau = cau_thong_bao(plate, slot)
-            else:
-                cau = cau_thong_bao_ra(plate)
-        except Exception as e:
-            print(f"[loa] Không dựng được câu cho {data}: {e}")
-            return
+        # Gói LỖI (backend từ chối xe): đọc NGUYÊN VĂN, không dựng từ biển+ô.
+        loi = data.get('error')
+        if loi:
+            cau = str(loi).strip()
+            if not cau:
+                print(f"[loa] Gói error rỗng: {data}")
+                return
+        else:
+            plate = data.get('plate', '')
+            slot = data.get('slot', None)
+            if not plate:
+                print(f"[loa] Gói announce thiếu 'plate': {data}")
+                return
+            try:
+                # Có slot -> câu VÀO (đọc ô). Không slot -> câu RA.
+                if slot not in (None, '', 'null'):
+                    cau = cau_thong_bao(plate, slot)
+                else:
+                    cau = cau_thong_bao_ra(plate)
+            except Exception as e:
+                print(f"[loa] Không dựng được câu cho {data}: {e}")
+                return
 
         with self._lock:
             self._dem += 1

@@ -84,3 +84,26 @@ export const publishAnnounce = (
     else console.log(`[MQTT] -> ${topic} ${payload}`);
   });
 };
+
+/**
+ * Yêu cầu Pi 5 đọc một câu LỖI bất kỳ ra loa tại cổng (xe bị từ chối, bãi đầy...).
+ *
+ * Khác publishAnnounce: không dựng câu từ biển+ô mà đọc NGUYÊN VĂN `text`. Pi nhận field
+ * `error` -> render thẳng câu đó -> đẩy URL WAV cho ESP32 cổng tương ứng phát.
+ * Câu nên ngắn, không dấu ngoặc / viết HOA gào thét để Piper đọc mượt.
+ */
+export const publishAnnounceError = (
+  gate: "in" | "out",
+  text: string,
+): void => {
+  if (!client || !enabled) {
+    console.warn(`[MQTT] Chưa sẵn sàng — bỏ thông báo lỗi loa cổng ${gate}.`);
+    return;
+  }
+  const topic = "smartparking/announce";
+  const payload = JSON.stringify({ gate, error: text || "" });
+  client.publish(topic, payload, { qos: 1 }, (err) => {
+    if (err) console.error(`[MQTT] Publish ${topic} (error) lỗi:`, err.message);
+    else console.log(`[MQTT] -> ${topic} ${payload}`);
+  });
+};
