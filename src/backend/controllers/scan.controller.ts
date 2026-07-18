@@ -7,7 +7,8 @@ import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
 import { assignRandomFreeSlot } from "../services/yard-slot.service";
 import { buildCheckInTicketPdf, CheckInTicketData } from "../services/ticket.service";
-import { publishGateOpen, publishAnnounce, publishAnnounceError } from "../services/mqtt.service";
+import { publishGateOpen, publishAnnounce } from "../services/mqtt.service";
+import { speakGateAlert } from "../services/gate-announce.service";
 
 interface ScanCache {
   plate?: { text: string; time: number };
@@ -15,48 +16,13 @@ interface ScanCache {
 }
 const cameraScanCache: Record<string, ScanCache> = {};
 
-// Làm sạch text socket để Piper (giọng vi) đọc mượt:
-//  - bỏ [ngoặc vuông] và (ngoặc đơn) — nhãn "[Cổng ra - ...]" và "(07:00-09:00)" đọc lên rối.
-//  - "container" -> "công-ten-nơ": để nguyên từ tiếng Anh thì Piper phonemize bằng luật
-//    tiếng Việt nên đọc sai/lạ.
-//  - hạ chữ HOA gào thét ("CẢNH BÁO"/"LỖI") về chữ thường cho tự nhiên.
-const sanitizeForSpeech = (text: string): string =>
-  String(text || "")
-    .replace(/\[[^\]]*\]/g, " ")
-    .replace(/\([^)]*\)/g, " ")
-    .replace(/container/gi, "công-ten-nơ")
-    .replace(/CẢNH BÁO/g, "Cảnh báo")
-    .replace(/LỖI/g, "Lỗi")
-    .replace(/\s+/g, " ")
-    .replace(/\s+([.,!?;:])/g, "$1")   // bỏ khoảng trắng thừa trước dấu câu (do vừa cắt ngoặc)
-    .trim();
-
-// Chống loa lải nhải: CV quét lại cùng 1 xe mỗi ~5s khi nó còn đứng ở cổng. Debounce theo
-// (cổng + biển + CÂU) — câu y hệt lặp mỗi frame chỉ đọc lại sau ngần này ms, nhưng câu KHÁC
-// cho cùng xe (vd chuyển từ "đang chờ" sang "từ chối") vẫn đọc ngay.
-const ERROR_SPEAK_COOLDOWN_MS = 30_000;
-const lastErrorSpokenAt: Record<string, number> = {};
-
-const speakGateError = (gate: "in" | "out", plate: string, message: string) => {
-  const cau = sanitizeForSpeech(message);
-  if (!cau) return;
-  const key = `${gate}:${plate}:${cau}`;
-  const now = Date.now();
-  const last = lastErrorSpokenAt[key];
-  if (last && now - last < ERROR_SPEAK_COOLDOWN_MS) return;
-  lastErrorSpokenAt[key] = now;
-  try {
-    publishAnnounceError(gate, cau);
-  } catch (err) {
-    console.error("[MQTT] Lỗi publish câu lỗi ra loa:", err);
-  }
-};
-
 // Cửa chung: MỌI thông báo lỗi/cảnh báo ở cổng đi qua đây — vừa phát socket cho dashboard,
-// vừa đọc CHÍNH câu đó ra loa (làm sạch + debounce). Dashboard và loa cùng một nguồn chữ.
+// vừa đọc CHÍNH câu đó ra loa (làm sạch + debounce nằm trong gate-announce.service).
+// Debounce theo (cổng + biển + câu): câu y hệt lặp mỗi frame chỉ đọc lại sau 30s, nhưng câu
+// KHÁC cho cùng xe (vd "đang chờ" -> "từ chối") vẫn đọc ngay.
 const emitGateError = (gate: "in" | "out", plate: string, message: string) => {
   io.emit("gate_scan_error", { plate, message });
-  speakGateError(gate, plate, message);
+  speakGateAlert(gate, `scan:${gate}:${plate}:${message}`, message);
 };
 
 // Trạng thái cảng kế tiếp của container, suy ra từ mục đích lịch hẹn và chiều qua cổng:

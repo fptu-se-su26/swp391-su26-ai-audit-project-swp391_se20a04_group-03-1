@@ -54,6 +54,24 @@ Xe RA tương tự nhưng `slot` để trống → Pi đọc câu *"...mời di 
 
 `<g>` = `in` hoặc `out`.
 
+### Giám sát container đúng ô tại bãi
+
+Ngoài quét ở cổng, **camera bãi** kiểm tra container có đỗ ĐÚNG Ô không:
+
+```
+Camera bãi ─> CV yard_verifier: OCR mã container + xác định ô (theo hình học slot)
+           ─HTTP POST /api/yards/<id>/verify-slot {slotName, containerNo}─> Backend
+Backend đối chiếu GateTransaction{status:"in", yardId, assignedSlot}.actualContainerNo:
+   - khớp   -> emit "yard_slot_verified"
+   - lệch   -> publishAnnounceError("in", "...sai vị trí...") + emit "yard_slot_mismatch"
+             (loa CỔNG IN đọc, cùng đường với câu lỗi ở mục dưới)
+```
+
+Ba loại cảnh báo: `wrong_container` (ô đã cấp cho container khác), `misplaced_in_empty`
+(ô trống nhưng có container), `unknown_container` (mã lạ không có trong bãi). Nếu tra được
+ô đúng của container thì loa đọc kèm hướng dẫn ("...phải đỗ ở ô X"). CV vote CẤP-Ô, backend
+debounce loa 30s theo (bãi+ô+mã).
+
 ## 4. Broker (HiveMQ Cloud — free tier)
 
 1. Tạo cluster free tại https://www.hivemq.com/mqtt-cloud-broker/ → được host dạng

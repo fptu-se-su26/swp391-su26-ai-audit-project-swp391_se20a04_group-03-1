@@ -4,6 +4,21 @@ import { io } from "../index";
 import cloudinary from "../config/cloudinary.config";
 import streamifier from "streamifier";
 import { Gate } from "../models/gate.model";
+import { GateTransaction } from "../models/gateTransaction.model";
+import { speakGateAlert } from "../services/gate-announce.service";
+
+/**
+ * So khớp mã container 2 chiều theo tiền tố: DB lưu 11 ký tự (đủ check digit), OCR trả
+ * 10 ký tự (bỏ check digit) — nên bên này là tiền tố của bên kia thì coi là TRÙNG.
+ * Giống cách scanPost khớp container.
+ */
+const containerMatches = (a?: string, b?: string): boolean => {
+  if (!a || !b) return false;
+  const x = a.trim().toUpperCase();
+  const y = b.trim().toUpperCase();
+  if (!x || !y) return false;
+  return x.startsWith(y) || y.startsWith(x);
+};
 
 export const yardsGet = async (req: Request, res: Response) => {
   try {
@@ -138,6 +153,122 @@ export const syncYardDataPost = async (req: Request, res: Response) => {
     console.log("Lỗi đồng bộ dữ liệu bãi đỗ:", error);
     res.status(400).json({ code: "error", message: "Lỗi đồng bộ dữ liệu bãi đỗ" });
     return;
+  }
+};
+
+/**
+ * Kiểm tra một container mà CAMERA BÃI đọc được có ĐÚNG ô của nó không.
+ *
+ * CV (yard_capture_worker) OCR mã container ở bãi, xác định nó nằm ở ô nào (theo hình học
+ * slot) rồi POST `{ slotName, containerNo }` vào đây. Backend đối chiếu với ô mà hệ thống
+ * đã CẤP cho container đó lúc check-in (GateTransaction status "in": yardId + assignedSlot +
+ * actualContainerNo). Nếu sai vị trí → PHÁT LOA CỔNG IN + emit socket cho dashboard.
+ *
+ * Ba tình huống báo lỗi (đều bật):
+ *  1. wrong_container   — ô này đã cấp cho container khác, nhưng camera thấy container này.
+ *  2. misplaced_in_empty— ô hệ thống coi là TRỐNG nhưng lại có container (đỗ chui/sai chỗ).
+ *  3. unknown_container — mã đọc được không khớp bất kỳ xe nào đang trong bãi (container lạ).
+ * Với (1)(2), nếu tra được container này ĐÁNG LẼ ở ô nào thì đọc kèm hướng dẫn đúng ô.
+ *
+ * Route nội bộ (x-internal-secret) — CV gọi, không phải người dùng.
+ */
+export const verifyYardSlotPost = async (req: Request, res: Response) => {
+  try {
+    const yardId = req.params.id;
+    const { slotName, containerNo } = req.body;
+
+    if (!slotName || !containerNo) {
+      return res.status(400).json({ code: "error", message: "Thiếu slotName hoặc containerNo" });
+    }
+
+    const yard = await Yard.findById(yardId).select("name slots isDeleted");
+    if (!yard || yard.isDeleted) {
+      return res.status(400).json({ code: "error", message: "Không tìm thấy bãi đỗ" });
+    }
+    const slotExists = (yard.slots || []).some((s) => s.slotName === slotName);
+    if (!slotExists) {
+      return res.status(400).json({ code: "error", message: "Ô không tồn tại trong bãi" });
+    }
+
+    const detected = String(containerNo).trim().toUpperCase();
+
+    // Tất cả xe đang trong bãi — dùng để tra "ô này của container nào" và "container này ở ô nào".
+    const actives = await GateTransaction.find({ status: "in", isDeleted: false })
+      .select("actualContainerNo assignedSlot yardId");
+
+    const expectedTx = actives.find(
+      (t) => t.yardId?.toString() === yardId && t.assignedSlot === slotName,
+    );
+    // Container này ĐÁNG LẼ đỗ ở ô nào (tra theo mã, bất kể bãi nào).
+    const correctTx = actives.find((t) => containerMatches(t.actualContainerNo, detected));
+
+    // ĐÚNG: ô có xe giữ và mã container khớp → không báo.
+    if (expectedTx && containerMatches(expectedTx.actualContainerNo, detected)) {
+      io.emit("yard_slot_verified", {
+        yardId,
+        slotName,
+        containerNo: detected,
+        ok: true,
+        timestamp: new Date().toISOString(),
+      });
+      return res.status(200).json({ code: "success", status: "match" });
+    }
+
+    // Tra ô đúng của container (nếu có) để đọc kèm hướng dẫn.
+    let correctSlotName: string | null = null;
+    let correctYardName: string | null = null;
+    if (correctTx) {
+      correctSlotName = correctTx.assignedSlot || null;
+      if (correctTx.yardId) {
+        const cy = await Yard.findById(correctTx.yardId).select("name");
+        correctYardName = cy?.name || null;
+      }
+    }
+
+    let alertType: string;
+    let message: string;
+    const guide = correctSlotName
+      ? ` Container này phải đỗ ở ô ${correctSlotName}${correctYardName ? `, bãi ${correctYardName}` : ""}.`
+      : "";
+
+    if (expectedTx) {
+      // (1) ô đã cấp cho container khác
+      alertType = "wrong_container";
+      message = correctSlotName
+        ? `Phát hiện container sai vị trí tại ô ${slotName}.${guide} Vui lòng kiểm tra.`
+        : `Phát hiện container lạ tại ô ${slotName}, không đúng xe được cấp ô này. Vui lòng kiểm tra.`;
+    } else if (correctSlotName) {
+      // (2) ô hệ thống coi là trống nhưng có container ĐÃ biết nơi đúng
+      alertType = "misplaced_in_empty";
+      message = `Phát hiện container đỗ sai ở ô ${slotName}.${guide} Vui lòng kiểm tra.`;
+    } else {
+      // (3) container lạ, không khớp xe nào trong bãi
+      alertType = "unknown_container";
+      message = `Phát hiện container lạ tại ô ${slotName} không có trong hệ thống. Vui lòng kiểm tra.`;
+    }
+
+    // Phát loa cổng IN, debounce theo (bãi + ô + mã) để không lải nhải khi container đứng yên.
+    speakGateAlert("in", `yard:${yardId}:${slotName}:${detected}`, message);
+
+    io.emit("yard_slot_mismatch", {
+      yardId,
+      slotName,
+      detected,
+      alertType,
+      correctSlotName,
+      correctYardName,
+      timestamp: new Date().toISOString(),
+    });
+
+    return res.status(200).json({
+      code: "success",
+      status: alertType,
+      detected,
+      correctSlot: correctSlotName,
+    });
+  } catch (error) {
+    console.error("Lỗi kiểm tra ô bãi:", error);
+    return res.status(400).json({ code: "error", message: "Lỗi kiểm tra ô bãi" });
   }
 };
 
