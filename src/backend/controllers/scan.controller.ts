@@ -15,27 +15,48 @@ interface ScanCache {
 }
 const cameraScanCache: Record<string, ScanCache> = {};
 
-// Chống loa lải nhải: CV quét lại cùng 1 xe mỗi ~5s khi nó còn đứng ở cổng, nên chỉ
-// cho đọc lại CÙNG một câu lỗi ở CÙNG cổng sau ngần này ms.
+// Làm sạch text socket để Piper (giọng vi) đọc mượt:
+//  - bỏ [ngoặc vuông] và (ngoặc đơn) — nhãn "[Cổng ra - ...]" và "(07:00-09:00)" đọc lên rối.
+//  - "container" -> "công-ten-nơ": để nguyên từ tiếng Anh thì Piper phonemize bằng luật
+//    tiếng Việt nên đọc sai/lạ.
+//  - hạ chữ HOA gào thét ("CẢNH BÁO"/"LỖI") về chữ thường cho tự nhiên.
+const sanitizeForSpeech = (text: string): string =>
+  String(text || "")
+    .replace(/\[[^\]]*\]/g, " ")
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/container/gi, "công-ten-nơ")
+    .replace(/CẢNH BÁO/g, "Cảnh báo")
+    .replace(/LỖI/g, "Lỗi")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,!?;:])/g, "$1")   // bỏ khoảng trắng thừa trước dấu câu (do vừa cắt ngoặc)
+    .trim();
+
+// Chống loa lải nhải: CV quét lại cùng 1 xe mỗi ~5s khi nó còn đứng ở cổng. Debounce theo
+// (cổng + biển + CÂU) — câu y hệt lặp mỗi frame chỉ đọc lại sau ngần này ms, nhưng câu KHÁC
+// cho cùng xe (vd chuyển từ "đang chờ" sang "từ chối") vẫn đọc ngay.
 const ERROR_SPEAK_COOLDOWN_MS = 30_000;
 const lastErrorSpokenAt: Record<string, number> = {};
 
-/**
- * Đọc một câu lỗi ra loa cổng, có debounce theo (cổng + biển). Chỉ dùng cho các lỗi TỪ
- * CHỐI THẬT (tài xế cần biết vì sao cổng không mở) — KHÔNG dùng cho trạng thái "đang chờ
- * quét..." vì chúng bắn mỗi frame.
- */
-const speakGateError = (gate: "in" | "out", plate: string, text: string) => {
-  const key = `${gate}:${plate}`;
+const speakGateError = (gate: "in" | "out", plate: string, message: string) => {
+  const cau = sanitizeForSpeech(message);
+  if (!cau) return;
+  const key = `${gate}:${plate}:${cau}`;
   const now = Date.now();
   const last = lastErrorSpokenAt[key];
   if (last && now - last < ERROR_SPEAK_COOLDOWN_MS) return;
   lastErrorSpokenAt[key] = now;
   try {
-    publishAnnounceError(gate, text);
+    publishAnnounceError(gate, cau);
   } catch (err) {
     console.error("[MQTT] Lỗi publish câu lỗi ra loa:", err);
   }
+};
+
+// Cửa chung: MỌI thông báo lỗi/cảnh báo ở cổng đi qua đây — vừa phát socket cho dashboard,
+// vừa đọc CHÍNH câu đó ra loa (làm sạch + debounce). Dashboard và loa cùng một nguồn chữ.
+const emitGateError = (gate: "in" | "out", plate: string, message: string) => {
+  io.emit("gate_scan_error", { plate, message });
+  speakGateError(gate, plate, message);
 };
 
 // Trạng thái cảng kế tiếp của container, suy ra từ mục đích lịch hẹn và chiều qua cổng:
@@ -150,11 +171,7 @@ export const scanPost = async (req: Request, res: Response) => {
     });
 
     if (!appointment) {
-      io.emit("gate_scan_error", {
-        plate: text,
-        message: "Không tìm thấy lịch hẹn đã duyệt cho xe này.",
-      });
-      speakGateError(status as "in" | "out", text, "Không tìm thấy lịch hẹn hợp lệ cho xe này. Vui lòng liên hệ nhân viên.");
+      emitGateError(status as "in" | "out", text, "Không tìm thấy lịch hẹn đã duyệt cho xe này.");
       res.status(200).json({
         code: "ignored",
         message: "Không tìm thấy lịch hẹn đã duyệt cho xe này.",
@@ -185,11 +202,7 @@ export const scanPost = async (req: Request, res: Response) => {
     const validEnd = new Date(endTime.getTime() + 30 * 60000);
 
     if (now < validStart || now > validEnd) {
-      io.emit("gate_scan_error", {
-        plate: text,
-        message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`,
-      });
-      speakGateError(status as "in" | "out", text, "Xe chưa tới giờ hoặc đã quá giờ hẹn. Vui lòng liên hệ nhân viên.");
+      emitGateError(status as "in" | "out", text, `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`);
       res.status(200).json({
         code: "ignored",
         message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot}).`,
@@ -208,11 +221,7 @@ export const scanPost = async (req: Request, res: Response) => {
     if (status === "in") {
       if (transaction) {
         // Already checked in, ignore duplicate
-        io.emit("gate_scan_error", {
-          plate: text,
-          message: "Xe này đã check-in và đang ở trong bãi.",
-        });
-        speakGateError("in", text, "Xe đã ở trong bãi, không thể vào lại.");
+        emitGateError("in", text, "Xe này đã check-in và đang ở trong bãi.");
         res.status(200).json({
           code: "ignored",
           message: "Xe này đã check-in và đang ở trong bãi.",
@@ -240,15 +249,9 @@ export const scanPost = async (req: Request, res: Response) => {
             const refTime = pTime || cTime;
 
             if (refTime && (Date.now() - refTime > 60000)) {
-              io.emit("gate_scan_error", {
-                plate: appointment.truckPlate,
-                message: `[Cổng vào - Trả container] CẢNH BÁO: Quá 1 phút chưa quét được ${missing}!`,
-              });
+              emitGateError("in", appointment.truckPlate, `[Cổng vào - Trả container] CẢNH BÁO: Quá 1 phút chưa quét được ${missing}!`);
             } else {
-              io.emit("gate_scan_error", {
-                plate: appointment.truckPlate,
-                message: `[Cổng vào - Trả container] Đang chờ quét thêm: ${missing}...`,
-              });
+              emitGateError("in", appointment.truckPlate, `[Cổng vào - Trả container] Đang chờ quét thêm: ${missing}...`);
             }
             res.status(200).json({
               code: "ignored",
@@ -268,11 +271,7 @@ export const scanPost = async (req: Request, res: Response) => {
         const slot = await assignRandomFreeSlot();
         if (!slot) {
           // Bãi đã đầy: không tạo check-in, không mở cổng, giữ xe ở cổng.
-          io.emit("gate_scan_error", {
-            plate: appointment.truckPlate,
-            message: "Bãi đỗ đã đầy, không thể cho xe vào. Vui lòng chờ có ô trống.",
-          });
-          speakGateError("in", appointment.truckPlate, "Bãi đỗ đã đầy, vui lòng chờ có ô trống.");
+          emitGateError("in", appointment.truckPlate, "Bãi đỗ đã đầy, không thể cho xe vào. Vui lòng chờ có ô trống.");
           res.status(200).json({
             code: "ignored",
             message: "Bãi đỗ đã đầy, không thể cho xe vào.",
@@ -307,11 +306,7 @@ export const scanPost = async (req: Request, res: Response) => {
       if (!transaction) {
         // No check-in found, maybe manual or error. We'll ignore or create a hanging checkout.
         // For strict logic, ignore.
-        io.emit("gate_scan_error", {
-          plate: text,
-          message: "Không tìm thấy dữ liệu check-in cho xe này.",
-        });
-        speakGateError("out", text, "Không tìm thấy dữ liệu vào bãi của xe này. Vui lòng liên hệ nhân viên.");
+        emitGateError("out", text, "Không tìm thấy dữ liệu check-in cho xe này.");
         res.status(200).json({
           code: "ignored",
           message: "Không tìm thấy dữ liệu check-in cho xe này.",
@@ -332,15 +327,9 @@ export const scanPost = async (req: Request, res: Response) => {
             const refTime = pTime || cTime;
 
             if (refTime && (Date.now() - refTime > 60000)) {
-              io.emit("gate_scan_error", {
-                plate: appointment.truckPlate,
-                message: `[Cổng ra - Lấy container] CẢNH BÁO: Quá 1 phút chưa quét được ${missing}!`,
-              });
+              emitGateError("out", appointment.truckPlate, `[Cổng ra - Lấy container] CẢNH BÁO: Quá 1 phút chưa quét được ${missing}!`);
             } else {
-              io.emit("gate_scan_error", {
-                plate: appointment.truckPlate,
-                message: `[Cổng ra - Lấy container] Đang chờ quét thêm: ${missing}...`,
-              });
+              emitGateError("out", appointment.truckPlate, `[Cổng ra - Lấy container] Đang chờ quét thêm: ${missing}...`);
             }
             res.status(200).json({
               code: "ignored",
@@ -353,13 +342,7 @@ export const scanPost = async (req: Request, res: Response) => {
         } else if (appointment.purpose === "Trả container") {
           // Bắt buộc KHÔNG CÓ container
           if (cameraScanCache[cameraIp]?.container) {
-            io.emit("gate_scan_error", {
-              plate: appointment.truckPlate,
-              message: `[Cổng ra - Trả container] LỖI: Phát hiện xe đang chở container ra ngoài! Không cho phép mở cổng.`,
-            });
-            // "công-ten-nơ" = phiên âm tiếng Việt của "container"; để nguyên từ tiếng Anh thì
-            // Piper (giọng vi) đọc sai/lạ vì phonemize bằng luật tiếng Việt.
-            speakGateError("out", appointment.truckPlate, "Phát hiện công-ten-nơ trên xe, không được phép đưa ra ngoài. Vui lòng liên hệ nhân viên.");
+            emitGateError("out", appointment.truckPlate, `[Cổng ra - Trả container] LỖI: Phát hiện xe đang chở container ra ngoài! Không cho phép mở cổng.`);
             res.status(400).json({
               code: "error",
               message: "Phát hiện xe chở container ra ngoài (không hợp lệ)",

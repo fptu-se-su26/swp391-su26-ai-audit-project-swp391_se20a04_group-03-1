@@ -155,11 +155,15 @@ mosquitto_sub -h <host> -p 8883 --capath /etc/ssl/certs -u <user> -P <pass> \
   -t 'smartparking/gate/+/status'
 ```
 
-**Loa đọc lỗi:** khi backend từ chối xe (không có lịch hẹn, sai giờ, bãi đầy, xe đã trong bãi,
-không có dữ liệu vào bãi, chở container ra ngoài), nó publish `smartparking/announce`
-`{gate, error}` → Pi đọc **nguyên văn** câu lỗi ra loa cổng đó. Backend chống lặp 30s/biển
-nên xe đứng lì ở cổng không làm loa lải nhải. Các trạng thái *"đang chờ quét biển/container"*
-(bắn mỗi frame) **không** được đọc — chỉ hiện trên dashboard.
+**Loa đọc lỗi:** MỌI message `gate_scan_error` mà backend phát cho dashboard (qua cửa chung
+`emitGateError`) đều được đọc ra loa cổng: không có lịch hẹn, sai giờ, bãi đầy, xe đã trong
+bãi, không có dữ liệu vào bãi, chở container ra ngoài, **và cả** các cảnh báo *"đang chờ quét
+biển/container"* / *"quá 1 phút"*. Backend publish `smartparking/announce` `{gate, error}` →
+Pi đọc **nguyên văn** ra loa. Trước khi gửi, backend **làm sạch** câu (`sanitizeForSpeech`):
+bỏ `[...]`/`(...)`, đổi "container" → "công-ten-nơ", hạ chữ HOA gào thét. Chống lặp
+**30s theo (cổng + biển + câu)**: câu y hệt bắn mỗi frame chỉ đọc lại sau 30s, câu KHÁC vẫn
+đọc ngay. `gate_scan_success` **không** đọc lại vì đã có câu chuẩn (biển đọc rời + số ô) qua
+`publishAnnounce`; `gate_scan_update` là dữ liệu bảng, không phải câu nói.
 
 Loa tại cổng in phải đọc: *"xe có biển số năm một a một hai ba bốn năm, di chuyển vào ô số ba."*
 
