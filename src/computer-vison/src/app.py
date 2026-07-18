@@ -516,9 +516,16 @@ def yard_capture_worker(yard_id, camera_ip):
             print(f"[Yard Feed Worker] Trạng thái bãi {yard_id} thay đổi! Gửi webhook...")
             try:
                 payload = { "occupied_slots": list(occupied_slots) }
-                backend_api_base = BACKEND_URL.replace("/scan", "") 
+                backend_api_base = BACKEND_URL.replace("/scan", "")
                 webhook_url = f"{backend_api_base}/yards/{yard_id}/sync-status"
-                requests.post(webhook_url, json=payload, timeout=2.0)
+                # Thiếu header này thì backend trả 401/400 (route /yards có requireAuth) -> webhook
+                # occupancy im lặng thất bại. x-internal-secret cho AI Server bỏ qua auth.
+                requests.post(
+                    webhook_url,
+                    json=payload,
+                    headers={"x-internal-secret": "AI_SERVER_SECRET_KEY"},
+                    timeout=2.0,
+                )
             except Exception as e:
                 print(f"[Yard Feed Worker] Lỗi gửi webhook: {e}")
             previous_occupied_slots = occupied_slots.copy()
