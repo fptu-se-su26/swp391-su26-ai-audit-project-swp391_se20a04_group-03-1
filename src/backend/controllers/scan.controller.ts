@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Appointment } from "../models/appointment.model";
+import { Container } from "../models/container.model";
 import { GateTransaction } from "../models/gateTransaction.model";
 import { io } from "../index";
 import cloudinary from "../config/cloudinary.config";
@@ -13,6 +14,49 @@ interface ScanCache {
   container?: { text: string; time: number };
 }
 const cameraScanCache: Record<string, ScanCache> = {};
+
+// Trạng thái cảng kế tiếp của container, suy ra từ mục đích lịch hẹn và chiều qua cổng:
+//   Trả container — xe chở container vào rồi hạ xuống bãi, ra tay không.
+//   Lấy container — xe vào tay không, móc container ở bãi rồi chở ra.
+// Trả về null nghĩa là lượt qua cổng này không làm đổi trạng thái container.
+const nextPortStatus = (
+  purpose: string | undefined,
+  direction: "in" | "out",
+): string | null => {
+  if (purpose === "Trả container") {
+    return direction === "in" ? "Đã nhập cảng" : "Đang lưu bãi";
+  }
+  if (purpose === "Lấy container" && direction === "out") {
+    return "Đã xuất cảng";
+  }
+  return null;
+};
+
+// Container nối với lịch hẹn qua mã (chuỗi), không phải khóa ngoại — nên khớp theo number.
+// Không chặn luồng cổng nếu cập nhật lỗi: xe đã qua rồi, chỉ ghi log để soát lại.
+const syncContainerPortStatus = async (
+  containerNo: string | undefined,
+  purpose: string | undefined,
+  direction: "in" | "out",
+) => {
+  const portStatus = nextPortStatus(purpose, direction);
+  if (!portStatus || !containerNo) return;
+
+  try {
+    const result = await Container.updateOne(
+      { number: containerNo.toUpperCase(), isDeleted: false },
+      { portStatus },
+      { runValidators: true },
+    );
+    if (result.matchedCount === 0) {
+      console.warn(
+        `[Container] Không tìm thấy container ${containerNo} để cập nhật "${portStatus}"`,
+      );
+    }
+  } catch (err) {
+    console.error("Lỗi cập nhật trạng thái cảng của container:", err);
+  }
+};
 
 const captureAndSaveImageAsync = async (transactionId: string, cameraIp: string) => {
   try {
@@ -221,7 +265,13 @@ export const scanPost = async (req: Request, res: Response) => {
           ocrConfidence: confidence,
         });
         await transaction.save();
-        
+
+        await syncContainerPortStatus(
+          appointment.containerNo,
+          appointment.purpose,
+          "in",
+        );
+
         if (cameraIp) {
           captureAndSaveImageAsync(transaction._id.toString(), cameraIp);
         }
@@ -299,6 +349,12 @@ export const scanPost = async (req: Request, res: Response) => {
         transaction.status = "out";
         transaction.ocrConfidence = confidence;
         await transaction.save();
+
+        await syncContainerPortStatus(
+          appointment.containerNo,
+          appointment.purpose,
+          "out",
+        );
 
         if (cameraIp) {
           captureAndSaveImageAsync(transaction._id.toString(), cameraIp);
@@ -523,6 +579,12 @@ export const manualCheckoutPatch = async (req: Request, res: Response) => {
       if (appointment) {
         appointment.status = "Completed";
         await appointment.save();
+
+        await syncContainerPortStatus(
+          log.actualContainerNo || appointment.containerNo,
+          appointment.purpose,
+          "out",
+        );
       }
     }
 

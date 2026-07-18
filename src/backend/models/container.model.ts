@@ -23,6 +23,7 @@ const containerSchema = new Schema(
 
     portStatus: {
       type: String,
+      enum: ["Chưa nhập cảng", "Đã nhập cảng", "Đang lưu bãi", "Đã xuất cảng"],
       default: "Chưa nhập cảng",
     },
 
