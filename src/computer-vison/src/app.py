@@ -385,6 +385,14 @@ def yard_capture_worker(yard_id, camera_ip):
         
     print(f"[Yard Feed Worker] Started stream for Yard ID: {yard_id}")
 
+    # Giám sát container ĐÚNG Ô: OCR mã container ở bãi -> map vào ô -> báo backend nếu sai vị trí.
+    try:
+        from src.services.yard_verifier import YardVerifier
+        verifier = YardVerifier(yard_id)
+    except Exception as e:
+        print(f"[Yard Feed Worker] Không bật giám sát container cho bãi {yard_id}: {e}")
+        verifier = None
+
     def check_overlap(box_x1, box_y1, box_x2, box_y2, slot, img_w, img_h):
         import numpy as np
         if 'points' in slot and slot['points']:
@@ -420,7 +428,12 @@ def yard_capture_worker(yard_id, camera_ip):
             
         frame_count += 1
         h, w, _ = frame.shape
-        
+
+        # Đối chiếu container/ô (tự throttle theo VERIFY_INTERVAL bên trong; container đứng yên
+        # nên không cần chạy mỗi frame). Chạy đồng bộ ở đây, chỉ chiếm CPU mỗi vài giây.
+        if verifier is not None:
+            verifier.maybe_verify(frame, active_yard_streams.get(yard_id, {}).get("slots", []))
+
         # Only run YOLO every 3 frames to save CPU/GPU
         if frame_count % 3 == 0:
             results = vehicle_model(frame, device=device, verbose=False)

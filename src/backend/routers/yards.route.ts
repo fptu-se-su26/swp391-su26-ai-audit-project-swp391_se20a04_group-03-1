@@ -20,6 +20,9 @@ router.patch(
 router.post("/:id/snapshot", P("update"), yardController.takeYardSnapshotPost);
 router.delete("/:id", P("delete"), yardController.deleteYardDelete);
 router.post("/:id/sync-status", P("update"), yardController.syncYardDataPost);
+// CV báo mã container đọc được ở 1 ô của bãi -> backend đối chiếu & phát loa nếu sai vị trí.
+// Nội bộ (x-internal-secret bỏ qua auth -> coi như super admin).
+router.post("/:id/verify-slot", P("update"), yardController.verifyYardSlotPost);
 
 router.get("/trash/list", P("view"), yardController.yardsTrashGet);
 router.patch("/:id/restore", P("delete"), yardController.restoreYardPatch);
