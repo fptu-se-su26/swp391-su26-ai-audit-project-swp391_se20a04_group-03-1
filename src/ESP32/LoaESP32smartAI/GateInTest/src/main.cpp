@@ -56,6 +56,10 @@
 #define I2S_DEFAULT_RATE 22050   // Piper vais1000-medium; sẽ chỉnh lại theo header WAV
 
 #define IR_PIN 32                // cảm biến hồng ngoại dưới cổng
+#define IR_WAIT_1 19
+#define IR_WAIT_2 18
+#define IR_WAIT_3 17
+#define IR_WAIT_4 16
 
 #define LED1_PIN 13 //Box 1
 #define LED2_PIN 12 //Box 2
@@ -105,6 +109,9 @@ char pendingPlate[16] = "";
 
 unsigned long lastMqttReconnect = 0;
 
+// LCD globals
+char currentLine1[17] = "";
+
 // ===== HÀNG ĐỢI ÂM THANH (main -> audio task) =====
 enum AudioType { AUDIO_BEEP, AUDIO_PLAY_URL };
 struct AudioCmd {
@@ -122,14 +129,29 @@ void set3LEDs(int state) {
   digitalWrite(LED3_PIN, state);
 }
 
+int getWaitingCars() {
+  int count = 0;
+  if (digitalRead(IR_WAIT_1) == IR_CAR_PRESENT) count++;
+  if (digitalRead(IR_WAIT_2) == IR_CAR_PRESENT) count++;
+  if (digitalRead(IR_WAIT_3) == IR_CAR_PRESENT) count++;
+  if (digitalRead(IR_WAIT_4) == IR_CAR_PRESENT) count++;
+  return count;
+}
+
 void updateLCD(const char* line1, const char* line2) {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print(line1);
-  if (line2 != nullptr) {
-    lcd.setCursor(0, 1);
-    lcd.print(line2);
+  if (line1) {
+    snprintf(currentLine1, sizeof(currentLine1), "%-16s", line1);
   }
+}
+
+void refreshLCDTask() {
+  int count = getWaitingCars();
+  char buf2[17];
+  snprintf(buf2, sizeof(buf2), "Cho: %d xe       ", count);
+  lcd.setCursor(0, 0);
+  lcd.print(currentLine1);
+  lcd.setCursor(0, 1);
+  lcd.print(buf2);
 }
 
 void changeState(GateState newState) {
@@ -340,7 +362,8 @@ void publishStatus(const char* event) {
   JsonDocument doc;
   doc["event"] = event;
   doc["gate"] = GATE_ID;
-  char buf[128];
+  doc["waiting"] = getWaitingCars();
+  char buf[160];
   size_t n = serializeJson(doc, buf);
   mqtt.publish(TOPIC_STATUS, (const uint8_t*)buf, n, false);
 }
@@ -442,6 +465,10 @@ void setup() {
   xTaskCreatePinnedToCore(audioTask, "AudioTask", 8192, NULL, 1, NULL, 0);
 
   pinMode(IR_PIN, INPUT);
+  pinMode(IR_WAIT_1, INPUT);
+  pinMode(IR_WAIT_2, INPUT);
+  pinMode(IR_WAIT_3, INPUT);
+  pinMode(IR_WAIT_4, INPUT);
   pinMode(FIRE_SENSOR_PIN, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   digitalWrite(BUZZER_PIN, LOW);
@@ -460,6 +487,8 @@ void setup() {
 }
 
 void loop() {
+  static unsigned long lastLCDUpdateTime = 0;
+
   // Mạng: giữ WiFi + MQTT sống. Không chặn vòng lặp cổng nếu mạng chập chờn.
   if (WiFi.status() == WL_CONNECTED) {
     mqttReconnect();
@@ -467,6 +496,12 @@ void loop() {
   }
 
   unsigned long currentTime = millis();
+  
+  if (currentTime - lastLCDUpdateTime >= 200) {
+    lastLCDUpdateTime = currentTime;
+    refreshLCDTask();
+  }
+
   unsigned long timeInState = currentTime - stateStartTime;
 
   // --- 1. ƯU TIÊN CAO NHẤT: BÁO CHÁY (hoạt động cả khi mất mạng) ---
