@@ -50,10 +50,6 @@
 #define I2S_DEFAULT_RATE 22050
 
 #define IR_PIN 32          // cảm biến PHÍA SAU cổng: xe qua khỏi -> đóng
-#define IR_WAIT_1 19       // 4 cảm biến đếm xe đang chờ ra
-#define IR_WAIT_2 18
-#define IR_WAIT_3 17
-#define IR_WAIT_4 16
 
 #define IR_CAR_PRESENT LOW  // cổng ra: CÓ xe = LOW
 #define IR_NO_CAR HIGH
@@ -98,19 +94,9 @@ struct AudioCmd {
 QueueHandle_t audioQueue;
 
 // --------------------------------------------------------------------------
-int getWaitingCars() {
-  int count = 0;
-  if (digitalRead(IR_WAIT_1) == IR_CAR_PRESENT) count++;
-  if (digitalRead(IR_WAIT_2) == IR_CAR_PRESENT) count++;
-  if (digitalRead(IR_WAIT_3) == IR_CAR_PRESENT) count++;
-  if (digitalRead(IR_WAIT_4) == IR_CAR_PRESENT) count++;
-  return count;
-}
-
 void updateDisplay(const char* line2) {
-  int count = getWaitingCars();
   char buf1[17];
-  snprintf(buf1, sizeof(buf1), "Goc:%2d|Cho:%dxe  ", currentServoAngle, count);
+  snprintf(buf1, sizeof(buf1), "GateOut Goc:%3d ", currentServoAngle);
   char buf2[17];
   snprintf(buf2, sizeof(buf2), "%-16s", line2);
   lcd.setCursor(0, 0);
@@ -321,7 +307,6 @@ void publishStatus(const char* event) {
   JsonDocument doc;
   doc["event"] = event;
   doc["gate"] = GATE_ID;
-  doc["waiting"] = getWaitingCars();
   char buf[160];
   size_t n = serializeJson(doc, buf);
   mqtt.publish(TOPIC_STATUS, (const uint8_t*)buf, n, false);
@@ -432,10 +417,6 @@ void setup() {
   xTaskCreatePinnedToCore(audioTask, "AudioTask", 8192, NULL, 1, NULL, 0);
 
   pinMode(IR_PIN, INPUT);
-  pinMode(IR_WAIT_1, INPUT);
-  pinMode(IR_WAIT_2, INPUT);
-  pinMode(IR_WAIT_3, INPUT);
-  pinMode(IR_WAIT_4, INPUT);
 
   setupWiFi();
 #if MQTT_USE_TLS
