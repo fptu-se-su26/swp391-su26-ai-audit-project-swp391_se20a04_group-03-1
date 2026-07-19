@@ -72,6 +72,11 @@ Ba loại cảnh báo: `wrong_container` (ô đã cấp cho container khác), `m
 ô đúng của container thì loa đọc kèm hướng dẫn ("...phải đỗ ở ô X"). CV vote CẤP-Ô, backend
 debounce loa 30s theo (bãi+ô+mã).
 
+**Chỉ quét khi ô BỊ XE CHIẾM:** CV phát hiện phương tiện (car/truck/bus) đè lên ô đã vẽ mới
+coi là ô bị chiếm; **chỉ khi đó** mới OCR mã container trong ô đó và đối chiếu — ô trống thì
+bỏ qua, đỡ tốn CPU và tránh báo nhầm. Trên luồng video, AI chạy ở **thread riêng** (không làm
+lag stream), box XE = cam, box CONTAINER đang quét = vàng (kèm mã), ô đỏ = bị chiếm / xanh = trống.
+
 ## 4. Broker (HiveMQ Cloud — free tier)
 
 1. Tạo cluster free tại https://www.hivemq.com/mqtt-cloud-broker/ → được host dạng
