@@ -40,9 +40,10 @@ import os
 # Khớp header nội bộ mà backend chấp nhận (bỏ qua auth) — giống sync_cameras_worker.
 INTERNAL_SECRET = "AI_SERVER_SECRET_KEY"
 
-# Chạy giám sát bãi mỗi ngần này giây. Giữ NHỎ hơn VOTE_RESET_GAP (5s) để mốc detection
-# của mỗi ô luôn "sống" giữa 2 lần quét -> vote KHÔNG bị reset giữa chừng như luật gate.
-VERIFY_INTERVAL = 1.0
+# Chạy giám sát bãi mỗi ngần này giây. Reader OCR container chạy CPU DÙNG CHUNG với cổng, nên
+# để thưa (2.5s) để nhả CPU cho cổng. Vẫn NHỎ hơn VOTE_RESET_GAP (5s) nên mốc detection của
+# mỗi ô luôn "sống" giữa 2 lần quét -> vote KHÔNG bị reset giữa chừng như luật gate.
+VERIFY_INTERVAL = 2.5
 # Không báo lại CÙNG (ô + mã) về backend trong ngần này giây (backend cũng tự debounce loa).
 REPORT_COOLDOWN = 60.0
 # Ngưỡng confidence tối thiểu cho OCR container (giống pipeline cổng).
