@@ -425,10 +425,14 @@ def yard_capture_worker(yard_id, camera_ip):
     shared = {"frame": None}
     shared_lock = threading.Lock()
     VEHICLE_CLASSES = {2: 'car', 3: 'motorcycle', 5: 'bus', 7: 'truck'}
+    # YOLO trên CPU hay "trượt" 1 frame -> giữ ô là BỊ CHIẾM thêm ngần này giây sau lần thấy
+    # xe cuối. Chống ô nhấp nháy trống dù xe còn đó, và tránh xoá phiếu vote OCR giữa chừng.
+    OCC_GRACE = 6.0
 
     def ai_loop():
-        """Thread AI: phát hiện XE -> occupancy -> quét container ô bị chiếm. Cập nhật overlay."""
+        """Thread AI: phát hiện XE -> occupancy (có debounce) -> quét container ô bị chiếm."""
         prev_occupied = set()
+        slot_last_seen = {}   # slotName -> thời điểm gần nhất THẤY xe đè lên ô
         while active_yard_streams.get(yard_id, {}).get("running", False):
             with shared_lock:
                 frame = None if shared["frame"] is None else shared["frame"].copy()
@@ -438,10 +442,10 @@ def yard_capture_worker(yard_id, camera_ip):
 
             h, w = frame.shape[:2]
             slots = active_yard_streams.get(yard_id, {}).get("slots", [])
-            occupied_slots = set()
+            detected_slots = set()
             vehicle_boxes = []
 
-            # 1. Phát hiện XE (chỉ nhận vehicle class) -> ô nào bị chiếm.
+            # 1. Phát hiện XE (chỉ nhận vehicle class) -> ô nào ĐANG thấy xe.
             try:
                 results = vehicle_model(frame, device=device, verbose=False)
                 if len(results) > 0 and results[0].boxes is not None:
@@ -456,9 +460,15 @@ def yard_capture_worker(yard_id, camera_ip):
                         vehicle_boxes.append((x1, y1, x2, y2, f"{VEHICLE_CLASSES[cls_id]} {conf:.2f}"))
                         for slot in slots:
                             if _yard_check_overlap(x1, y1, x2, y2, slot, w, h):
-                                occupied_slots.add(slot.get('slotName'))
+                                detected_slots.add(slot.get('slotName'))
             except Exception as e:
                 print(f"[Yard Feed Worker] Lỗi phát hiện xe: {e}")
+
+            # Debounce occupancy: ô còn "bị chiếm" nếu thấy xe trong OCC_GRACE giây gần đây.
+            now = time.time()
+            for s in detected_slots:
+                slot_last_seen[s] = now
+            occupied_slots = {s for s, t in slot_last_seen.items() if now - t < OCC_GRACE}
 
             # 2. CHỈ quét container ở các ô ĐANG BỊ XE CHIẾM; lấy box để vẽ.
             container_boxes = []

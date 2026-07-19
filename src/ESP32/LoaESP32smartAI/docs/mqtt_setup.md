@@ -69,8 +69,10 @@ Backend đối chiếu GateTransaction{status:"in", yardId, assignedSlot}.actual
 
 Ba loại cảnh báo: `wrong_container` (ô đã cấp cho container khác), `misplaced_in_empty`
 (ô trống nhưng có container), `unknown_container` (mã lạ không có trong bãi). Nếu tra được
-ô đúng của container thì loa đọc kèm hướng dẫn ("...phải đỗ ở ô X"). CV vote CẤP-Ô, backend
-debounce loa 30s theo (bãi+ô+mã).
+ô đúng của container thì loa đọc kèm hướng dẫn ("...phải đỗ ở ô X"). CV vote mã container
+**dùng lại đúng bộ máy của gate** (`_touch_vote`/`_accumulate_vote`): mỗi Ô một bucket, mốc
+"sống" theo DETECTION (không theo OCR) nên OCR chậm không làm mất phiếu giữa chừng; chốt khi
+≥4 lần khớp / 8 mẫu & top≥3 / ≥15 lần. Backend debounce loa 30s theo (bãi+ô+mã).
 
 **Chỉ quét khi ô BỊ XE CHIẾM:** CV phát hiện phương tiện (car/truck/bus) đè lên ô đã vẽ mới
 coi là ô bị chiếm; **chỉ khi đó** mới OCR mã container trong ô đó và đối chiếu — ô trống thì

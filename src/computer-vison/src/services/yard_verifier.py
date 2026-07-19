@@ -16,6 +16,7 @@ Khác pipeline cổng: KHÔNG vote cấp-camera mà vote CẤP-Ô (mỗi ô mộ
 đứng yên trong ô — cần biết "ô này đang chứa mã nào", không phải "camera thấy mã nào".
 """
 import time
+import threading
 import requests
 import numpy as np
 import cv2
@@ -26,6 +27,8 @@ from src.services.ai_processor import (
     HAILO_AVAILABLE,
     get_hailo_models,
     get_ocr,
+    _touch_vote,
+    _accumulate_vote,
 )
 from src.config import (
     BACKEND_URL,
@@ -37,14 +40,24 @@ import os
 # Khớp header nội bộ mà backend chấp nhận (bỏ qua auth) — giống sync_cameras_worker.
 INTERNAL_SECRET = "AI_SERVER_SECRET_KEY"
 
-# Chạy giám sát bãi mỗi ngần này giây (container đứng yên nên không cần realtime).
-VERIFY_INTERVAL = 4.0
-# Số lần đọc GIỐNG HỆT trong một ô thì chốt mã của ô đó.
-SLOT_VOTE_STABLE = 3
+# Chạy giám sát bãi mỗi ngần này giây. Giữ NHỎ hơn VOTE_RESET_GAP (5s) để mốc detection
+# của mỗi ô luôn "sống" giữa 2 lần quét -> vote KHÔNG bị reset giữa chừng như luật gate.
+VERIFY_INTERVAL = 1.0
 # Không báo lại CÙNG (ô + mã) về backend trong ngần này giây (backend cũng tự debounce loa).
 REPORT_COOLDOWN = 60.0
 # Ngưỡng confidence tối thiểu cho OCR container (giống pipeline cổng).
 CONTAINER_OCR_MIN_PROB = 0.2
+
+
+def _new_slot_bucket():
+    """Bucket vote cho MỘT ô — cùng cấu trúc với AIProcessor._new_vote_bucket của gate."""
+    return {
+        "votes": Counter(),
+        "samples": 0,
+        "last_update": 0.0,
+        "finalized": None,
+        "lock": threading.Lock(),
+    }
 
 
 def _get_container_model():
@@ -142,7 +155,7 @@ class YardVerifier:
         except Exception as e:
             print(f"[Yard Verify] Không khởi tạo được (bỏ qua giám sát bãi {yard_id}): {e}")
             self.model = None
-        self.slot_votes = {}    # slotName -> Counter(mã -> số phiếu)
+        self.slot_buckets = {}  # slotName -> vote bucket (giống gate), sống theo detection
         self.last_report = {}   # slotName -> (mã đã báo, thời điểm)
         self.last_run = 0.0
         self.last_boxes = []    # box container lần quét gần nhất, để luồng stream VẼ lại
@@ -163,7 +176,6 @@ class YardVerifier:
         # Chỉ quét khi có ít nhất 1 ô bị XE chiếm.
         if occupied_slots is not None and not occupied_slots:
             self.last_boxes = []
-            self.slot_votes.clear()
             return self.last_boxes
         now = time.time()
         if now - self.last_run < VERIFY_INTERVAL:
@@ -185,6 +197,12 @@ class YardVerifier:
             # Bỏ qua container không nằm trong ô ĐANG BỊ XE CHIẾM.
             if occupied_slots is not None and slot_name not in occupied_slots:
                 continue
+
+            # Vote GIỐNG GATE: mốc "sống" theo DETECTION (không theo OCR) nên OCR chậm không
+            # làm reset phiếu giữa chừng; chỉ reset khi ô hết thấy container > VOTE_RESET_GAP.
+            bucket = self.slot_buckets.setdefault(slot_name, _new_slot_bucket())
+            _touch_vote(bucket)
+
             x1, y1, x2, y2 = box
             pad = 15
             crop = frame[max(0, y1 - pad):min(h, y2 + pad), max(0, x1 - pad):min(w, x2 + pad)]
@@ -197,12 +215,10 @@ class YardVerifier:
             if not code:
                 continue
 
-            votes = self.slot_votes.setdefault(slot_name, Counter())
-            votes[code] += 1
-            best, cnt = votes.most_common(1)[0]
-            if cnt >= SLOT_VOTE_STABLE:
+            # Luật chốt container của gate: ≥4 lần khớp / 8 mẫu & top≥3 / ≥15 lần.
+            best, finalized, just_finalized = _accumulate_vote(bucket, code, "container")
+            if just_finalized:
                 self._report(slot_name, best)
-                votes.clear()
 
         self.last_boxes = draw_boxes
         return draw_boxes
