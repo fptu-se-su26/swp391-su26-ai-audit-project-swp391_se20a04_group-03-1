@@ -429,20 +429,39 @@ def yard_capture_worker(yard_id, camera_ip):
     # ngần này giây sau lần thấy CUỐI. Chống ô nhấp nháy khi xe/container đứng yên, và giữ phiếu
     # vote OCR không bị reset giữa chừng. Xe đứng yên trong bãi nên để rộng rãi.
     OCC_GRACE = 12.0
+    # Nhịp TỐI THIỂU giữa 2 vòng AI. RẤT QUAN TRỌNG trên Pi: yolov8n (xe) chạy CPU, gate & yard
+    # chung 1 tiến trình -> nếu vòng này chạy sát nhau sẽ PEG CPU 100% và làm NGHẼN OCR/nhận diện
+    # của CỔNG (khiến cổng "không quét được container"). Xe/container trong bãi đứng yên nên ~1s/lần
+    # là quá đủ, và nhả CPU cho luồng cổng.
+    AI_INTERVAL = 1.0
 
     def ai_loop():
         """Thread AI: phát hiện XE + CONTAINER -> occupancy (debounce) -> quét & vote mã container."""
         prev_occupied = set()
         slot_last_seen = {}   # slotName -> thời điểm gần nhất THẤY xe/container đè lên ô
+        last_ai = 0.0
         while active_yard_streams.get(yard_id, {}).get("running", False):
             with shared_lock:
                 frame = None if shared["frame"] is None else shared["frame"].copy()
             if frame is None:
                 time.sleep(0.05)
                 continue
+            # Throttle: nhả CPU cho cổng, tránh yolov8n chạy pegging liên tục.
+            if time.time() - last_ai < AI_INTERVAL:
+                time.sleep(0.05)
+                continue
+            last_ai = time.time()
 
             h, w = frame.shape[:2]
             slots = active_yard_streams.get(yard_id, {}).get("slots", [])
+            # Bãi chưa vẽ ô nào -> không có gì để giám sát, khỏi tốn CPU (nhường cho cổng).
+            if not slots:
+                st = active_yard_streams.get(yard_id)
+                if st is not None:
+                    st["ai_vehicle_boxes"] = []
+                    st["ai_occupied_slots"] = set()
+                    st["ai_container_boxes"] = []
+                continue
             detected_slots = set()
             vehicle_boxes = []
 
