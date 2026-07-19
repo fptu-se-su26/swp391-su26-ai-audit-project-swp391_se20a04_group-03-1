@@ -145,14 +145,29 @@ class YardVerifier:
         self.slot_votes = {}    # slotName -> Counter(mã -> số phiếu)
         self.last_report = {}   # slotName -> (mã đã báo, thời điểm)
         self.last_run = 0.0
+        self.last_boxes = []    # box container lần quét gần nhất, để luồng stream VẼ lại
 
-    def maybe_verify(self, frame, slots):
-        """Gọi mỗi frame; tự throttle theo VERIFY_INTERVAL. Không làm gì nếu chưa tới hạn."""
+    def maybe_verify(self, frame, slots, occupied_slots=None):
+        """
+        Quét mã container trong các Ô ĐANG BỊ XE CHIẾM rồi báo backend nếu sai vị trí.
+
+        Trả về list (x1, y1, x2, y2, code) của box container để luồng stream vẽ border box
+        (code có thể là "" khi chưa OCR ra — vẫn vẽ khung để thấy đang quét). Tự throttle theo
+        VERIFY_INTERVAL; giữa 2 lần quét trả lại box lần trước (container đứng yên).
+
+        occupied_slots: tập slotName đang bị xe chiếm. None = quét mọi ô (giữ tương thích);
+        rỗng = KHÔNG có ô nào bị chiếm -> không quét, xoá box.
+        """
         if self.model is None or frame is None or not slots:
-            return
+            return self.last_boxes
+        # Chỉ quét khi có ít nhất 1 ô bị XE chiếm.
+        if occupied_slots is not None and not occupied_slots:
+            self.last_boxes = []
+            self.slot_votes.clear()
+            return self.last_boxes
         now = time.time()
         if now - self.last_run < VERIFY_INTERVAL:
-            return
+            return self.last_boxes
         self.last_run = now
 
         h, w = frame.shape[:2]
@@ -160,11 +175,15 @@ class YardVerifier:
             boxes = _detect_container_boxes(self.model, frame)
         except Exception as e:
             print(f"[Yard Verify] Lỗi detect: {e}")
-            return
+            return self.last_boxes
 
+        draw_boxes = []
         for box in boxes:
             slot_name = _slot_of_box(box, slots, w, h)
             if not slot_name:
+                continue
+            # Bỏ qua container không nằm trong ô ĐANG BỊ XE CHIẾM.
+            if occupied_slots is not None and slot_name not in occupied_slots:
                 continue
             x1, y1, x2, y2 = box
             pad = 15
@@ -173,7 +192,8 @@ class YardVerifier:
                 code = _ocr_container(crop)
             except Exception as e:
                 print(f"[Yard Verify] Lỗi OCR: {e}")
-                continue
+                code = None
+            draw_boxes.append((x1, y1, x2, y2, code or ""))
             if not code:
                 continue
 
@@ -183,6 +203,9 @@ class YardVerifier:
             if cnt >= SLOT_VOTE_STABLE:
                 self._report(slot_name, best)
                 votes.clear()
+
+        self.last_boxes = draw_boxes
+        return draw_boxes
 
     def _report(self, slot_name, code):
         """Báo (ô, mã) về backend, chống lặp cùng (ô+mã) trong REPORT_COOLDOWN."""

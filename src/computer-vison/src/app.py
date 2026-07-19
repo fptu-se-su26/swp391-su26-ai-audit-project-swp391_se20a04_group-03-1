@@ -362,14 +362,42 @@ def generate_gate_stream(rtsp_url):
             
         time.sleep(0.1)
 
+def _yard_check_overlap(box_x1, box_y1, box_x2, box_y2, slot, img_w, img_h):
+    """Box (toạ độ pixel) có đè lên ô đã vẽ không. Ô lưu theo % (points hoặc x/y/w/h)."""
+    import numpy as np
+    if 'points' in slot and slot['points']:
+        pts = [[int(p['x'] / 100.0 * img_w), int(p['y'] / 100.0 * img_h)] for p in slot['points']]
+        poly = np.array(pts, np.int32)
+        box_poly = [(box_x1, box_y1), (box_x2, box_y1), (box_x2, box_y2), (box_x1, box_y2)]
+        cx, cy = (box_x1 + box_x2) // 2, (box_y1 + box_y2) // 2
+        if cv2.pointPolygonTest(poly, (cx, cy), False) >= 0: return True
+        for bx, by in box_poly:
+            if cv2.pointPolygonTest(poly, (int(bx), int(by)), False) >= 0: return True
+        for px, py in poly:
+            if box_x1 <= px <= box_x2 and box_y1 <= py <= box_y2: return True
+        return False
+    else:
+        sx = int(slot.get('x', 0) / 100.0 * img_w)
+        sy = int(slot.get('y', 0) / 100.0 * img_h)
+        sw = int(slot.get('width', 0) / 100.0 * img_w)
+        sh = int(slot.get('height', 0) / 100.0 * img_h)
+        return not (box_x2 < sx or box_x1 > sx + sw or box_y2 < sy or box_y1 > sy + sh)
+
+
 def yard_capture_worker(yard_id, camera_ip):
+    """
+    Luồng STREAM của 1 bãi: chỉ đọc frame + vẽ overlay đã cache + encode (nhẹ, mượt).
+    Toàn bộ AI NẶNG (phát hiện xe + occupancy + OCR container) chạy ở THREAD RIÊNG bên dưới
+    nên không làm khựng video. Occupancy = có XE đè lên ô đã vẽ; chỉ ô bị xe chiếm mới quét
+    container -> vẽ border box (kèm mã) lên đúng ô đó.
+    """
     from ultralytics import YOLO
     import torch
-    import os
-    
+    import numpy as np
+
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     try:
-        vehicle_model = YOLO("yolov8n.pt") 
+        vehicle_model = YOLO("yolov8n.pt")
     except Exception as e:
         print(f"[Yard Feed Worker] Error loading YOLO: {e}")
         if yard_id in active_yard_streams:
@@ -382,7 +410,7 @@ def yard_capture_worker(yard_id, camera_ip):
         if yard_id in active_yard_streams:
             active_yard_streams[yard_id]["running"] = False
         return
-        
+
     print(f"[Yard Feed Worker] Started stream for Yard ID: {yard_id}")
 
     # Giám sát container ĐÚNG Ô: OCR mã container ở bãi -> map vào ô -> báo backend nếu sai vị trí.
@@ -393,103 +421,115 @@ def yard_capture_worker(yard_id, camera_ip):
         print(f"[Yard Feed Worker] Không bật giám sát container cho bãi {yard_id}: {e}")
         verifier = None
 
-    def check_overlap(box_x1, box_y1, box_x2, box_y2, slot, img_w, img_h):
-        import numpy as np
-        if 'points' in slot and slot['points']:
-            pts = [[int(p['x'] / 100.0 * img_w), int(p['y'] / 100.0 * img_h)] for p in slot['points']]
-            poly = np.array(pts, np.int32)
-            
-            box_poly = np.array([[box_x1, box_y1], [box_x2, box_y1], [box_x2, box_y2], [box_x1, box_y2]], np.int32)
-            cx, cy = (box_x1 + box_x2) // 2, (box_y1 + box_y2) // 2
-            
-            if cv2.pointPolygonTest(poly, (cx, cy), False) >= 0: return True
-            for bx, by in box_poly:
-                if cv2.pointPolygonTest(poly, (int(bx), int(by)), False) >= 0: return True
-            for px, py in poly:
-                if box_x1 <= px <= box_x2 and box_y1 <= py <= box_y2: return True
-            return False
-        else:
-            sx = int(slot.get('x',0) / 100.0 * img_w)
-            sy = int(slot.get('y',0) / 100.0 * img_h)
-            sw = int(slot.get('width',0) / 100.0 * img_w)
-            sh = int(slot.get('height',0) / 100.0 * img_h)
-            return not (box_x2 < sx or box_x1 > sx + sw or box_y2 < sy or box_y1 > sy + sh)
+    # Khung hình thô mới nhất chia sẻ cho thread AI (được luồng stream cập nhật mỗi frame).
+    shared = {"frame": None}
+    shared_lock = threading.Lock()
+    VEHICLE_CLASSES = {2: 'car', 3: 'motorcycle', 5: 'bus', 7: 'truck'}
 
-    frame_count = 0
-    previous_occupied_slots = set()
-    last_occupied_slots = set()
-    last_ai_boxes = []
-    
+    def ai_loop():
+        """Thread AI: phát hiện XE -> occupancy -> quét container ô bị chiếm. Cập nhật overlay."""
+        prev_occupied = set()
+        while active_yard_streams.get(yard_id, {}).get("running", False):
+            with shared_lock:
+                frame = None if shared["frame"] is None else shared["frame"].copy()
+            if frame is None:
+                time.sleep(0.05)
+                continue
+
+            h, w = frame.shape[:2]
+            slots = active_yard_streams.get(yard_id, {}).get("slots", [])
+            occupied_slots = set()
+            vehicle_boxes = []
+
+            # 1. Phát hiện XE (chỉ nhận vehicle class) -> ô nào bị chiếm.
+            try:
+                results = vehicle_model(frame, device=device, verbose=False)
+                if len(results) > 0 and results[0].boxes is not None:
+                    b = results[0].boxes
+                    for xyxy, conf, cls in zip(b.xyxy.cpu().tolist(),
+                                               b.conf.cpu().tolist(),
+                                               b.cls.cpu().tolist()):
+                        cls_id = int(cls)
+                        if conf <= 0.15 or cls_id not in VEHICLE_CLASSES:
+                            continue  # PHẢI là xe mới tính chiếm ô
+                        x1, y1, x2, y2 = map(int, xyxy)
+                        vehicle_boxes.append((x1, y1, x2, y2, f"{VEHICLE_CLASSES[cls_id]} {conf:.2f}"))
+                        for slot in slots:
+                            if _yard_check_overlap(x1, y1, x2, y2, slot, w, h):
+                                occupied_slots.add(slot.get('slotName'))
+            except Exception as e:
+                print(f"[Yard Feed Worker] Lỗi phát hiện xe: {e}")
+
+            # 2. CHỈ quét container ở các ô ĐANG BỊ XE CHIẾM; lấy box để vẽ.
+            container_boxes = []
+            if verifier is not None:
+                try:
+                    container_boxes = verifier.maybe_verify(frame, slots, occupied_slots)
+                except Exception as e:
+                    print(f"[Yard Feed Worker] Lỗi verify container: {e}")
+
+            st = active_yard_streams.get(yard_id)
+            if st is not None:
+                st["ai_vehicle_boxes"] = vehicle_boxes
+                st["ai_occupied_slots"] = occupied_slots
+                st["ai_container_boxes"] = container_boxes or []
+
+            # 3. Đổi trạng thái chiếm ô -> báo backend cập nhật occupancy.
+            if occupied_slots != prev_occupied:
+                print(f"[Yard Feed Worker] Trạng thái bãi {yard_id} thay đổi! Gửi webhook...")
+                try:
+                    backend_api_base = BACKEND_URL.replace("/scan", "")
+                    requests.post(
+                        f"{backend_api_base}/yards/{yard_id}/sync-status",
+                        json={"occupied_slots": list(occupied_slots)},
+                        headers={"x-internal-secret": "AI_SERVER_SECRET_KEY"},
+                        timeout=2.0,
+                    )
+                except Exception as e:
+                    print(f"[Yard Feed Worker] Lỗi gửi webhook: {e}")
+                prev_occupied = occupied_slots.copy()
+
+            time.sleep(0.03)
+
+    ai_thread = threading.Thread(target=ai_loop, daemon=True)
+    ai_thread.start()
+
     while active_yard_streams.get(yard_id, {}).get("running", False) and reader.isOpened():
         ret, frame = reader.read_latest()
-        if not ret: break
+        if not ret:
+            break
         if frame is None:
             continue
-            
-        frame_count += 1
+
         h, w, _ = frame.shape
+        # Chia sẻ khung THÔ cho thread AI trước khi vẽ (tránh AI đọc phải frame đã có overlay).
+        with shared_lock:
+            shared["frame"] = frame.copy()
 
-        # Đối chiếu container/ô (tự throttle theo VERIFY_INTERVAL bên trong; container đứng yên
-        # nên không cần chạy mỗi frame). Chạy đồng bộ ở đây, chỉ chiếm CPU mỗi vài giây.
-        if verifier is not None:
-            verifier.maybe_verify(frame, active_yard_streams.get(yard_id, {}).get("slots", []))
+        st = active_yard_streams.get(yard_id, {})
+        vehicle_boxes = st.get("ai_vehicle_boxes", [])
+        occupied_slots = st.get("ai_occupied_slots", set())
+        container_boxes = st.get("ai_container_boxes", [])
+        slots = st.get("slots", [])
 
-        # Only run YOLO every 3 frames to save CPU/GPU
-        if frame_count % 3 == 0:
-            results = vehicle_model(frame, device=device, verbose=False)
-            occupied_slots = set()
-            current_ai_boxes = []
-            
-            if len(results) > 0 and results[0].boxes is not None:
-                boxes = results[0].boxes
-                xyxys = boxes.xyxy.cpu().tolist()
-                confs = boxes.conf.cpu().tolist()
-                clss = boxes.cls.cpu().tolist()
-                
-                # Dictionary for COCO vehicle classes
-                vehicle_classes = {2: 'car', 3: 'motorcycle', 5: 'bus', 7: 'truck'}
-                
-                for xyxy, conf, cls in zip(xyxys, confs, clss):
-                    cls_id = int(cls)
-                    x1, y1, x2, y2 = map(int, xyxy)
-                    
-                    if conf > 0.15:
-                        label = ""
-                        if cls_id in vehicle_classes:
-                            label = f"{vehicle_classes[cls_id]} {conf:.2f}"
-                        else:
-                            label = f"cls_{cls_id} {conf:.2f}"
-                            
-                        # Cho phép TẤT CẢ các vật thể được phát hiện kích hoạt ô đỗ (để dễ demo với đồ chơi)
-                        current_ai_boxes.append((x1, y1, x2, y2, label, True))
-                        current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
-                        for slot in current_slots:
-                            if check_overlap(x1, y1, x2, y2, slot, w, h):
-                                occupied_slots.add(slot.get('slotName'))
-                                
-            last_occupied_slots = occupied_slots
-            last_ai_boxes = current_ai_boxes
-        else:
-            occupied_slots = last_occupied_slots
-            current_ai_boxes = last_ai_boxes
-            
-        # Draw AI boxes
-        for box_data in current_ai_boxes:
-            x1, y1, x2, y2, label, is_veh = box_data
-            color = (255, 165, 0) if is_veh else (255, 255, 255) # Orange for vehicles, White for others
-            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-            cv2.putText(frame, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
-                    
-        # Draw slots
-        current_slots = active_yard_streams.get(yard_id, {}).get("slots", [])
-        for slot in current_slots:
+        # Vẽ box XE (cam).
+        for (x1, y1, x2, y2, label) in vehicle_boxes:
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 165, 0), 2)
+            cv2.putText(frame, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 165, 0), 1)
+
+        # Vẽ box CONTAINER đang quét (vàng) + mã đọc được.
+        for (cx1, cy1, cx2, cy2, code) in container_boxes:
+            cv2.rectangle(frame, (cx1, cy1), (cx2, cy2), (0, 255, 255), 2)
+            cv2.putText(frame, code or "scanning...", (cx1, cy2 + 18),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+
+        # Vẽ Ô: đỏ = bị chiếm, xanh = trống.
+        for slot in slots:
             is_occupied = slot.get('slotName') in occupied_slots
             color = (0, 0, 255) if is_occupied else (0, 255, 0)
             status_text = "Occupied" if is_occupied else "Empty"
             overlay = frame.copy()
-            
             if 'points' in slot and slot['points']:
-                import numpy as np
                 pts = [[int(p['x'] / 100.0 * w), int(p['y'] / 100.0 * h)] for p in slot['points']]
                 poly = np.array([pts], np.int32)
                 cv2.fillPoly(overlay, poly, color)
@@ -498,40 +538,22 @@ def yard_capture_worker(yard_id, camera_ip):
                 tx, ty = min([p[0] for p in pts]), min([p[1] for p in pts])
                 cv2.putText(frame, f"{slot['slotName']} - {status_text}", (tx, ty - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
             else:
-                sx = int(slot.get('x',0) / 100.0 * w)
-                sy = int(slot.get('y',0) / 100.0 * h)
-                sw = int(slot.get('width',0) / 100.0 * w)
-                sh = int(slot.get('height',0) / 100.0 * h)
+                sx = int(slot.get('x', 0) / 100.0 * w)
+                sy = int(slot.get('y', 0) / 100.0 * h)
+                sw = int(slot.get('width', 0) / 100.0 * w)
+                sh = int(slot.get('height', 0) / 100.0 * h)
                 cv2.rectangle(overlay, (sx, sy), (sx + sw, sy + sh), color, -1)
                 cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
                 cv2.rectangle(frame, (sx, sy), (sx + sw, sy + sh), color, 2)
                 cv2.putText(frame, f"{slot['slotName']} - {status_text}", (sx, sy - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-            
+
         stream_frame = cv2.resize(frame, (640, 480))
         ret_encode, buffer = cv2.imencode('.jpg', stream_frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
-        if ret_encode:
+        if ret_encode and yard_id in active_yard_streams:
             active_yard_streams[yard_id]["frame_data"] = buffer.tobytes()
-            
-        if occupied_slots != previous_occupied_slots:
-            print(f"[Yard Feed Worker] Trạng thái bãi {yard_id} thay đổi! Gửi webhook...")
-            try:
-                payload = { "occupied_slots": list(occupied_slots) }
-                backend_api_base = BACKEND_URL.replace("/scan", "")
-                webhook_url = f"{backend_api_base}/yards/{yard_id}/sync-status"
-                # Thiếu header này thì backend trả 401/400 (route /yards có requireAuth) -> webhook
-                # occupancy im lặng thất bại. x-internal-secret cho AI Server bỏ qua auth.
-                requests.post(
-                    webhook_url,
-                    json=payload,
-                    headers={"x-internal-secret": "AI_SERVER_SECRET_KEY"},
-                    timeout=2.0,
-                )
-            except Exception as e:
-                print(f"[Yard Feed Worker] Lỗi gửi webhook: {e}")
-            previous_occupied_slots = occupied_slots.copy()
-            
+
         time.sleep(0.01)
-        
+
     reader.release()
     active_yard_streams.pop(yard_id, None)
     print(f"[Yard Feed Worker] Stream ended for Yard ID: {yard_id}")
@@ -544,14 +566,13 @@ def generate_yard_stream(yard_id):
             continue
             
         frame_data = stream_state.get("frame_data")
-        
+
         if frame_data:
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n')
+            time.sleep(0.04)  # ~25fps: mượt hơn mà không tràn băng thông
         else:
             time.sleep(0.1)
-            
-        time.sleep(0.1)
 
 @app.route('/yard_feed')
 def yard_feed():
