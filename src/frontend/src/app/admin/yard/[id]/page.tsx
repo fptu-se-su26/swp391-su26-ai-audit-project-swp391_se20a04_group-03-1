@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { VideoStream } from "@/components/ui/video-stream";
 
 interface MockActivity {
   id: string;
@@ -309,24 +310,11 @@ export default function YardDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Video / Snapshot View */}
         <div className="lg:col-span-2">
-          <Card className="h-full bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm overflow-hidden">
-            <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] py-4 px-6 flex flex-row items-center justify-between">
-              <CardTitle className="text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 text-[#121212] dark:text-[#ffffff]">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f3727f] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f3727f]"></span>
-                </span>
-                Live Camera (AI Detection)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 bg-[#000000] relative aspect-video">
-              <img
-                src={`${process.env.NEXT_PUBLIC_CV_URL || "http://localhost:5001"}/yard_feed?yard_id=${id}`}
-                alt="Live AI Stream"
-                className="w-full h-full object-contain"
-              />
-            </CardContent>
-          </Card>
+          <VideoStream
+            title={`Live Camera (AI Detection) — ${yard?.name || ""}`}
+            cameraId={String(id).substring(0, 8).toUpperCase()}
+            streamUrl={`${process.env.NEXT_PUBLIC_CV_URL || "http://localhost:5001"}/yard_feed?yard_id=${id}`}
+          />
         </div>
 
         {/* Recent Activities List */}

@@ -558,11 +558,14 @@ def yard_feed():
     yard_id = request.args.get('yard_id')
     if not yard_id:
         return "Missing yard_id", 400
-        
-    token = request.cookies.get('tokenAdmin')
-    if not token:
-        return jsonify({"code": "error", "message": "Unauthorized"}), 401
-        
+
+    # Thẻ <img> của frontend gọi CV là CROSS-ORIGIN nên trình duyệt KHÔNG gửi cookie
+    # tokenAdmin (cookie thuộc domain backend) -> đoạn kiểm tra dưới luôn 401 -> mất hình.
+    # Bỏ chặn ở tầng stream cho khớp /video_feed của gate (quyền xem đã chặn ở trang admin).
+    # token = request.cookies.get('tokenAdmin')
+    # if not token:
+    #     return jsonify({"code": "error", "message": "Unauthorized"}), 401
+
     return Response(
         generate_yard_stream(yard_id), 
         mimetype='multipart/x-mixed-replace; boundary=frame'
