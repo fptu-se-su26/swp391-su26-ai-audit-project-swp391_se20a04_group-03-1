@@ -425,14 +425,15 @@ def yard_capture_worker(yard_id, camera_ip):
     shared = {"frame": None}
     shared_lock = threading.Lock()
     VEHICLE_CLASSES = {2: 'car', 3: 'motorcycle', 5: 'bus', 7: 'truck'}
-    # YOLO trên CPU hay "trượt" 1 frame -> giữ ô là BỊ CHIẾM thêm ngần này giây sau lần thấy
-    # xe cuối. Chống ô nhấp nháy trống dù xe còn đó, và tránh xoá phiếu vote OCR giữa chừng.
-    OCC_GRACE = 6.0
+    # Model nhận diện (xe/container) chạy CPU hay "trượt" vài frame -> giữ ô là BỊ CHIẾM thêm
+    # ngần này giây sau lần thấy CUỐI. Chống ô nhấp nháy khi xe/container đứng yên, và giữ phiếu
+    # vote OCR không bị reset giữa chừng. Xe đứng yên trong bãi nên để rộng rãi.
+    OCC_GRACE = 12.0
 
     def ai_loop():
-        """Thread AI: phát hiện XE -> occupancy (có debounce) -> quét container ô bị chiếm."""
+        """Thread AI: phát hiện XE + CONTAINER -> occupancy (debounce) -> quét & vote mã container."""
         prev_occupied = set()
-        slot_last_seen = {}   # slotName -> thời điểm gần nhất THẤY xe đè lên ô
+        slot_last_seen = {}   # slotName -> thời điểm gần nhất THẤY xe/container đè lên ô
         while active_yard_streams.get(yard_id, {}).get("running", False):
             with shared_lock:
                 frame = None if shared["frame"] is None else shared["frame"].copy()
@@ -454,8 +455,8 @@ def yard_capture_worker(yard_id, camera_ip):
                                                b.conf.cpu().tolist(),
                                                b.cls.cpu().tolist()):
                         cls_id = int(cls)
-                        if conf <= 0.15 or cls_id not in VEHICLE_CLASSES:
-                            continue  # PHẢI là xe mới tính chiếm ô
+                        if conf <= 0.10 or cls_id not in VEHICLE_CLASSES:
+                            continue  # chỉ nhận phương tiện, ngưỡng thấp cho dễ bắt
                         x1, y1, x2, y2 = map(int, xyxy)
                         vehicle_boxes.append((x1, y1, x2, y2, f"{VEHICLE_CLASSES[cls_id]} {conf:.2f}"))
                         for slot in slots:
@@ -464,19 +465,21 @@ def yard_capture_worker(yard_id, camera_ip):
             except Exception as e:
                 print(f"[Yard Feed Worker] Lỗi phát hiện xe: {e}")
 
-            # Debounce occupancy: ô còn "bị chiếm" nếu thấy xe trong OCC_GRACE giây gần đây.
+            # 2. Quét CONTAINER (phát hiện + OCR + vote kiểu gate). Container nằm trong ô cũng
+            #    TÍNH LÀ chiếm ô -> ô đứng vững kể cả khi model xe bỏ sót, và mã được quét liên tục.
+            container_boxes = []
+            if verifier is not None:
+                try:
+                    container_boxes = verifier.maybe_verify(frame, slots)
+                    detected_slots |= verifier.container_slots
+                except Exception as e:
+                    print(f"[Yard Feed Worker] Lỗi verify container: {e}")
+
+            # 3. Debounce occupancy: ô còn "bị chiếm" nếu thấy xe/container trong OCC_GRACE giây.
             now = time.time()
             for s in detected_slots:
                 slot_last_seen[s] = now
             occupied_slots = {s for s, t in slot_last_seen.items() if now - t < OCC_GRACE}
-
-            # 2. CHỈ quét container ở các ô ĐANG BỊ XE CHIẾM; lấy box để vẽ.
-            container_boxes = []
-            if verifier is not None:
-                try:
-                    container_boxes = verifier.maybe_verify(frame, slots, occupied_slots)
-                except Exception as e:
-                    print(f"[Yard Feed Worker] Lỗi verify container: {e}")
 
             st = active_yard_streams.get(yard_id)
             if st is not None:

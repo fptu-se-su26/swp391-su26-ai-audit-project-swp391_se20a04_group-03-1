@@ -100,6 +100,7 @@ def _ocr_container(crop):
         results = reader.read(img)
     parts = [(bbox, text) for (bbox, text, prob) in results if prob > CONTAINER_OCR_MIN_PROB]
     if not parts:
+        print("[Yard Verify] OCR không đọc được ký tự nào trong ô (ảnh mờ/nhỏ/nghiêng?)")
         return None
     # Thử nối theo thứ tự mặc định và ép theo trục X (camera nghiêng dễ "đọc ngược").
     raw_y = "".join(t for _, t in parts)
@@ -108,7 +109,10 @@ def _ocr_container(crop):
         return res
     parts_x = sorted(parts, key=lambda p: p[0][0][0])
     raw_x = "".join(t for _, t in parts_x)
-    return aip.clean_and_format_container(raw_x)
+    res = aip.clean_and_format_container(raw_x)
+    if not res:
+        print(f"[Yard Verify] OCR thô: '{raw_y}' / '{raw_x}' -> chưa thành mã ISO 6346 hợp lệ")
+    return res
 
 
 def _slot_of_box(box, slots, img_w, img_h):
@@ -155,27 +159,22 @@ class YardVerifier:
         except Exception as e:
             print(f"[Yard Verify] Không khởi tạo được (bỏ qua giám sát bãi {yard_id}): {e}")
             self.model = None
-        self.slot_buckets = {}  # slotName -> vote bucket (giống gate), sống theo detection
-        self.last_report = {}   # slotName -> (mã đã báo, thời điểm)
+        self.slot_buckets = {}   # slotName -> vote bucket (giống gate), sống theo detection
+        self.last_report = {}    # slotName -> (mã đã báo, thời điểm)
         self.last_run = 0.0
-        self.last_boxes = []    # box container lần quét gần nhất, để luồng stream VẼ lại
+        self.last_boxes = []     # box container lần quét gần nhất, để luồng stream VẼ lại
+        self.container_slots = set()  # ô ĐANG có container (yard_capture_worker tính vào occupancy)
 
-    def maybe_verify(self, frame, slots, occupied_slots=None):
+    def maybe_verify(self, frame, slots):
         """
-        Quét mã container trong các Ô ĐANG BỊ XE CHIẾM rồi báo backend nếu sai vị trí.
+        Phát hiện container ở mỗi Ô -> OCR -> vote (kiểu gate) -> báo backend nếu sai vị trí.
 
-        Trả về list (x1, y1, x2, y2, code) của box container để luồng stream vẽ border box
-        (code có thể là "" khi chưa OCR ra — vẫn vẽ khung để thấy đang quét). Tự throttle theo
-        VERIFY_INTERVAL; giữa 2 lần quét trả lại box lần trước (container đứng yên).
-
-        occupied_slots: tập slotName đang bị xe chiếm. None = quét mọi ô (giữ tương thích);
-        rỗng = KHÔNG có ô nào bị chiếm -> không quét, xoá box.
+        CONTAINER nằm trong ô tức là ô ĐANG BỊ CHIẾM: cập nhật `self.container_slots` để luồng
+        capture cộng vào occupancy (ô đứng vững kể cả khi model xe bỏ sót). Trả về list
+        (x1, y1, x2, y2, code) để luồng stream vẽ border box (code="" khi chưa OCR ra — vẫn vẽ
+        khung để thấy đang quét). Tự throttle theo VERIFY_INTERVAL; giữa 2 lần quét trả box cũ.
         """
         if self.model is None or frame is None or not slots:
-            return self.last_boxes
-        # Chỉ quét khi có ít nhất 1 ô bị XE chiếm.
-        if occupied_slots is not None and not occupied_slots:
-            self.last_boxes = []
             return self.last_boxes
         now = time.time()
         if now - self.last_run < VERIFY_INTERVAL:
@@ -190,13 +189,12 @@ class YardVerifier:
             return self.last_boxes
 
         draw_boxes = []
+        container_slots = set()
         for box in boxes:
             slot_name = _slot_of_box(box, slots, w, h)
             if not slot_name:
                 continue
-            # Bỏ qua container không nằm trong ô ĐANG BỊ XE CHIẾM.
-            if occupied_slots is not None and slot_name not in occupied_slots:
-                continue
+            container_slots.add(slot_name)
 
             # Vote GIỐNG GATE: mốc "sống" theo DETECTION (không theo OCR) nên OCR chậm không
             # làm reset phiếu giữa chừng; chỉ reset khi ô hết thấy container > VOTE_RESET_GAP.
@@ -217,9 +215,11 @@ class YardVerifier:
 
             # Luật chốt container của gate: ≥4 lần khớp / 8 mẫu & top≥3 / ≥15 lần.
             best, finalized, just_finalized = _accumulate_vote(bucket, code, "container")
+            print(f"[Yard Verify] ô {slot_name}: mẫu '{code}' | tạm '{best}' ({bucket['samples']} mẫu)")
             if just_finalized:
                 self._report(slot_name, best)
 
+        self.container_slots = container_slots
         self.last_boxes = draw_boxes
         return draw_boxes
 
