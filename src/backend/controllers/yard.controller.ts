@@ -6,6 +6,7 @@ import streamifier from "streamifier";
 import { Gate } from "../models/gate.model";
 import { GateTransaction } from "../models/gateTransaction.model";
 import { speakGateAlert } from "../services/gate-announce.service";
+import { notify } from "../services/notification.service";
 
 /** Chuẩn hoá mã container: bỏ ký tự lạ, viết hoa. */
 const normContainer = (s?: string): string =>
@@ -254,6 +255,16 @@ export const verifyYardSlotPost = async (req: Request, res: Response) => {
 
     // Phát loa cổng IN, debounce theo (bãi + ô + mã) để không lải nhải khi container đứng yên.
     speakGateAlert("in", `yard:${yardId}:${slotName}:${detected}`, message);
+
+    // Container đỗ sai ô là sự cố cần người xử lý — đưa vào chuông thông báo.
+    void notify({
+      type: "yard",
+      severity: "error",
+      title: "Container sai vị trí trong bãi",
+      message,
+      link: `/admin/yard/${yardId}`,
+      dedupeKey: `yard-mismatch:${yardId}:${slotName}:${detected}`,
+    });
 
     io.emit("yard_slot_mismatch", {
       yardId,

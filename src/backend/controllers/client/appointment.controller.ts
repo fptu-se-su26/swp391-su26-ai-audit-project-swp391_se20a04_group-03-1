@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Appointment } from "../../models/appointment.model";
 import { Driver } from "../../models/driver.model";
 import { Container } from "../../models/container.model";
+import { notify } from "../../services/notification.service";
 
 export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
@@ -65,6 +66,16 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
 
     const newAppointment = new Appointment(req.body);
     await newAppointment.save();
+
+    // Báo cho admin có lịch hẹn mới chờ duyệt (chuông trên header).
+    void notify({
+      type: "appointment",
+      severity: "info",
+      title: "Lịch hẹn mới chờ duyệt",
+      message: `${newAppointment.truckPlate} — ${newAppointment.purpose} ${newAppointment.containerNo}, khung ${newAppointment.timeSlot}.`,
+      link: "/admin/appointments",
+      dedupeKey: `appointment-new:${newAppointment._id}`,
+    });
 
     res.status(200).json({
       code: "success",

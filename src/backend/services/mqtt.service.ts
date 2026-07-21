@@ -20,20 +20,45 @@ import mqtt, { MqttClient } from "mqtt";
 let client: MqttClient | null = null;
 let enabled = false;
 
+/**
+ * Làm sạch giá trị lấy từ .env: bỏ nháy còn sót và khoảng trắng thừa.
+ *
+ * dotenv chỉ bóc nháy khi giá trị được ôm TRỌN vẹn; chỉ cần một ký tự lạc sau
+ * dấu nháy đóng (vd `MQTT_URL="mqtts://..."` + backtick thừa) là biến sẽ giữ
+ * nguyên dấu nháy, khiến mqtt đọc protocol thành `"mqtts` và ném "Missing
+ * protocol". Cùng cách xử lý đã dùng cho COOKIE_DOMAIN ở auth.middleware.
+ */
+const cleanEnv = (raw?: string): string | undefined => {
+  const v = raw?.replace(/[`'"]/g, "").trim();
+  return v || undefined;
+};
+
 export const initMqtt = (): void => {
-  const url = process.env.MQTT_URL; // ví dụ: mqtts://xxxx.s1.eu.hivemq.cloud:8883
+  const url = cleanEnv(process.env.MQTT_URL); // ví dụ: mqtts://xxxx.s1.eu.hivemq.cloud:8883
   if (!url) {
     console.warn("[MQTT] MQTT_URL chưa đặt — bỏ qua điều khiển cổng/loa qua MQTT.");
     return;
   }
 
-  client = mqtt.connect(url, {
-    username: process.env.MQTT_USERNAME,
-    password: process.env.MQTT_PASSWORD,
-    reconnectPeriod: 5000, // tự nối lại mỗi 5s nếu rớt
-    connectTimeout: 10000,
-    clientId: `backend-${Math.random().toString(16).slice(2, 10)}`,
-  });
+  // MQTT là tính năng phụ (mở cổng + loa). Cấu hình sai thì tắt riêng nó, TUYỆT ĐỐI
+  // không để ném ra ngoài làm sập cả backend — trước đây một dấu gõ nhầm trong .env
+  // đủ khiến toàn bộ API không khởi động được.
+  try {
+    client = mqtt.connect(url, {
+      username: cleanEnv(process.env.MQTT_USERNAME),
+      password: cleanEnv(process.env.MQTT_PASSWORD),
+      reconnectPeriod: 5000, // tự nối lại mỗi 5s nếu rớt
+      connectTimeout: 10000,
+      clientId: `backend-${Math.random().toString(16).slice(2, 10)}`,
+    });
+  } catch (err) {
+    client = null;
+    console.error(
+      "[MQTT] MQTT_URL không hợp lệ — tắt điều khiển cổng/loa qua MQTT:",
+      (err as Error).message,
+    );
+    return;
+  }
 
   client.on("connect", () => {
     enabled = true;

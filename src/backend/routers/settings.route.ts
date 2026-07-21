@@ -5,12 +5,18 @@ import * as companyRoleController from "../controllers/companyRole.controller";
 import * as companyRoleValidator from "../validators/companyRole.validator";
 import * as adminRoleController from "../controllers/adminRole.controller";
 import * as adminRoleValidator from "../validators/adminRole.validator";
+import * as profileController from "../controllers/profile.controller";
 import { requirePermission } from "../middlewares/rbac.middleware";
 
 const router = Router();
 
-// ===== RBAC: quyền của chính mình + catalog (chỉ cần đăng nhập) =====
+// ===== Hồ sơ của chính mình (chỉ cần đăng nhập, KHÔNG cần quyền settings.admins) =====
+// Đặt TRƯỚC các route "/admins/:id" để "/me" không bị nuốt bởi param route.
 router.get("/me/permissions", adminRoleController.myPermissionsGet);
+router.get("/me", profileController.meGet);
+router.patch("/me", profileController.meUpdatePatch);
+router.patch("/me/password", profileController.changePasswordPatch);
+router.patch("/me/logout-all", profileController.logoutAllPatch);
 router.get(
   "/roles/catalog",
   requirePermission("settings.roles", "view"),

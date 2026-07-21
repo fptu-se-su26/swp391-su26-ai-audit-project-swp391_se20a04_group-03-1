@@ -40,12 +40,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { can } = usePermissions();
 
-  // Chỉ hiện mục có quyền view. Menu cài đặt hiện nếu có quyền vào bất kỳ trang con nào.
+  // Chỉ hiện mục có quyền view. Menu cài đặt LUÔN hiện: bên trong đã có mục
+  // "Tài khoản của tôi" mà mọi admin đều dùng được, các mục quản trị khác tự lọc
+  // theo quyền ở trang cài đặt.
   const visibleItems = menuItems.filter((item) => can(item.resource, "view"));
-  const canSeeSettings =
-    can("settings.admins", "view") ||
-    can("settings.roles", "view") ||
-    can("settings.client-roles", "view");
 
   return (
     <>
@@ -111,8 +109,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             );
           })}
 
-          {canSeeSettings && (
-          <>
           <div className="pt-4 pb-2">
             <div className="h-px w-full bg-[#e5e5e5] dark:bg-[#272727]" />
           </div>
@@ -143,8 +139,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               Cài đặt chung
             </span>
           </Link>
-          </>
-          )}
         </nav>
       </aside>
     </>
