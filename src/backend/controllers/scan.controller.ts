@@ -9,6 +9,7 @@ import { assignRandomFreeSlot } from "../services/yard-slot.service";
 import { buildCheckInTicketPdf, CheckInTicketData } from "../services/ticket.service";
 import { publishGateOpen, publishAnnounce } from "../services/mqtt.service";
 import { speakGateAlert } from "../services/gate-announce.service";
+import { notify } from "../services/notification.service";
 
 interface ScanCache {
   plate?: { text: string; time: number };
@@ -23,6 +24,16 @@ const cameraScanCache: Record<string, ScanCache> = {};
 const emitGateError = (gate: "in" | "out", plate: string, message: string) => {
   io.emit("gate_scan_error", { plate, message });
   speakGateAlert(gate, `scan:${gate}:${plate}:${message}`, message);
+  // Lưu lại vào chuông thông báo để ca sau vẫn soát được sự cố đã xảy ra.
+  // Không await: camera bắn liên tục, luồng cổng không được chờ ghi DB.
+  void notify({
+    type: "gate",
+    severity: "warning",
+    title: `Cổng ${gate === "in" ? "VÀO" : "RA"} — từ chối xe`,
+    message: plate ? `${plate}: ${message}` : message,
+    link: "/admin/gate",
+    dedupeKey: `gate-error:${gate}:${plate}:${message}`,
+  });
 };
 
 // Trạng thái cảng kế tiếp của container, suy ra từ mục đích lịch hẹn và chiều qua cổng:
@@ -387,6 +398,22 @@ export const scanPost = async (req: Request, res: Response) => {
             ? `Check-in thành công. Xe vào ô ${transaction!.assignedSlot}.`
             : "Check-in thành công"
           : "Check-out thành công",
+    });
+
+    // Ghi vào chuông thông báo. Dedupe theo id transaction + chiều nên mỗi lượt
+    // qua cổng chỉ sinh đúng 1 thông báo dù camera bắn lại cùng biển số.
+    void notify({
+      type: "gate",
+      severity: "success",
+      title: status === "in" ? "Xe vào cảng" : "Xe rời cảng",
+      message:
+        status === "in"
+          ? `${transaction!.actualTruckPlate || text} đã check-in${
+              transaction!.assignedSlot ? `, vào ô ${transaction!.assignedSlot}` : ""
+            }.`
+          : `${transaction!.actualTruckPlate || text} đã check-out.`,
+      link: `/admin/gate/logs/${transaction!._id}`,
+      dedupeKey: `gate-ok:${transaction!._id}:${status}`,
     });
 
     // --- ĐIỀU KHIỂN CỔNG + LOA QUA MQTT ---

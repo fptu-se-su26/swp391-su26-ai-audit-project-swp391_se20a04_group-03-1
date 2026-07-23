@@ -11,6 +11,8 @@ import scanRouter from "./scan.route";
 import containerProvidersRouter from "./container-providers.route";
 import settingsRouter from "./settings.route";
 import reportsRouter from "./reports.route";
+import dashboardRouter from "./dashboard.route";
+import notificationsRouter from "./notifications.route";
 import clientRouter from "./client/index.route";
 import mobileRouter from "./mobile/index.route";
 
@@ -44,6 +46,15 @@ rootRouter.use("/containers", requireAuth, attachPermissions, containersRoutes);
 rootRouter.use("/trucks", requireAuth, attachPermissions, trucksRoutes);
 rootRouter.use("/scan", scanRouter);
 rootRouter.use("/reports", requireAuth, attachPermissions, reportsRouter);
+rootRouter.use("/dashboard", requireAuth, attachPermissions, dashboardRouter);
+// notifications: chuông trên header — mọi admin đã đăng nhập đều dùng được,
+// không siết thêm quyền (chi tiết lý do trong notifications.route.ts).
+rootRouter.use(
+  "/notifications",
+  requireAuth,
+  attachPermissions,
+  notificationsRouter,
+);
 
 // settings: cổng truy cập & CRUD được siết chi tiết bên trong settings.route.ts
 rootRouter.use("/settings", requireAuth, attachPermissions, settingsRouter);

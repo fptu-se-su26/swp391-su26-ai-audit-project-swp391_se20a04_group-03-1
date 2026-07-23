@@ -1,13 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { Users, ShieldCheck, Settings as SettingsIcon, Bell, Database, Building2, KeyRound } from "lucide-react";
+import { Users, Building2, KeyRound, UserCog } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePermissions } from "@/lib/permissions";
 
 export default function SettingsPage() {
   const { can } = usePermissions();
+
+  // Chỉ liệt kê những mục ĐÃ CÓ trang thật và chạy được. Trước đây trang này còn
+  // 4 thẻ trỏ tới /security, /general, /notifications, /backup — đều là link chết
+  // (404) vì không có màn hình lẫn API phía sau, nên đã gỡ bỏ. Cấu hình bảo mật
+  // cá nhân (đổi mật khẩu, phiên đăng nhập) đã nằm trong "Tài khoản của tôi".
   const settingOptions = [
+    {
+      title: "Tài khoản của tôi",
+      description:
+        "Xem thông tin cá nhân, đổi mật khẩu và đăng xuất khỏi mọi thiết bị.",
+      icon: <UserCog className="h-6 w-6" />,
+      href: "/admin/settings/profile",
+      // Không gắn resource: mọi admin đều được xem hồ sơ của chính mình.
+    },
     {
       title: "Vai trò & Phân quyền",
       description: "Tạo vai trò, gán quyền truy cập từng trang và thao tác CRUD cho quản trị viên.",
@@ -28,30 +41,6 @@ export default function SettingsPage() {
       icon: <Users className="h-6 w-6" />,
       href: "/admin/settings/admins",
       resource: "settings.admins",
-    },
-    {
-      title: "Cấu hình Bảo mật",
-      description: "Thiết lập xác thực 2 bước, quản lý phiên đăng nhập và chính sách mật khẩu.",
-      icon: <ShieldCheck className="h-6 w-6" />,
-      href: "/admin/settings/security",
-    },
-    {
-      title: "Cài đặt Chung",
-      description: "Thay đổi thông tin website, múi giờ, ngôn ngữ và các tùy chọn hiển thị.",
-      icon: <SettingsIcon className="h-6 w-6" />,
-      href: "/admin/settings/general",
-    },
-    {
-      title: "Thông báo & Cảnh báo",
-      description: "Tùy chỉnh các kênh nhận thông báo (Email, Zalo, SMS) cho các sự kiện.",
-      icon: <Bell className="h-6 w-6" />,
-      href: "/admin/settings/notifications",
-    },
-    {
-      title: "Sao lưu Dữ liệu",
-      description: "Thiết lập sao lưu dữ liệu định kỳ và phục hồi hệ thống khi có sự cố.",
-      icon: <Database className="h-6 w-6" />,
-      href: "/admin/settings/backup",
     },
   ];
 

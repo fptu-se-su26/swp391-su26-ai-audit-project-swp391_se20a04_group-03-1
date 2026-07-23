@@ -16,6 +16,7 @@ Khác pipeline cổng: KHÔNG vote cấp-camera mà vote CẤP-Ô (mỗi ô mộ
 đứng yên trong ô — cần biết "ô này đang chứa mã nào", không phải "camera thấy mã nào".
 """
 import time
+import threading
 import requests
 import numpy as np
 import cv2
@@ -26,6 +27,8 @@ from src.services.ai_processor import (
     HAILO_AVAILABLE,
     get_hailo_models,
     get_ocr,
+    _touch_vote,
+    _accumulate_vote,
 )
 from src.config import (
     BACKEND_URL,
@@ -37,14 +40,25 @@ import os
 # Khớp header nội bộ mà backend chấp nhận (bỏ qua auth) — giống sync_cameras_worker.
 INTERNAL_SECRET = "AI_SERVER_SECRET_KEY"
 
-# Chạy giám sát bãi mỗi ngần này giây (container đứng yên nên không cần realtime).
-VERIFY_INTERVAL = 4.0
-# Số lần đọc GIỐNG HỆT trong một ô thì chốt mã của ô đó.
-SLOT_VOTE_STABLE = 3
+# Chạy giám sát bãi mỗi ngần này giây. Reader OCR container chạy CPU DÙNG CHUNG với cổng, nên
+# để thưa (2.5s) để nhả CPU cho cổng. Vẫn NHỎ hơn VOTE_RESET_GAP (5s) nên mốc detection của
+# mỗi ô luôn "sống" giữa 2 lần quét -> vote KHÔNG bị reset giữa chừng như luật gate.
+VERIFY_INTERVAL = 2.5
 # Không báo lại CÙNG (ô + mã) về backend trong ngần này giây (backend cũng tự debounce loa).
 REPORT_COOLDOWN = 60.0
 # Ngưỡng confidence tối thiểu cho OCR container (giống pipeline cổng).
 CONTAINER_OCR_MIN_PROB = 0.2
+
+
+def _new_slot_bucket():
+    """Bucket vote cho MỘT ô — cùng cấu trúc với AIProcessor._new_vote_bucket của gate."""
+    return {
+        "votes": Counter(),
+        "samples": 0,
+        "last_update": 0.0,
+        "finalized": None,
+        "lock": threading.Lock(),
+    }
 
 
 def _get_container_model():
@@ -87,6 +101,7 @@ def _ocr_container(crop):
         results = reader.read(img)
     parts = [(bbox, text) for (bbox, text, prob) in results if prob > CONTAINER_OCR_MIN_PROB]
     if not parts:
+        print("[Yard Verify] OCR không đọc được ký tự nào trong ô (ảnh mờ/nhỏ/nghiêng?)")
         return None
     # Thử nối theo thứ tự mặc định và ép theo trục X (camera nghiêng dễ "đọc ngược").
     raw_y = "".join(t for _, t in parts)
@@ -95,7 +110,10 @@ def _ocr_container(crop):
         return res
     parts_x = sorted(parts, key=lambda p: p[0][0][0])
     raw_x = "".join(t for _, t in parts_x)
-    return aip.clean_and_format_container(raw_x)
+    res = aip.clean_and_format_container(raw_x)
+    if not res:
+        print(f"[Yard Verify] OCR thô: '{raw_y}' / '{raw_x}' -> chưa thành mã ISO 6346 hợp lệ")
+    return res
 
 
 def _slot_of_box(box, slots, img_w, img_h):
@@ -142,17 +160,26 @@ class YardVerifier:
         except Exception as e:
             print(f"[Yard Verify] Không khởi tạo được (bỏ qua giám sát bãi {yard_id}): {e}")
             self.model = None
-        self.slot_votes = {}    # slotName -> Counter(mã -> số phiếu)
-        self.last_report = {}   # slotName -> (mã đã báo, thời điểm)
+        self.slot_buckets = {}   # slotName -> vote bucket (giống gate), sống theo detection
+        self.last_report = {}    # slotName -> (mã đã báo, thời điểm)
         self.last_run = 0.0
+        self.last_boxes = []     # box container lần quét gần nhất, để luồng stream VẼ lại
+        self.container_slots = set()  # ô ĐANG có container (yard_capture_worker tính vào occupancy)
 
     def maybe_verify(self, frame, slots):
-        """Gọi mỗi frame; tự throttle theo VERIFY_INTERVAL. Không làm gì nếu chưa tới hạn."""
+        """
+        Phát hiện container ở mỗi Ô -> OCR -> vote (kiểu gate) -> báo backend nếu sai vị trí.
+
+        CONTAINER nằm trong ô tức là ô ĐANG BỊ CHIẾM: cập nhật `self.container_slots` để luồng
+        capture cộng vào occupancy (ô đứng vững kể cả khi model xe bỏ sót). Trả về list
+        (x1, y1, x2, y2, code) để luồng stream vẽ border box (code="" khi chưa OCR ra — vẫn vẽ
+        khung để thấy đang quét). Tự throttle theo VERIFY_INTERVAL; giữa 2 lần quét trả box cũ.
+        """
         if self.model is None or frame is None or not slots:
-            return
+            return self.last_boxes
         now = time.time()
         if now - self.last_run < VERIFY_INTERVAL:
-            return
+            return self.last_boxes
         self.last_run = now
 
         h, w = frame.shape[:2]
@@ -160,12 +187,21 @@ class YardVerifier:
             boxes = _detect_container_boxes(self.model, frame)
         except Exception as e:
             print(f"[Yard Verify] Lỗi detect: {e}")
-            return
+            return self.last_boxes
 
+        draw_boxes = []
+        container_slots = set()
         for box in boxes:
             slot_name = _slot_of_box(box, slots, w, h)
             if not slot_name:
                 continue
+            container_slots.add(slot_name)
+
+            # Vote GIỐNG GATE: mốc "sống" theo DETECTION (không theo OCR) nên OCR chậm không
+            # làm reset phiếu giữa chừng; chỉ reset khi ô hết thấy container > VOTE_RESET_GAP.
+            bucket = self.slot_buckets.setdefault(slot_name, _new_slot_bucket())
+            _touch_vote(bucket)
+
             x1, y1, x2, y2 = box
             pad = 15
             crop = frame[max(0, y1 - pad):min(h, y2 + pad), max(0, x1 - pad):min(w, x2 + pad)]
@@ -173,16 +209,20 @@ class YardVerifier:
                 code = _ocr_container(crop)
             except Exception as e:
                 print(f"[Yard Verify] Lỗi OCR: {e}")
-                continue
+                code = None
+            draw_boxes.append((x1, y1, x2, y2, code or ""))
             if not code:
                 continue
 
-            votes = self.slot_votes.setdefault(slot_name, Counter())
-            votes[code] += 1
-            best, cnt = votes.most_common(1)[0]
-            if cnt >= SLOT_VOTE_STABLE:
+            # Luật chốt container của gate: ≥4 lần khớp / 8 mẫu & top≥3 / ≥15 lần.
+            best, finalized, just_finalized = _accumulate_vote(bucket, code, "container")
+            print(f"[Yard Verify] ô {slot_name}: mẫu '{code}' | tạm '{best}' ({bucket['samples']} mẫu)")
+            if just_finalized:
                 self._report(slot_name, best)
-                votes.clear()
+
+        self.container_slots = container_slots
+        self.last_boxes = draw_boxes
+        return draw_boxes
 
     def _report(self, slot_name, code):
         """Báo (ô, mã) về backend, chống lặp cùng (ô+mã) trong REPORT_COOLDOWN."""

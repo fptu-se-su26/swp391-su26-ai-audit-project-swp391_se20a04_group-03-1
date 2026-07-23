@@ -6,18 +6,24 @@ import streamifier from "streamifier";
 import { Gate } from "../models/gate.model";
 import { GateTransaction } from "../models/gateTransaction.model";
 import { speakGateAlert } from "../services/gate-announce.service";
+import { notify } from "../services/notification.service";
+
+/** Chuẩn hoá mã container: bỏ ký tự lạ, viết hoa. */
+const normContainer = (s?: string): string =>
+  (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 
 /**
- * So khớp mã container 2 chiều theo tiền tố: DB lưu 11 ký tự (đủ check digit), OCR trả
- * 10 ký tự (bỏ check digit) — nên bên này là tiền tố của bên kia thì coi là TRÙNG.
- * Giống cách scanPost khớp container.
+ * So khớp mã container trên ĐÚNG 4 chữ + 6 số ĐẦU (10 ký tự). OCR KHÔNG đọc được số kiểm
+ * tra thứ 7 (ký tự thứ 11) nên ta BỎ HẲN nó ở cả hai phía: DB lưu 11 ký tự, CV trả 10 ký tự
+ * — cắt cùng về 10 rồi so bằng nhau (chính xác hơn so-tiền-tố, tránh khớp nhầm).
+ * Dữ liệu ngắn hơn 10 thì so theo tiền tố phần chung.
  */
 const containerMatches = (a?: string, b?: string): boolean => {
-  if (!a || !b) return false;
-  const x = a.trim().toUpperCase();
-  const y = b.trim().toUpperCase();
+  const x = normContainer(a);
+  const y = normContainer(b);
   if (!x || !y) return false;
-  return x.startsWith(y) || y.startsWith(x);
+  const n = Math.min(x.length, y.length, 10);
+  return x.slice(0, n) === y.slice(0, n);
 };
 
 export const yardsGet = async (req: Request, res: Response) => {
@@ -249,6 +255,16 @@ export const verifyYardSlotPost = async (req: Request, res: Response) => {
 
     // Phát loa cổng IN, debounce theo (bãi + ô + mã) để không lải nhải khi container đứng yên.
     speakGateAlert("in", `yard:${yardId}:${slotName}:${detected}`, message);
+
+    // Container đỗ sai ô là sự cố cần người xử lý — đưa vào chuông thông báo.
+    void notify({
+      type: "yard",
+      severity: "error",
+      title: "Container sai vị trí trong bãi",
+      message,
+      link: `/admin/yard/${yardId}`,
+      dedupeKey: `yard-mismatch:${yardId}:${slotName}:${detected}`,
+    });
 
     io.emit("yard_slot_mismatch", {
       yardId,
