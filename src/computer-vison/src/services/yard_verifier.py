@@ -27,8 +27,6 @@ from src.services.ai_processor import (
     HAILO_AVAILABLE,
     get_hailo_models,
     get_ocr,
-    _touch_vote,
-    _accumulate_vote,
 )
 from src.config import (
     BACKEND_URL,
@@ -40,25 +38,88 @@ import os
 # Khớp header nội bộ mà backend chấp nhận (bỏ qua auth) — giống sync_cameras_worker.
 INTERNAL_SECRET = "AI_SERVER_SECRET_KEY"
 
-# Chạy giám sát bãi mỗi ngần này giây. Reader OCR container chạy CPU DÙNG CHUNG với cổng, nên
-# để thưa (2.5s) để nhả CPU cho cổng. Vẫn NHỎ hơn VOTE_RESET_GAP (5s) nên mốc detection của
-# mỗi ô luôn "sống" giữa 2 lần quét -> vote KHÔNG bị reset giữa chừng như luật gate.
+# Chạy giám sát bãi mỗi ngần này giây (nhịp TỐI THIỂU — thực tế trên Pi một vòng detect+OCR
+# mất ~5-8s nên chu kỳ thật lớn hơn con số này khá nhiều).
 VERIFY_INTERVAL = 2.5
 # Không báo lại CÙNG (ô + mã) về backend trong ngần này giây (backend cũng tự debounce loa).
 REPORT_COOLDOWN = 60.0
 # Ngưỡng confidence tối thiểu cho OCR container (giống pipeline cổng).
 CONTAINER_OCR_MIN_PROB = 0.2
 
+# --- Luật vote RIÊNG CỦA BÃI (không dùng chung với gate) ---------------------------------
+# Gate dùng VOTE_RESET_GAP = 5s vì XE CHẠY QUA: im 5s tức là xe khác. Ở BÃI thì ngược lại —
+# container ĐỨNG YÊN hàng giờ, mà một vòng detect+OCR trên Pi mất tới ~8s, tức là LỚN HƠN 5s.
+# Dùng luật gate ở đây khiến mỗi lần quét đều bị coi là "container mới" -> xoá phiếu -> samples
+# đứng mãi ở 1 và KHÔNG BAO GIỜ chốt được mã. Vì vậy bãi có mốc reset rộng hơn nhiều: chỉ khi ô
+# không thấy container liên tục quá ngần này giây mới coi là ô đã được dọn.
+SLOT_VOTE_RESET_GAP = 45.0
+# Số lần OCR ra CÙNG một mã thì chốt. Container đứng yên nên 3 lần khớp (~24s) là chắc chắn.
+SLOT_VOTE_STABLE = 3
+# ...hoặc đã thử ngần này mẫu thì lấy mã có phiếu cao nhất (tránh kẹt mãi vì OCR nhảy 1 ký tự).
+SLOT_VOTE_MAX_SAMPLES = 6
+# Đã chốt rồi nhưng OCR ra mã KHÁC liên tiếp ngần này lần -> ô đã đổi container, vote lại từ đầu.
+SLOT_MISMATCH_RESET = 3
+
 
 def _new_slot_bucket():
-    """Bucket vote cho MỘT ô — cùng cấu trúc với AIProcessor._new_vote_bucket của gate."""
+    """Bucket vote cho MỘT ô."""
     return {
         "votes": Counter(),
         "samples": 0,
         "last_update": 0.0,
         "finalized": None,
+        "mismatch": 0,
         "lock": threading.Lock(),
     }
+
+
+def _touch_slot_vote(bucket):
+    """
+    Gọi mỗi lần THẤY container trong ô (theo detection, không theo OCR).
+
+    Chỉ reset phiếu khi ô đã im lặng quá SLOT_VOTE_RESET_GAP — nghĩa là container đã được
+    lấy đi. Khác gate: ở bãi khoảng cách giữa 2 lần quét (~8s) là BÌNH THƯỜNG, không phải
+    dấu hiệu đổi container.
+    """
+    now = time.time()
+    with bucket["lock"]:
+        if bucket["last_update"] > 0 and now - bucket["last_update"] > SLOT_VOTE_RESET_GAP:
+            bucket["votes"].clear()
+            bucket["samples"] = 0
+            bucket["finalized"] = None
+            bucket["mismatch"] = 0
+        bucket["last_update"] = now
+
+
+def _accumulate_slot_vote(bucket, text):
+    """
+    Cộng phiếu cho ô và chốt theo luật của bãi.
+
+    Trả về (best_text, is_finalized, just_finalized).
+    """
+    with bucket["lock"]:
+        if bucket["finalized"] is not None:
+            # Đã chốt: chỉ theo dõi xem có phải container KHÁC vừa được đặt vào không.
+            if text == bucket["finalized"]:
+                bucket["mismatch"] = 0
+                return bucket["finalized"], True, False
+            bucket["mismatch"] += 1
+            if bucket["mismatch"] < SLOT_MISMATCH_RESET:
+                return bucket["finalized"], True, False
+            # Đủ số lần lệch → coi như ô đã đổi container, bầu lại từ đầu.
+            bucket["votes"].clear()
+            bucket["samples"] = 0
+            bucket["finalized"] = None
+            bucket["mismatch"] = 0
+
+        bucket["votes"][text] += 1
+        bucket["samples"] += 1
+        best, count = bucket["votes"].most_common(1)[0]
+
+        if count >= SLOT_VOTE_STABLE or bucket["samples"] >= SLOT_VOTE_MAX_SAMPLES:
+            bucket["finalized"] = best
+            return best, True, True
+        return best, False, False
 
 
 def _get_container_model():
@@ -197,10 +258,10 @@ class YardVerifier:
                 continue
             container_slots.add(slot_name)
 
-            # Vote GIỐNG GATE: mốc "sống" theo DETECTION (không theo OCR) nên OCR chậm không
-            # làm reset phiếu giữa chừng; chỉ reset khi ô hết thấy container > VOTE_RESET_GAP.
+            # Mốc "sống" theo DETECTION (không theo OCR) nên OCR chậm không làm reset phiếu
+            # giữa chừng; chỉ reset khi ô hết thấy container > SLOT_VOTE_RESET_GAP (45s).
             bucket = self.slot_buckets.setdefault(slot_name, _new_slot_bucket())
-            _touch_vote(bucket)
+            _touch_slot_vote(bucket)
 
             x1, y1, x2, y2 = box
             pad = 15
@@ -214,11 +275,17 @@ class YardVerifier:
             if not code:
                 continue
 
-            # Luật chốt container của gate: ≥4 lần khớp / 8 mẫu & top≥3 / ≥15 lần.
-            best, finalized, just_finalized = _accumulate_vote(bucket, code, "container")
-            print(f"[Yard Verify] ô {slot_name}: mẫu '{code}' | tạm '{best}' ({bucket['samples']} mẫu)")
+            # Luật chốt của bãi: ≥3 lần khớp, hoặc ≥6 mẫu thì lấy mã nhiều phiếu nhất.
+            best, finalized, just_finalized = _accumulate_slot_vote(bucket, code)
+            print(f"[Yard Verify] ô {slot_name}: mẫu '{code}' | tạm '{best}' "
+                  f"({bucket['samples']}/{SLOT_VOTE_STABLE} phiếu"
+                  f"{' — ĐÃ CHỐT' if finalized else ''})")
             if just_finalized:
+                print(f"[Yard Verify] ✅ CHỐT ô {slot_name} = '{best}'")
                 self._report(slot_name, best)
+            if finalized:
+                # Đã chốt: hiện mã đã chốt lên khung vẽ thay vì mã thô của lần OCR này.
+                draw_boxes[-1] = (x1, y1, x2, y2, best)
 
         self.container_slots = container_slots
         self.last_boxes = draw_boxes
