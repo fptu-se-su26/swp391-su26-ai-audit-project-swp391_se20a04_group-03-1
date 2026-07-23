@@ -276,7 +276,9 @@ const getAlerts = async (yardPct: number, todayStart: Date) => {
       severity: "high",
       message: `${overstay} xe còn trong cảng quá ${OVERSTAY_HOURS} giờ`,
       count: overstay,
-      link: "/admin/gate/logs",
+      // /admin/gate/logs không tồn tại (chỉ có /logs/[id] và /logs/trash);
+      // bảng nhật ký nằm ngay trong trang /admin/gate.
+      link: "/admin/gate",
     });
   }
   if (pendingToday > 0) {

@@ -6,6 +6,7 @@ import * as companyRoleValidator from "../validators/companyRole.validator";
 import * as adminRoleController from "../controllers/adminRole.controller";
 import * as adminRoleValidator from "../validators/adminRole.validator";
 import * as profileController from "../controllers/profile.controller";
+import * as systemSettingController from "../controllers/system-setting.controller";
 import { requirePermission } from "../middlewares/rbac.middleware";
 
 const router = Router();
@@ -21,6 +22,18 @@ router.get(
   "/roles/catalog",
   requirePermission("settings.roles", "view"),
   adminRoleController.catalogGet,
+);
+
+// ===== Cấu hình vận hành (tham số hệ thống) =====
+router.get(
+  "/system",
+  requirePermission("settings.system", "view"),
+  systemSettingController.systemSettingGet,
+);
+router.patch(
+  "/system",
+  requirePermission("settings.system", "update"),
+  systemSettingController.systemSettingPatch,
 );
 
 // ===== Admin Accounts =====

@@ -8,5 +8,8 @@ router.use(requireAuthProvider);
 
 router.get("/", controller.getSettings);
 router.patch("/bic", controller.updateBicCodes);
+router.patch("/profile", controller.updateProfilePatch);
+router.patch("/password", controller.changePasswordPatch);
+router.patch("/logout-all", controller.logoutAllPatch);
 
 export const providerSettingsRoutes = router;

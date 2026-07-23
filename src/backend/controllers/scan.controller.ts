@@ -73,10 +73,50 @@ const syncContainerPortStatus = async (
       console.warn(
         `[Container] Không tìm thấy container ${containerNo} để cập nhật "${portStatus}"`,
       );
+      return;
     }
+
+    // Báo cho hãng tàu sở hữu container biết container của họ vừa đổi trạng thái.
+    // Tra lại bằng một truy vấn riêng thay vì đổi updateOne thành findOneAndUpdate:
+    // giữ nguyên lệnh ghi vốn đã chạy ổn, và đây là đường đi ngoài luồng cổng.
+    void notifyProviderPortStatus(containerNo.toUpperCase(), portStatus).catch(
+      (err) => console.error("[Notification] Báo hãng tàu thất bại:", err),
+    );
   } catch (err) {
     console.error("Lỗi cập nhật trạng thái cảng của container:", err);
   }
+};
+
+// Câu mô tả sự kiện cho hãng tàu, theo trạng thái cảng mới của container.
+const PORT_STATUS_NOTE: Record<string, string> = {
+  "Đã nhập cảng": "vừa được đưa vào cảng",
+  "Đang lưu bãi": "đã hạ xuống bãi và đang lưu tại cảng",
+  "Đã xuất cảng": "đã rời khỏi cảng",
+};
+
+const notifyProviderPortStatus = async (
+  containerNo: string,
+  portStatus: string,
+): Promise<void> => {
+  const note = PORT_STATUS_NOTE[portStatus];
+  if (!note) return;
+
+  const container = await Container.findOne({ number: containerNo })
+    .select("providerId")
+    .lean();
+  // Container không gắn hãng tàu thì không có ai để báo — bỏ qua trong im lặng.
+  if (!container?.providerId) return;
+
+  await notify({
+    audience: "provider",
+    recipientId: container.providerId,
+    type: "container",
+    severity: portStatus === "Đã xuất cảng" ? "info" : "success",
+    title: `Container ${containerNo} ${note}`,
+    message: `Trạng thái cảng mới: ${portStatus}.`,
+    link: "/client/provider/history",
+    dedupeKey: `provider-port:${containerNo}:${portStatus}`,
+  });
 };
 
 const captureAndSaveImageAsync = async (transactionId: string, cameraIp: string) => {

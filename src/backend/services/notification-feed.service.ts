@@ -24,6 +24,12 @@ export const companyFeedFilter = (companyId: string): FeedFilter => ({
   recipientId: new mongoose.Types.ObjectId(companyId),
 });
 
+/** Bộ lọc thông báo riêng của một hãng tàu. */
+export const providerFeedFilter = (providerId: string): FeedFilter => ({
+  audience: "provider",
+  recipientId: new mongoose.Types.ObjectId(providerId),
+});
+
 interface ListOptions {
   filter: FeedFilter;
   /** Id người đang xem — dùng để tính cờ đã đọc. Null nếu không xác định được. */

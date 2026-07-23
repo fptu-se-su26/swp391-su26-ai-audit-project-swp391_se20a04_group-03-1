@@ -3,9 +3,10 @@ import mongoose, { Schema } from "mongoose";
 /**
  * Thông báo vận hành hiển thị ở chuông trên header.
  *
- * Có HAI kiểu người nhận, phân biệt bằng `audience`:
- *   - "admin"   : broadcast — mọi admin đều thấy, `recipientId` bỏ trống.
- *   - "company" : riêng tư — chỉ doanh nghiệp có id = `recipientId` thấy.
+ * Người nhận phân biệt bằng `audience`:
+ *   - "admin"    : broadcast — mọi admin đều thấy, `recipientId` bỏ trống.
+ *   - "company"  : riêng tư — chỉ doanh nghiệp có id = `recipientId` thấy.
+ *   - "provider" : riêng tư — chỉ hãng tàu có id = `recipientId` thấy.
  *
  * Trạng thái "đã đọc" là RIÊNG từng người nên lưu trong `readBy` (mảng id
  * người xem) thay vì một cờ boolean dùng chung.
@@ -29,7 +30,7 @@ export const NOTIFICATION_SEVERITIES = [
   "error",
 ] as const;
 
-export const NOTIFICATION_AUDIENCES = ["admin", "company"] as const;
+export const NOTIFICATION_AUDIENCES = ["admin", "company", "provider"] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 export type NotificationSeverity = (typeof NOTIFICATION_SEVERITIES)[number];
@@ -40,7 +41,7 @@ export interface INotification {
   severity: NotificationSeverity;
   /** Ai được xem. Mặc định "admin" để mọi thông báo cũ giữ nguyên hành vi. */
   audience: NotificationAudience;
-  /** Chỉ dùng khi audience = "company": id doanh nghiệp được nhận. */
+  /** Bắt buộc khi audience khác "admin": id doanh nghiệp / hãng tàu được nhận. */
   recipientId?: mongoose.Types.ObjectId | null;
   title: string;
   message: string;

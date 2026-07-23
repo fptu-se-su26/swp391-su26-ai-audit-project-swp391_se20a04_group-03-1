@@ -33,9 +33,9 @@ export interface NotifyInput {
   title: string;
   message: string;
   link?: string | null;
-  /** Mặc định "admin" (broadcast). "company" thì bắt buộc kèm recipientId. */
+  /** Mặc định "admin" (broadcast). Khác "admin" thì bắt buộc kèm recipientId. */
   audience?: NotificationAudience;
-  /** Id doanh nghiệp nhận thông báo, chỉ dùng khi audience = "company". */
+  /** Id doanh nghiệp / hãng tàu nhận thông báo. Bỏ qua khi audience = "admin". */
   recipientId?: mongoose.Types.ObjectId | string | null;
   /** Khóa chống trùng tùy chỉnh. Mặc định suy ra từ type + title + message. */
   dedupeKey?: string;
@@ -46,13 +46,16 @@ export const notify = async (input: NotifyInput) => {
     const now = Date.now();
     const audience = input.audience || "admin";
     const recipientId =
-      audience === "company" && input.recipientId
+      audience !== "admin" && input.recipientId
         ? new mongoose.Types.ObjectId(String(input.recipientId))
         : null;
 
-    // Thông báo riêng tư phải có người nhận, nếu không sẽ lọt vào khoảng không.
-    if (audience === "company" && !recipientId) {
-      console.error("[Notification] Thiếu recipientId cho thông báo doanh nghiệp.");
+    // Thông báo riêng tư phải có người nhận, nếu không sẽ lọt vào khoảng không:
+    // không ai truy vấn được nó mà vẫn chiếm chỗ trong collection.
+    if (audience !== "admin" && !recipientId) {
+      console.error(
+        `[Notification] Thiếu recipientId cho thông báo audience="${audience}".`,
+      );
       return null;
     }
 

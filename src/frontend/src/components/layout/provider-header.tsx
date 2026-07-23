@@ -10,9 +10,8 @@ interface ProviderHeaderProps {
 /**
  * Header cổng hãng tàu.
  *
- * Chưa gắn chuông thông báo: hiện chưa có sự kiện nào của hệ thống nhắm riêng
- * tới hãng tàu, gắn chuông vào sẽ luôn rỗng. Khi có luồng sự kiện (vd container
- * của hãng vừa vào/ra cảng) chỉ cần thêm notificationsPath là xong.
+ * Chuông nhận thông báo khi container của hãng đổi trạng thái cảng — sự kiện do
+ * scan.controller phát ra ở luồng qua cổng.
  */
 export function ProviderHeader({ onMenuClick }: ProviderHeaderProps) {
   const { profile, loading } = useProviderProfile();
@@ -24,6 +23,7 @@ export function ProviderHeader({ onMenuClick }: ProviderHeaderProps) {
       logoutPath="/client/provider/auth/logout"
       loginHref="/client/provider/login"
       accountHref="/client/provider/settings"
+      notificationsPath="/client/provider/notifications"
       loading={loading}
       initials={companyInitials(profile?.name)}
       name={profile?.name || "Hãng tàu"}

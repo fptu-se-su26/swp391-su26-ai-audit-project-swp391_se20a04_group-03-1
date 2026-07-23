@@ -80,6 +80,13 @@ export const RESOURCES: ResourceDef[] = [
     label: "Loại hình doanh nghiệp",
     actions: ["view", "create", "update", "delete", "restore"],
   },
+  {
+    // Tham số vận hành (sức chứa khung giờ...). Không có create/delete: đây là
+    // một bản ghi cấu hình duy nhất, chỉ xem và sửa.
+    key: "settings.system",
+    label: "Cấu hình vận hành",
+    actions: ["view", "update"],
+  },
 ];
 
 /** Map nhanh resourceKey -> danh sách action hợp lệ (để validate). */

@@ -13,6 +13,13 @@ jest.mock('../models/appointment.model');
 jest.mock('../models/driver.model');
 jest.mock('../models/container.model');
 
+// Sức chứa mỗi khung giờ giờ do admin cấu hình (SystemSetting) chứ không còn là
+// hằng số trong controller. Cố định 20 ở đây để các ca biên 19/20 và 20/20 vẫn
+// kiểm đúng thứ cần kiểm: phép so sánh sức chứa, không phải việc đọc cấu hình.
+jest.mock('../services/system-setting.service', () => ({
+  getMaxCapacityPerSlot: jest.fn().mockResolvedValue(20),
+}));
+
 // Helpers to mock chained Mongoose queries
 const mockFindChain = (resolvedValue: any) => {
   const chain = {

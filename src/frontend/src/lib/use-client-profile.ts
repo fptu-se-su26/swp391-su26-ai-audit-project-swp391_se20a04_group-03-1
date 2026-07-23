@@ -30,6 +30,9 @@ export interface ProviderProfile {
   name: string | null;
   contact_email: string | null;
   bic_codes: string[];
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  createdAt: string;
+  totalContainers: number;
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL;

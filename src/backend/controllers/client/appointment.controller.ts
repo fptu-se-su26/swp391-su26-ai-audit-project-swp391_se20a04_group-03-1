@@ -3,6 +3,7 @@ import { Appointment } from "../../models/appointment.model";
 import { Driver } from "../../models/driver.model";
 import { Container } from "../../models/container.model";
 import { notify } from "../../services/notification.service";
+import { getMaxCapacityPerSlot } from "../../services/system-setting.service";
 
 export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
@@ -48,7 +49,8 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     }
 
     // 2. Thuật toán kiểm tra sức chứa (Capacity Slot)
-    const MAX_CAPACITY_PER_SLOT = 20;
+    // Hạn mức do admin cấu hình ở /admin/settings/system, không còn gõ cứng.
+    const MAX_CAPACITY_PER_SLOT = await getMaxCapacityPerSlot();
     const currentSlotCount = await Appointment.countDocuments({
       scheduledDate: new Date(scheduledDate),
       timeSlot: timeSlot,
