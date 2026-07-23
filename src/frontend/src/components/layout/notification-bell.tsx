@@ -55,7 +55,27 @@ const timeAgo = (iso: string): string => {
   return new Date(iso).toLocaleDateString("vi-VN");
 };
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  /**
+   * Đường dẫn API của chuông. Admin dùng "/notifications", doanh nghiệp dùng
+   * "/client/notifications" — cùng hình dạng dữ liệu, khác phạm vi người nhận.
+   */
+  basePath?: string;
+  /**
+   * Bật lắng nghe socket. Chỉ admin bật: backend phát sự kiện "notification"
+   * dạng broadcast tới mọi socket, phía client dùng nó sẽ thấy cả thông báo
+   * của người khác. Chuông client vì vậy hỏi lại theo chu kỳ (xem pollMs).
+   */
+  realtime?: boolean;
+  /** Chu kỳ hỏi lại server khi không dùng socket. Mặc định 60 giây. */
+  pollMs?: number;
+}
+
+export function NotificationBell({
+  basePath = "/notifications",
+  realtime = true,
+  pollMs = 60000,
+}: NotificationBellProps = {}) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
@@ -65,7 +85,7 @@ export function NotificationBell() {
 
   const load = async () => {
     try {
-      const res = await fetch(`${API}/notifications?limit=20`, {
+      const res = await fetch(`${API}${basePath}?limit=20`, {
         credentials: "include",
       });
       const json = await res.json();
@@ -82,11 +102,12 @@ export function NotificationBell() {
 
   useEffect(() => {
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [basePath]);
 
   // Realtime: backend phát "notification" mỗi khi có sự kiện vận hành mới.
   useEffect(() => {
-    if (!API) return;
+    if (!API || !realtime) return;
     const socketUrl = API.replace(/\/api\/?$/, "");
     const socket: Socket = io(socketUrl);
 
@@ -98,7 +119,15 @@ export function NotificationBell() {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [realtime]);
+
+  // Không có socket thì hỏi lại server theo chu kỳ để chuông vẫn tự cập nhật.
+  useEffect(() => {
+    if (realtime) return;
+    const id = setInterval(load, pollMs);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realtime, pollMs, basePath]);
 
   // Đóng panel khi bấm ra ngoài hoặc nhấn Esc.
   useEffect(() => {
@@ -124,7 +153,7 @@ export function NotificationBell() {
     );
     setUnread((c) => Math.max(c - 1, 0));
     try {
-      const res = await fetch(`${API}/notifications/${id}/read`, {
+      const res = await fetch(`${API}${basePath}/${id}/read`, {
         method: "PATCH",
         credentials: "include",
       });
@@ -139,7 +168,7 @@ export function NotificationBell() {
     setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
     setUnread(0);
     try {
-      await fetch(`${API}/notifications/read-all`, {
+      await fetch(`${API}${basePath}/read-all`, {
         method: "PATCH",
         credentials: "include",
       });

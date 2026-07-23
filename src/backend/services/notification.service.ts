@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import {
   Notification,
+  NotificationAudience,
   NotificationSeverity,
   NotificationType,
 } from "../models/notification.model";
@@ -31,6 +33,10 @@ export interface NotifyInput {
   title: string;
   message: string;
   link?: string | null;
+  /** Mặc định "admin" (broadcast). "company" thì bắt buộc kèm recipientId. */
+  audience?: NotificationAudience;
+  /** Id doanh nghiệp nhận thông báo, chỉ dùng khi audience = "company". */
+  recipientId?: mongoose.Types.ObjectId | string | null;
   /** Khóa chống trùng tùy chỉnh. Mặc định suy ra từ type + title + message. */
   dedupeKey?: string;
 }
@@ -38,8 +44,23 @@ export interface NotifyInput {
 export const notify = async (input: NotifyInput) => {
   try {
     const now = Date.now();
+    const audience = input.audience || "admin";
+    const recipientId =
+      audience === "company" && input.recipientId
+        ? new mongoose.Types.ObjectId(String(input.recipientId))
+        : null;
+
+    // Thông báo riêng tư phải có người nhận, nếu không sẽ lọt vào khoảng không.
+    if (audience === "company" && !recipientId) {
+      console.error("[Notification] Thiếu recipientId cho thông báo doanh nghiệp.");
+      return null;
+    }
+
+    // Khóa dedupe phải tách theo người nhận, nếu không hai doanh nghiệp cùng
+    // sự kiện sẽ đè nhau và một bên mất thông báo.
     const key =
-      input.dedupeKey || `${input.type}|${input.title}|${input.message}`;
+      input.dedupeKey ||
+      `${audience}:${recipientId || "*"}|${input.type}|${input.title}|${input.message}`;
 
     const previous = lastSent.get(key);
     if (previous && now - previous < DEDUPE_MS) return null;
@@ -49,31 +70,39 @@ export const notify = async (input: NotifyInput) => {
     const doc = await Notification.create({
       type: input.type,
       severity: input.severity || "info",
+      audience,
+      recipientId,
       title: input.title,
       message: input.message,
       link: input.link || null,
       readBy: [],
     });
 
-    // Đẩy realtime cho chuông trên header. Lấy `io` trễ để tránh vòng lặp import
-    // (index -> routers -> controllers -> service -> index).
+    // Đẩy realtime cho chuông trên header ADMIN. Lấy `io` trễ để tránh vòng lặp
+    // import (index -> routers -> controllers -> service -> index).
     //
     // Quan trọng: chỉ đọc từ require.cache, KHÔNG require thẳng. Khi chạy server
     // thật thì index.ts luôn đã nạp nên vẫn lấy được io; còn trong test/script thì
     // index chưa nạp, require thẳng sẽ vô tình bật cả HTTP server + kết nối DB thật.
-    try {
-      const io = require.cache[require.resolve("../index")]?.exports?.io;
-      io?.emit("notification", {
-        _id: doc._id,
-        type: doc.type,
-        severity: doc.severity,
-        title: doc.title,
-        message: doc.message,
-        link: doc.link,
-        createdAt: doc.createdAt,
-      });
-    } catch {
-      // Socket chưa sẵn sàng (vd khi chạy test) — bỏ qua, bản ghi vẫn đã lưu.
+    //
+    // CHỈ phát cho audience "admin": io.emit là broadcast tới MỌI socket đang mở,
+    // đẩy thông báo riêng của một doanh nghiệp qua đó là lộ sang doanh nghiệp
+    // khác. Chuông bên client dùng cách hỏi lại theo chu kỳ nên vẫn cập nhật.
+    if (audience === "admin") {
+      try {
+        const io = require.cache[require.resolve("../index")]?.exports?.io;
+        io?.emit("notification", {
+          _id: doc._id,
+          type: doc.type,
+          severity: doc.severity,
+          title: doc.title,
+          message: doc.message,
+          link: doc.link,
+          createdAt: doc.createdAt,
+        });
+      } catch {
+        // Socket chưa sẵn sàng (vd khi chạy test) — bỏ qua, bản ghi vẫn đã lưu.
+      }
     }
 
     return doc;

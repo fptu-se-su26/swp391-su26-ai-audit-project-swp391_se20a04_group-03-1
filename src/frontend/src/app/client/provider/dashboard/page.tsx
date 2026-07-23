@@ -152,7 +152,8 @@ export default function ProviderDashboardPage() {
               <Activity className="h-5 w-5 text-[#1ed760]" />
               Giao dịch gần đây
             </CardTitle>
-            <Link href="/client/provider/history">
+            {/* Trỏ về trang container: /client/provider/history chưa từng tồn tại nên nút này vốn dẫn vào 404. */}
+            <Link href="/client/provider/containers">
               <Button variant="ghost" className="text-[#666666] hover:text-[#121212] dark:text-[#999999] dark:hover:text-[#ffffff] font-bold text-xs uppercase tracking-wider rounded-[500px]">
                 Xem tất cả <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

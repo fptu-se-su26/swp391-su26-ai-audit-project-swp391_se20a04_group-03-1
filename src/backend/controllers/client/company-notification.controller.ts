@@ -1,46 +1,54 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import {
-  adminFeedFilter,
+  companyFeedFilter,
   listFeed,
   markAllRead,
   markRead,
-} from "../services/notification-feed.service";
+} from "../../services/notification-feed.service";
 
-/** Id admin đang đăng nhập, null nếu là request nội bộ (AI server). */
-const currentAdminId = (req: Request): string | null => {
+/**
+ * Chuông thông báo của doanh nghiệp.
+ *
+ * Khác chuông admin ở đúng một điểm: doanh nghiệp CHỈ thấy thông báo có
+ * recipientId là chính mình. Id luôn lấy từ token (requireAuthCompany), không
+ * bao giờ từ query/params — nếu không sẽ xem được thông báo của công ty khác.
+ */
+
+const currentCompanyId = (req: Request): string | null => {
   const id = req.user?.id;
   return id && mongoose.isValidObjectId(id) ? String(id) : null;
 };
 
-/**
- * GET /notifications?limit=20&unreadOnly=true
- * Danh sách thông báo + số chưa đọc của CHÍNH người đang đăng nhập.
- */
 export const listGet = async (req: Request, res: Response) => {
   try {
+    const companyId = currentCompanyId(req);
+    if (!companyId) {
+      return res
+        .status(400)
+        .json({ code: "error", message: "Không xác định được tài khoản" });
+    }
+
     const { data, unreadCount } = await listFeed({
-      filter: adminFeedFilter(),
-      viewerId: currentAdminId(req),
+      filter: companyFeedFilter(companyId),
+      viewerId: companyId,
       limit: parseInt(String(req.query.limit || "20"), 10) || 20,
       unreadOnly: req.query.unreadOnly === "true",
     });
 
     res.status(200).json({ code: "success", data, unreadCount });
   } catch (error) {
-    console.error("Notification list error:", error);
-    res.status(400).json({
-      code: "error",
-      message: "Không thể lấy danh sách thông báo",
-    });
+    console.error("Company notification list error:", error);
+    res
+      .status(400)
+      .json({ code: "error", message: "Không thể lấy danh sách thông báo" });
   }
 };
 
-/** PATCH /notifications/:id/read — đánh dấu 1 thông báo đã đọc. */
 export const markReadPatch = async (req: Request, res: Response) => {
   try {
-    const adminId = currentAdminId(req);
-    if (!adminId) {
+    const companyId = currentCompanyId(req);
+    if (!companyId) {
       return res
         .status(400)
         .json({ code: "error", message: "Không xác định được tài khoản" });
@@ -52,33 +60,32 @@ export const markReadPatch = async (req: Request, res: Response) => {
     }
 
     const unreadCount = await markRead(
-      adminFeedFilter(),
-      adminId,
+      companyFeedFilter(companyId),
+      companyId,
       String(req.params.id),
     );
     res.status(200).json({ code: "success", unreadCount });
   } catch (error) {
-    console.error("Notification markRead error:", error);
+    console.error("Company notification markRead error:", error);
     res
       .status(400)
       .json({ code: "error", message: "Không thể cập nhật thông báo" });
   }
 };
 
-/** PATCH /notifications/read-all — đánh dấu tất cả đã đọc. */
 export const markAllReadPatch = async (req: Request, res: Response) => {
   try {
-    const adminId = currentAdminId(req);
-    if (!adminId) {
+    const companyId = currentCompanyId(req);
+    if (!companyId) {
       return res
         .status(400)
         .json({ code: "error", message: "Không xác định được tài khoản" });
     }
 
-    await markAllRead(adminFeedFilter(), adminId);
+    await markAllRead(companyFeedFilter(companyId), companyId);
     res.status(200).json({ code: "success", unreadCount: 0 });
   } catch (error) {
-    console.error("Notification markAllRead error:", error);
+    console.error("Company notification markAllRead error:", error);
     res
       .status(400)
       .json({ code: "error", message: "Không thể cập nhật thông báo" });
