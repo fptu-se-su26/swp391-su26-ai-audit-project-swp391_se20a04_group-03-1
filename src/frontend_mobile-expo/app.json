@@ -40,6 +40,19 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6cb2d86c-b409-4d66-98ad-205df0f5864c"
+      }
+    },
+    "owner": "kenleo",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/6cb2d86c-b409-4d66-98ad-205df0f5864c"
     }
   }
 }

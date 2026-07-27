@@ -70,6 +70,11 @@ export default function YardDetailPage() {
       setYard(yardData);
       setEditName(yardData.name);
       setEditCameraIp(yardData.cameraIp);
+      // Khôi phục trạng thái chiếm ô đã lưu để reload không mất số liệu.
+      // Socket sẽ ghi đè khi camera phát hiện thay đổi mới.
+      if (Array.isArray(yardData.liveOccupiedSlots)) {
+        setOccupiedSlotNames(yardData.liveOccupiedSlots);
+      }
     } catch (err: any) {
       toast.error(err.message || "Không tải được dữ liệu bãi đỗ");
     } finally {
