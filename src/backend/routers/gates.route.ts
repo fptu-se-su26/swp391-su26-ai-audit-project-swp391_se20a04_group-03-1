@@ -7,6 +7,7 @@ const router = Router();
 const P = (action: string) => requirePermission("gates", action);
 
 router.get("/", P("view"), gateController.gatesGet);
+router.get("/status/live", P("view"), gateController.gateLiveStatusGet);
 router.post("/create", P("create"), gateValidator.gatePost, gateController.createGatePost);
 router.get("/:id", P("view"), gateController.gateDetailGet);
 router.patch(

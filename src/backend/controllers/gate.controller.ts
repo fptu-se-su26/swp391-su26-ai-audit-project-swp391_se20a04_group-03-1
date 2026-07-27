@@ -1,6 +1,16 @@
 import { Request, Response } from "express";
 import { Gate } from "../models/gate.model";
 import { Yard } from "../models/yard.model";
+import { getGateStatuses } from "../services/mqtt.service";
+
+/**
+ * Trạng thái live của cổng (số ô chờ, online...) lấy từ MQTT.
+ * Trang gate gọi 1 lần lúc load để có giá trị ban đầu; sau đó cập nhật realtime qua socket.
+ */
+export const gateLiveStatusGet = async (_req: Request, res: Response) => {
+  res.status(200).json({ code: "success", data: getGateStatuses() });
+  return;
+};
 
 export const gatesGet = async (req: Request, res: Response) => {
   try {

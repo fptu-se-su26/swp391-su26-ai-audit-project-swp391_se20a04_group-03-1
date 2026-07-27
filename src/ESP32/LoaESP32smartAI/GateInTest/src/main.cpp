@@ -44,6 +44,11 @@
 #define TOPIC_AUDIO  "smartparking/gate/" GATE_ID "/audio"
 #define TOPIC_STATUS "smartparking/gate/" GATE_ID "/status"
 
+// Topic BÁO CHÁY dùng CHUNG (không kèm gate id). Cổng VÀO có cảm biến cháy -> khi cháy nó
+// PHÁT (retained) vào topic này; cổng RA lắng nghe để cùng mở cổng thoát hiểm. Broadcast
+// trực tiếp qua broker nên vẫn chạy KỂ CẢ khi backend chết -> an toàn.
+#define TOPIC_FIRE   "smartparking/fire"
+
 // ===== CHÂN & GÓC SERVO =====
 #define SERVO_PIN 33
 #define ANGLE_CLOSED 180
@@ -145,11 +150,17 @@ void updateLCD(const char* line1, const char* line2) {
 }
 
 void refreshLCDTask() {
-  int count = getWaitingCars();
-  char buf2[17];
-  snprintf(buf2, sizeof(buf2), "Cho: %d xe       ", count);
   lcd.setCursor(0, 0);
   lcd.print(currentLine1);
+
+  // Dòng 2 luôn kể "câu chuyện" quan trọng nhất lúc demo: cháy -> báo khẩn; bình thường ->
+  // số Ô CHỜ đang có xe (0..4). Ngắn, đủ 16 ký tự.
+  char buf2[17];
+  if (currentState == STATE_FIRE_EMERGENCY) {
+    snprintf(buf2, sizeof(buf2), "%-16s", "MO CONG KHAN CAP");
+  } else {
+    snprintf(buf2, sizeof(buf2), "O cho: %d/4      ", getWaitingCars());
+  }
   lcd.setCursor(0, 1);
   lcd.print(buf2);
 }
@@ -362,10 +373,17 @@ void publishStatus(const char* event) {
   JsonDocument doc;
   doc["event"] = event;
   doc["gate"] = GATE_ID;
-  doc["waiting"] = getWaitingCars();
+  doc["waiting"] = getWaitingCars();   // số ô chờ -> backend đọc để hiện lên web
   char buf[160];
   size_t n = serializeJson(doc, buf);
   mqtt.publish(TOPIC_STATUS, (const uint8_t*)buf, n, false);
+}
+
+// Phát trạng thái CHÁY cho cả hệ thống (retained: cổng RA vừa nối lại là biết ngay đang
+// cháy hay không). Cổng RA subscribe TOPIC_FIRE để mở cổng thoát hiểm.
+void publishFire(bool active) {
+  const char* payload = active ? "{\"fire\":true}" : "{\"fire\":false}";
+  mqtt.publish(TOPIC_FIRE, (const uint8_t*)payload, strlen(payload), true);
 }
 
 void onMqttMessage(char* topic, byte* payload, unsigned int len) {
@@ -448,7 +466,7 @@ void setup() {
   Wire.begin(21, 22);
   lcd.init();
   lcd.backlight();
-  updateLCD("He thong GateIn", "Khoi tao...");
+  updateLCD("GateIN khoi tao", nullptr);
 
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
@@ -481,7 +499,7 @@ void setup() {
   mqtt.setBufferSize(512);
   mqtt.setCallback(onMqttMessage);
 
-  updateLCD("Dong cong.", "Cho lenh MQTT");
+  updateLCD("VAO: cho lenh", nullptr);
   Serial.println("GateIn READY — cho lenh mo cong qua MQTT.");
   changeState(STATE_IDLE_CLOSED);
 }
@@ -502,6 +520,26 @@ void loop() {
     refreshLCDTask();
   }
 
+  // --- Báo SỐ Ô CHỜ lên web: publish khi số xe chờ ĐỔI (debounce 800ms chống rung IR),
+  //     kèm nhịp tim 10s để backend vừa khởi động lại vẫn có số mới nhất. ---
+  static int   waitingPublished = -1;   // giá trị đã gửi gần nhất
+  static int   waitingCandidate = -1;   // giá trị đang chờ ổn định
+  static unsigned long waitingChangedAt = 0;
+  static unsigned long lastWaitingBeat = 0;
+  if (WiFi.status() == WL_CONNECTED && mqtt.connected()) {
+    int w = getWaitingCars();
+    if (w != waitingCandidate) { waitingCandidate = w; waitingChangedAt = currentTime; }
+    bool stable = (currentTime - waitingChangedAt >= 800);
+    if (stable && waitingCandidate != waitingPublished) {
+      waitingPublished = waitingCandidate;
+      publishStatus("waiting");
+      lastWaitingBeat = currentTime;
+    } else if (currentTime - lastWaitingBeat >= 10000) {
+      lastWaitingBeat = currentTime;
+      publishStatus("waiting");
+    }
+  }
+
   unsigned long timeInState = currentTime - stateStartTime;
 
   // --- 1. ƯU TIÊN CAO NHẤT: BÁO CHÁY (hoạt động cả khi mất mạng) ---
@@ -511,7 +549,8 @@ void loop() {
       digitalWrite(BUZZER_PIN, HIGH);
       set3LEDs(HIGH);
       targetServoAngle = ANGLE_OPEN;
-      updateLCD("!!! CANH BAO !!!", "PHAT HIEN CHAY");
+      updateLCD("!!! BAO CHAY !!!", nullptr);
+      publishFire(true);          // báo cho cổng RA cùng mở cổng thoát
       publishStatus("fire");
       changeState(STATE_FIRE_EMERGENCY);
     }
@@ -520,7 +559,8 @@ void loop() {
     digitalWrite(BUZZER_PIN, LOW);
     set3LEDs(LOW);
     targetServoAngle = ANGLE_CLOSED;
-    updateLCD("Dong cong an toan", "Cho lenh MQTT");
+    updateLCD("An toan - dong", nullptr);
+    publishFire(false);         // báo hết cháy -> cổng RA đóng lại
     publishStatus("fire_cleared");
     openRequested = false;
     changeState(STATE_IDLE_CLOSED);
@@ -536,12 +576,11 @@ void loop() {
       // KHÔNG còn tự mở sau 5s. Chỉ mở khi backend gửi lệnh MQTT.
       if (openRequested) {
         openRequested = false;
-        Serial.println("-> Nhan lenh MQTT, mo cong!");
+        Serial.printf("-> Nhan lenh MQTT, mo cong! Bien: %s\n",
+                      pendingPlate[0] ? pendingPlate : "(khong)");
         targetServoAngle = ANGLE_OPEN;
         set3LEDs(HIGH);
-        char l2[17];
-        snprintf(l2, sizeof(l2), "Xe %s", pendingPlate[0] ? pendingPlate : "vao");
-        updateLCD("Mo cong...", l2);
+        updateLCD("Mo cong VAO", nullptr);
         requestBeep();
         publishStatus("opening");
         changeState(STATE_OPENING);
@@ -551,7 +590,7 @@ void loop() {
     case STATE_OPENING:
       if (currentServoAngle == targetServoAngle) {
         Serial.println("-> Cong da mo. Cho xe.");
-        updateLCD("Da mo cong", "Moi xe qua...");
+        updateLCD("Moi xe vao...", nullptr);
         publishStatus("opened");
         changeState(STATE_WAITING_CAR);
       }
@@ -560,13 +599,13 @@ void loop() {
     case STATE_WAITING_CAR:
       if (digitalRead(IR_PIN) == IR_CAR_PRESENT) {
         Serial.println("-> Phat hien xe dang qua.");
-        updateLCD("Xe dang qua...", nullptr);
+        updateLCD("Xe dang vao...", nullptr);
         publishStatus("car_passing");
         changeState(STATE_CAR_PASSING);
       } else if (timeInState >= 15000) {
         // Timeout an toàn: mở 15s không có xe -> đóng lại.
         Serial.println("-> Timeout khong co xe. Dong cong.");
-        updateLCD("Het han cho", "Tu dong dong...");
+        updateLCD("Het cho - dong", nullptr);
         targetServoAngle = ANGLE_CLOSED;
         blinkCount = 0;
         lastLedBlinkTime = currentTime;
@@ -578,7 +617,7 @@ void loop() {
       if (digitalRead(IR_PIN) == IR_NO_CAR) {
         if (timeInState >= 1000) {   // debounce 1s sau khi IR nhả
           Serial.println("-> Xe da qua. Dong cong.");
-          updateLCD("Xe da qua", "Dong cong...");
+          updateLCD("Xe da vao-dong", nullptr);
           targetServoAngle = ANGLE_CLOSED;
           blinkCount = 0;
           lastLedBlinkTime = currentTime;
@@ -596,7 +635,7 @@ void loop() {
         Serial.println("-> VAT CAN! Mo lai cong.");
         targetServoAngle = ANGLE_OPEN;
         set3LEDs(HIGH);
-        updateLCD("!!! VAT CAN !!!", "Mo lai cong");
+        updateLCD("!! VAT CAN !!", nullptr);
         publishStatus("obstacle");
         changeState(STATE_OPENING);
         break;
@@ -613,7 +652,7 @@ void loop() {
       }
       if (currentServoAngle == targetServoAngle) {
         Serial.println("-> Dong cong xong.");
-        updateLCD("Dong cong.", "Cho lenh MQTT");
+        updateLCD("VAO: cho lenh", nullptr);
         publishStatus("closed");
         changeState(STATE_IDLE_CLOSED);
       }

@@ -77,6 +77,9 @@ export default function GatePage() {
   const [activeIn, setActiveIn] = useState(0);
   const [activeOut, setActiveOut] = useState(0);
   const [gateLogs, setGateLogs] = useState<any[]>([]);
+  // Số ô chờ ở cổng VÀO (0..4) — từ cảm biến hồng ngoại ESP32, cập nhật realtime qua socket.
+  const [waitingSlots, setWaitingSlots] = useState(0);
+  const [waitingOnline, setWaitingOnline] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
@@ -145,9 +148,45 @@ export default function GatePage() {
       toast.success(`[${data.plate}]: ${data.message}`, { id: "scan-success" });
     });
 
+    // Số ô chờ từ ESP32 (chỉ quan tâm cổng vào — nơi có 4 cảm biến hồng ngoại).
+    socket.on(
+      "gate_status_update",
+      (data: { gate: string; waiting: number; online: boolean }) => {
+        if (data.gate === "in") {
+          setWaitingSlots(data.waiting ?? 0);
+          setWaitingOnline(data.online);
+        }
+      },
+    );
+
     return () => {
       socket.disconnect();
     };
+  }, []);
+
+  // Lấy số ô chờ hiện tại lúc trang vừa load (trước khi có sự kiện socket mới).
+  useEffect(() => {
+    const fetchLiveStatus = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/gates/status/live`,
+          { credentials: "include" },
+        );
+        const data = await res.json();
+        if (data.code === "success" && Array.isArray(data.data)) {
+          const inStatus = data.data.find(
+            (s: { gate: string }) => s.gate === "in",
+          );
+          if (inStatus) {
+            setWaitingSlots(inStatus.waiting ?? 0);
+            setWaitingOnline(inStatus.online);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch gate live status:", err);
+      }
+    };
+    fetchLiveStatus();
   }, []);
 
   const fetchLogs = async () => {
@@ -384,6 +423,24 @@ export default function GatePage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          {/* Số ô chờ ở cổng VÀO — cảm biến hồng ngoại ESP32, cập nhật realtime */}
+          <div className="flex items-center gap-3 rounded-[500px] border border-[#e5e5e5] dark:border-[#272727] bg-[#ffffff] dark:bg-[#181818] px-5 py-2.5">
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${
+                waitingOnline ? "bg-[#1ed760] animate-pulse" : "bg-[#b3b3b3]"
+              }`}
+              title={waitingOnline ? "Cổng vào online" : "Cổng vào offline"}
+            />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666] dark:text-[#b3b3b3]">
+              Ô chờ cổng vào
+            </span>
+            <span className="text-xl font-black tabular-nums text-[#121212] dark:text-[#ffffff]">
+              {waitingSlots}
+              <span className="text-sm text-[#666666] dark:text-[#b3b3b3]">
+                /4
+              </span>
+            </span>
+          </div>
           <Can resource="gates" action="create">
             <Button
               onClick={() => setShowCreateGate(!showCreateGate)}
