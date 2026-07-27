@@ -1,11 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
 /**
- * Thông báo vận hành hiển thị ở chuông trên header admin.
+ * Thông báo vận hành hiển thị ở chuông trên header.
  *
- * Mô hình BROADCAST: mỗi thông báo là một sự kiện của hệ thống, mọi admin đều
- * thấy. Trạng thái "đã đọc" là RIÊNG từng người nên lưu trong `readBy`
- * (mảng id admin) thay vì một cờ boolean dùng chung.
+ * Người nhận phân biệt bằng `audience`:
+ *   - "admin"    : broadcast — mọi admin đều thấy, `recipientId` bỏ trống.
+ *   - "company"  : riêng tư — chỉ doanh nghiệp có id = `recipientId` thấy.
+ *   - "provider" : riêng tư — chỉ hãng tàu có id = `recipientId` thấy.
+ *
+ * Trạng thái "đã đọc" là RIÊNG từng người nên lưu trong `readBy` (mảng id
+ * người xem) thay vì một cờ boolean dùng chung.
  *
  * Thông báo là dữ liệu nhật ký, không phải dữ liệu nghiệp vụ — nên tự hết hạn
  * sau 30 ngày bằng TTL index để collection không phình vô hạn.
@@ -26,15 +30,22 @@ export const NOTIFICATION_SEVERITIES = [
   "error",
 ] as const;
 
+export const NOTIFICATION_AUDIENCES = ["admin", "company", "provider"] as const;
+
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 export type NotificationSeverity = (typeof NOTIFICATION_SEVERITIES)[number];
+export type NotificationAudience = (typeof NOTIFICATION_AUDIENCES)[number];
 
 export interface INotification {
   type: NotificationType;
   severity: NotificationSeverity;
+  /** Ai được xem. Mặc định "admin" để mọi thông báo cũ giữ nguyên hành vi. */
+  audience: NotificationAudience;
+  /** Bắt buộc khi audience khác "admin": id doanh nghiệp / hãng tàu được nhận. */
+  recipientId?: mongoose.Types.ObjectId | null;
   title: string;
   message: string;
-  /** Đường dẫn admin để bấm vào xem chi tiết (vd "/admin/gate/logs/<id>"). */
+  /** Đường dẫn bấm vào xem chi tiết (vd "/admin/gate/logs/<id>"). */
   link?: string | null;
   readBy: mongoose.Types.ObjectId[];
   createdAt?: Date;
@@ -50,6 +61,13 @@ const notificationSchema = new Schema<INotification>(
       required: true,
       default: "info",
     },
+    audience: {
+      type: String,
+      enum: NOTIFICATION_AUDIENCES,
+      required: true,
+      default: "admin",
+    },
+    recipientId: { type: Schema.Types.ObjectId, default: null },
     title: { type: String, required: true },
     message: { type: String, required: true },
     link: { type: String, default: null },
@@ -60,6 +78,8 @@ const notificationSchema = new Schema<INotification>(
 
 // Danh sách luôn sắp theo thời gian giảm dần → index sẵn.
 notificationSchema.index({ createdAt: -1 });
+// Truy vấn chuông luôn lọc theo người nhận rồi mới sắp thời gian.
+notificationSchema.index({ audience: 1, recipientId: 1, createdAt: -1 });
 // Tự xóa sau 30 ngày.
 notificationSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 

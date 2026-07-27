@@ -1,9 +1,9 @@
 // Import the Nodemailer library
 import nodemailer from "nodemailer";
 
-export const sendMail = (email: string, title: string, content: string) => {
-  // Create a transporter object
-  const transporter = nodemailer.createTransport({
+// Một transporter dùng chung cho mọi email — tránh tạo lại kết nối SMTP mỗi lần.
+const buildTransporter = () =>
+  nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // use false for STARTTLS; true for SSL on port 465
@@ -12,6 +12,9 @@ export const sendMail = (email: string, title: string, content: string) => {
       pass: process.env.EMAIL_APP,
     },
   });
+
+export const sendMail = (email: string, title: string, content: string) => {
+  const transporter = buildTransporter();
 
   // Configure the mailoptions object
   const mailOptions = {
@@ -29,6 +32,116 @@ export const sendMail = (email: string, title: string, content: string) => {
       console.log("Email sent: ", info.response);
     }
   });
+};
+
+export interface MailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+}
+
+/**
+ * Gửi email kèm tệp đính kèm (vd phiếu PDF). Trả về Promise để caller await
+ * và bắt lỗi. Dùng cho phiếu hoàn thành giao nhận gửi doanh nghiệp.
+ */
+export const sendMailWithAttachments = async (
+  email: string,
+  title: string,
+  content: string,
+  attachments: MailAttachment[],
+): Promise<void> => {
+  const transporter = buildTransporter();
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: title,
+    html: content,
+    attachments,
+  });
+};
+
+/**
+ * Thân email phiếu hoàn thành giao nhận — báo doanh nghiệp lịch hẹn đã hoàn tất
+ * (xe đã rời cảng), phiếu chi tiết đính kèm PDF.
+ */
+export const buildCompletionReceiptEmail = (params: {
+  companyName?: string;
+  truckPlate: string;
+  containerNo: string;
+  purpose: string;
+  timeSlot: string;
+  checkOutTimeText: string;
+  receiptCode: string;
+}): string => {
+  const {
+    companyName,
+    truckPlate,
+    containerNo,
+    purpose,
+    timeSlot,
+    checkOutTimeText,
+    receiptCode,
+  } = params;
+
+  return `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #ffffff;">
+      <div style="background-color: #121212; border-radius: 12px; padding: 32px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 24px; font-weight: 900; color: #1ed760; letter-spacing: -0.5px;">LogiPort</span>
+        </div>
+        <div style="background-color: #ffffff; border-radius: 8px; padding: 32px;">
+          <h2 style="margin: 0 0 8px 0; font-size: 22px; font-weight: 900; color: #121212;">Lịch hẹn đã hoàn thành</h2>
+          <p style="margin: 0 0 24px 0; font-size: 15px; color: #666666; line-height: 1.6;">
+            ${companyName ? `Kính gửi <strong>${companyName}</strong>,<br/>` : ""}
+            Chuyến giao nhận container của quý doanh nghiệp đã hoàn tất. Phiếu hoàn thành chi tiết được đính kèm dưới dạng PDF.
+          </p>
+
+          <div style="background-color: #eafaf0; border-left: 4px solid #1ed760; padding: 16px 20px; margin-bottom: 24px; border-radius: 0 4px 4px 0;">
+            <p style="margin: 0; font-size: 15px; color: #0f7a37; font-weight: 700;">
+              Xe ${truckPlate} đã rời cảng lúc ${checkOutTimeText}
+            </p>
+          </div>
+
+          <div style="background-color: #f8f8f8; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #121212;">Thông tin chuyến</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666; width: 45%;">Mã phiếu</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${receiptCode}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666;">Biển số xe</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${truckPlate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666;">Số container</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${containerNo}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666666;">Mục đích</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${purpose}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-size: 14px; color: #666666;">Khung giờ</td>
+                <td style="padding: 8px 0; font-size: 15px; font-weight: 700; color: #121212; text-align: right;">${timeSlot}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="border-top: 1px solid #e5e5e5; padding-top: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #999999; font-weight: 700;">Trân trọng,</p>
+            <p style="margin: 4px 0 0 0; font-size: 16px; color: #121212; font-weight: 900;">Đội ngũ LogiPort</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+          <p style="font-size: 12px; color: #999999; line-height: 1.5;">
+            Đây là email tự động từ hệ thống LogiPort. Vui lòng không trả lời email này.<br/>
+            © ${new Date().getFullYear()} LogiPort. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
 };
 
 // Email khởi tạo tài khoản (admin cấp cho doanh nghiệp / nhà cung cấp).

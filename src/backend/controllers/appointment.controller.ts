@@ -2,6 +2,44 @@ import { NextFunction, Request, Response } from "express";
 import { Appointment } from "../models/appointment.model";
 import { Driver } from "../models/driver.model";
 import { Container } from "../models/container.model";
+import { notify } from "../services/notification.service";
+import { getMaxCapacityPerSlot } from "../services/system-setting.service";
+
+/**
+ * Báo cho doanh nghiệp biết ban quản lý vừa đổi trạng thái lịch hẹn của họ.
+ *
+ * Lịch hẹn không có companyId (xem appointment.model), phải tra ngược qua tài
+ * xế. Không await ở chỗ gọi: duyệt lịch hẹn không được chờ một bản ghi thông báo.
+ */
+const notifyCompanyStatusChange = async (
+  appointment: any,
+  status: string,
+): Promise<void> => {
+  const STATUS_LABEL: Record<string, string> = {
+    Confirmed: "đã được duyệt",
+    Cancelled: "đã bị hủy",
+    Completed: "đã hoàn thành",
+    Pending: "được chuyển về chờ duyệt",
+  };
+  const label = STATUS_LABEL[status];
+  if (!label) return;
+
+  const driver = await Driver.findById(appointment.driverId)
+    .select("companyId")
+    .lean();
+  if (!driver?.companyId) return;
+
+  await notify({
+    audience: "company",
+    recipientId: driver.companyId,
+    type: "appointment",
+    severity: status === "Cancelled" ? "warning" : "success",
+    title: `Lịch hẹn ${label}`,
+    message: `${appointment.truckPlate} — ${appointment.purpose} ${appointment.containerNo}, khung ${appointment.timeSlot}.`,
+    link: "/client/company/appointments",
+    dedupeKey: `appointment-status:${appointment._id}:${status}`,
+  });
+};
 
 export const createAppointmentPost = async (req: Request, res: Response) => {
   try {
@@ -60,7 +98,8 @@ export const createAppointmentPost = async (req: Request, res: Response) => {
     }
 
     // 2. Thuật toán kiểm tra sức chứa (Capacity Slot)
-    const MAX_CAPACITY_PER_SLOT = 20;
+    // Hạn mức do admin cấu hình ở /admin/settings/system, không còn gõ cứng.
+    const MAX_CAPACITY_PER_SLOT = await getMaxCapacityPerSlot();
     const currentSlotCount = await Appointment.countDocuments({
       scheduledDate: new Date(scheduledDate),
       timeSlot: timeSlot,
@@ -289,6 +328,16 @@ export const appointmentStatusPatch = async (req: Request, res: Response) => {
 
     // 3. Cập nhật trạng thái
     await Appointment.updateOne({ _id: id }, { status });
+
+    // Chỉ báo khi trạng thái thực sự đổi, tránh làm phiền doanh nghiệp vì một
+    // lần bấm lại đúng trạng thái cũ.
+    if (appointment.status !== status) {
+      // .catch bắt buộc: hàm này có truy vấn Driver, promise treo mà không bắt
+      // lỗi sẽ thành unhandled rejection làm sập tiến trình Node.
+      void notifyCompanyStatusChange(appointment, status).catch((err) =>
+        console.error("[Notification] Báo trạng thái lịch hẹn thất bại:", err),
+      );
+    }
 
     res.status(200).json({
       code: "success",

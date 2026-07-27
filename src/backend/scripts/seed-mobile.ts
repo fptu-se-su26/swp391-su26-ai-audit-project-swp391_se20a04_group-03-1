@@ -21,6 +21,21 @@ const DRIVER_EMAIL = "driver.demo@logiport.vn";
 const GATE_EMAIL = "gate.demo@logiport.vn";
 const PASSWORD = "123456";
 
+// Khung giờ (enum của Appointment) chứa giờ hiện tại theo giờ VN. Ngoài
+// 05:00–23:59 thì lùi về "09:00-10:00" cho an toàn.
+function currentTimeSlot(): string {
+  const hourStr = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    hour: "2-digit",
+    hour12: false,
+  });
+  const h = parseInt(hourStr, 10);
+  if (Number.isNaN(h) || h < 5 || h > 23) return "09:00-10:00";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const end = h === 23 ? "00" : pad(h + 1);
+  return `${pad(h)}:00-${end}:00`;
+}
+
 async function run() {
   if (!process.env.DATABASE) {
     console.error("❌ Thiếu biến môi trường DATABASE trong .env");
@@ -93,7 +108,10 @@ async function run() {
     console.log("[seed-mobile] Cập nhật Quản lý cổng demo (reset mật khẩu)");
   }
 
-  // 4. Appointment (Pending) cho driver demo
+  // 4. Appointment cho driver demo — ĐÃ DUYỆT + khung giờ hiện tại để quét QR
+  //    ở app quản lý cổng chạy được ngay (QR fallback yêu cầu Confirmed + đúng
+  //    khung giờ, đệm ±30 phút, giống camera).
+  const timeSlot = currentTimeSlot() as any;
   const existAppt = await Appointment.findOne({
     driverId: driver._id,
     isDeleted: false,
@@ -104,11 +122,20 @@ async function run() {
       driverId: driver._id,
       containerNo: "MSKU1234567",
       scheduledDate: new Date(),
-      timeSlot: "09:00-10:00",
+      timeSlot,
       purpose: "Lấy container",
-      status: "Pending",
+      status: "Confirmed",
     });
-    console.log("[seed-mobile] Tạo Appointment demo (Pending)");
+    console.log(`[seed-mobile] Tạo Appointment demo (Confirmed, ${timeSlot})`);
+  } else if (existAppt.status !== "Completed") {
+    // Đưa lịch hẹn demo về trạng thái quét được ngay (nếu chưa hoàn tất).
+    existAppt.status = "Confirmed";
+    existAppt.scheduledDate = new Date();
+    existAppt.timeSlot = timeSlot;
+    await existAppt.save();
+    console.log(
+      `[seed-mobile] Cập nhật Appointment demo (Confirmed, ${timeSlot})`,
+    );
   }
 
   console.log("\n✅ Xong. Tài khoản demo:");

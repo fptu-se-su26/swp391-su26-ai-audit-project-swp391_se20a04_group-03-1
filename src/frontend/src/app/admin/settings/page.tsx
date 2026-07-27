@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, Building2, KeyRound, UserCog } from "lucide-react";
+import { Users, Building2, KeyRound, UserCog, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePermissions } from "@/lib/permissions";
 
@@ -20,6 +20,14 @@ export default function SettingsPage() {
       icon: <UserCog className="h-6 w-6" />,
       href: "/admin/settings/profile",
       // Không gắn resource: mọi admin đều được xem hồ sơ của chính mình.
+    },
+    {
+      title: "Cấu hình vận hành",
+      description:
+        "Đặt sức chứa tối đa mỗi khung giờ đặt lịch — tham số này chặn việc đặt lịch khi khung giờ đã đầy.",
+      icon: <SlidersHorizontal className="h-6 w-6" />,
+      href: "/admin/settings/system",
+      resource: "settings.system",
     },
     {
       title: "Vai trò & Phân quyền",

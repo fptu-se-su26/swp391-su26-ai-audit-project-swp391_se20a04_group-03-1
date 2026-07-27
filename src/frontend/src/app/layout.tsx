@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -44,10 +44,13 @@ export const metadata: Metadata = {
     title: "Logiport | Hệ thống quản lý cảng",
     description: "Nền tảng quản lý bãi đỗ và điều phối container thông minh.",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-  },
+};
+
+// Từ bản Next này, `viewport` không còn nằm trong `metadata` mà phải là một
+// export riêng — để trong metadata thì bị bỏ qua và build cảnh báo ở mọi route.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

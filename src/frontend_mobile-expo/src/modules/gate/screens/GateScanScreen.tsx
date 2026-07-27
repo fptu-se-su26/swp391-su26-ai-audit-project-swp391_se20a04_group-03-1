@@ -23,6 +23,9 @@ const REASON_TEXT: Record<string, string> = {
   NOT_FOUND: "Không tìm thấy lịch hẹn tương ứng.",
   CANCELLED: "Lịch hẹn đã bị hủy — không được phép vào.",
   COMPLETED: "Lịch hẹn đã hoàn tất trước đó.",
+  NOT_CONFIRMED: "Lịch hẹn chưa được duyệt — không thể qua cổng.",
+  OUT_OF_WINDOW: "Chưa tới hoặc đã quá khung giờ lịch hẹn.",
+  YARD_FULL: "Bãi đỗ đã đầy — chưa thể cho xe vào.",
   UNKNOWN: "Không xác thực được mã QR.",
 };
 
@@ -146,6 +149,14 @@ function ResultCard({
   const valid = result.valid;
   const appt = result.appointment;
   const driver = result.driver;
+  const isCheckOut = result.direction === "out";
+
+  // Tiêu đề theo chiều qua cổng: vào (check-in) hay ra (check-out).
+  const title = valid
+    ? isCheckOut
+      ? "ĐÃ CHECK-OUT — CHO PHÉP RA"
+      : "ĐÃ CHECK-IN — CHO PHÉP VÀO"
+    : "KHÔNG HỢP LỆ";
 
   return (
     <View
@@ -165,7 +176,13 @@ function ResultCard({
         ]}
       >
         <Ionicons
-          name={valid ? "checkmark-circle" : "close-circle"}
+          name={
+            valid
+              ? isCheckOut
+                ? "exit-outline"
+                : "enter-outline"
+              : "close-circle"
+          }
           size={44}
           color={valid ? palette.success : palette.danger}
         />
@@ -177,17 +194,30 @@ function ResultCard({
           { color: valid ? palette.success : palette.danger },
         ]}
       >
-        {valid ? "HỢP LỆ — CHO PHÉP VÀO" : "KHÔNG HỢP LỆ"}
+        {title}
       </Text>
+
+      {valid && result.message ? (
+        <Text style={styles.resultReason}>{result.message}</Text>
+      ) : null}
 
       {!valid && (
         <Text style={styles.resultReason}>
-          {REASON_TEXT[result.reason ?? "UNKNOWN"] ?? "Không hợp lệ."}
+          {result.message ||
+            REASON_TEXT[result.reason ?? "UNKNOWN"] ||
+            "Không hợp lệ."}
         </Text>
       )}
 
       {valid && appt && (
         <View style={styles.infoBlock}>
+          <InfoRow
+            label="Chiều"
+            value={isCheckOut ? "Ra cổng (Check-out)" : "Vào cổng (Check-in)"}
+          />
+          {!isCheckOut && result.assignedSlot ? (
+            <InfoRow label="Ô đỗ được cấp" value={result.assignedSlot} />
+          ) : null}
           <InfoRow label="Mã lịch hẹn" value={appt.code} />
           <InfoRow label="Tài xế" value={driver?.fullName ?? "-"} />
           <InfoRow label="Biển số" value={appt.truckPlate} />

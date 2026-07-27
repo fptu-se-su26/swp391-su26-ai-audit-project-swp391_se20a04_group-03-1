@@ -471,7 +471,9 @@ function DashboardContent() {
             <div className="flex items-center justify-between">
               <CardTitle className={cardTitleClass}>Hoạt động mới nhất</CardTitle>
               <Link
-                href="/admin/gate/logs"
+                // Bảng nhật ký nằm ngay trong /admin/gate — không có route
+                // /admin/gate/logs (chỉ có /logs/[id] và /logs/trash).
+                href="/admin/gate"
                 className="text-[11px] font-black uppercase tracking-wider text-[#1db954] hover:text-[#1ed760] transition-colors"
               >
                 Xem tất cả

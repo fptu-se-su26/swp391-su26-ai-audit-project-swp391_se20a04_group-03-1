@@ -108,7 +108,7 @@ export function CompanySidebar({ isOpen, onClose }: CompanySidebarProps) {
               "h-5 w-5 transition-transform duration-200",
               pathname.startsWith("/client/company/settings") ? "text-[#121212]" : "text-[#999999] dark:text-[#666666] group-hover:text-[#121212] dark:group-hover:text-[#ffffff]"
             )} />
-            <span className={cn(pathname.startsWith("/client/company/settings") && "uppercase tracking-wider text-[13px]")}>Cài đặt chung</span>
+            <span className={cn(pathname.startsWith("/client/company/settings") && "uppercase tracking-wider text-[13px]")}>Cài đặt tài khoản</span>
           </Link>
         </nav>
       </aside>

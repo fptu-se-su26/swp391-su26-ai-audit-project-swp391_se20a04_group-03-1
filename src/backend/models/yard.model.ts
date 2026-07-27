@@ -14,6 +14,11 @@ export interface IYard {
   cameraIp: string;
   snapshotUrl: string;
   slots: IYardSlot[];
+  // Trạng thái chiếm ô do camera bãi (CV) phát hiện gần nhất, được LƯU LẠI để
+  // khi tải lại trang không mất dữ liệu. CV chỉ gửi khi tập ô đổi (event-driven)
+  // nên đây luôn là ảnh chụp mới nhất, không phải giá trị theo lịch.
+  liveOccupiedSlots: string[];
+  liveOccupancyAt: Date | null;
   isDeleted: boolean;
 }
 
@@ -41,6 +46,8 @@ const yardSchema = new Schema<IYard>(
         ],
       },
     ],
+    liveOccupiedSlots: { type: [String], default: [] },
+    liveOccupancyAt: { type: Date, default: null },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },

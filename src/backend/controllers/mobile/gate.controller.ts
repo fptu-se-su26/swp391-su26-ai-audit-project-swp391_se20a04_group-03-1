@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { Appointment } from "../../models/appointment.model";
 import { Driver } from "../../models/driver.model";
+import { processGateQrScan } from "../../services/gate-passage.service";
 
 // POST /api/mobile/gate/scan  (requireMobileAuth + role gate_manager)
-// Fallback thủ công khi AI quét cổng không xử lý được.
+// Fallback khi AI quét cổng không xử lý được: quét mã QR của tài xế để xác thực
+// rồi xử lý ĐẦY ĐỦ như camera — tự suy ra check-in/check-out theo trạng thái.
 // Body: { qrToken }
 export const scanPost = async (req: Request, res: Response) => {
   try {
@@ -14,7 +16,7 @@ export const scanPost = async (req: Request, res: Response) => {
       return res.status(400).json({
         code: "error",
         message: "Thiếu mã QR",
-        data: { valid: false },
+        data: { valid: false, reason: "INVALID_TOKEN" },
       });
     }
 
@@ -39,11 +41,11 @@ export const scanPost = async (req: Request, res: Response) => {
     }
 
     // 2. Load lịch hẹn + tài xế.
-    const appt = await Appointment.findOne({
+    const appointment: any = await Appointment.findOne({
       _id: decoded.apptId,
       isDeleted: false,
-    });
-    if (!appt) {
+    }).populate("driverId", "driverId driverName driverPhone");
+    if (!appointment) {
       return res.status(200).json({
         code: "error",
         message: "Không tìm thấy lịch hẹn tương ứng",
@@ -51,48 +53,74 @@ export const scanPost = async (req: Request, res: Response) => {
       });
     }
 
-    // 3. Kiểm tra trạng thái hợp lệ để cho vào cổng.
-    if (appt.status === "Cancelled") {
+    // 3. Chặn theo trạng thái lịch hẹn.
+    if (appointment.status === "Cancelled") {
       return res.status(200).json({
         code: "error",
         message: "Lịch hẹn đã bị hủy — không được phép vào",
         data: { valid: false, reason: "CANCELLED" },
       });
     }
-    if (appt.status === "Completed") {
+    if (appointment.status === "Completed") {
       return res.status(200).json({
         code: "error",
         message: "Lịch hẹn đã hoàn tất trước đó",
         data: { valid: false, reason: "COMPLETED" },
       });
     }
-
-    const driver = await Driver.findById(appt.driverId).select(
-      "driverId driverName driverPhone",
-    );
-
-    // 4. Hợp lệ: chuyển Pending -> Confirmed (đánh dấu đã cho vào cổng).
-    const previousStatus = appt.status;
-    if (appt.status === "Pending") {
-      appt.status = "Confirmed";
-      await appt.save();
+    // Chỉ lịch hẹn ĐÃ DUYỆT mới được qua cổng — giống camera (chỉ xét Confirmed).
+    if (appointment.status !== "Confirmed") {
+      return res.status(200).json({
+        code: "error",
+        message: "Lịch hẹn chưa được duyệt — không thể qua cổng",
+        data: { valid: false, reason: "NOT_CONFIRMED" },
+      });
     }
 
+    // 4. Kiểm tra khung giờ (đệm ±30 phút, y như camera).
+    if (!isWithinTimeWindow(appointment)) {
+      return res.status(200).json({
+        code: "error",
+        message: `Chưa tới hoặc đã quá khung giờ lịch hẹn (${appointment.timeSlot})`,
+        data: { valid: false, reason: "OUT_OF_WINDOW" },
+      });
+    }
+
+    // 5. Xử lý qua cổng (tự suy ra check-in/check-out).
+    const result = await processGateQrScan(appointment);
+
+    // Bãi đầy khi check-in: hợp lệ về mặt QR nhưng không cho vào.
+    if (!result.ok) {
+      return res.status(200).json({
+        code: "error",
+        message: result.message,
+        data: {
+          valid: false,
+          reason: "YARD_FULL",
+          direction: result.direction,
+        },
+      });
+    }
+
+    const driver = appointment.driverId as any;
     return res.status(200).json({
       code: "success",
-      message: "Mã QR hợp lệ — Cho phép vào cổng",
+      message: result.message,
       data: {
         valid: true,
-        previousStatus,
+        direction: result.direction,
+        message: result.message,
+        assignedSlot: result.assignedSlot ?? null,
+        yardName: result.yardName ?? null,
         appointment: {
-          id: appt._id,
-          code: String(appt._id).slice(-6).toUpperCase(),
-          truckPlate: appt.truckPlate,
-          containerNo: appt.containerNo,
-          scheduledDate: appt.scheduledDate,
-          timeSlot: appt.timeSlot,
-          purpose: appt.purpose,
-          status: appt.status,
+          id: appointment._id,
+          code: String(appointment._id).slice(-6).toUpperCase(),
+          truckPlate: appointment.truckPlate,
+          containerNo: appointment.containerNo,
+          scheduledDate: appointment.scheduledDate,
+          timeSlot: appointment.timeSlot,
+          purpose: appointment.purpose,
+          status: appointment.status,
         },
         driver: driver
           ? {
@@ -101,8 +129,6 @@ export const scanPost = async (req: Request, res: Response) => {
               phone: driver.driverPhone,
             }
           : null,
-        // Appointment chưa liên kết yard/ô đỗ trong pass này.
-        yard: null,
       },
     });
   } catch (error) {
@@ -110,7 +136,36 @@ export const scanPost = async (req: Request, res: Response) => {
     return res.status(400).json({
       code: "error",
       message: "Không thể xử lý quét cổng",
-      data: { valid: false },
+      data: { valid: false, reason: "UNKNOWN" },
     });
+  }
+};
+
+// Lịch hẹn có nằm trong khung giờ cho phép (đệm 30 phút hai đầu) không.
+const isWithinTimeWindow = (appointment: any): boolean => {
+  try {
+    const appointmentDate = new Date(appointment.scheduledDate);
+    const [start, end] = String(appointment.timeSlot).split("-");
+
+    const startTime = new Date(appointmentDate);
+    const [startH, startM] = start.split(":");
+    startTime.setHours(parseInt(startH), parseInt(startM), 0, 0);
+
+    const endTime = new Date(appointmentDate);
+    const [endH, endM] = end.split(":");
+    endTime.setHours(parseInt(endH), parseInt(endM), 0, 0);
+
+    // Khung giờ vắt qua nửa đêm (vd 23:00-00:00): giờ kết thúc sang ngày hôm sau.
+    if (endTime <= startTime) {
+      endTime.setDate(endTime.getDate() + 1);
+    }
+
+    const validStart = new Date(startTime.getTime() - 30 * 60000);
+    const validEnd = new Date(endTime.getTime() + 30 * 60000);
+    const now = new Date();
+    return now >= validStart && now <= validEnd;
+  } catch {
+    // Không phân tích được khung giờ thì không chặn — để nghiệp vụ chạy tiếp.
+    return true;
   }
 };
