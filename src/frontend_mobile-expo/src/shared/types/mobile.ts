@@ -61,7 +61,12 @@ export interface DriverAppointment {
 export interface GateScanResult {
   valid: boolean;
   reason?: string;
-  previousStatus?: AppointmentStatus;
+  // Chiều qua cổng do backend suy ra: "in" = check-in, "out" = check-out.
+  direction?: "in" | "out";
+  // Ô đỗ được cấp khi check-in.
+  assignedSlot?: string | null;
+  yardName?: string | null;
+  message?: string;
   appointment?: {
     id: string;
     code: string;
@@ -77,5 +82,4 @@ export interface GateScanResult {
     fullName: string;
     phone?: string;
   } | null;
-  yard?: unknown | null;
 }

@@ -279,7 +279,7 @@ export default function ProviderSettingsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-4xl font-black text-[#121212] dark:text-[#ffffff] tracking-tight uppercase">
           Cài đặt tài khoản

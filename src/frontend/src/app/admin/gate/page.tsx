@@ -26,7 +26,6 @@ import {
   Eye,
   LogOut,
   Camera,
-  Activity,
   History,
 } from "lucide-react";
 import JustValidate from "just-validate";
@@ -62,7 +61,6 @@ interface Gate {
 }
 
 export default function GatePage() {
-  const [showCheckIn, setShowCheckIn] = useState(false);
   const [showCreateGate, setShowCreateGate] = useState(false);
   const [createType, setCreateType] = useState("in");
 
@@ -386,16 +384,6 @@ export default function GatePage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Can resource="gates" action="update">
-            <Button
-              onClick={() => setShowCheckIn(!showCheckIn)}
-              variant="outline"
-              className="bg-[#ffffff] dark:bg-[#181818] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] hover:text-[#121212] dark:hover:text-[#ffffff] hover:border-[#1ed760] dark:hover:border-[#1ed760] rounded-[500px] font-bold uppercase tracking-wider transition-colors gap-2"
-            >
-              <Activity className="h-4 w-4" />
-              Check-in thủ công
-            </Button>
-          </Can>
           <Can resource="gates" action="create">
             <Button
               onClick={() => setShowCreateGate(!showCreateGate)}
@@ -416,75 +404,6 @@ export default function GatePage() {
           </Link>
         </div>
       </div>
-
-      {/* Manual Check-in Form Overlay */}
-      {showCheckIn && (
-        <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm animate-in fade-in slide-in-from-top-4 duration-200">
-          <CardHeader className="bg-[#f8f8f8] dark:bg-[#121212] border-b border-[#e5e5e5] dark:border-[#272727] p-6 rounded-t-[16px]">
-            <CardTitle className="text-xl font-black text-[#121212] dark:text-[#ffffff] uppercase tracking-wider">
-              Check-in xe thủ công
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-8">
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                    Biển số xe
-                  </Label>
-                  <Input
-                    placeholder="VN-001"
-                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                    Tên tài xế
-                  </Label>
-                  <Input
-                    placeholder="Nguyễn A"
-                    className="bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                    Số booking
-                  </Label>
-                  <Input
-                    placeholder="BK-001"
-                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label className="text-[12px] font-bold uppercase tracking-[1.5px] text-[#121212] dark:text-[#ffffff]">
-                    Mã container
-                  </Label>
-                  <Input
-                    placeholder="CNT-001"
-                    className="uppercase bg-[#f8f8f8] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#272727] text-[#121212] dark:text-[#ffffff] font-bold h-12 px-4 rounded-[8px] focus-visible:border-[#00754A] dark:focus-visible:border-[#00754A] focus-visible:ring-1 focus-visible:ring-[#00754A] dark:focus-visible:ring-[#00754A] transition-colors"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-4 justify-end pt-4">
-                <Button
-                  type="button"
-                  onClick={() => setShowCheckIn(false)}
-                  variant="outline"
-                  className="bg-[#ffffff] dark:bg-[#181818] text-[#121212] dark:text-[#ffffff] border border-[#e5e5e5] dark:border-[#272727] hover:bg-[#f8f8f8] dark:hover:bg-[#272727] rounded-[500px] font-bold uppercase tracking-wider px-8"
-                >
-                  Hủy
-                </Button>
-                <Button
-                  type="button"
-                  className="bg-[#1ed760] hover:bg-[#1db954] text-[#121212] font-black uppercase tracking-[1.5px] px-8 rounded-[500px]"
-                >
-                  Xác nhận
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Create Gate Form */}
       {showCreateGate && (

@@ -144,10 +144,28 @@ export const syncYardDataPost = async (req: Request, res: Response) => {
       return;
     }
 
+    // Chuẩn hoá về mảng chuỗi ô hợp lệ trước khi lưu.
+    const occupiedList: string[] = occupied_slots
+      .map((s: unknown) => String(s))
+      .filter((s: string) => s.length > 0);
+    const now = new Date();
+
+    // LƯU LẠI trạng thái chiếm ô vào DB để reload trang không mất dữ liệu.
+    // CV chỉ gọi khi tập ô thay đổi nên mỗi lần ghi là một thay đổi thật —
+    // không cần hẹn giờ 5s hay chống dội thêm. Không chặn luồng nếu ghi lỗi.
+    try {
+      await Yard.updateOne(
+        { _id: yard_id },
+        { liveOccupiedSlots: occupiedList, liveOccupancyAt: now },
+      );
+    } catch (err) {
+      console.error("Lỗi lưu trạng thái chiếm ô của bãi:", err);
+    }
+
     io.to(yard_id).emit("yard_status_updated", {
       yard_id: yard_id,
-      occupied_slots: occupied_slots,
-      timestamp: new Date().toISOString(),
+      occupied_slots: occupiedList,
+      timestamp: now.toISOString(),
     });
 
     res.status(200).json({
