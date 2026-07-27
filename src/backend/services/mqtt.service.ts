@@ -1,4 +1,5 @@
 import mqtt, { MqttClient } from "mqtt";
+import { io } from "../index";
 
 /**
  * Cầu nối MQTT của backend.
@@ -19,6 +20,24 @@ import mqtt, { MqttClient } from "mqtt";
 
 let client: MqttClient | null = null;
 let enabled = false;
+
+/**
+ * Trạng thái mới nhất mỗi cổng, cập nhật từ topic smartparking/gate/<gate>/status mà ESP32
+ * phát. Dùng để hiển thị SỐ Ô CHỜ (waiting) lên web gate theo thời gian thực + cho phép
+ * trang vừa load lấy giá trị hiện tại qua REST (getGateStatuses).
+ */
+export interface GateLiveStatus {
+  gate: "in" | "out";
+  waiting: number; // số ô chờ đang có xe (0..4), chỉ cổng vào có cảm biến
+  event: string; // sự kiện gần nhất: online/opening/closed/waiting/fire...
+  online: boolean;
+  updatedAt: number; // epoch ms lần cập nhật gần nhất
+}
+
+const gateStatus: Record<string, GateLiveStatus> = {};
+
+/** Lấy snapshot trạng thái live của tất cả cổng (cho REST GET /gates/status/live). */
+export const getGateStatuses = (): GateLiveStatus[] => Object.values(gateStatus);
 
 /**
  * Làm sạch giá trị lấy từ .env: bỏ nháy còn sót và khoảng trắng thừa.
@@ -63,11 +82,39 @@ export const initMqtt = (): void => {
   client.on("connect", () => {
     enabled = true;
     console.log("[MQTT] Đã kết nối broker.");
+    // Nghe trạng thái mọi cổng để biết SỐ Ô CHỜ (và online/offline) đẩy lên web.
+    client!.subscribe("smartparking/gate/+/status", { qos: 1 }, (err) => {
+      if (err) console.error("[MQTT] Subscribe status lỗi:", err.message);
+      else console.log("[MQTT] Đang nghe smartparking/gate/+/status");
+    });
   });
   client.on("reconnect", () => console.log("[MQTT] Đang kết nối lại broker..."));
   client.on("error", (err) => console.error("[MQTT] Lỗi:", err.message));
   client.on("close", () => {
     enabled = false;
+  });
+
+  // Nhận status từ ESP32 -> cập nhật cache + phát socket cho web gate cập nhật số ô chờ.
+  client.on("message", (topic, payload) => {
+    const m = topic.match(/^smartparking\/gate\/(in|out)\/status$/);
+    if (!m) return;
+    const gate = m[1] as "in" | "out";
+    let data: Record<string, unknown> = {};
+    try {
+      data = JSON.parse(payload.toString());
+    } catch {
+      return; // payload không phải JSON -> bỏ qua
+    }
+    const event = String(data.event ?? "");
+    const online = event !== "offline";
+    // Chỉ cổng vào gửi 'waiting'; nếu thiếu thì GIỮ giá trị cũ (đừng nhảy về 0).
+    const waiting =
+      typeof data.waiting === "number"
+        ? (data.waiting as number)
+        : (gateStatus[gate]?.waiting ?? 0);
+
+    gateStatus[gate] = { gate, waiting, event, online, updatedAt: Date.now() };
+    io.emit("gate_status_update", { gate, waiting, event, online });
   });
 };
 

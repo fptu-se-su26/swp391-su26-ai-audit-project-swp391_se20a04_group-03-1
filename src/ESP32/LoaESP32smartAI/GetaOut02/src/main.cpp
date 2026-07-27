@@ -3,7 +3,8 @@
 //
 // Cùng kiến trúc MQTT với cổng vào (xem GateInTest + docs/mqtt_setup.md). Khác biệt:
 //   - GATE_ID = "out"  -> topic smartparking/gate/out/{cmd,audio,status}
-//   - Không có cảm biến cháy / LED / còi. Có 4 cảm biến đếm xe đang CHỜ ra.
+//   - KHÔNG có cảm biến cháy / LED / còi riêng. Thay vào đó LẮNG NGHE broadcast cháy
+//     (smartparking/fire) do cổng VÀO phát -> khi cháy thì MỞ CỔNG thoát hiểm (không kêu).
 //   - Cảm biến IR đảo cực so với cổng vào (IR_CAR_PRESENT = LOW).
 //   - Câu thông báo do Pi dựng là câu RA ("... mời di chuyển ra cổng").
 //
@@ -38,6 +39,9 @@
 #define TOPIC_AUDIO  "smartparking/gate/" GATE_ID "/audio"
 #define TOPIC_STATUS "smartparking/gate/" GATE_ID "/status"
 
+// Topic BÁO CHÁY dùng CHUNG (do cổng VÀO phát, retained). Cổng RA subscribe để mở cổng thoát.
+#define TOPIC_FIRE   "smartparking/fire"
+
 // ===== SERVO =====
 #define SERVO_PIN 33
 #define ANGLE_CLOSED 0
@@ -70,12 +74,17 @@ enum GateState {
   STATE_OPENING,
   STATE_WAIT_CAR_PASS,
   STATE_SAFE_DELAY,
-  STATE_CLOSING
+  STATE_CLOSING,
+  STATE_FIRE_EMERGENCY   // nhận broadcast cháy -> mở cổng thoát tới khi hết cháy
 };
 
 GateState currentState = STATE_IDLE_CLOSED;
 unsigned long stateStartTime = 0;
 const char* currentLine2Msg = "Cho lenh MQTT";
+// Dòng 1 LCD: mặc định nhãn cổng; đổi thành banner khi cháy.
+char currentLine1[17] = "== CONG RA ==   ";
+// Cờ đặt bởi callback MQTT khi nhận broadcast cháy từ cổng vào.
+volatile bool remoteFireActive = false;
 
 int currentServoAngle = ANGLE_CLOSED;
 unsigned long lastServoMoveTime = 0;
@@ -95,12 +104,12 @@ QueueHandle_t audioQueue;
 
 // --------------------------------------------------------------------------
 void updateDisplay(const char* line2) {
-  char buf1[17];
-  snprintf(buf1, sizeof(buf1), "GateOut Goc:%3d ", currentServoAngle);
+  // Dòng 1: nhãn cổng / banner cháy (bỏ hiển thị góc servo — nhiễu, vô nghĩa lúc demo).
+  // Dòng 2: câu trạng thái ngắn gọn.
   char buf2[17];
   snprintf(buf2, sizeof(buf2), "%-16s", line2);
   lcd.setCursor(0, 0);
-  lcd.print(buf1);
+  lcd.print(currentLine1);
   lcd.setCursor(0, 1);
   lcd.print(buf2);
 }
@@ -333,6 +342,10 @@ void onMqttMessage(char* topic, byte* payload, unsigned int len) {
       Serial.printf("[mqtt] Phát audio: %s\n", url);
       requestPlay(url);
     }
+  } else if (strcmp(topic, TOPIC_FIRE) == 0) {
+    // Broadcast cháy từ cổng vào -> đặt cờ, vòng loop() sẽ mở/đóng cổng thoát.
+    remoteFireActive = doc["fire"] | false;
+    Serial.printf("[mqtt] Broadcast chay: %s\n", remoteFireActive ? "CHAY" : "het");
   }
 }
 
@@ -346,6 +359,7 @@ void mqttReconnect() {
     Serial.println("OK");
     mqtt.subscribe(TOPIC_CMD, 1);
     mqtt.subscribe(TOPIC_AUDIO, 1);
+    mqtt.subscribe(TOPIC_FIRE, 1);   // nghe báo cháy để mở cổng thoát
     publishStatus("online");
   } else {
     Serial.printf("thất bại rc=%d\n", mqtt.state());
@@ -444,6 +458,21 @@ void loop() {
     updateDisplay(currentLine2Msg);
   }
 
+  // --- ƯU TIÊN CAO NHẤT: BÁO CHÁY (broadcast từ cổng vào) -> mở cổng thoát hiểm ---
+  if (remoteFireActive && currentState != STATE_FIRE_EMERGENCY) {
+    Serial.println("!!! NHAN BAO CHAY -> MO CONG RA KHAN CAP !!!");
+    strncpy(currentLine1, "!!! BAO CHAY !!!", sizeof(currentLine1));
+    openRequested = false;
+    carDetectedAtGate = false;
+    publishStatus("fire_open");
+    changeState(STATE_FIRE_EMERGENCY, "Mo cong thoat");
+  } else if (!remoteFireActive && currentState == STATE_FIRE_EMERGENCY) {
+    Serial.println("-> Het bao chay -> dong cong ra.");
+    strncpy(currentLine1, "== CONG RA ==   ", sizeof(currentLine1));
+    publishStatus("fire_cleared");
+    changeState(STATE_CLOSING, "Dang dong...");
+  }
+
   updateServo();
 
   switch (currentState) {
@@ -485,5 +514,8 @@ void loop() {
 
     case STATE_CLOSING:
       break;  // updateServo() lo, tự sang IDLE_CLOSED
+
+    case STATE_FIRE_EMERGENCY:
+      break;  // giữ cổng mở tới khi hết cháy (xử lý ở block ưu tiên phía trên)
   }
 }

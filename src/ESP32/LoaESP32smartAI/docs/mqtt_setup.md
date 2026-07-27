@@ -49,7 +49,8 @@ Xe RA tương tự nhưng `slot` để trống → Pi đọc câu *"...mời di 
 | `smartparking/gate/<g>/cmd` | backend → ESP32 | `{action:"open", plate, container}` |
 | `smartparking/announce` | backend → Pi | `{gate, plate, slot}` (slot=null → câu ra) **hoặc** `{gate, error}` (đọc nguyên văn câu lỗi) |
 | `smartparking/gate/<g>/audio` | Pi → ESP32 | `{url, text}` |
-| `smartparking/gate/<g>/status` | ESP32 → * | `{event, gate, ...}` (opening/opened/car_passing/closed/fire/offline) |
+| `smartparking/gate/<g>/status` | ESP32 → backend | `{event, gate, waiting}` (opening/opened/car_passing/closed/waiting/fire/offline). `waiting` = số ô chờ (0..4) ở cổng vào; backend đọc để đẩy lên web gate qua socket `gate_status_update` |
+| `smartparking/fire` | GateIn → GateOut | `{fire:true/false}` **retained**. Cổng vào phát khi cảm biến cháy kích; cổng ra nghe để mở cổng thoát. Broadcast trực tiếp — chạy cả khi backend chết |
 | `smartparking/pi/status` | Pi → * | `{event}` (online/offline) |
 
 `<g>` = `in` hoặc `out`.
