@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ContainerProvider } from "../models/container-provider.model";
 import bcrypt from "bcryptjs";
 import { sendMail, buildAccountProvisionEmail } from "../helpers/mail.helper";
+import { webLink } from "../helpers/app-url.helper";
 
 export const providersGet = async (req: Request, res: Response) => {
   try {
@@ -112,7 +113,7 @@ export const createProviderPost = async (req: Request, res: Response) => {
 
     // Email cấp tài khoản: KHÔNG gửi mật khẩu trong email (bảo mật).
     if (newProvider.contact_email) {
-      const loginUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/client/provider/login`;
+      const loginUrl = webLink("/client/provider/login");
       const isActive = newProvider.status === "ACTIVE";
       sendMail(
         newProvider.contact_email,
@@ -249,7 +250,7 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
               </table>
             </div>
 
-            ${newStatus === "ACTIVE" ? `<a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/client/provider/login" style="display: inline-block; background-color: #1ed760; color: #121212; font-weight: 900; text-decoration: none; padding: 14px 28px; border-radius: 500px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14px; margin-bottom: 32px;">Đăng nhập ngay</a>` : ''}
+            ${newStatus === "ACTIVE" ? `<a href="${webLink('/client/provider/login')}" style="display: inline-block; background-color: #1ed760; color: #121212; font-weight: 900; text-decoration: none; padding: 14px 28px; border-radius: 500px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14px; margin-bottom: 32px;">Đăng nhập ngay</a>` : ''}
 
             <div style="border-top: 1px solid #e5e5e5; padding-top: 24px;">
               <p style="margin: 0; font-size: 14px; color: #999999; font-weight: 700;">Trân trọng,</p>

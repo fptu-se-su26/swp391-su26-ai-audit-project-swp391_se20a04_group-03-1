@@ -4,6 +4,7 @@ import { Driver } from "../models/driver.model";
 import { CompanyRole } from "../models/companyRole.model";
 import bcrypt from "bcryptjs";
 import { sendMail, buildAccountProvisionEmail } from "../helpers/mail.helper";
+import { webLink } from "../helpers/app-url.helper";
 
 export const companiesGet = async (req: Request, res: Response) => {
   try {
@@ -121,7 +122,7 @@ export const createCompanyPost = async (req: Request, res: Response) => {
 
     // Email cấp tài khoản: KHÔNG gửi mật khẩu trong email (bảo mật).
     if (newCompany.email) {
-      const loginUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/client/company/login`;
+      const loginUrl = webLink("/client/company/login");
       const isActive = newCompany.status === "Active";
       sendMail(
         newCompany.email,
@@ -264,7 +265,7 @@ export const updateStatusPatch = async (req: Request, res: Response) => {
               </table>
             </div>
 
-            ${newStatus === "Active" ? `<a href="${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/client/company/login" style="display: inline-block; background-color: #1ed760; color: #121212; font-weight: 900; text-decoration: none; padding: 14px 28px; border-radius: 500px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14px; margin-bottom: 32px;">Đăng nhập ngay</a>` : ''}
+            ${newStatus === "Active" ? `<a href="${webLink('/client/company/login')}" style="display: inline-block; background-color: #1ed760; color: #121212; font-weight: 900; text-decoration: none; padding: 14px 28px; border-radius: 500px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 14px; margin-bottom: 32px;">Đăng nhập ngay</a>` : ''}
 
             <div style="border-top: 1px solid #e5e5e5; padding-top: 24px;">
               <p style="margin: 0; font-size: 14px; color: #999999; font-weight: 700;">Trân trọng,</p>
