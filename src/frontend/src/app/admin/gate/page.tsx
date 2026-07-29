@@ -423,24 +423,6 @@ export default function GatePage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {/* Số ô chờ ở cổng VÀO — cảm biến hồng ngoại ESP32, cập nhật realtime */}
-          <div className="flex items-center gap-3 rounded-[500px] border border-[#e5e5e5] dark:border-[#272727] bg-[#ffffff] dark:bg-[#181818] px-5 py-2.5">
-            <span
-              className={`h-2.5 w-2.5 rounded-full ${
-                waitingOnline ? "bg-[#1ed760] animate-pulse" : "bg-[#b3b3b3]"
-              }`}
-              title={waitingOnline ? "Cổng vào online" : "Cổng vào offline"}
-            />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666] dark:text-[#b3b3b3]">
-              Ô chờ cổng vào
-            </span>
-            <span className="text-xl font-black tabular-nums text-[#121212] dark:text-[#ffffff]">
-              {waitingSlots}
-              <span className="text-sm text-[#666666] dark:text-[#b3b3b3]">
-                /4
-              </span>
-            </span>
-          </div>
           <Can resource="gates" action="create">
             <Button
               onClick={() => setShowCreateGate(!showCreateGate)}
@@ -761,17 +743,26 @@ export default function GatePage() {
         </Card>
         <Card className="bg-[#ffffff] dark:bg-[#181818] border-[#e5e5e5] dark:border-[#272727] rounded-[16px] shadow-sm border-l-[6px] border-l-[#f59e0b]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px]">
+            <CardTitle className="text-[12px] text-[#666666] dark:text-[#999999] font-black uppercase tracking-[2px] flex items-center gap-2">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  waitingOnline ? "bg-[#1ed760] animate-pulse" : "bg-[#b3b3b3]"
+                }`}
+                title={waitingOnline ? "Cổng vào online" : "Cổng vào offline"}
+              />
               Xe đang chờ
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-3">
               <p className="text-[48px] leading-none font-black text-[#121212] dark:text-[#ffffff]">
-                0
+                {waitingSlots}
+                <span className="text-[24px] text-[#666666] dark:text-[#999999]">
+                  /4
+                </span>
               </p>
               <p className="text-[14px] text-[#666666] dark:text-[#999999] font-bold mb-2 uppercase tracking-wider">
-                tại cổng
+                tại cổng vào
               </p>
             </div>
           </CardContent>
