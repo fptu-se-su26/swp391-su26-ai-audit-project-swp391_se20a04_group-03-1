@@ -36,8 +36,9 @@ import {
 import { CustomSelect } from "@/components/CustomSelect";
 import toast from "react-hot-toast";
 import { Can } from "@/lib/permissions";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
-interface Company {
+interface Company extends AuditFields {
   _id: string;
   companyCode: string;
   companyName: string;
@@ -515,6 +516,7 @@ export default function CompaniesPage() {
                     <th className="px-6 py-4 font-black">Email</th>
                     <th className="px-6 py-4 font-black">Ngày tạo</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
+                    <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                     <th className="px-6 py-4 font-black text-right">
                       Hành động
                     </th>
@@ -562,6 +564,14 @@ export default function CompaniesPage() {
                               ? "Đình chỉ"
                               : "Chờ duyệt"}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={comp.createdBy}
+                          updatedBy={comp.updatedBy}
+                          createdAt={comp.createdAt}
+                          updatedAt={comp.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

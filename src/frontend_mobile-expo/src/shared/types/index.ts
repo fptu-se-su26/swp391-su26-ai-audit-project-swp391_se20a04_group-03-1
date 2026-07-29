@@ -20,4 +20,7 @@ export type {
   AppointmentStatus,
   DriverAppointment,
   GateScanResult,
+  GatePassageItem,
+  GateHistoryStats,
+  GateHistory,
 } from './mobile';

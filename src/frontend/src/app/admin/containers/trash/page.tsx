@@ -13,6 +13,7 @@ import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { CustomSelect } from "@/components/CustomSelect";
 import Link from "next/link";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +34,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-interface Container {
+interface Container extends AuditFields {
   _id: string;
   number: string;
   type: string;
@@ -256,6 +257,7 @@ export default function AdminTrashContainersPage() {
                   <th className="px-6 py-4 font-black">Kích thước</th>
                   <th className="px-6 py-4 font-black">Tình trạng</th>
                   <th className="px-6 py-4 font-black">Trạng thái cảng</th>
+                  <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                   <th className="px-6 py-4 font-black text-right w-32">
                     Hành động
                   </th>
@@ -264,7 +266,7 @@ export default function AdminTrashContainersPage() {
               <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <Loader2 className="h-6 w-6 animate-spin text-[#1ed760] mx-auto mb-2" />
                       <p className="text-[#666666] font-bold uppercase tracking-wider text-[12px]">
                         Đang tải dữ liệu...
@@ -273,7 +275,7 @@ export default function AdminTrashContainersPage() {
                   </tr>
                 ) : containers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-[#666666] dark:text-[#999999] font-bold uppercase tracking-wider text-[12px]">
+                    <td colSpan={7} className="px-6 py-12 text-center text-[#666666] dark:text-[#999999] font-bold uppercase tracking-wider text-[12px]">
                       Thùng rác trống
                     </td>
                   </tr>
@@ -315,6 +317,14 @@ export default function AdminTrashContainersPage() {
                         >
                           {container.portStatus}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={container.createdBy}
+                          updatedBy={container.updatedBy}
+                          createdAt={container.createdAt}
+                          updatedAt={container.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

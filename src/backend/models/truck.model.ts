@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 const truckSchema = new mongoose.Schema(
   {
@@ -25,5 +26,8 @@ const truckSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+truckSchema.plugin(auditPlugin);
 
 export const Truck = mongoose.model("Truck", truckSchema);

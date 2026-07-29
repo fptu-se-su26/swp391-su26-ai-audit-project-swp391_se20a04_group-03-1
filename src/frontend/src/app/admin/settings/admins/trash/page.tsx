@@ -14,6 +14,7 @@ import {
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 import {
   Pagination,
   PaginationContent,
@@ -34,7 +35,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface AdminUser {
+interface AdminUser extends AuditFields {
   _id: string;
   fullName: string;
   email: string;
@@ -188,13 +189,14 @@ export default function AdminsTrashPage() {
                 <th className="px-6 py-4 font-black">Tài khoản</th>
                 <th className="px-6 py-4 font-black">Thông tin</th>
                 <th className="px-6 py-4 font-black">Ngày xóa</th>
+                <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                 <th className="px-6 py-4 font-black text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center">
+                  <td colSpan={5} className="px-6 py-12 text-center">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#1ed760]" />
                     <p className="mt-2 font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
                       Đang tải thùng rác...
@@ -204,7 +206,7 @@ export default function AdminsTrashPage() {
               ) : admins.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={5}
                     className="px-6 py-12 text-center text-gray-500 dark:text-[#b3b3b3]"
                   >
                     <UserX className="h-16 w-16 mx-auto text-[#e5e5e5] dark:text-[#272727] mb-4" />
@@ -246,6 +248,14 @@ export default function AdminsTrashPage() {
                       {admin.deletedAt
                         ? new Date(admin.deletedAt).toLocaleDateString("vi-VN")
                         : "N/A"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <AuditCell
+                        createdBy={admin.createdBy}
+                        updatedBy={admin.updatedBy}
+                        createdAt={admin.createdAt}
+                        updatedAt={admin.updatedAt}
+                      />
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

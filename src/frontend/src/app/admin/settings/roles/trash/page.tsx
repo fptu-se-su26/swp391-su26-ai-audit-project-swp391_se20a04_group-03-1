@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { RequirePermission } from "@/lib/permissions";
+import { AuditCell } from "@/components/ui/audit-cell";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -153,19 +154,20 @@ function RolesTrashInner() {
                   <th className="px-6 py-4 font-black">Mã vai trò</th>
                   <th className="px-6 py-4 font-black">Tên</th>
                   <th className="px-6 py-4 font-black">Ngày xóa</th>
+                  <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                   <th className="px-6 py-4 font-black text-right">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-10 text-center">
+                    <td colSpan={5} className="px-6 py-10 text-center">
                       <Loader2 className="h-10 w-10 animate-spin text-[#f3727f] mx-auto" />
                     </td>
                   </tr>
                 ) : roles.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-20 text-center">
+                    <td colSpan={5} className="px-6 py-20 text-center">
                       <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4 mx-auto" />
                       <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
                         Thùng rác trống.
@@ -183,6 +185,14 @@ function RolesTrashInner() {
                       </td>
                       <td className="px-6 py-4 font-bold text-[#f59e0b]">
                         {role.deletedAt ? new Date(role.deletedAt).toLocaleString("vi-VN") : "-"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={role.createdBy}
+                          updatedBy={role.updatedBy}
+                          createdAt={role.createdAt}
+                          updatedAt={role.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

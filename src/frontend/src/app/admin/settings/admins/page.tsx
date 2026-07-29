@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
 import { RequirePermission, Can } from "@/lib/permissions";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
 interface RoleRef {
   _id: string;
@@ -67,7 +68,7 @@ interface GateRef {
   type: string;
 }
 
-interface AdminUser {
+interface AdminUser extends AuditFields {
   _id: string;
   fullName: string;
   email: string;
@@ -528,13 +529,14 @@ function AdminsInner() {
                 <th className="px-6 py-4 font-black">Thông tin</th>
                 <th className="px-6 py-4 font-black">Trạng thái</th>
                 <th className="px-6 py-4 font-black">Vai trò</th>
+                <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                 <th className="px-6 py-4 font-black text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center">
+                  <td colSpan={6} className="px-6 py-12 text-center">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#1ed760]" />
                     <p className="mt-2 font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
                       Đang tải dữ liệu...
@@ -544,7 +546,7 @@ function AdminsInner() {
               ) : admins.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-6 py-12 text-center text-gray-500 dark:text-[#b3b3b3]"
                   >
                     <ShieldCheck className="h-16 w-16 mx-auto text-[#e5e5e5] dark:text-[#272727] mb-4" />
@@ -607,6 +609,14 @@ function AdminsInner() {
                           </span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <AuditCell
+                        createdBy={admin.createdBy}
+                        updatedBy={admin.updatedBy}
+                        createdAt={admin.createdAt}
+                        updatedAt={admin.updatedAt}
+                      />
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

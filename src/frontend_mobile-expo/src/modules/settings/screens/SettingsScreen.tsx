@@ -48,6 +48,8 @@ export default function SettingsScreen() {
     <ScreenShell
       title="TÀI KHOẢN TÀI XẾ"
       subtitle="Thông tin do công ty vận tải cấp và quản lý."
+      onReload={refetch}
+      reloading={isRefetching}
     >
       <QueryStateHandler
         isLoading={isLoading && !profile}

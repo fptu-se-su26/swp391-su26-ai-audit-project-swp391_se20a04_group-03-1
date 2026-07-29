@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { Appointment } from "../../models/appointment.model";
 import { Driver } from "../../models/driver.model";
+import { GateTransaction } from "../../models/gateTransaction.model";
 import { processGateQrScan } from "../../services/gate-passage.service";
 
 // POST /api/mobile/gate/scan  (requireMobileAuth + role gate_manager)
@@ -138,6 +139,76 @@ export const scanPost = async (req: Request, res: Response) => {
       message: "Không thể xử lý quét cổng",
       data: { valid: false, reason: "UNKNOWN" },
     });
+  }
+};
+
+// GET /api/mobile/gate/history  (requireMobileAuth + role gate_manager)
+// Lịch sử các lượt do CHÍNH tài khoản này quét, kèm thống kê.
+//
+// Truy được là nhờ nhật ký sửa đổi (models/audit.plugin.ts): mỗi lượt quét ghi
+// lại người thao tác vào createdBy (lúc check-in) và updatedBy (lúc check-out).
+export const historyGet = async (req: Request, res: Response) => {
+  try {
+    const staffId = String(req.user.id);
+    const mine = {
+      isDeleted: false,
+      $or: [{ "createdBy.id": staffId }, { "updatedBy.id": staffId }],
+    };
+
+    const transactions: any[] = await GateTransaction.find(mine)
+      .sort({ updatedAt: -1 })
+      .limit(100)
+      .populate({
+        path: "appointmentId",
+        populate: { path: "driverId", select: "driverName driverPhone" },
+      })
+      .populate({ path: "yardId", select: "name" })
+      .lean();
+
+    // Mốc đầu ngày theo giờ VN để đếm "hôm nay".
+    const vn = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const [month, day, year] = vn.split("/");
+    const todayStart = new Date(`${year}-${month}-${day}T00:00:00.000+07:00`);
+    const isToday = (d?: Date | string | null) =>
+      !!d && new Date(d).getTime() >= todayStart.getTime();
+
+    const items = transactions.map((tx) => {
+      const appt = tx.appointmentId || {};
+      return {
+        id: String(tx._id),
+        truckPlate: tx.actualTruckPlate || appt.truckPlate || "—",
+        containerNo: tx.actualContainerNo || appt.containerNo || "—",
+        driverName: appt.driverId?.driverName || "—",
+        purpose: appt.purpose || "—",
+        timeSlot: appt.timeSlot || "—",
+        appointmentStatus: appt.status || "—",
+        assignedSlot: tx.assignedSlot || null,
+        yardName: tx.yardId?.name || null,
+        checkInTime: tx.checkInTime || null,
+        checkOutTime: tx.checkOutTime || null,
+        // "in" = còn trong bãi, "out" = đã rời cảng.
+        status: tx.status || "in",
+      };
+    });
+
+    const stats = {
+      total: items.length,
+      checkInToday: items.filter((i) => isToday(i.checkInTime)).length,
+      checkOutToday: items.filter((i) => isToday(i.checkOutTime)).length,
+      stillInside: items.filter((i) => i.status === "in").length,
+    };
+
+    return res.status(200).json({ code: "success", data: { stats, items } });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(400)
+      .json({ code: "error", message: "Không thể lấy lịch sử quét" });
   }
 };
 

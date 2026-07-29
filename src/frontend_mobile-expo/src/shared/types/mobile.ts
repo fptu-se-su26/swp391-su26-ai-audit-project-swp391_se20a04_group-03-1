@@ -57,6 +57,35 @@ export interface DriverAppointment {
   qrToken: string;
 }
 
+/** Một lượt qua cổng do tài khoản quản lý cổng hiện tại đã quét. */
+export interface GatePassageItem {
+  id: string;
+  truckPlate: string;
+  containerNo: string;
+  driverName: string;
+  purpose: string;
+  timeSlot: string;
+  appointmentStatus: string;
+  assignedSlot: string | null;
+  yardName: string | null;
+  checkInTime: string | null;
+  checkOutTime: string | null;
+  /** "in" = còn trong bãi, "out" = đã rời cảng. */
+  status: "in" | "out";
+}
+
+export interface GateHistoryStats {
+  total: number;
+  checkInToday: number;
+  checkOutToday: number;
+  stillInside: number;
+}
+
+export interface GateHistory {
+  stats: GateHistoryStats;
+  items: GatePassageItem[];
+}
+
 /** Kết quả quét cổng (fallback thủ công). */
 export interface GateScanResult {
   valid: boolean;

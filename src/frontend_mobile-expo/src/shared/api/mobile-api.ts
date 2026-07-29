@@ -5,6 +5,7 @@
 import { apiClient } from "./client";
 import type {
   DriverAppointment,
+  GateHistory,
   GateScanResult,
   LoginResult,
   MobileRole,
@@ -72,6 +73,17 @@ export async function fetchDriverAppointments(): Promise<DriverAppointment[]> {
     throw new Error(res.data.message ?? "Không thể lấy lịch hẹn");
   }
   return res.data.data ?? [];
+}
+
+// GET /gate/history — lịch sử + thống kê các lượt do chính tài khoản này quét.
+export async function fetchGateHistory(): Promise<GateHistory> {
+  const res = await apiClient.get<ApiEnvelope<GateHistory>>(
+    "/mobile/gate/history",
+  );
+  if (res.data.code !== "success" || !res.data.data) {
+    throw new Error(res.data.message ?? "Không thể lấy lịch sử quét");
+  }
+  return res.data.data;
 }
 
 // POST /gate/scan — xác thực QR (backend trả 200 kèm valid:false nếu không hợp lệ).

@@ -66,6 +66,9 @@ export default function GateScanScreen() {
     <ScreenShell
       title="QUÉT CỔNG THỦ CÔNG"
       subtitle="Dùng khi AI quét cổng không xử lý được — quét mã QR của tài xế để xác thực."
+      // Màn này không có dữ liệu để tải lại; nút làm mới đưa về trạng thái sẵn
+      // sàng quét, hữu ích khi đang kẹt ở màn kết quả hoặc thông báo lỗi.
+      onReload={reset}
     >
       {/* Trạng thái nhàn rỗi / lỗi */}
       {mode === "idle" && (

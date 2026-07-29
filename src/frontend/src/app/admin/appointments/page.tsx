@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
 import { Can } from "@/lib/permissions";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
 const TIME_SLOTS = [
   "05:00-06:00",
@@ -73,7 +74,7 @@ const TIME_SLOTS = [
   "23:00-00:00",
 ];
 
-interface Appointment {
+interface Appointment extends AuditFields {
   _id: string;
   appointmentId: string;
   truckPlate: string;
@@ -620,6 +621,7 @@ export default function AppointmentsPage() {
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn & Giờ</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
+                    <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                     <th className="px-6 py-4 font-black text-right">
                       Thao tác
                     </th>
@@ -696,6 +698,14 @@ export default function AppointmentsPage() {
                                     ? "Đã Hủy"
                                     : "Chờ Duyệt"}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={apt.createdBy}
+                          updatedBy={apt.updatedBy}
+                          createdAt={apt.createdAt}
+                          updatedAt={apt.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

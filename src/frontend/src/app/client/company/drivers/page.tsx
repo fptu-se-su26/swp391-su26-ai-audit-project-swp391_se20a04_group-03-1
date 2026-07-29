@@ -35,8 +35,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
-interface Driver {
+interface Driver extends AuditFields {
   _id: string;
   driverId: string;
   driverName: string;
@@ -459,6 +460,7 @@ export default function DriversPage() {
                     <th className="px-6 py-4 font-black">Họ Tên</th>
                     <th className="px-6 py-4 font-black">Điện Thoại</th>
                     <th className="px-6 py-4 font-black">Tài khoản app</th>
+                    <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                     <th className="px-6 py-4 font-black text-right">
                       Hành động
                     </th>
@@ -493,6 +495,14 @@ export default function DriversPage() {
                             Chờ kích hoạt
                           </span>
                         )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={driver.createdBy}
+                          updatedBy={driver.updatedBy}
+                          createdAt={driver.createdAt}
+                          updatedAt={driver.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 const companySchema = new Schema(
   {
@@ -60,5 +61,8 @@ const companySchema = new Schema(
     timestamps: true,
   },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+companySchema.plugin(auditPlugin);
 
 export const Company = mongoose.model("Company", companySchema, "companies");

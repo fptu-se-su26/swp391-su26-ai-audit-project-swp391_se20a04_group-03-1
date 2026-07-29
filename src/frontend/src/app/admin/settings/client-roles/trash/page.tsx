@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { AuditCell } from "@/components/ui/audit-cell";
 
 export default function ClientRolesTrashPage() {
   const [roles, setRoles] = useState<any[]>([]);
@@ -153,13 +154,14 @@ export default function ClientRolesTrashPage() {
                   <th className="px-6 py-4 font-black">Mã (Code)</th>
                   <th className="px-6 py-4 font-black">Tên loại hình</th>
                   <th className="px-6 py-4 font-black">Ngày xóa</th>
+                  <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                   <th className="px-6 py-4 font-black text-right">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-10">
+                    <td colSpan={5} className="px-6 py-10">
                       <div className="flex flex-col items-center justify-center">
                         <Loader2 className="h-10 w-10 animate-spin text-[#f3727f] mb-4" />
                         <p className="font-bold text-[#666666] dark:text-[#b3b3b3] uppercase tracking-wider text-[12px]">
@@ -170,7 +172,7 @@ export default function ClientRolesTrashPage() {
                   </tr>
                 ) : roles.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-20">
+                    <td colSpan={5} className="px-6 py-20">
                       <div className="flex flex-col items-center justify-center text-center">
                         <Trash2 className="h-16 w-16 text-[#e5e5e5] dark:text-[#272727] mb-4" />
                         <p className="font-bold text-[#666666] dark:text-[#b3b3b3] text-[16px]">
@@ -193,6 +195,14 @@ export default function ClientRolesTrashPage() {
                       </td>
                       <td className="px-6 py-4 font-bold text-[#f59e0b]">
                         {new Date(role.deletedAt).toLocaleString('vi-VN')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={role.createdBy}
+                          updatedBy={role.updatedBy}
+                          createdAt={role.createdAt}
+                          updatedAt={role.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -51,6 +51,7 @@ export default function AppointmentsScreen() {
     isLoading,
     isError,
     refetch,
+    isFetching,
   } = useQuery({
     queryKey: ["driver-appointments"],
     queryFn: fetchDriverAppointments,
@@ -65,6 +66,8 @@ export default function AppointmentsScreen() {
     <ScreenShell
       title="LỊCH HẸN CỦA BẠN"
       subtitle="Mở mã QR của từng lịch hẹn để nhân viên cổng quét khi vào cảng."
+      onReload={refetch}
+      reloading={isFetching}
     >
       <QueryStateHandler
         isLoading={isLoading}

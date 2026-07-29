@@ -3,9 +3,12 @@ import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { stitchPalette } from "@/shared/theme";
 import { useAuth } from "@/shared/state/auth";
+import { useTabBarStyle } from "@/shared/hooks/use-tab-bar-style";
 
 export default function DriverTabLayout() {
   const auth = useAuth();
+  // Hook phải gọi TRƯỚC mọi return sớm (quy tắc hooks của React).
+  const { tabBarStyle } = useTabBarStyle();
 
   if (!auth.isReady) {
     return null;
@@ -23,14 +26,7 @@ export default function DriverTabLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: stitchPalette.surfaceAlt },
         headerTintColor: stitchPalette.text,
-        tabBarStyle: {
-          backgroundColor: stitchPalette.surfaceAlt,
-          borderTopColor: stitchPalette.borderSoft,
-          borderTopWidth: 1,
-          height: 74,
-          paddingTop: 8,
-          paddingBottom: 8,
-        },
+        tabBarStyle,
         // Tab được chọn: chỉ đổi màu icon + chữ sang xanh (không dùng khối nền).
         tabBarActiveTintColor: stitchPalette.accent,
         tabBarInactiveTintColor: stitchPalette.textSubtle,

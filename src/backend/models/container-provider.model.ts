@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 const containerProviderSchema = new Schema(
   {
@@ -45,6 +46,9 @@ const containerProviderSchema = new Schema(
     timestamps: true,
   }
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+containerProviderSchema.plugin(auditPlugin);
 
 export const ContainerProvider = mongoose.model(
   "ContainerProvider",

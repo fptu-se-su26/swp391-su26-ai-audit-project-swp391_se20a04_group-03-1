@@ -32,4 +32,12 @@ mobileRouter.post(
   gateController.scanPost,
 );
 
+// Lịch sử + thống kê các lượt do chính tài khoản cổng này quét.
+mobileRouter.get(
+  "/gate/history",
+  requireMobileAuth,
+  requireRole("gate_manager"),
+  gateController.historyGet,
+);
+
 export default mobileRouter;

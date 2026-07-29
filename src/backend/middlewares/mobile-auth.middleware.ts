@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { redisClient } from "../config/redis.config";
+import { runWithActor } from "../helpers/audit-context";
+import { resolveActor } from "../helpers/resolve-actor";
 
 /**
  * Xác thực cho app mobile — biến thể Bearer (không dùng cookie như web).
@@ -38,7 +40,15 @@ export const requireMobileAuth = async (
     }
 
     req.user = decoded;
-    next();
+
+    // Đóng dấu nhật ký sửa đổi cho thao tác ghi từ app (quét QR ở cổng).
+    // Quản lý cổng là một AccountAdmin -> kind "admin"; tài xế -> "driver".
+    if (req.method === "GET") return next();
+    const actor = await resolveActor(
+      decoded.role === "driver" ? "driver" : "admin",
+      decoded,
+    );
+    return runWithActor(actor, () => next());
   } catch (error) {
     return res.status(401).json({
       code: "error",

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 export interface IYardSlot {
   slotName: string;
@@ -52,5 +53,8 @@ const yardSchema = new Schema<IYard>(
   },
   { timestamps: true },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+yardSchema.plugin(auditPlugin);
 
 export const Yard = mongoose.model<IYard>("Yard", yardSchema, "yards");

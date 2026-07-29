@@ -41,6 +41,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { RequirePermission, Can, usePermissions } from "@/lib/permissions";
 import { ACTION_LABELS, type Action } from "@/config/rbac";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
 interface ResourceDef {
   key: string;
@@ -51,7 +52,7 @@ interface Permission {
   resource: string;
   actions: string[];
 }
-interface Role {
+interface Role extends AuditFields {
   _id: string;
   roleCode: string;
   roleName: string;
@@ -313,19 +314,20 @@ function RolesInner() {
                   <th className="px-6 py-4 font-black">Số quyền</th>
                   <th className="px-6 py-4 font-black">Người dùng</th>
                   <th className="px-6 py-4 font-black">Trạng thái</th>
+                  <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                   <th className="px-6 py-4 font-black text-right">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e5e5e5] dark:divide-[#272727]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#1ed760]" />
                     </td>
                   </tr>
                 ) : roles.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <ShieldCheck className="h-16 w-16 mx-auto text-[#e5e5e5] dark:text-[#272727] mb-4" />
                       <p className="font-bold text-[#666666] dark:text-[#b3b3b3]">Chưa có vai trò nào.</p>
                     </td>
@@ -360,6 +362,14 @@ function RolesInner() {
                         }`}>
                           {role.status === "Active" ? "Hoạt động" : "Tạm ẩn"}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={role.createdBy}
+                          updatedBy={role.updatedBy}
+                          createdAt={role.createdAt}
+                          updatedAt={role.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         {role.isSystem ? (

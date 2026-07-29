@@ -1,5 +1,6 @@
 import { required } from "joi";
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 const appointmentSchema = new Schema(
   {
@@ -67,6 +68,9 @@ const appointmentSchema = new Schema(
     timestamps: true,
   },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+appointmentSchema.plugin(auditPlugin);
 
 export const Appointment = mongoose.model(
   "Appointment",

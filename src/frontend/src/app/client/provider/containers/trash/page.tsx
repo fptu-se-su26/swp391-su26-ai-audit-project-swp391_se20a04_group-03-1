@@ -32,8 +32,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Link from "next/link";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
-interface Container {
+interface Container extends AuditFields {
   _id: string;
   number: string;
   type: string;
@@ -269,6 +270,7 @@ export default function ProviderTrashContainersPage() {
                     <th className="px-6 py-4 font-black">Tình trạng (R/H)</th>
                     <th className="px-6 py-4 font-black">Trạng thái LogiPort</th>
                     <th className="px-6 py-4 font-black">Ngày khai báo</th>
+                    <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                     <th className="px-6 py-4 font-black text-right w-32">
                       Hành động
                     </th>
@@ -312,6 +314,14 @@ export default function ProviderTrashContainersPage() {
                       </td>
                       <td className="px-6 py-4 font-bold text-[#666666] dark:text-[#b3b3b3]">
                         {new Date(container.createdAt).toLocaleDateString("vi-VN")}
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={container.createdBy}
+                          updatedBy={container.updatedBy}
+                          createdAt={container.createdAt}
+                          updatedAt={container.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

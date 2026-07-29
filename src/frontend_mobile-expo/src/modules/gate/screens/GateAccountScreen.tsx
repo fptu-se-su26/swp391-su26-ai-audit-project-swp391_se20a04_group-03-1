@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { ScreenShell } from "@/shared/components/layout/ScreenShell";
 import { Button } from "@/shared/components/Button";
+import { fetchMe } from "@/shared/api/mobile-api";
 import { useAuth, signOut } from "@/shared/state/auth";
 import { palette, radii, spacing } from "@/shared/theme";
 
@@ -12,7 +14,14 @@ export default function GateAccountScreen() {
   const auth = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const user = auth.user ?? {};
+  // Lấy hồ sơ mới nhất từ /auth/me, dùng dữ liệu đăng nhập sẵn có để hiện ngay.
+  const { data: profile, refetch, isRefetching } = useQuery<any>({
+    queryKey: ["me", "gate"],
+    queryFn: fetchMe,
+    initialData: (auth.user as any) ?? undefined,
+  });
+
+  const user = profile ?? auth.user ?? {};
   const gate = (user as any).gate as
     | { name: string; type: string }
     | undefined
@@ -28,6 +37,8 @@ export default function GateAccountScreen() {
     <ScreenShell
       title="TÀI KHOẢN QUẢN LÝ CỔNG"
       subtitle="Thông tin nhân viên và phiên đăng nhập."
+      onReload={refetch}
+      reloading={isRefetching}
     >
       <View style={styles.card}>
         <View style={styles.avatar}>

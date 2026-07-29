@@ -42,8 +42,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
-interface Appointment {
+interface Appointment extends AuditFields {
   _id: string;
   appointmentId: string;
   truckPlate: string;
@@ -306,6 +307,7 @@ export default function TrashAppointmentsPage() {
                     <th className="px-6 py-4 font-black">Tài xế / SĐT</th>
                     <th className="px-6 py-4 font-black">Ngày hẹn & Giờ</th>
                     <th className="px-6 py-4 font-black">Trạng thái</th>
+                    <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                     <th className="px-6 py-4 font-black text-right">
                       Thao tác
                     </th>
@@ -358,6 +360,14 @@ export default function TrashAppointmentsPage() {
                         <span className="inline-flex items-center px-3 py-1 rounded-[500px] text-[11px] font-black uppercase tracking-wider bg-[#b3b3b3]/10 text-[#666666] dark:text-[#b3b3b3]">
                           Đã xóa
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={apt.createdBy}
+                          updatedBy={apt.updatedBy}
+                          createdAt={apt.createdAt}
+                          updatedAt={apt.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

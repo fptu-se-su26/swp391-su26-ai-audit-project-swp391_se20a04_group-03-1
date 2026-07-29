@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 export interface IDriver {
   driverId: string;
@@ -41,6 +42,9 @@ const driverSchema = new Schema<IDriver>(
   },
   { timestamps: true },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+driverSchema.plugin(auditPlugin);
 
 export const Driver = mongoose.model<IDriver>(
   "Driver",

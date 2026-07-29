@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 const accountAdminSchema = new Schema(
   {
@@ -47,6 +48,9 @@ const accountAdminSchema = new Schema(
     timestamps: true,
   },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+accountAdminSchema.plugin(auditPlugin);
 
 export const AccountAdmin = mongoose.model(
   "AccountAdmin",

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 export interface IGateTransaction {
   appointmentId?: mongoose.Types.ObjectId;
@@ -36,6 +37,9 @@ const gateTransactionSchema = new Schema<IGateTransaction>(
   },
   { timestamps: true },
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+gateTransactionSchema.plugin(auditPlugin);
 
 export const GateTransaction = mongoose.model<IGateTransaction>(
   "GateTransaction",

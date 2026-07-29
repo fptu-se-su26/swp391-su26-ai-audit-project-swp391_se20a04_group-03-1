@@ -17,7 +17,11 @@ export default function DashboardScreen() {
   const user = auth.user as any;
   const [showPass, setShowPass] = useState(false);
 
-  const { data: appointments = [] } = useQuery({
+  const {
+    data: appointments = [],
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ["driver-appointments"],
     queryFn: fetchDriverAppointments,
   });
@@ -35,6 +39,8 @@ export default function DashboardScreen() {
     <ScreenShell
       title="TÀI XẾ CẢNG"
       subtitle="Cảng thông minh LogiPort — mã QR vào cổng của bạn."
+      onReload={refetch}
+      reloading={isFetching}
     >
       {/* Lời chào */}
       <View style={styles.hero}>

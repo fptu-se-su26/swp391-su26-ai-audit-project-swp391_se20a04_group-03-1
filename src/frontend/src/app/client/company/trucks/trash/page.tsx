@@ -38,8 +38,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import toast from "react-hot-toast";
+import { AuditCell, AuditFields } from "@/components/ui/audit-cell";
 
-interface Truck {
+interface Truck extends AuditFields {
   _id: string;
   truckPlate: string;
   truckType: string;
@@ -230,6 +231,7 @@ export default function TrucksTrashPage() {
                     <th className="px-6 py-4 font-black">Loại Xe</th>
                     
                     <th className="px-6 py-4 font-black">Ngày Xóa</th>
+                    <th className="px-6 py-4 font-black">Nhật ký sửa đổi</th>
                     <th className="px-6 py-4 font-black text-right">Hành động</th>
                   </tr>
                 </thead>
@@ -250,6 +252,14 @@ export default function TrucksTrashPage() {
                         {truck.updatedAt
                           ? new Date(truck.updatedAt).toLocaleDateString("vi-VN")
                           : "-"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <AuditCell
+                          createdBy={truck.createdBy}
+                          updatedBy={truck.updatedBy}
+                          createdAt={truck.createdAt}
+                          updatedAt={truck.updatedAt}
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

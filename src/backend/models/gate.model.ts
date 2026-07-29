@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { auditPlugin } from "./audit.plugin";
 
 export interface IGate {
   name: string;
@@ -16,5 +17,8 @@ const gateSchema = new Schema<IGate>(
   },
   { timestamps: true }
 );
+
+// Nhật ký sửa đổi: tự đóng dấu ai tạo / ai sửa cho mọi thao tác ghi.
+gateSchema.plugin(auditPlugin);
 
 export const Gate = mongoose.model<IGate>("Gate", gateSchema, "gates");

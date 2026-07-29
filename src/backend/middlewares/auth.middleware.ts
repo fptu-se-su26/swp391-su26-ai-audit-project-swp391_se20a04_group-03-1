@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { redisClient } from "../config/redis.config";
+import { ActorKind, runWithActor } from "../helpers/audit-context";
+import { resolveActor, systemActor } from "../helpers/resolve-actor";
 
 declare global {
   namespace Express {
@@ -9,6 +11,22 @@ declare global {
     }
   }
 }
+
+/**
+ * Đặt "ai đang thao tác" vào ngữ cảnh request rồi chạy tiếp chuỗi middleware.
+ * Plugin audit (models/audit.plugin.ts) đọc lại khi ghi DB.
+ *
+ * Bỏ qua GET: request đọc không ghi gì, tra tên actor sẽ tốn một truy vấn vô ích.
+ */
+const withActor = async (
+  req: Request,
+  kind: ActorKind,
+  next: NextFunction,
+): Promise<void> => {
+  if (req.method === "GET") return next();
+  const actor = await resolveActor(kind, req.user);
+  runWithActor(actor, () => next());
+};
 
 export const requireAuth = async (
   req: Request,
@@ -19,7 +37,8 @@ export const requireAuth = async (
     // 0. Bỏ qua xác thực nếu là request nội bộ từ AI Server
     const internalSecret = req.headers["x-internal-secret"];
     if (internalSecret === "AI_SERVER_SECRET_KEY") {
-      return next();
+      // CV server ghi dữ liệu (đồng bộ bãi, quét cổng) -> đóng dấu "Hệ thống".
+      return runWithActor(systemActor(), () => next());
     }
 
     // 1. Lấy token từ cookie
@@ -50,7 +69,7 @@ export const requireAuth = async (
     }
     // 4. Nếu khớp 100%, cho phép đi qua và đính kèm thông tin user
     req.user = decoded;
-    next();
+    return withActor(req, "admin", next);
   } catch (error) {
     res.clearCookie("tokenAdmin", {
       httpOnly: true,
@@ -100,7 +119,7 @@ export const requireAuthCompany = async (
     }
     
     req.user = decoded;
-    next();
+    return withActor(req, "company", next);
   } catch (error) {
     res.clearCookie("tokenCompany", {
       httpOnly: true,
@@ -150,7 +169,7 @@ export const requireAuthProvider = async (
     }
     
     req.user = decoded;
-    next();
+    return withActor(req, "provider", next);
   } catch (error) {
     res.clearCookie("tokenProvider", {
       httpOnly: true,
