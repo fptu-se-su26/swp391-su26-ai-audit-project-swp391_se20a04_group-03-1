@@ -7,9 +7,11 @@ import { Sidebar } from "@/components/layout/sidebar"
 import { Footer } from "@/components/layout/footer"
 import { Toaster } from "react-hot-toast"
 import { PermissionProvider } from "@/lib/permissions"
+import { AIAssistantButton, AIAssistantChat } from "@/components/ai-assistant"
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false)
   const pathname = usePathname()
 
   const isAuthPage = pathname?.includes("/admin/login") ||
@@ -30,13 +32,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         root.style.setProperty('--toast-border', '#e5e5e5');
       }
     };
-    
+
     updateToastTheme();
-    
+
     // Create an observer to watch for class changes on html tag
     const observer = new MutationObserver(updateToastTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    
+
     return () => observer.disconnect();
   }, []);
 
@@ -83,6 +85,16 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <Footer />
         </main>
       </div>
+
+      {/* AI Assistant */}
+      <AIAssistantButton
+        onClick={() => setAiAssistantOpen(true)}
+        tooltip="AI Assistant"
+      />
+      <AIAssistantChat
+        open={aiAssistantOpen}
+        onOpenChange={setAiAssistantOpen}
+      />
     </div>
     </PermissionProvider>
   )
