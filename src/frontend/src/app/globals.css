@@ -181,3 +181,45 @@ input.bg-\[\#1f1f1f\]:-webkit-autofill:active {
     @apply font-sans;
   }
 }
+
+/* AI Assistant Audio Waves Animation */
+@keyframes wave-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+
+@keyframes wave-2 {
+  0%, 100% { height: 8px; }
+  50% { height: 20px; }
+}
+
+@keyframes wave-3 {
+  0%, 100% { height: 12px; }
+  50% { height: 24px; }
+}
+
+@keyframes wave-4 {
+  0%, 100% { height: 6px; }
+  50% { height: 18px; }
+}
+
+@keyframes wave-5 {
+  0%, 100% { height: 10px; }
+  50% { height: 14px; }
+}
+
+.animate-wave-1 {
+  animation: wave-1 0.6s ease-in-out infinite;
+}
+.animate-wave-2 {
+  animation: wave-2 0.6s ease-in-out infinite 0.1s;
+}
+.animate-wave-3 {
+  animation: wave-3 0.6s ease-in-out infinite 0.2s;
+}
+.animate-wave-4 {
+  animation: wave-4 0.6s ease-in-out infinite 0.3s;
+}
+.animate-wave-5 {
+  animation: wave-5 0.6s ease-in-out infinite 0.4s;
+}
